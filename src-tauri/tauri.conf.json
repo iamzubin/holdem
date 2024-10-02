@@ -17,7 +17,9 @@
         "height": 300,
         "dragDropEnabled": true,
         "decorations": false,
-        "create": false
+        "create": true,
+        "closable": false,
+        "alwaysOnTop": true
       }
     ],
     "security": {

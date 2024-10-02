@@ -1,7 +1,7 @@
 use std::thread;
 use std::time::{Duration, Instant};
-use tauri::{Manager, WebviewWindowBuilder};
-use winapi::um::winuser::GetForegroundWindow; // Import necessary traits
+use tauri::{Manager, PhysicalPosition, WebviewWindowBuilder};
+use winapi::um::winuser::{GetForegroundWindow, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN}; // Import necessary traits
 
 pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tauri::AppHandle) {
     thread::spawn(move || {
@@ -13,8 +13,13 @@ pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tau
         let movement_time_limit = Duration::from_millis(shake_time_limit); // Time limit for direction change
         let mut last_shake_time = Instant::now(); // Track last shake time
         let mut last_direction: Option<i32> = None; // Track last direction (1 for right, -1 for left)
+        let mut is_window_shown = false; // Track if window is shown
 
         loop {
+            // Get screen dimensions
+            let screen_width = unsafe { GetSystemMetrics(SM_CXSCREEN) };
+            let screen_height = unsafe { GetSystemMetrics(SM_CYSCREEN) };
+
             // Check if a full-screen application is running
             let hwnd = unsafe { GetForegroundWindow() };
             let is_fullscreen = if hwnd.is_null() {
@@ -34,7 +39,8 @@ pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tau
             }
 
             // Check if the left mouse button is pressed
-            if unsafe { winapi::um::winuser::GetAsyncKeyState(0x01) } < 0 {
+            let is_button_pressed = unsafe { winapi::um::winuser::GetAsyncKeyState(0x01) } < 0;
+            if is_button_pressed {
                 let mut current_position = winapi::shared::windef::POINT { x: 0, y: 0 }; // Changed LPPOINT to POINT
                 unsafe {
                     winapi::um::winuser::GetCursorPos(&mut current_position);
@@ -74,23 +80,46 @@ pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tau
                     // Check if shake count meets the required shakes
                     println!("Shake detected!");
 
-                    // Open a new window
-                    let window_config = app.config().app.windows.get(0).unwrap(); // Get the first window config
-                    match WebviewWindowBuilder::from_config(&app, window_config) {
-                        Ok(window) => {
-                            window.build().expect("Failed to build window");
-                        }
-                        Err(e) => {
-                            eprintln!("Failed to create window: {}", e);
-                        }
+                    // Ensure the window does not open off-screen or in the corner
+                    let mut window_x = current_position.x;
+                    let mut window_y = current_position.y;
+
+                    // Define some margin to consider as "corner"
+                    let margin = 300;
+
+                    // Check if cursor is near the right or bottom edge
+                    if current_position.x + margin > screen_width {
+                        window_x = current_position.x - 300; // Move window left
                     }
 
+                    if current_position.y + margin > screen_height {
+                        window_y = current_position.y - 300; // Move window up
+                    }
+
+                    // Show the window at the adjusted position
+                    let app = app.app_handle();
+                    if let Some(window) = app.get_webview_window("main") {
+                        let _ = window.set_position(PhysicalPosition {
+                            x: window_x,
+                            y: window_y,
+                        });
+                        let _ = window.show();
+                        let _ = window.set_focus();
+                        is_window_shown = true; // Track that the window is shown
+                    }
                     shake_count = 0; // Reset after detection
                 }
 
                 last_position = current_position; // No change needed here
-            } else {
-                shake_count = 0; // Reset if mouse button is not pressed
+            } else if is_window_shown {
+                // Hide the window when the left mouse button is released
+
+                let app = app.app_handle();
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.hide(); // Hide the window
+                    is_window_shown = false; // Reset window state
+                }
+                shake_count = 0; // Reset shake count when the button is released
                 last_direction = None; // Reset last direction
             }
 

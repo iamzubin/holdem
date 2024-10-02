@@ -7,7 +7,8 @@ use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
-use tauri::{Manager, WebviewWindowBuilder}; // Import WindowUrl
+use tauri::{window, CloseRequestApi, Manager, WebviewWindowBuilder}; // Import WindowUrl
+use tauri::{AppHandle, WindowEvent};
 use tempfile::TempDir; // Add this import
 
 mod mouse_monitor;
@@ -138,7 +139,6 @@ pub fn run() {
             // Create a TempDir during setup and store it in the app state
             let temp_dir = TempDir::new().expect("Failed to create temp directory");
             app.manage(temp_dir);
-
             #[cfg(all(desktop))]
             {
                 let handle = app.handle();
@@ -148,6 +148,13 @@ pub fn run() {
             mouse_monitor::start_mouse_monitor(4, 500, app.handle().clone()); // Changed from app to app.handle()
 
             Ok(())
+        })
+        .on_window_event(|_window, _event| match _event {
+            WindowEvent::CloseRequested { api, .. } => {
+                _window.hide().unwrap();
+                api.prevent_close()
+            }
+            _ => {}
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

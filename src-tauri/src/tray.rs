@@ -1,7 +1,7 @@
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager, Runtime,
+    window, CloseRequestApi, Manager, Runtime, WebviewWindowBuilder, WindowEvent,
 };
 
 pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
@@ -33,7 +33,8 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
                 }
             }
         })
-        .build(app);
+        .build(app)?;
 
+    // Add a listener for the window close event
     Ok(())
 }

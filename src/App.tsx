@@ -35,8 +35,6 @@ function App() {
   const handleFileDrop = async (paths: string[]) => {
     try {
       const storedPaths = await invoke<string[]>("handle_file_drop", { paths });
-      const storedPaths_1 = await invoke<string[]>("handle_data_drop", { paths });
-      console.log(storedPaths_1)
       const newFiles = storedPaths.map(path => ({
         name: path.split('/').pop() || '',
         type: 'file' as const,
