@@ -13,8 +13,11 @@
     "windows": [
       {
         "title": "holdem",
-        "width": 800,
-        "height": 600
+        "width": 300,
+        "height": 300,
+        "dragDropEnabled": true,
+        "decorations": false,
+        "create": false
       }
     ],
     "security": {

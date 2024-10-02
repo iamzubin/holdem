@@ -2,9 +2,25 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
+  "platforms": ["windows"],
   "windows": ["main"],
+  "webviews": ["Capability"],
   "permissions": [
-    "core:default",
-    "shell:allow-open"
+    "core:path:default",
+    "core:event:default",
+    "core:window:default",
+    "core:app:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default",
+    "core:image:allow-from-bytes",
+    "core:image:allow-new",
+    "core:image:allow-from-path",
+    {
+      "identifier": "core:path:default",
+      "allow": [
+        "*"
+      ]
+    }
   ]
 }
