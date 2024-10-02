@@ -1,9 +1,19 @@
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
-use tauri::{Manager, PhysicalPosition, WebviewWindowBuilder};
-use winapi::um::winuser::{GetForegroundWindow, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN}; // Import necessary traits
+use tauri::{Listener, Manager, PhysicalPosition, WebviewWindowBuilder};
+use winapi::um::winuser::{GetForegroundWindow, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 
 pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tauri::AppHandle) {
+    let files_dropped = Arc::new(AtomicBool::new(false));
+    let files_dropped_clone = files_dropped.clone();
+
+    // Set up a listener for the 'files_dropped' event
+    let _unlistener = app.listen("files_dropped", move |_| {
+        files_dropped_clone.store(true, Ordering::SeqCst);
+    });
+
     thread::spawn(move || {
         let mut last_position = winapi::shared::windef::POINT { x: 0, y: 0 }; // Corrected POINT definition
         let check_interval = Duration::from_millis(50); // Check every 50 ms
@@ -112,12 +122,24 @@ pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tau
 
                 last_position = current_position; // No change needed here
             } else if is_window_shown {
-                // Hide the window when the left mouse button is released
-
-                let app = app.app_handle();
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.hide(); // Hide the window
-                    is_window_shown = false; // Reset window state
+                // Only hide the window when the left mouse button is released if no files were dropped
+                if !files_dropped.load(Ordering::SeqCst) {
+                    let app = app.app_handle();
+                    if let Some(window) = app.get_webview_window("main") {
+                        let _ = window.hide(); // Hide the window
+                        is_window_shown = false; // Reset window state
+                    }
+                } else {
+                    // Reset the files_dropped flag after a short delay
+                    let files_dropped_clone = files_dropped.clone();
+                    let app_clone = app.clone();
+                    thread::spawn(move || {
+                        thread::sleep(Duration::from_secs(1));
+                        files_dropped_clone.store(false, Ordering::SeqCst);
+                        if let Some(window) = app_clone.get_webview_window("main") {
+                            let _ = window.show();
+                        }
+                    });
                 }
                 shake_count = 0; // Reset shake count when the button is released
                 last_direction = None; // Reset last direction

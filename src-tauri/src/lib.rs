@@ -7,7 +7,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
-use tauri::{window, CloseRequestApi, Manager, WebviewWindowBuilder}; // Import WindowUrl
+use tauri::{window, CloseRequestApi, Emitter, Manager, WebviewWindowBuilder}; // Import WindowUrl
 use tauri::{AppHandle, WindowEvent};
 use tempfile::TempDir; // Add this import
 
@@ -15,7 +15,7 @@ mod mouse_monitor;
 
 #[tauri::command]
 async fn handle_file_drop(
-    _app: tauri::AppHandle, // Prefix with underscore to silence warning
+    app: tauri::AppHandle, // Prefix with underscore to silence warning
     paths: Vec<String>,
 ) -> Result<Vec<String>, String> {
     let mut stored_paths = Vec::new();
@@ -37,6 +37,12 @@ async fn handle_file_drop(
             // Handle individual file
             stored_paths.push(source_path.to_string_lossy().into_owned());
         }
+    }
+    app.emit("files_dropped", ()).map_err(|e| e.to_string())?;
+
+    // Show the window after handling the file drop
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.show();
     }
 
     Ok(stored_paths)

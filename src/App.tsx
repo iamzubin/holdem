@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { FileIcon, FolderIcon, CopyIcon } from "lucide-react";
 import { useDropzone } from "react-dropzone";
+import { listen } from '@tauri-apps/api/event';
 
 import "./App.css";
 
@@ -31,6 +32,16 @@ function App() {
 
     setupFileListener();
   }, []);
+
+  useEffect(() => {
+    const unlistenCheckFiles = listen('check_files', () => {
+      return files.length > 0;
+    });
+
+    return () => {
+      unlistenCheckFiles.then(unlisten => unlisten());
+    };
+  }, [files]);
 
   const handleFileDrop = async (paths: string[]) => {
     try {
