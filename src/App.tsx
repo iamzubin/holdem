@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X, MoreVertical, ChevronDown, ChevronUp, FileIcon, MoreHorizontal } from 'lucide-react';
+import { invoke } from "@tauri-apps/api/core";
 
 interface FilePreview {
   id: number;
@@ -128,23 +129,56 @@ function App() {
     console.log("File renamed successfully");
   };
 
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, file: FilePreview) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Prepare the drag data
+    e.dataTransfer.setData('text/plain', file.name);
+    e.dataTransfer.effectAllowed = 'copy';
+
+    // Call the Tauri API to initiate the OS-level drag
+    invoke('start_drag', { filePath: file.preview })
+      .then(() => console.log('Drag started successfully'))
+      .catch((error) => console.error('Error starting drag:', error));
+  }, []);
+
+  const handleMultiFileDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Prepare the drag data for multiple files
+    const fileNames = files.map(file => file.name).join('\n');
+    e.dataTransfer.setData('text/plain', fileNames);
+    e.dataTransfer.effectAllowed = 'copy';
+
+    // Call the Tauri API to initiate the OS-level drag for multiple files
+    invoke('start_multi_drag', { filePaths: files.map(file => file.preview) })
+      .then(() => console.log('Multi-file drag started successfully'))
+      .catch((error) => console.error('Error starting multi-file drag:', error));
+  }, [files]);
+
   const renderFilePreview = () => {
     if (files.length === 0) {
       return (
         <div className="flex items-center justify-center h-full">
-          <p className="text-white text-lg font-medium">Drop files here</p>
+          <p className="text-black text-lg font-medium">Drop files here</p>
         </div>
       );
     } else {
       return (
         <div className="flex flex-col items-center justify-center h-full">
-          <div className="w-40 h-40  rounded-lg mb-6 flex items-center justify-center">
-            <FileIcon className="h-16 w-16 text-gray-400" />
+          <div 
+            className="w-40 h-40 bg-white rounded-lg mb-6 flex items-center justify-center shadow-md cursor-move"
+            draggable
+            onDragStart={handleMultiFileDragStart}
+          >
+            <FileIcon className="h-16 w-16 text-[#0078d4]" />
           </div>
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={toggleDropdown}
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 bg-white text-black border-[#d1d1d1] hover:bg-[#f9f9f9] rounded-md"
           >
             <span>{files.length} Files</span>
             {isDropdownOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -155,10 +189,10 @@ function App() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black text-white flex items-center justify-center">
+    <div className="fixed inset-0 bg-[#f3f3f3] text-black flex items-center justify-center">
       <div
         className={`w-full h-full max-w-md mx-auto flex flex-col ${
-          isDragging ? 'ring-2 ring-white ring-opacity-60' : ''
+          isDragging ? 'ring-2 ring-[#0078d4] ring-opacity-60' : ''
         }`}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
@@ -166,10 +200,10 @@ function App() {
         onDrop={handleDrop}
       >
         <div className="flex justify-between p-4">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="text-black hover:bg-black/10 rounded-full">
             <X className="h-6 w-6" />
           </Button>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="text-black hover:bg-black/10 rounded-full">
             <MoreVertical className="h-6 w-6" />
           </Button>
         </div>
@@ -178,28 +212,33 @@ function App() {
         </div>
       </div>
       {isDropdownOpen && (
-        <div className="fixed inset-x-0 bottom-0 bg-white text-black rounded-t-2xl shadow-lg transition-all duration-300 ease-in-out"
+        <div className="fixed inset-x-0 bottom-0 bg-white rounded-t-xl shadow-lg transition-all duration-300 ease-in-out"
              style={{ height: 'calc(100% - 4rem)' }}>
-          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-lg font-semibold">{files.length} Files</h2>
-            <Button variant="outline" size="sm" onClick={toggleDropdown}>
+          <div className="p-4 border-b border-[#e6e6e6] flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-black">{files.length} Files</h2>
+            <Button variant="ghost" size="sm" onClick={toggleDropdown} className="text-black hover:bg-black/10 rounded-full">
               <X className="h-4 w-4" />
             </Button>
           </div>
           <ScrollArea className="h-[calc(100%-4rem)]">
             <ul className="p-4 space-y-4">
               {files.map((file) => (
-                <li key={file.id} className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-black rounded flex items-center justify-center">
-                    <FileIcon className="h-6 w-6 text-gray-600" />
+                <li
+                  key={file.id}
+                  className="flex items-center space-x-4 hover:bg-[#f9f9f9] p-2 rounded-md"
+                  draggable
+                  onDragStart={(e: React.DragEvent<HTMLLIElement>) => handleDragStart(e as any, file)}
+                >
+                  <div className="w-10 h-10 bg-[#f0f0f0] rounded-md flex items-center justify-center">
+                    <FileIcon className="h-6 w-6 text-[#0078d4]" />
                   </div>
                   <div className="flex-grow">
-                    <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs ">{file.size}</p>
+                    <p className="text-sm font-medium truncate text-black">{file.name}</p>
+                    <p className="text-xs text-[#767676]">{file.size}</p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="text-black hover:bg-black/10 rounded-full">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -215,25 +254,27 @@ function App() {
         </div>
       )}
       <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
-        <DialogContent className="bg-white text-black">
+        <DialogContent className="bg-white text-black rounded-lg">
           <DialogHeader>
-            <DialogTitle>Rename File</DialogTitle>
+            <DialogTitle className="text-black">Rename File</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
+              <Label htmlFor="name" className="text-right text-black">
                 Name
               </Label>
               <Input
                 id="name"
                 value={newFileName}
                 onChange={(e) => setNewFileName(e.target.value)}
-                className="col-span-3"
+                className="col-span-3 border-[#d1d1d1] focus:border-[#0078d4] focus:ring-[#0078d4]"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" onClick={renameFile} className="bg-black text-white hover:bg-gray-800">Save changes</Button>
+            <Button type="submit" onClick={renameFile} className="bg-[#0078d4] hover:bg-[#006cbd] text-white rounded-md">
+              Save changes
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
