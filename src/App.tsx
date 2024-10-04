@@ -11,13 +11,14 @@ import { Label } from "@/components/ui/label";
 import { X, MoreVertical, ChevronDown, ChevronUp, FileIcon, MoreHorizontal } from 'lucide-react';
 import { invoke } from "@tauri-apps/api/core";
 import { Window } from '@tauri-apps/api/window';
-
+import {  FolderIcon, FileTextIcon, ImageIcon, MusicIcon, VideoIcon } from 'lucide-react';
 interface FileInfo {
   id: number;
   path: string;
   name: string;
   size: number;
   is_directory: boolean;
+  icon: string;
 }
 
 export default function Component() {
@@ -37,14 +38,8 @@ export default function Component() {
       const webview = await getCurrentWebview();
       await webview.onDragDropEvent((event) => {
         if (event.payload.type === 'drop') {
-          const newFiles = event.payload.paths.map((path, index) => ({
-            id: Date.now() + index,
-            path: path,
-            name: path.split('/').pop() || '',
-            size: 0,
-            is_directory: false
-          }));
-          handleNewFiles(newFiles);
+          const paths = event.payload.paths;
+          handleNewFiles(paths.map(path => ({ path })));
         }
       });
     };
@@ -53,17 +48,23 @@ export default function Component() {
   }, []);
 
   const handleNewFiles = async (newFiles: FileInfo[]) => {
-    setFiles(prevFiles => {
-      const uniqueNewFiles = newFiles.filter(newFile => 
-        !prevFiles.some(existingFile => existingFile.id === newFile.id)
-      );
-      if (uniqueNewFiles.length > 0) {
-        console.log(`Added ${uniqueNewFiles.length} new file(s)`);
-      } else {
-        console.log("No new files added");
-      }
-      return [...prevFiles, ...uniqueNewFiles];
-    });
+    try {
+      const paths = newFiles.map(file => file.path);
+      const updatedFiles = await invoke<FileInfo[]>('handle_file_drop', { paths });
+      setFiles(prevFiles => {
+        const uniqueNewFiles = updatedFiles.filter(newFile => 
+          !prevFiles.some(existingFile => existingFile.id === newFile.id)
+        );
+        if (uniqueNewFiles.length > 0) {
+          console.log(`Added ${uniqueNewFiles.length} new file(s)`);
+        } else {
+          console.log("No new files added");
+        }
+        return [...prevFiles, ...uniqueNewFiles];
+      });
+    } catch (error) {
+      console.error('Error handling new files:', error);
+    }
   };
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -89,12 +90,7 @@ export default function Component() {
     setIsDragging(false);
 
     const paths = Array.from(e.dataTransfer.files).map(file => file.path);
-    try {
-      const newFiles = await invoke<FileInfo[]>('handle_file_drop', { paths });
-      handleNewFiles(newFiles);
-    } catch (error) {
-      console.error('Error handling file drop:', error);
-    }
+    handleNewFiles(paths.map(path => ({ path })));
   }, []);
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
@@ -141,6 +137,22 @@ export default function Component() {
       .catch((error) => console.error('Error starting drag:', error));
   }, []);
 
+
+  const DynamicFileIcon = ({ icon }: { icon: string }) => {
+    switch (icon) {
+      case 'folder': return <FolderIcon className="h-6 w-6 text-blue-500" />;
+      case 'file-text': return <FileTextIcon className="h-6 w-6 text-blue-500" />;
+      case 'file-pdf': return <FileIcon className="h-6 w-6 text-red-500" />;
+      case 'file-word': return <FileIcon className="h-6 w-6 text-blue-700" />;
+      case 'file-excel': return <FileIcon className="h-6 w-6 text-green-600" />;
+      case 'file-powerpoint': return <FileIcon className="h-6 w-6 text-orange-500" />;
+      case 'image': return <ImageIcon className="h-6 w-6 text-purple-500" />;
+      case 'music': return <MusicIcon className="h-6 w-6 text-pink-500" />;
+      case 'video': return <VideoIcon className="h-6 w-6 text-indigo-500" />;
+      default: return <FileIcon className="h-6 w-6 text-gray-500" />;
+    }
+  };
+
   const handleMultiFileDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -149,7 +161,7 @@ export default function Component() {
     e.dataTransfer.setData('text/plain', fileNames);
     e.dataTransfer.effectAllowed = 'copy';
 
-    invoke('start_multi_drag', { filePaths: files.map(file => file.path) })
+    invoke('start_multi_drag', { file_paths: files.map(file => file.path) })
       .then(() => console.log('Multi-file drag started successfully'))
       .catch((error) => console.error('Error starting multi-file drag:', error));
   }, [files]);
@@ -170,9 +182,19 @@ export default function Component() {
             onDragStart={async (e) => {
               e.preventDefault();
               e.stopPropagation();
-              const fileIds = files.map(file => file.id);
+
+
+          
+
+
+              const filePaths = files.map(file => file.path);
+
+              
+
+              e.dataTransfer.setData('text/plain', filePaths.join('\n'));
+              e.dataTransfer.effectAllowed = 'copy';
               try {
-                await invoke('start_multi_drag', { fileIds });
+                await invoke('start_multi_drag', { filePaths });
                 console.log('Multi-file drag started successfully');
               } catch (error) {
                 console.error('Error starting multi-file drag:', error);
@@ -219,6 +241,14 @@ export default function Component() {
     fetchStoredFiles();
   }, []);
 
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   return (
     <div className="fixed inset-0 bg-[#f3f3f3] text-gray-800 flex flex-col">
       <div className="flex justify-between items-center p-2 bg-[#f9f9f9] select-none" data-tauri-drag-region>
@@ -264,11 +294,11 @@ export default function Component() {
                   onDragStart={(e: React.DragEvent<HTMLLIElement>) => handleDragStart(e as any, file)}
                 >
                   <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center">
-                    <FileIcon className="h-6 w-6 text-blue-500" />
+                    <DynamicFileIcon icon={file.icon} />
                   </div>
                   <div className="flex-grow">
                     <p className="text-sm font-medium truncate text-gray-800">{file.name}</p>
-                    <p className="text-xs text-gray-500">{file.size}</p>
+                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

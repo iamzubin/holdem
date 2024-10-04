@@ -2,9 +2,12 @@ use base64::{engine::general_purpose, Engine as _};
 use serde::Serialize;
 use std::ffi::c_void;
 use std::fs;
+use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::Mutex;
+use std::thread;
+use std::time::Duration;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Event;
 use tauri::{Emitter, State};
@@ -17,6 +20,7 @@ pub struct FileInfo {
     pub name: String,
     pub size: u64,
     pub is_directory: bool,
+    pub icon: String,
 }
 
 pub struct FileStore(pub Mutex<Vec<FileInfo>>);
@@ -59,6 +63,7 @@ fn handle_file_drop_internal(
                 .ok_or_else(|| "Failed to get file name".to_string())?
                 .to_string_lossy()
                 .into_owned();
+            let icon = get_file_icon(&path);
             let file_info = FileInfo {
                 id: SystemTime::now()
                     .duration_since(UNIX_EPOCH)
@@ -68,6 +73,7 @@ fn handle_file_drop_internal(
                 name: file_name,
                 size: metadata.len(),
                 is_directory: metadata.is_dir(),
+                icon,
             };
             new_files.push(file_info.clone());
             stored_files.push(file_info);
@@ -83,6 +89,27 @@ fn handle_file_drop_internal(
     println!("Stored files: {:?}", stored_files);
 
     Ok(new_files)
+}
+
+fn get_file_icon(path: &Path) -> String {
+    // This is a simple implementation. You might want to use a more sophisticated
+    // method to get file icons, possibly using system APIs.
+    if path.is_dir() {
+        "folder".to_string()
+    } else {
+        match path.extension().and_then(|s| s.to_str()) {
+            Some("txt") => "file-text",
+            Some("pdf") => "file-pdf",
+            Some("doc") | Some("docx") => "file-word",
+            Some("xls") | Some("xlsx") => "file-excel",
+            Some("ppt") | Some("pptx") => "file-powerpoint",
+            Some("jpg") | Some("jpeg") | Some("png") | Some("gif") => "image",
+            Some("mp3") | Some("wav") | Some("ogg") => "music",
+            Some("mp4") | Some("avi") | Some("mov") => "video",
+            _ => "file",
+        }
+        .to_string()
+    }
 }
 
 #[tauri::command]
@@ -114,27 +141,16 @@ pub async fn rename_file(
 #[tauri::command]
 pub async fn start_multi_drag(
     app: tauri::AppHandle,
-    file_ids: Vec<u64>,
-    file_store: State<'_, FileStore>,
+    file_paths: Vec<String>,
 ) -> Result<(), String> {
-    println!("Starting multi-file drag for: {:?}", file_ids);
+    println!("Starting multi-file drag for paths: {:?}", file_paths);
 
-    let stored_files = file_store
-        .0
-        .lock()
-        .map_err(|e| format!("Failed to acquire the file store lock: {:?}", e))?;
-    // Remove the debug print statement that was causing the issue
-
-    // pring stored_files
-    println!("Stored files: {:?}", stored_files);
-
-    let files_to_drag: Vec<std::path::PathBuf> = stored_files
-        .iter()
-        .filter(|file| file_ids.contains(&file.id))
-        .map(|file| std::path::PathBuf::from(&file.path))
+    let files_to_drag: Vec<std::path::PathBuf> = file_paths
+        .into_iter()
+        .map(std::path::PathBuf::from)
         .collect();
 
-    println!("Starting multi-file drag for: {:?}", files_to_drag);
+    println!("Prepared paths for drag: {:?}", files_to_drag);
 
     let window = app
         .get_webview_window("main")
@@ -143,12 +159,12 @@ pub async fn start_multi_drag(
 
     let item = drag::DragItem::Files(files_to_drag);
 
-    // Define the on_drop_callback function
-    let on_drop_callback = |result: drag::DragResult, _: drag::CursorPosition| {
+    let on_drop_callback = |result: drag::DragResult, position: drag::CursorPosition| {
         println!("Drag result: {:?}", result);
+        println!("Drop position: {:?}", position);
     };
+    thread::sleep(Duration::from_millis(100));
 
-    // Start the drag operation
     drag::start_drag(
         &hwnd_isize,
         item,
