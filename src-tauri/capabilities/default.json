@@ -16,6 +16,13 @@
     "core:image:allow-from-bytes",
     "core:image:allow-new",
     "core:image:allow-from-path",
+    "core:window:allow-close",
+    "core:window:allow-maximize",
+    "core:window:allow-minimize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-unminimize",
+    "core:window:allow-start-dragging",
+    "core:window:allow-start-resize-dragging",
     {
       "identifier": "core:path:default",
       "allow": [

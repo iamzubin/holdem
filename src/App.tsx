@@ -1,19 +1,32 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+"use client"
+
+import { useState, useCallback, useEffect, useRef } from "react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { invoke } from "@tauri-apps/api/core";
-import { Toaster, toast } from "sonner";
-import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { FileIcon, FolderIcon, CopyIcon } from "lucide-react";
-import { useDropzone } from "react-dropzone";
-import { listen } from '@tauri-apps/api/event';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { X, MoreVertical, ChevronDown, ChevronUp, FileIcon, MoreHorizontal } from 'lucide-react';
+import { invoke } from "@tauri-apps/api/core";
+import { Window } from '@tauri-apps/api/window';
 
-import "./App.css";
+interface FileInfo {
+  id: number;
+  path: string;
+  name: string;
+  size: number;
+  is_directory: boolean;
+}
 
-function App() {
-  const [files, setFiles] = useState<{ name: string; type: 'file' | 'folder'; path: string }[]>([]);
-  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+export default function Component() {
+  const [isDragging, setIsDragging] = useState(false);
+  const [files, setFiles] = useState<FileInfo[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
+  const [fileToRename, setFileToRename] = useState<FileInfo | null>(null);
+  const [newFileName, setNewFileName] = useState("");
   const listenerSetup = useRef(false);
 
   useEffect(() => {
@@ -23,9 +36,15 @@ function App() {
     const setupFileListener = async () => {
       const webview = await getCurrentWebview();
       await webview.onDragDropEvent((event) => {
-        console.log("event", event);
         if (event.payload.type === 'drop') {
-          handleFileDrop(event.payload.paths);
+          const newFiles = event.payload.paths.map((path, index) => ({
+            id: Date.now() + index,
+            path: path,
+            name: path.split('/').pop() || '',
+            size: 0,
+            is_directory: false
+          }));
+          handleNewFiles(newFiles);
         }
       });
     };
@@ -33,193 +52,256 @@ function App() {
     setupFileListener();
   }, []);
 
-  useEffect(() => {
-    const unlistenCheckFiles = listen('check_files', () => {
-      return files.length > 0;
+  const handleNewFiles = async (newFiles: FileInfo[]) => {
+    setFiles(prevFiles => {
+      const uniqueNewFiles = newFiles.filter(newFile => 
+        !prevFiles.some(existingFile => existingFile.id === newFile.id)
+      );
+      if (uniqueNewFiles.length > 0) {
+        console.log(`Added ${uniqueNewFiles.length} new file(s)`);
+      } else {
+        console.log("No new files added");
+      }
+      return [...prevFiles, ...uniqueNewFiles];
     });
-
-    return () => {
-      unlistenCheckFiles.then(unlisten => unlisten());
-    };
-  }, [files]);
-
-  const handleFileDrop = async (paths: string[]) => {
-    try {
-      const storedPaths = await invoke<string[]>("handle_file_drop", { paths });
-      const newFiles = storedPaths.map(path => ({
-        name: path.split('/').pop() || '',
-        type: 'file' as const,
-        path: path
-      }));
-      setFiles(prevFiles => {
-        const uniqueNewFiles = newFiles.filter(newFile => 
-          !prevFiles.some(existingFile => existingFile.path === newFile.path)
-        );
-        if (uniqueNewFiles.length > 0) {
-          toast.success(`Added ${uniqueNewFiles.length} new file(s)`);
-        } else {
-          toast.info("No new files added");
-        }
-        return [...prevFiles, ...uniqueNewFiles];
-      });
-    } catch (error) {
-      toast.error(`Error storing files: ${error}`);
-    }
   };
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    handleFileDropFromBrowser(acceptedFiles);
+  const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    noClick: true,
-  });
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-  };
+    setIsDragging(false);
+  }, []);
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    const items = e.dataTransfer.items;
-    const files: File[] = [];
-    
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].kind === 'file') {
-        const file = items[i].getAsFile();
-        if (file) {
-          files.push(file);
-        }
-      }
-    }
+  }, []);
 
-    if (files.length > 0) {
-      handleFileDropFromBrowser(files);
-    }
-  };
+  const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
 
-  const handleFileDropFromBrowser = async (files: File[]) => {
-    console.log("handleFileDropFromBrowser", files);
+    const paths = Array.from(e.dataTransfer.files).map(file => file.path);
     try {
-      const fileDataPromises = files.map(file => 
-        new Promise<string>((resolve, reject) => {
-          if (file.webkitRelativePath) {
-            // Local file drop
-            resolve(file.webkitRelativePath);
-          } else {
-            // Browser file drop
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          }
-        })
+      const newFiles = await invoke<FileInfo[]>('handle_file_drop', { paths });
+      handleNewFiles(newFiles);
+    } catch (error) {
+      console.error('Error handling file drop:', error);
+    }
+  }, []);
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+  const removeFile = async (id: number) => {
+    try {
+      await invoke('remove_file', { id });
+      setFiles(files.filter(file => file.id !== id));
+    } catch (error) {
+      console.error('Error removing file:', error);
+    }
+  };
+
+  const openRenameDialog = (file: FileInfo) => {
+    setFileToRename(file);
+    setNewFileName(file.name);
+    setIsRenameDialogOpen(true);
+  };
+
+  const renameFile = async () => {
+    if (!fileToRename) return;
+
+    try {
+      await invoke('rename_file', { id: fileToRename.id, newName: newFileName });
+      setFiles(files.map(file => 
+        file.id === fileToRename.id ? { ...file, name: newFileName } : file
+      ));
+      setIsRenameDialogOpen(false);
+      console.log("File renamed successfully");
+    } catch (error) {
+      console.error('Error renaming file:', error);
+    }
+  };
+
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, file: FileInfo) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    e.dataTransfer.setData('text/plain', file.name);
+    e.dataTransfer.effectAllowed = 'copy';
+
+    invoke('start_drag', { filePath: file.path })
+      .then(() => console.log('Drag started successfully'))
+      .catch((error) => console.error('Error starting drag:', error));
+  }, []);
+
+  const handleMultiFileDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const fileNames = files.map(file => file.name).join('\n');
+    e.dataTransfer.setData('text/plain', fileNames);
+    e.dataTransfer.effectAllowed = 'copy';
+
+    invoke('start_multi_drag', { filePaths: files.map(file => file.path) })
+      .then(() => console.log('Multi-file drag started successfully'))
+      .catch((error) => console.error('Error starting multi-file drag:', error));
+  }, [files]);
+
+  const renderFilePreview = () => {
+    if (files.length === 0) {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-gray-600 text-lg font-medium">Drop files here</p>
+        </div>
       );
-
-      const fileDataArray = await Promise.all(fileDataPromises);
-      const storedPaths = await invoke<string[]>("handle_browser_file_drop", { files: fileDataArray });
-      
-      const newFiles = storedPaths.map(path => ({
-        name: path.split('/').pop() || '',
-        type: 'file' as const,
-        path: path
-      }));
-
-      setFiles(prevFiles => {
-        const uniqueNewFiles = newFiles.filter(newFile => 
-          !prevFiles.some(existingFile => existingFile.path === newFile.path)
-        );
-        if (uniqueNewFiles.length > 0) {
-          toast.success(`Added ${uniqueNewFiles.length} new file(s)`);
-        } else {
-          toast.info("No new files added");
-        }
-        return [...prevFiles, ...uniqueNewFiles];
-      });
-
-      // Log full file paths or names
-      files.forEach(file => console.log("Full file path or name:", file.webkitRelativePath || file.name));
-    } catch (error) {
-      toast.error(`Error storing files: ${error}`);
+    } else {
+      return (
+        <div className="flex flex-col items-center justify-center h-full">
+          <div 
+            className="w-40 h-40 bg-white rounded-lg mb-6 flex items-center justify-center shadow-md cursor-move"
+            draggable
+            onDragStart={handleMultiFileDragStart}
+          >
+            <FileIcon className="h-16 w-16 text-blue-500" />
+          </div>
+          <Button
+            variant="outline"
+            onClick={toggleDropdown}
+            className="flex items-center space-x-2 bg-white text-gray-800 border-gray-200 hover:bg-gray-100 rounded-full px-4 py-2"
+          >
+            <span>{files.length} Files</span>
+            {isDropdownOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+        </div>
+      );
     }
   };
 
-  const handleFileSelection = (path: string) => {
-    setSelectedFiles(prevSelected => {
-      if (prevSelected.includes(path)) {
-        return prevSelected.filter(p => p !== path);
-      } else {
-        return [...prevSelected, path];
+  const minimizeWindow = () => {
+    Window.getCurrent().minimize();
+  };
+
+  const maximizeWindow = () => {
+    Window.getCurrent().toggleMaximize();
+  };
+
+  const closeWindow = () => {
+    Window.getCurrent().close();
+  };
+
+  useEffect(() => {
+    const fetchStoredFiles = async () => {
+      try {
+        const storedFiles = await invoke<FileInfo[]>('get_stored_files');
+        setFiles(storedFiles);
+      } catch (error) {
+        console.error('Error fetching stored files:', error);
       }
-    });
-  };
+    };
 
-  const handleCopySelectedFiles = async () => {
-    if (selectedFiles.length === 0) {
-      toast.info("No files selected");
-      return;
-    }
-
-    try {
-      await invoke("copy_selected_files", { paths: selectedFiles });
-      toast.success(`Copied ${selectedFiles.length} file(s)`);
-      setSelectedFiles([]);
-    } catch (error) {
-      toast.error(`Error copying files: ${error}`);
-    }
-  };
+    fetchStoredFiles();
+  }, []);
 
   return (
-    <div className="container mx-auto p-4">
-      <Card className="w-full h-[calc(100vh-2rem)]">
-        <CardContent className="p-6">
-          <div 
-            {...getRootProps()} 
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-lg p-8 mb-4 h-64 flex items-center justify-center ${
-              isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-            }`}
-          >
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <p className="text-xl">Drop the files here ...</p>
-            ) : (
-              <p className="text-xl">Drag 'n' drop some files here, or click to select files</p>
-            )}
-          </div>
-          <ScrollArea className="h-[calc(100vh-24rem)]">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {files.map((item, index) => (
-                <Button
-                  key={index}
-                  variant={selectedFiles.includes(item.path) ? "default" : "outline"}
-                  className="h-24 flex flex-col items-center justify-center"
-                  onClick={() => handleFileSelection(item.path)}
-                >
-                  {item.type === 'folder' ? <FolderIcon className="h-8 w-8 mb-2" /> : <FileIcon className="h-8 w-8 mb-2" />}
-                  <span className="text-sm truncate w-full text-center">{item.name}</span>
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
-          <div className="mt-4 flex justify-between items-center">
-            <div className="text-sm text-gray-500">
-              {files.length} item(s), {selectedFiles.length} selected
-            </div>
-            <Button onClick={handleCopySelectedFiles} disabled={selectedFiles.length === 0}>
-              <CopyIcon className="mr-2 h-4 w-4" /> Copy Selected Files
+    <div className="fixed inset-0 bg-[#f3f3f3] text-gray-800 flex flex-col">
+      <div className="flex justify-between items-center p-2 bg-[#f9f9f9] select-none" data-tauri-drag-region>
+        <div className="flex items-center space-x-2 flex-grow" data-tauri-drag-region>
+          <img src="/path-to-your-app-icon.png" alt="App Icon" className="w-4 h-4" />
+          <span className="text-sm font-semibold">Your App Name</span>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-gray-200" onClick={minimizeWindow}>
+            <span className="w-4 h-4 flex items-center justify-center">&#8211;</span>
+          </Button>
+          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-gray-200" onClick={maximizeWindow}>
+            <span className="w-4 h-4 flex items-center justify-center">&#9633;</span>
+          </Button>
+          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-red-500 hover:text-white" onClick={closeWindow}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      <div className="flex-grow flex flex-col items-center justify-center p-4"
+           onDragEnter={handleDragEnter}
+           onDragOver={handleDragOver}
+           onDragLeave={handleDragLeave}
+           onDrop={handleDrop}>
+        {renderFilePreview()}
+      </div>
+      {isDropdownOpen && (
+        <div className="fixed inset-x-0 bottom-0 bg-white rounded-t-xl shadow-lg transition-all duration-300 ease-in-out"
+             style={{ height: 'calc(100% - 4rem)' }}>
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-gray-800">{files.length} Files</h2>
+            <Button variant="ghost" size="sm" onClick={toggleDropdown} className="text-gray-600 hover:bg-gray-200 rounded-full">
+              <X className="h-4 w-4" />
             </Button>
           </div>
-        </CardContent>
-      </Card>
-      <Toaster />
+          <ScrollArea className="h-[calc(100%-4rem)]">
+            <ul className="p-4 space-y-4">
+              {files.map((file) => (
+                <li
+                  key={file.id}
+                  className="flex items-center space-x-4 hover:bg-gray-100 p-2 rounded-md"
+                  draggable
+                  onDragStart={(e: React.DragEvent<HTMLLIElement>) => handleDragStart(e as any, file)}
+                >
+                  <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center">
+                    <FileIcon className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <div className="flex-grow">
+                    <p className="text-sm font-medium truncate text-gray-800">{file.name}</p>
+                    <p className="text-xs text-gray-500">{file.size}</p>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-gray-600 hover:bg-gray-200 rounded-full">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onSelect={() => openRenameDialog(file)}>Rename</DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => removeFile(file.id)}>Remove</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </li>
+              ))}
+            </ul>
+          </ScrollArea>
+        </div>
+      )}
+      <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
+        <DialogContent className="bg-white text-gray-800 rounded-lg">
+          <DialogHeader>
+            <DialogTitle className="text-gray-800">Rename File</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right text-gray-600">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={newFileName}
+                onChange={(e) => setNewFileName(e.target.value)}
+                className="col-span-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit" onClick={renameFile} className="bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+              Save changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
-export default App;

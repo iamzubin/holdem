@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
-use tauri::{Listener, Manager, PhysicalPosition, WebviewWindowBuilder};
+use tauri::{Listener, Manager, PhysicalPosition};
 use winapi::um::winuser::{GetForegroundWindow, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
 
 pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tauri::AppHandle) {
