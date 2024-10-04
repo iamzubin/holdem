@@ -49,6 +49,7 @@ pub fn run() {
             file_handler::get_stored_files,
             file_handler::remove_file,
             file_handler::rename_file,
+            file_handler::start_multi_drag,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

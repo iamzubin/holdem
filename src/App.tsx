@@ -167,7 +167,17 @@ export default function Component() {
           <div 
             className="w-40 h-40 bg-white rounded-lg mb-6 flex items-center justify-center shadow-md cursor-move"
             draggable
-            onDragStart={handleMultiFileDragStart}
+            onDragStart={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const fileIds = files.map(file => file.id);
+              try {
+                await invoke('start_multi_drag', { fileIds });
+                console.log('Multi-file drag started successfully');
+              } catch (error) {
+                console.error('Error starting multi-file drag:', error);
+              }
+            }}
           >
             <FileIcon className="h-16 w-16 text-blue-500" />
           </div>

@@ -6,7 +6,7 @@ use std::str::FromStr;
 use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Manager;
-use tauri::{Emitter, Manager, State};
+use tauri::{Emitter, State};
 
 #[derive(Clone, serde::Serialize)]
 pub struct FileInfo {

@@ -3,7 +3,12 @@ use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{Listener, Manager, PhysicalPosition};
-use winapi::um::winuser::{GetForegroundWindow, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
+use windows::Win32::Foundation::POINT;
+use windows::Win32::UI::Input::KeyboardAndMouse::GetAsyncKeyState;
+use windows::Win32::UI::WindowsAndMessaging::{
+    GetCursorPos, GetForegroundWindow, GetSystemMetrics, GetWindowLongW, GWL_STYLE, SM_CXSCREEN,
+    SM_CYSCREEN, WS_MAXIMIZE,
+};
 
 pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tauri::AppHandle) {
     let files_dropped = Arc::new(AtomicBool::new(false));
@@ -15,15 +20,15 @@ pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tau
     });
 
     thread::spawn(move || {
-        let mut last_position = winapi::shared::windef::POINT { x: 0, y: 0 }; // Corrected POINT definition
-        let check_interval = Duration::from_millis(50); // Check every 50 ms
+        let mut last_position = POINT { x: 0, y: 0 };
+        let check_interval = Duration::from_millis(50);
 
-        let shake_threshold_x = 50; // Set threshold for x-axis
-        let mut shake_count = 0; // Counter for shakes
-        let movement_time_limit = Duration::from_millis(shake_time_limit); // Time limit for direction change
-        let mut last_shake_time = Instant::now(); // Track last shake time
-        let mut last_direction: Option<i32> = None; // Track last direction (1 for right, -1 for left)
-        let mut is_window_shown = false; // Track if window is shown
+        let shake_threshold_x = 50;
+        let mut shake_count = 0;
+        let movement_time_limit = Duration::from_millis(shake_time_limit);
+        let mut last_shake_time = Instant::now();
+        let mut last_direction: Option<i32> = None;
+        let mut is_window_shown = false;
 
         loop {
             // Get screen dimensions
@@ -32,29 +37,25 @@ pub fn start_mouse_monitor(required_shakes: u32, shake_time_limit: u64, app: tau
 
             // Check if a full-screen application is running
             let hwnd = unsafe { GetForegroundWindow() };
-            let is_fullscreen = if hwnd.is_null() {
+            let is_fullscreen = if hwnd.0 == 0 {
                 false
             } else {
-                let style = unsafe {
-                    winapi::um::winuser::GetWindowLongW(hwnd, winapi::um::winuser::GWL_STYLE)
-                };
-                (style as i32 & winapi::um::winuser::WS_MAXIMIZE as i32) != 0 // Check if the window is maximized
+                let style = unsafe { GetWindowLongW(hwnd, GWL_STYLE) };
+                (style & WS_MAXIMIZE.0 as i32) != 0
             };
 
             if is_fullscreen {
-                shake_count = 0; // Reset shake count if a full-screen app is running
-                last_direction = None; // Reset last direction
-                thread::sleep(check_interval); // Sleep and continue checking
-                continue; // Skip the rest of the loop
+                shake_count = 0;
+                last_direction = None;
+                thread::sleep(check_interval);
+                continue;
             }
 
             // Check if the left mouse button is pressed
-            let is_button_pressed = unsafe { winapi::um::winuser::GetAsyncKeyState(0x01) } < 0;
+            let is_button_pressed = unsafe { GetAsyncKeyState(0x01) } < 0;
             if is_button_pressed {
-                let mut current_position = winapi::shared::windef::POINT { x: 0, y: 0 }; // Changed LPPOINT to POINT
-                unsafe {
-                    winapi::um::winuser::GetCursorPos(&mut current_position);
-                }
+                let mut current_position = POINT::default();
+                unsafe { GetCursorPos(&mut current_position) };
 
                 // Calculate the distance moved on the x-axis
                 let distance_x = current_position.x as f64 - last_position.x as f64;
