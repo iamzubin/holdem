@@ -35,6 +35,7 @@ pub fn run() {
             // Correctly call start_mouse_monitor with a closure
             mouse_monitor::start_mouse_monitor(4, 500, app.handle().clone()); // Changed from app to app.handle()
 
+            file_handler::setup_drag_drop_listener(app)?;
             Ok(())
         })
         .on_window_event(|_window, _event| match _event {

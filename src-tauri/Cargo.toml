@@ -26,6 +26,7 @@ windows = { version = "0.48", features = [
     "Win32_UI_WindowsAndMessaging",
     "Win32_UI_Input_KeyboardAndMouse",
 ] }
+drag = { git = "https://github.com/AudiogenAI/drag.git", version = "0.9.0" }
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
