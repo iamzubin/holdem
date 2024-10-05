@@ -8,25 +8,23 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, MoreVertical, ChevronDown, ChevronUp, FileIcon, MoreHorizontal } from 'lucide-react';
-import { invoke } from "@tauri-apps/api/core";
-
-interface FilePreview {
-  id: number;
-  name: string;
-  preview: string;
-  type: 'file' | 'folder';
-  size: string;
-}
+import { X, ChevronDown, ChevronUp, FileIcon, MoreHorizontal } from 'lucide-react';
+import { formatFileSize } from "@/lib/utils";
+import { handleDragStart, handleMultiFileDragStart } from "@/lib/fileUtils";
+import { minimizeWindow, maximizeWindow, closeWindow } from "@/lib/windowUtils";
+import { DynamicFileIcon } from "@/components/FileIcon";
+import { useFileManagement } from "@/hooks/useFileManagement";
+import { FilePreview } from "@/types";
 
 function App() {
   const [isDragging, setIsDragging] = useState(false);
-  const [files, setFiles] = useState<FilePreview[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [fileToRename, setFileToRename] = useState<FilePreview | null>(null);
   const [newFileName, setNewFileName] = useState("");
   const listenerSetup = useRef(false);
+
+  const { files, handleNewFiles, removeFile, renameFile } = useFileManagement();
 
   useEffect(() => {
     if (listenerSetup.current) return;
@@ -41,7 +39,9 @@ function App() {
             name: path.split('/').pop() || '',
             preview: '',
             type: 'file' as const,
-            size: '0 KB' // You might want to get the actual file size
+            size: 0,
+            path: path,
+            icon: ''
           }));
           handleNewFiles(newFiles);
         }
@@ -49,21 +49,7 @@ function App() {
     };
 
     setupFileListener();
-  }, []);
-
-  const handleNewFiles = (newFiles: FilePreview[]) => {
-    setFiles(prevFiles => {
-      const uniqueNewFiles = newFiles.filter(newFile => 
-        !prevFiles.some(existingFile => existingFile.name === newFile.name)
-      );
-      if (uniqueNewFiles.length > 0) {
-        console.log(`Added ${uniqueNewFiles.length} new file(s)`);
-      } else {
-        console.log("No new files added");
-      }
-      return [...prevFiles, ...uniqueNewFiles];
-    });
-  };
+  }, [handleNewFiles]);
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -93,17 +79,15 @@ function App() {
       name: file.name,
       preview: URL.createObjectURL(file),
       type: 'file',
-      size: '0 KB' // You might want to get the actual file size
+      size: file.size,
+      path: (file as any).path,
+      icon: ''
     }));
 
     handleNewFiles(newFiles);
-  }, []);
+  }, [handleNewFiles]);
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-
-  const removeFile = (id: number) => {
-    setFiles(files.filter(file => file.id !== id));
-  };
 
   const openRenameDialog = (file: FilePreview) => {
     setFileToRename(file);
@@ -111,7 +95,7 @@ function App() {
     setIsRenameDialogOpen(true);
   };
 
-  const renameFile = () => {
+  const handleRename = () => {
     if (!fileToRename) return;
 
     const oldExtension = fileToRename.name.split('.').pop();
@@ -122,47 +106,16 @@ function App() {
       return;
     }
 
-    setFiles(files.map(file => 
-      file.id === fileToRename.id ? { ...file, name: newFileName } : file
-    ));
+    renameFile(fileToRename.id, newFileName);
     setIsRenameDialogOpen(false);
     console.log("File renamed successfully");
   };
-
-  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, file: FilePreview) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Prepare the drag data
-    e.dataTransfer.setData('text/plain', file.name);
-    e.dataTransfer.effectAllowed = 'copy';
-
-    // Call the Tauri API to initiate the OS-level drag
-    invoke('start_drag', { filePath: file.preview })
-      .then(() => console.log('Drag started successfully'))
-      .catch((error) => console.error('Error starting drag:', error));
-  }, []);
-
-  const handleMultiFileDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Prepare the drag data for multiple files
-    const fileNames = files.map(file => file.name).join('\n');
-    e.dataTransfer.setData('text/plain', fileNames);
-    e.dataTransfer.effectAllowed = 'copy';
-
-    // Call the Tauri API to initiate the OS-level drag for multiple files
-    invoke('start_multi_drag', { filePaths: files.map(file => file.preview) })
-      .then(() => console.log('Multi-file drag started successfully'))
-      .catch((error) => console.error('Error starting multi-file drag:', error));
-  }, [files]);
 
   const renderFilePreview = () => {
     if (files.length === 0) {
       return (
         <div className="flex items-center justify-center h-full">
-          <p className="text-black text-lg font-medium">Drop files here</p>
+          <p className="text-gray-600 text-lg font-medium">Drop files here</p>
         </div>
       );
     } else {
@@ -171,14 +124,14 @@ function App() {
           <div 
             className="w-40 h-40 bg-white rounded-lg mb-6 flex items-center justify-center shadow-md cursor-move"
             draggable
-            onDragStart={handleMultiFileDragStart}
+            onDragStart={(e) => handleMultiFileDragStart(e, files)}
           >
-            <FileIcon className="h-16 w-16 text-[#0078d4]" />
+            <FileIcon className="h-16 w-16 text-blue-500" />
           </div>
           <Button
             variant="outline"
             onClick={toggleDropdown}
-            className="flex items-center space-x-2 bg-white text-black border-[#d1d1d1] hover:bg-[#f9f9f9] rounded-md"
+            className="flex items-center space-x-2 bg-white text-gray-800 border-gray-200 hover:bg-gray-100 rounded-full px-4 py-2"
           >
             <span>{files.length} Files</span>
             {isDropdownOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -189,34 +142,37 @@ function App() {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#f3f3f3] text-black flex items-center justify-center">
-      <div
-        className={`w-full h-full max-w-md mx-auto flex flex-col ${
-          isDragging ? 'ring-2 ring-[#0078d4] ring-opacity-60' : ''
-        }`}
-        onDragEnter={handleDragEnter}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <div className="flex justify-between p-4">
-          <Button variant="ghost" size="icon" className="text-black hover:bg-black/10 rounded-full">
-            <X className="h-6 w-6" />
+    <div className="fixed inset-0 bg-[#f3f3f3] text-gray-800 flex flex-col">
+      <div className="flex justify-between items-center p-2 bg-[#f9f9f9] select-none" data-tauri-drag-region>
+        <div className="flex items-center space-x-2 flex-grow" data-tauri-drag-region>
+          <img src="/path-to-your-app-icon.png" alt="App Icon" className="w-4 h-4" />
+          <span className="text-sm font-semibold">Your App Name</span>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-gray-200" onClick={minimizeWindow}>
+            <span className="w-4 h-4 flex items-center justify-center">&#8211;</span>
           </Button>
-          <Button variant="ghost" size="icon" className="text-black hover:bg-black/10 rounded-full">
-            <MoreVertical className="h-6 w-6" />
+          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-gray-200" onClick={maximizeWindow}>
+            <span className="w-4 h-4 flex items-center justify-center">&#9633;</span>
+          </Button>
+          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-red-500 hover:text-white" onClick={closeWindow}>
+            <X className="h-4 w-4" />
           </Button>
         </div>
-        <div className="flex-grow flex flex-col items-center justify-center p-4">
-          {renderFilePreview()}
-        </div>
+      </div>
+      <div className="flex-grow flex flex-col items-center justify-center p-4"
+           onDragEnter={handleDragEnter}
+           onDragOver={handleDragOver}
+           onDragLeave={handleDragLeave}
+           onDrop={handleDrop}>
+        {renderFilePreview()}
       </div>
       {isDropdownOpen && (
         <div className="fixed inset-x-0 bottom-0 bg-white rounded-t-xl shadow-lg transition-all duration-300 ease-in-out"
              style={{ height: 'calc(100% - 4rem)' }}>
-          <div className="p-4 border-b border-[#e6e6e6] flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-black">{files.length} Files</h2>
-            <Button variant="ghost" size="sm" onClick={toggleDropdown} className="text-black hover:bg-black/10 rounded-full">
+          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-gray-800">{files.length} Files</h2>
+            <Button variant="ghost" size="sm" onClick={toggleDropdown} className="text-gray-600 hover:bg-gray-200 rounded-full">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -225,20 +181,20 @@ function App() {
               {files.map((file) => (
                 <li
                   key={file.id}
-                  className="flex items-center space-x-4 hover:bg-[#f9f9f9] p-2 rounded-md"
+                  className="flex items-center space-x-4 hover:bg-gray-100 p-2 rounded-md"
                   draggable
                   onDragStart={(e: React.DragEvent<HTMLLIElement>) => handleDragStart(e as any, file)}
                 >
-                  <div className="w-10 h-10 bg-[#f0f0f0] rounded-md flex items-center justify-center">
-                    <FileIcon className="h-6 w-6 text-[#0078d4]" />
+                  <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center">
+                    <DynamicFileIcon icon={file.icon} />
                   </div>
                   <div className="flex-grow">
-                    <p className="text-sm font-medium truncate text-black">{file.name}</p>
-                    <p className="text-xs text-[#767676]">{file.size}</p>
+                    <p className="text-sm font-medium truncate text-gray-800">{file.name}</p>
+                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="text-black hover:bg-black/10 rounded-full">
+                      <Button variant="ghost" size="sm" className="text-gray-600 hover:bg-gray-200 rounded-full">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -272,7 +228,7 @@ function App() {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" onClick={renameFile} className="bg-[#0078d4] hover:bg-[#006cbd] text-white rounded-md">
+            <Button type="submit" onClick={handleRename} className="bg-[#0078d4] hover:bg-[#006cbd] text-white rounded-md">
               Save changes
             </Button>
           </DialogFooter>
