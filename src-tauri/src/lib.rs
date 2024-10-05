@@ -1,5 +1,4 @@
 use file::FileMetadata;
-use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -7,13 +6,8 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{Emitter, State};
-use tauri::{
-    Listener, LogicalPosition, LogicalSize, Manager, PhysicalPosition, WebviewUrl,
-    WebviewWindowBuilder,
-};
-use window_vibrancy::{apply_acrylic, apply_vibrancy, clear_acrylic, NSVisualEffectMaterial};
+use tauri::{Listener, Manager, PhysicalPosition, WebviewUrl, WebviewWindowBuilder};
 use windows::Win32::Foundation::POINT;
-use windows::Win32::UI::Input::KeyboardAndMouse::GetAsyncKeyState;
 use windows::Win32::UI::WindowsAndMessaging::{
     GetCursorPos, GetForegroundWindow, GetSystemMetrics, GetWindowLongW, GWL_STYLE, SM_CXSCREEN,
     SM_CYSCREEN, WS_MAXIMIZE,
@@ -91,7 +85,7 @@ fn remove_file(
 
 #[tauri::command]
 fn get_files(file_list: State<'_, FileList>) -> Result<Vec<FileMetadata>, String> {
-    let list = file_list
+    let list: std::sync::MutexGuard<'_, Vec<FileMetadata>> = file_list
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
     Ok(list.clone())

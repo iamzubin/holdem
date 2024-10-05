@@ -2,28 +2,22 @@
 
 import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { handleMultiFileDragStart } from "@/lib/fileUtils";
 import { closeWindow } from "@/lib/windowUtils";
-import { FilePreview } from "@/types";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { BaseDirectory , readFile, stat } from "@tauri-apps/plugin-fs";
+import { readFile, stat } from "@tauri-apps/plugin-fs";
 import { ChevronDown, X, Download } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
+import { FilePreview } from "@/types";
+import { getFileExtension } from "./lib/utils";
 function App() {
   const [isDragging, setIsDragging] = useState(false);
-  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
-  const [fileToRename, setFileToRename] = useState<FilePreview | null>(null);
-  const [newFileName, setNewFileName] = useState("");
   const listenerSetup = useRef(false);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
 
-  const { files, addFiles, removeFile, renameFile } = useFileManagement();
+  const { files, addFiles } = useFileManagement();
 
   useEffect(() => {
     if (listenerSetup.current) return;
@@ -41,10 +35,8 @@ function App() {
               let preview = '';
 
               if (isImage) {
-                console.log(path);
                 const binaryData = await readFile(path);
                 const blob = new Blob([binaryData], { type: `image/${extension}` });
-                console.log(blob);
                 preview = URL.createObjectURL(blob);
               }
 
@@ -71,7 +63,7 @@ function App() {
     };
 
     setupFileListener();
-  }, [addFiles, listenerSetup, setIsDragging]);
+  }, [addFiles]);
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -110,34 +102,7 @@ function App() {
   }, [addFiles]);
 
   const openPopup = () => {
-    // Invoke the command to open the popup window
     invoke('open_popup_window').catch((err) => console.error(err));
-  };
-
-  const handleRename = () => {
-    if (!fileToRename) return;
-
-    const oldExtension = fileToRename.name.split('.').pop();
-    const newExtension = newFileName.split('.').pop();
-
-    if (oldExtension !== newExtension) {
-      console.error("Cannot change file extension");
-      return;
-    }
-
-    renameFile(fileToRename.id, newFileName);
-    setIsRenameDialogOpen(false);
-    console.log("File renamed successfully");
-  };
-
-  const getFileExtension = (filename: string): string => {
-    const ext = filename.split('.').pop()?.toLowerCase();
-    if (!ext) return 'file';
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];
-    const pdfExtensions = ['pdf'];
-    if (imageExtensions.includes(ext)) return 'image';
-    if (pdfExtensions.includes(ext)) return 'pdf';
-    return 'file';
   };
 
   const handleStackDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -146,25 +111,12 @@ function App() {
   }, [files]);
 
   const stackedIcons = useMemo(() => {
-    return files.slice(-3).map(async (file, index) => {
+    return files.slice(-3).map((file, index) => {
       const rotation = Math.random() * 10 - 5;
       const translateX = Math.random() * 10 - 5;
       const translateY = Math.random() * 10 - 5;
       const zIndex = files.length - index;
     
-      const fileStat = await stat(file.path);
-      const extension = file.path.split('.').pop()?.toLowerCase() || '';
-      const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(extension);
-      let preview = '';
-
-      if (isImage) {
-        console.log(file.path);
-        const binaryData = await readFile(file.path);
-        const blob = new Blob([binaryData], { type: `image/${extension}` });
-        console.log(blob);
-        preview = URL.createObjectURL(blob);
-      }
-      console.log(file.preview);
       return (
         <div
           key={file.id}
@@ -188,18 +140,6 @@ function App() {
     });
   }, [files, handleStackDragStart]);
 
-  const toggleFileSelection = (fileId: string) => {
-    setSelectedFiles(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(fileId)) {
-        newSet.delete(fileId);
-      } else {
-        newSet.add(fileId);
-      }
-      return newSet;
-    });
-  };
-
   return (
     <div className="fixed inset-0 text-white flex flex-col bg-black">
       {/* Minimal Title Bar */}
@@ -210,7 +150,7 @@ function App() {
       </div>
       
       {/* Main Content */}
-      <div className="flex-grow flex flex-col items-center  justify-center p-2"
+      <div className="flex-grow flex flex-col items-center justify-center p-2"
            onDragEnter={handleDragEnter}
            onDragOver={handleDragOver}
            onDragLeave={handleDragLeave}
@@ -218,9 +158,7 @@ function App() {
         <div className="flex flex-col items-center p-4 rounded-lg">
           {files.length > 0 ? (
             <div className="relative w-32 h-32 mb-4" draggable onDragStart={handleStackDragStart}>
-              <DynamicFileIcon
-                icon={files[0].icon}
-              />
+              {stackedIcons}
             </div>
           ) : (
             <div className="flex flex-col items-center space-x-2 mb-4">
@@ -230,15 +168,14 @@ function App() {
           )}
         </div>
         <Button
-            variant="outline"
-            onClick={openPopup}
-            className="flex items-center space-x-1 text-white border-gray-600 hover:bg-gray-600 rounded-full px-3 py-1 text-sm mt-4"
-          >
-            <span>{files.length} items</span>
-            <ChevronDown className="h-3 w-3" />
-          </Button>
+          variant="outline"
+          onClick={openPopup}
+          className="flex items-center space-x-1 text-white border-gray-600 hover:bg-gray-600 rounded-full px-3 py-1 text-sm mt-4"
+        >
+          <span>{files.length} items</span>
+          <ChevronDown className="h-3 w-3" />
+        </Button>
       </div>
-      
     </div>
   );
 }
