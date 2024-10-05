@@ -21,9 +21,15 @@
         "focus": false,
         "alwaysOnTop": true,
         "skipTaskbar": true,
-        "windowEffects": {
-          "effects": ["underWindowBackground"]
-        }
+        "theme": "Dark"
+      },
+      {
+        "title": "popup",
+        "width": 300,
+        "height": 300,
+        "create": false,
+        "transparent": true,
+        "decorations": false
       }
     ],
     "security": {

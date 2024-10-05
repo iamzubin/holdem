@@ -1,32 +1,29 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef, useMemo } from "react";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, ChevronDown, ChevronUp, FileIcon, MoreHorizontal, Trash2 } from 'lucide-react';
-import { handleDragStart, handleMultiFileDragStart } from "@/lib/fileUtils";
-import { minimizeWindow, maximizeWindow, closeWindow } from "@/lib/windowUtils";
-import { DynamicFileIcon } from "@/components/FileIcon";
 import { useFileManagement } from "@/hooks/useFileManagement";
+import { handleMultiFileDragStart } from "@/lib/fileUtils";
+import { closeWindow } from "@/lib/windowUtils";
 import { FilePreview } from "@/types";
-import { stat, readFile } from "@tauri-apps/plugin-fs";
-
+import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
+import { BaseDirectory , readFile, stat } from "@tauri-apps/plugin-fs";
+import { ChevronDown, X, Download } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function App() {
   const [isDragging, setIsDragging] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [fileToRename, setFileToRename] = useState<FilePreview | null>(null);
   const [newFileName, setNewFileName] = useState("");
   const listenerSetup = useRef(false);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
 
-  const { files, handleNewFiles, removeFile, renameFile } = useFileManagement();
+  const { files, addFiles, removeFile, renameFile } = useFileManagement();
 
   useEffect(() => {
     if (listenerSetup.current) return;
@@ -44,8 +41,10 @@ function App() {
               let preview = '';
 
               if (isImage) {
+                console.log(path);
                 const binaryData = await readFile(path);
                 const blob = new Blob([binaryData], { type: `image/${extension}` });
+                console.log(blob);
                 preview = URL.createObjectURL(blob);
               }
 
@@ -66,13 +65,13 @@ function App() {
 
           const newFiles = await Promise.all(filePromises);
           const validNewFiles = newFiles.filter(file => file !== null) as FilePreview[];
-          handleNewFiles(validNewFiles);
+          addFiles(validNewFiles);
         }
       });
     };
 
     setupFileListener();
-  }, [handleNewFiles]);
+  }, [addFiles, listenerSetup, setIsDragging]);
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -107,15 +106,12 @@ function App() {
       icon: getFileExtension(file.name)
     }));
 
-    handleNewFiles(newFiles);
-  }, [handleNewFiles]);
+    addFiles(newFiles);
+  }, [addFiles]);
 
-  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-
-  const openRenameDialog = (file: FilePreview) => {
-    setFileToRename(file);
-    setNewFileName(file.name);
-    setIsRenameDialogOpen(true);
+  const openPopup = () => {
+    // Invoke the command to open the popup window
+    invoke('open_popup_window').catch((err) => console.error(err));
   };
 
   const handleRename = () => {
@@ -144,33 +140,53 @@ function App() {
     return 'file';
   };
 
-  const stackedIcons = useMemo(() => {
-    return files.slice(-3).map((file, index) => {
-      const rotation = Math.random() * 10 - 5; // Random rotation between -5 and 5 degrees
-      const translateX = Math.random() * 10 - 5; // Random X offset between -5 and 5 pixels
-      const translateY = Math.random() * 10 - 5; // Random Y offset between -5 and 5 pixels
-      const zIndex = files.length - index;
+  const handleStackDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    handleMultiFileDragStart(e, files);
+  }, [files]);
 
+  const stackedIcons = useMemo(() => {
+    return files.slice(-3).map(async (file, index) => {
+      const rotation = Math.random() * 10 - 5;
+      const translateX = Math.random() * 10 - 5;
+      const translateY = Math.random() * 10 - 5;
+      const zIndex = files.length - index;
+    
+      const fileStat = await stat(file.path);
+      const extension = file.path.split('.').pop()?.toLowerCase() || '';
+      const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(extension);
+      let preview = '';
+
+      if (isImage) {
+        console.log(file.path);
+        const binaryData = await readFile(file.path);
+        const blob = new Blob([binaryData], { type: `image/${extension}` });
+        console.log(blob);
+        preview = URL.createObjectURL(blob);
+      }
+      console.log(file.preview);
       return (
         <div
           key={file.id}
-          className="absolute w-32 h-32 rounded-lg shadow-md flex items-center justify-center overflow-hidden"
+          className="absolute w-24 h-24 rounded-lg shadow-md flex items-center justify-center overflow-hidden"
           style={{
             transform: `rotate(${rotation}deg) translate(${translateX}px, ${translateY}px)`,
             zIndex,
           }}
+          draggable
+          onDragStart={handleStackDragStart}
         >
           {file.preview ? (
             <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-white flex items-center justify-center">
-              <DynamicFileIcon icon={file.icon}/>
+              <DynamicFileIcon icon={file.icon} />
             </div>
           )}
         </div>
       );
     });
-  }, [files]);
+  }, [files, handleStackDragStart]);
 
   const toggleFileSelection = (fileId: string) => {
     setSelectedFiles(prev => {
@@ -183,162 +199,46 @@ function App() {
       return newSet;
     });
   };
-  const handleSelectedFilesDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    const selectedFilesList = files.filter(file => selectedFiles.has(file.id.toString()));
-    handleMultiFileDragStart(e, selectedFilesList);
-  };
-
-  const deleteSelectedFiles = () => {
-    selectedFiles.forEach(fileId => removeFile(parseInt(fileId)));
-    setSelectedFiles(new Set());
-  };
-
-  const renderFilePreview = () => {
-    if (files.length === 0) {
-      return (
-        <div className="flex items-center justify-center h-full">
-          <p className="text-gray-600 text-lg font-medium">Drop files here</p>
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex flex-col items-center justify-center h-full">
-          <div 
-            className="relative w-40 h-40 mb-6 cursor-move"
-            draggable
-            onDragStart={(e) => handleMultiFileDragStart(e, files)}
-          >
-            {stackedIcons}
-          </div>
-          <Button
-            variant="outline"
-            onClick={toggleDropdown}
-            className="flex items-center space-x-2 bg-white text-gray-800 border-gray-200 hover:bg-gray-100 rounded-full px-4 py-2"
-          >
-            <span>{files.length} Files</span>
-            {isDropdownOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </Button>
-        </div>
-      );
-    }
-  };
 
   return (
-    <div className="fixed inset-0 bg-[#f3f3f3] text-gray-800 flex flex-col">
-      <div className="flex justify-between items-center p-2 bg-[#f9f9f9] select-none" data-tauri-drag-region>
-        <div className="flex items-center space-x-2 flex-grow" data-tauri-drag-region>
-          <img src="/path-to-your-app-icon.png" alt="App Icon" className="w-4 h-4" />
-          <span className="text-sm font-semibold">Your App Name</span>
-        </div>
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-gray-200" onClick={minimizeWindow}>
-            <span className="w-4 h-4 flex items-center justify-center">&#8211;</span>
-          </Button>
-          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-gray-200" onClick={maximizeWindow}>
-            <span className="w-4 h-4 flex items-center justify-center">&#9633;</span>
-          </Button>
-          <Button variant="ghost" size="icon" className="text-gray-600 hover:bg-red-500 hover:text-white" onClick={closeWindow}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+    <div className="fixed inset-0 text-white flex flex-col bg-black">
+      {/* Minimal Title Bar */}
+      <div className="flex justify-end items-center p-1" data-tauri-drag-region>
+        <Button variant="ghost" size="sm" className="text-gray-400 hover:bg-red-500 hover:text-white rounded-md" onClick={closeWindow}>
+          <X className="h-4 w-4" />
+        </Button>
       </div>
-      <div className="flex-grow flex flex-col items-center justify-center p-4"
+      
+      {/* Main Content */}
+      <div className="flex-grow flex flex-col items-center  justify-center p-2"
            onDragEnter={handleDragEnter}
            onDragOver={handleDragOver}
            onDragLeave={handleDragLeave}
            onDrop={handleDrop}>
-        {renderFilePreview()}
-      </div>
-      {isDropdownOpen && (
-        <div className="fixed inset-x-0 bottom-0 bg-white rounded-t-xl shadow-lg transition-all duration-300 ease-in-out z-50"
-             style={{ height: 'calc(100% - 4rem)' }}>
-          <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-lg font-semibold text-gray-800">{files.length} Files</h2>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={deleteSelectedFiles}
-                disabled={selectedFiles.size === 0}
-                className="bg-red-500 hover:bg-red-600 text-white rounded-md"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Selected
-              </Button>
-              <Button variant="ghost" size="sm" onClick={toggleDropdown} className="text-gray-600 hover:bg-gray-200 rounded-full">
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          <ScrollArea className="h-[calc(100%-4rem)]">
-            <ul className="p-4 space-y-4">
-              {files.map((file) => (
-                <li
-                  key={file.id}
-                  className={`flex items-center space-x-4 hover:bg-gray-100 p-2 rounded-md ${
-                    selectedFiles.has(file.id.toString()) ? 'bg-blue-100' : ''
-                  }`}
-                  draggable={selectedFiles.has(file.id.toString())}
-                  onDragStart={(e: React.DragEvent<HTMLLIElement>) => handleSelectedFilesDragStart(e)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedFiles.has(file.id.toString())}
-                    onChange={() => toggleFileSelection(file.id.toString())}
-                    className="mr-2"
-                  />
-                  <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden">
-                    {file.preview ? (
-                      <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <DynamicFileIcon icon={file.icon} />
-                    )}
-                  </div>
-                  <div className="flex-grow">
-                    <p className="text-sm font-medium truncate text-gray-800">{file.path.split('\\').pop()}</p>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="text-gray-600 hover:bg-gray-200 rounded-full">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onSelect={() => openRenameDialog(file)}>Rename</DropdownMenuItem>
-                      <DropdownMenuItem onSelect={() => removeFile(file.id)}>Remove</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </li>
-              ))}
-            </ul>
-          </ScrollArea>
-        </div>
-      )}
-      <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
-        <DialogContent className="bg-white text-black rounded-lg">
-          <DialogHeader>
-            <DialogTitle className="text-black">Rename File</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right text-black">
-                Name
-              </Label>
-              <Input
-                id="name"
-                value={newFileName}
-                onChange={(e) => setNewFileName(e.target.value)}
-                className="col-span-3 border-[#d1d1d1] focus:border-[#0078d4] focus:ring-[#0078d4]"
+        <div className="flex flex-col items-center p-4 rounded-lg">
+          {files.length > 0 ? (
+            <div className="relative w-32 h-32 mb-4" draggable onDragStart={handleStackDragStart}>
+              <DynamicFileIcon
+                icon={files[0].icon}
               />
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" onClick={handleRename} className="bg-[#0078d4] hover:bg-[#006cbd] text-white rounded-md">
-              Save changes
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          ) : (
+            <div className="flex flex-col items-center space-x-2 mb-4">
+              <Download className="h-5 w-5" />
+              <span className="text-lg">Drop items here</span>
+            </div>
+          )}
+        </div>
+        <Button
+            variant="outline"
+            onClick={openPopup}
+            className="flex items-center space-x-1 text-white border-gray-600 hover:bg-gray-600 rounded-full px-3 py-1 text-sm mt-4"
+          >
+            <span>{files.length} items</span>
+            <ChevronDown className="h-3 w-3" />
+          </Button>
+      </div>
+      
     </div>
   );
 }

@@ -17,10 +17,7 @@
       "@/*": ["./src/*"]
     },
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "strict": false,
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

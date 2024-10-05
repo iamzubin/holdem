@@ -1,8 +1,17 @@
+use file::FileMetadata;
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
-use tauri::{Listener, Manager, PhysicalPosition};
+use tauri::{Emitter, State};
+use tauri::{
+    Listener, LogicalPosition, LogicalSize, Manager, PhysicalPosition, WebviewUrl,
+    WebviewWindowBuilder,
+};
+use window_vibrancy::{apply_acrylic, apply_vibrancy, clear_acrylic, NSVisualEffectMaterial};
 use windows::Win32::Foundation::POINT;
 use windows::Win32::UI::Input::KeyboardAndMouse::GetAsyncKeyState;
 use windows::Win32::UI::WindowsAndMessaging::{
@@ -14,8 +23,106 @@ use windows::Win32::UI::WindowsAndMessaging::{
 #[cfg(desktop)]
 mod tray;
 
+mod file; // Make sure to include the file module
+
+type FileList = Arc<Mutex<Vec<FileMetadata>>>;
+
 #[tauri::command]
-fn start_drag(app: tauri::AppHandle, file_path: String) -> Result<(), String> {
+fn add_files(
+    app_handle: tauri::AppHandle,
+    file_list: State<'_, FileList>,
+    files: Vec<String>,
+) -> Result<(), String> {
+    let mut list = file_list
+        .lock()
+        .map_err(|_| "Failed to acquire lock".to_string())?;
+
+    for (index, path_str) in files.iter().enumerate() {
+        let path = PathBuf::from(path_str);
+        if path.exists() {
+            let metadata = path.metadata().map_err(|e| e.to_string())?;
+            let file = FileMetadata {
+                id: list.len() as u64 + index as u64 + 1,
+                name: path
+                    .file_name()
+                    .and_then(|n| n.to_str())
+                    .unwrap_or("Unknown")
+                    .to_string(),
+                path: path.clone(),
+                size: metadata.len(),
+                file_type: path
+                    .extension()
+                    .and_then(|ext| ext.to_str())
+                    .unwrap_or("unknown")
+                    .to_string(),
+            };
+            // Avoid duplicates
+            if !list.iter().any(|f| f.path == file.path) {
+                list.push(file);
+            }
+            let _ = app_handle.emit("file_added", "test");
+        } else {
+            println!("File does not exist: {}", path_str);
+        }
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+fn remove_file(
+    app_handle: tauri::AppHandle,
+    file_list: State<'_, FileList>,
+    file_id: u64,
+) -> Result<(), String> {
+    let mut list = file_list
+        .lock()
+        .map_err(|_| "Failed to acquire lock".to_string())?;
+    if let Some(pos) = list.iter().position(|f| f.id == file_id) {
+        list.remove(pos);
+        println!("Removed file with ID: {}", file_id);
+
+        app_handle.emit("file_removed", "test").unwrap();
+        Ok(())
+    } else {
+        Err(format!("File with ID {} not found", file_id))
+    }
+}
+
+#[tauri::command]
+fn get_files(file_list: State<'_, FileList>) -> Result<Vec<FileMetadata>, String> {
+    let list = file_list
+        .lock()
+        .map_err(|_| "Failed to acquire lock".to_string())?;
+    Ok(list.clone())
+}
+
+#[tauri::command]
+fn rename_file(
+    app_handle: tauri::AppHandle,
+    file_list: State<'_, FileList>,
+    file_id: u64,
+    new_name: String,
+) -> Result<(), String> {
+    let mut list = file_list
+        .lock()
+        .map_err(|_| "Failed to acquire lock".to_string())?;
+    if let Some(file) = list.iter_mut().find(|f| f.id == file_id) {
+        file.name = new_name.clone();
+        println!("Renamed file ID {} to {}", file_id, new_name);
+        app_handle.emit("file_renamed", "file").unwrap();
+        Ok(())
+    } else {
+        Err(format!("File with ID {} not found", file_id))
+    }
+}
+
+#[tauri::command]
+fn start_drag(
+    app: tauri::AppHandle,
+    file_path: String,
+    file_list: State<'_, FileList>,
+) -> Result<(), String> {
     println!("Starting drag for file: {}", file_path);
     let item = match std::fs::canonicalize(file_path.clone()) {
         Ok(path) => {
@@ -49,7 +156,11 @@ fn start_drag(app: tauri::AppHandle, file_path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn start_multi_drag(app: tauri::AppHandle, file_paths: Vec<String>) -> Result<(), String> {
+fn start_multi_drag(
+    app: tauri::AppHandle,
+    file_paths: Vec<String>,
+    file_list: State<'_, FileList>,
+) -> Result<(), String> {
     println!(
         "Starting multi-file drag for files: {}",
         file_paths.join(", ")
@@ -208,6 +319,8 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app: tauri::AppHandle) {
                 // Show the window at the adjusted position
                 let app = app.app_handle();
                 if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.unminimize();
+
                     let _ = window.set_position(PhysicalPosition {
                         x: window_x as f64,
                         y: window_y as f64,
@@ -247,12 +360,72 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app: tauri::AppHandle) {
     });
 }
 
+#[tauri::command]
+fn open_popup_window(app: tauri::AppHandle, file_list: State<'_, FileList>) -> Result<(), String> {
+    // Get the main window
+    let main_window = app
+        .get_webview_window("main")
+        .ok_or("Main window not found")?;
+
+    // Get the position and size of the main window
+    let position = main_window.outer_position().map_err(|e| e.to_string())?;
+    let size = main_window.outer_size().map_err(|e| e.to_string())?;
+
+    // Calculate the position for the popup window (right below the main window)
+    let popup_x = position.x as f64;
+    let popup_y = position.y as f64 + size.height as f64;
+
+    // Create the popup window
+    tauri::async_runtime::spawn(async move {
+        WebviewWindowBuilder::new(
+            &app,
+            "popup",                         // Window label
+            WebviewUrl::App("popup".into()), // Assuming same frontend build
+        )
+        .title("File List")
+        .decorations(false) // Remove window decorations for a popup feel
+        .transparent(true)
+        .shadow(false)
+        .resizable(false)
+        .inner_size(size.width as f64, 500.0)
+        .position(popup_x, popup_y)
+        .always_on_top(true)
+        .focused(false)
+        .build()
+        .map_err(|e| e.to_string())?;
+        Ok::<(), String>(())
+    });
+
+    Ok(())
+}
+
+#[tauri::command]
+fn close_popup_window(app: tauri::AppHandle, file_list: State<'_, FileList>) -> Result<(), String> {
+    let popup_window = app
+        .get_webview_window("popup")
+        .ok_or("Popup window not found")?;
+    popup_window.close().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let file_list: FileList = Arc::new(Mutex::new(Vec::new()));
+
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![start_drag, start_multi_drag])
+        .manage(file_list.clone())
+        .invoke_handler(tauri::generate_handler![
+            start_drag,
+            start_multi_drag,
+            open_popup_window,
+            close_popup_window,
+            add_files,
+            remove_file,
+            get_files,
+            rename_file
+        ])
         .setup(|app| {
             #[cfg(all(desktop))]
             {
@@ -269,6 +442,29 @@ pub fn run() {
                 window_close_delay: 3000,
             };
             start_mouse_monitor(config, app_handle.clone());
+
+            // #[cfg(target_os = "macos")]
+            // apply_vibrancy(
+            //     &app_handle.get_webview_window("main").unwrap(),
+            //     NSVisualEffectMaterial::HudWindow,
+            //     None,
+            //     None,
+            // )
+            // .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+
+            // #[cfg(target_os = "windows")]
+            // apply_acrylic(
+            //     &app_handle.get_webview_window("main").unwrap(),
+            //     Some((106, 223, 0, 100)),
+            // )
+            // .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+
+            // #[cfg(target_os = "windows")]
+            // apply_acrylic(
+            //     &app.get_webview_window("popup").unwrap(),
+            //     Some((106, 223, 0, 100)),
+            // )
+            // .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
 
             Ok(())
         })
