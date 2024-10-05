@@ -20,3 +20,9 @@ tauri-plugin-shell = "2.0.0-rc"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 drag = { git = "https://github.com/AudiogenAI/drag.git", version = "0.9.0" }
+tauri-plugin-fs = "2.0.0-rc"
+windows = { version = "0.48.0", features = [
+    "Win32_Foundation",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_WindowsAndMessaging",
+] }

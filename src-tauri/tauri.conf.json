@@ -13,11 +13,17 @@
     "windows": [
       {
         "title": "holdem",
-        "width": 500,
-        "height": 500,
+        "width": 300,
+        "height": 300,
         "dragDropEnabled": true,
         "decorations": false,
-        "transparent": true
+        "transparent": true,
+        "focus": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "windowEffects": {
+          "effects": ["underWindowBackground"]
+        }
       }
     ],
     "security": {

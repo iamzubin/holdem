@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,12 +9,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { X, ChevronDown, ChevronUp, FileIcon, MoreHorizontal } from 'lucide-react';
-import { formatFileSize } from "@/lib/utils";
 import { handleDragStart, handleMultiFileDragStart } from "@/lib/fileUtils";
 import { minimizeWindow, maximizeWindow, closeWindow } from "@/lib/windowUtils";
 import { DynamicFileIcon } from "@/components/FileIcon";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { FilePreview } from "@/types";
+import { stat, readFile } from "@tauri-apps/plugin-fs";
+
 
 function App() {
   const [isDragging, setIsDragging] = useState(false);
@@ -32,18 +33,39 @@ function App() {
 
     const setupFileListener = async () => {
       const webview = await getCurrentWebview();
-      await webview.onDragDropEvent((event) => {
+      await webview.onDragDropEvent(async (event) => {
         if (event.payload.type === 'drop') {
-          const newFiles = event.payload.paths.map((path, index) => ({
-            id: Date.now() + index,
-            name: path.split('/').pop() || '',
-            preview: '',
-            type: 'file' as const,
-            size: 0,
-            path: path,
-            icon: ''
-          }));
-          handleNewFiles(newFiles);
+          const filePromises = event.payload.paths.map(async (path, index) => {
+            try {
+              const fileStat = await stat(path);
+              const extension = path.split('.').pop()?.toLowerCase() || '';
+              const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(extension);
+              let preview = '';
+
+              if (isImage) {
+                const binaryData = await readFile(path);
+                const blob = new Blob([binaryData], { type: `image/${extension}` });
+                preview = URL.createObjectURL(blob);
+              }
+
+              return {
+                id: Date.now() + index,
+                name: path.split('/').pop() || '',
+                preview,
+                type: fileStat.isFile ? 'file' : 'folder',
+                size: fileStat.size,
+                path: path,
+                icon: fileStat.isFile ? getFileExtension(path.split('/').pop() || '') : 'folder'
+              };
+            } catch (error) {
+              console.error(`Error fetching stats for file: ${path}`, error);
+              return null;
+            }
+          });
+
+          const newFiles = await Promise.all(filePromises);
+          const validNewFiles = newFiles.filter(file => file !== null) as FilePreview[];
+          handleNewFiles(validNewFiles);
         }
       });
     };
@@ -68,7 +90,7 @@ function App() {
     e.stopPropagation();
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
@@ -81,7 +103,7 @@ function App() {
       type: 'file',
       size: file.size,
       path: (file as any).path,
-      icon: ''
+      icon: getFileExtension(file.name)
     }));
 
     handleNewFiles(newFiles);
@@ -111,6 +133,44 @@ function App() {
     console.log("File renamed successfully");
   };
 
+  const getFileExtension = (filename: string): string => {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    if (!ext) return 'file';
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];
+    const pdfExtensions = ['pdf'];
+    if (imageExtensions.includes(ext)) return 'image';
+    if (pdfExtensions.includes(ext)) return 'pdf';
+    return 'file';
+  };
+
+  const stackedIcons = useMemo(() => {
+    return files.slice(-3).map((file, index) => {
+      const rotation = Math.random() * 10 - 5; // Random rotation between -5 and 5 degrees
+      const translateX = Math.random() * 10 - 5; // Random X offset between -5 and 5 pixels
+      const translateY = Math.random() * 10 - 5; // Random Y offset between -5 and 5 pixels
+      const zIndex = files.length - index;
+
+      return (
+        <div
+          key={file.id}
+          className="absolute w-32 h-32 rounded-lg shadow-md flex items-center justify-center overflow-hidden"
+          style={{
+            transform: `rotate(${rotation}deg) translate(${translateX}px, ${translateY}px)`,
+            zIndex,
+          }}
+        >
+          {file.preview ? (
+            <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-white flex items-center justify-center">
+              <DynamicFileIcon icon={file.icon}/>
+            </div>
+          )}
+        </div>
+      );
+    });
+  }, [files]);
+
   const renderFilePreview = () => {
     if (files.length === 0) {
       return (
@@ -122,11 +182,11 @@ function App() {
       return (
         <div className="flex flex-col items-center justify-center h-full">
           <div 
-            className="w-40 h-40 bg-white rounded-lg mb-6 flex items-center justify-center shadow-md cursor-move"
+            className="relative w-40 h-40 mb-6 cursor-move"
             draggable
             onDragStart={(e) => handleMultiFileDragStart(e, files)}
           >
-            <FileIcon className="h-16 w-16 text-blue-500" />
+            {stackedIcons}
           </div>
           <Button
             variant="outline"
@@ -168,7 +228,7 @@ function App() {
         {renderFilePreview()}
       </div>
       {isDropdownOpen && (
-        <div className="fixed inset-x-0 bottom-0 bg-white rounded-t-xl shadow-lg transition-all duration-300 ease-in-out"
+        <div className="fixed inset-x-0 bottom-0 bg-white rounded-t-xl shadow-lg transition-all duration-300 ease-in-out z-50"
              style={{ height: 'calc(100% - 4rem)' }}>
           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-800">{files.length} Files</h2>
@@ -185,12 +245,15 @@ function App() {
                   draggable
                   onDragStart={(e: React.DragEvent<HTMLLIElement>) => handleDragStart(e as any, file)}
                 >
-                  <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center">
-                    <DynamicFileIcon icon={file.icon} />
+                  <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden">
+                    {file.preview ? (
+                      <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <DynamicFileIcon icon={file.icon} />
+                    )}
                   </div>
                   <div className="flex-grow">
-                    <p className="text-sm font-medium truncate text-gray-800">{file.name}</p>
-                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                    <p className="text-sm font-medium truncate text-gray-800">{file.path.split('\\').pop()}</p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
