@@ -8,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, ChevronDown, ChevronUp, FileIcon, MoreHorizontal } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, FileIcon, MoreHorizontal, Trash2 } from 'lucide-react';
 import { handleDragStart, handleMultiFileDragStart } from "@/lib/fileUtils";
 import { minimizeWindow, maximizeWindow, closeWindow } from "@/lib/windowUtils";
 import { DynamicFileIcon } from "@/components/FileIcon";
@@ -24,6 +24,7 @@ function App() {
   const [fileToRename, setFileToRename] = useState<FilePreview | null>(null);
   const [newFileName, setNewFileName] = useState("");
   const listenerSetup = useRef(false);
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
 
   const { files, handleNewFiles, removeFile, renameFile } = useFileManagement();
 
@@ -171,6 +172,27 @@ function App() {
     });
   }, [files]);
 
+  const toggleFileSelection = (fileId: string) => {
+    setSelectedFiles(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(fileId)) {
+        newSet.delete(fileId);
+      } else {
+        newSet.add(fileId);
+      }
+      return newSet;
+    });
+  };
+  const handleSelectedFilesDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    const selectedFilesList = files.filter(file => selectedFiles.has(file.id.toString()));
+    handleMultiFileDragStart(e, selectedFilesList);
+  };
+
+  const deleteSelectedFiles = () => {
+    selectedFiles.forEach(fileId => removeFile(parseInt(fileId)));
+    setSelectedFiles(new Set());
+  };
+
   const renderFilePreview = () => {
     if (files.length === 0) {
       return (
@@ -232,19 +254,39 @@ function App() {
              style={{ height: 'calc(100% - 4rem)' }}>
           <div className="p-4 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-800">{files.length} Files</h2>
-            <Button variant="ghost" size="sm" onClick={toggleDropdown} className="text-gray-600 hover:bg-gray-200 rounded-full">
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={deleteSelectedFiles}
+                disabled={selectedFiles.size === 0}
+                className="bg-red-500 hover:bg-red-600 text-white rounded-md"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Selected
+              </Button>
+              <Button variant="ghost" size="sm" onClick={toggleDropdown} className="text-gray-600 hover:bg-gray-200 rounded-full">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           <ScrollArea className="h-[calc(100%-4rem)]">
             <ul className="p-4 space-y-4">
               {files.map((file) => (
                 <li
                   key={file.id}
-                  className="flex items-center space-x-4 hover:bg-gray-100 p-2 rounded-md"
-                  draggable
-                  onDragStart={(e: React.DragEvent<HTMLLIElement>) => handleDragStart(e as any, file)}
+                  className={`flex items-center space-x-4 hover:bg-gray-100 p-2 rounded-md ${
+                    selectedFiles.has(file.id.toString()) ? 'bg-blue-100' : ''
+                  }`}
+                  draggable={selectedFiles.has(file.id.toString())}
+                  onDragStart={(e: React.DragEvent<HTMLLIElement>) => handleSelectedFilesDragStart(e)}
                 >
+                  <input
+                    type="checkbox"
+                    checked={selectedFiles.has(file.id.toString())}
+                    onChange={() => toggleFileSelection(file.id.toString())}
+                    className="mr-2"
+                  />
                   <div className="w-10 h-10 bg-gray-200 rounded-md flex items-center justify-center overflow-hidden">
                     {file.preview ? (
                       <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
