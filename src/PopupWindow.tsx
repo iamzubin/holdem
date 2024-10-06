@@ -1,18 +1,17 @@
 import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { handleMultiFileDragStart } from "@/lib/fileUtils";
 import { invoke } from "@tauri-apps/api/core";
-import { MoreHorizontal, Trash2, X } from 'lucide-react';
+import { MoreHorizontal, List as ListIcon, Grid as GridIcon } from 'lucide-react';
 import React, { useEffect, useState, useCallback } from "react";
-import { Toaster, useSonner } from "sonner";
+import { Toaster } from "sonner";
 
 const PopupWindow: React.FC = () => {
-  const { files, removeFile } = useFileManagement();
+  const { files } = useFileManagement();
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
-  const toast = useSonner();
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -65,51 +64,85 @@ const PopupWindow: React.FC = () => {
     }
   }, [files, selectedFiles]);
 
+  const getTotalSize = (files: any[]): string => {
+    const totalBytes = files.reduce((acc, file) => acc + file.size, 0);
+    return formatFileSize(totalBytes);
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const toggleViewMode = () => {
+    setViewMode(prev => prev === 'list' ? 'grid' : 'list');
+  };
+
   return (
-    <div className="fixed inset-0 bg-gray-900 text-white p-4 overflow-auto">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Files</h2>
-        <Button variant="ghost" size="sm" className="text-gray-400 hover:bg-red-500 hover:text-white rounded-full" onClick={() => invoke('close_popup_window')}>
-          <X className="h-4 w-4" />
-        </Button>
+    <div className="fixed inset-0 bg-black text-white p-2 overflow-auto">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center space-x-2">
+          <Button variant="ghost" size="sm" className="text-gray-400 hover:bg-gray-600 rounded-full p-1">
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+          <span className="text-xs">{files.length} items selected</span>
+          <span className="text-xs text-gray-400">{getTotalSize(files)}</span>
+        </div>
+        <div className="flex space-x-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`text-gray-400 hover:bg-gray-600 rounded-full p-1 ${viewMode === 'list' ? 'bg-gray-600' : ''}`}
+            onClick={toggleViewMode}
+          >
+            <ListIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`text-gray-400 hover:bg-gray-600 rounded-full p-1 ${viewMode === 'grid' ? 'bg-gray-600' : ''}`}
+            onClick={toggleViewMode}
+          >
+            <GridIcon className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-      <div className="space-y-2">
+      <div className={viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'space-y-1'}>
         {files.map(file => (
           <div
             key={file.id}
-            className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-800"
+            className={`
+              ${viewMode === 'list'
+                ? 'flex items-center space-x-2 p-1 rounded-md hover:bg-gray-800'
+                : 'flex flex-col items-center p-1 rounded-md hover:bg-gray-800'
+              }
+            `}
             draggable
             onDragStart={(e) => handleDragStart(e, file)}
           >
-            <input
-              type="checkbox"
-              checked={selectedFiles.has(file.id?.toString() || '')}
-              onChange={() => toggleFileSelection(file.id || '')}
-              className="mr-1"
-            />
-            <div className="w-8 h-8 bg-gray-700 rounded-md flex items-center justify-center overflow-hidden">
+            <div className={`
+              bg-gray-700 rounded-md flex items-center justify-center overflow-hidden
+              ${viewMode === 'list' ? 'w-8 h-8 flex-shrink-0' : 'w-12 h-12 mb-1'}
+            `}>
               {file.preview ? (
                 <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
               ) : (
                 <DynamicFileIcon icon={file.icon} />
               )}
             </div>
-            <div className="flex-grow">
-              <p className="text-xs font-medium truncate">{file.name}</p>
+            <div className={`
+              ${viewMode === 'list' ? 'flex-grow min-w-0' : 'w-full text-center'}
+            `}>
+              <p className="text-xs font-medium truncate" title={file.name}>{file.name}</p>
+              {viewMode === 'grid' && (
+                <span className="text-[10px] text-gray-400">{formatFileSize(file.size)}</span>
+              )}
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-400 hover:bg-gray-700 rounded-full p-1">
-                  <MoreHorizontal className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-gray-800 text-white border-gray-700">
-                <DropdownMenuItem onSelect={() => removeFile(file.id)} className="text-red-500 hover:bg-red-900">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {viewMode === 'list' && (
+              <span className="text-[10px] text-gray-400 flex-shrink-0">{formatFileSize(file.size)}</span>
+            )}
           </div>
         ))}
       </div>

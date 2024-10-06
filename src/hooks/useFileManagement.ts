@@ -21,6 +21,7 @@ export const useFileManagement = () => {
     fetchFiles();
 
     const unlistenFileAdded = listen('file_added', (event: any) => {
+      console.log('file_added', event);
       setFiles(prevFiles => [...prevFiles, event.payload]);
     });
 

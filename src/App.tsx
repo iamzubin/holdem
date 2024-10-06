@@ -78,6 +78,7 @@ function App() {
   }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    console.log("handleDragOver")
     e.preventDefault();
     e.stopPropagation();
   }, []);
@@ -113,14 +114,14 @@ function App() {
   const stackedIcons = useMemo(() => {
     return files.slice(-3).map((file, index) => {
       const rotation = Math.random() * 10 - 5;
-      const translateX = Math.random() * 10 - 5;
-      const translateY = Math.random() * 10 - 5;
+      const translateX = Math.random() * 5 - 2.5;
+      const translateY = Math.random() * 5 - 2.5;
       const zIndex = files.length - index;
     
       return (
         <div
           key={file.id}
-          className="absolute w-24 h-24 rounded-lg shadow-md flex items-center justify-center overflow-hidden"
+          className="absolute w-10 h-10 rounded-md shadow-sm flex items-center justify-center overflow-hidden"
           style={{
             transform: `rotate(${rotation}deg) translate(${translateX}px, ${translateY}px)`,
             zIndex,
@@ -132,7 +133,7 @@ function App() {
             <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full bg-white flex items-center justify-center">
-              <DynamicFileIcon icon={file.icon} />
+              <DynamicFileIcon icon={file.icon} className="w-6 h-6" />
             </div>
           )}
         </div>
@@ -141,39 +142,44 @@ function App() {
   }, [files, handleStackDragStart]);
 
   return (
-    <div className="fixed inset-0 text-white flex flex-col bg-black">
-      {/* Minimal Title Bar */}
-      <div className="flex justify-end items-center p-1" data-tauri-drag-region>
-        <Button variant="ghost" size="sm" className="text-gray-400 hover:bg-red-500 hover:text-white rounded-md" onClick={closeWindow}>
+    <div className="fixed inset-0 text-white flex flex-col bg-black p-2">
+      {/* Handle and Title Bar */}
+      <div className="relative flex justify-end items-center h-5" data-tauri-drag-region>
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2">
+          <div className="w-10 h-0.5 bg-gray-400 rounded-full"></div>
+        </div>
+        <Button variant="ghost" size="icon" className="text-gray-400 hover:bg-red-500 hover:text-white rounded h-5 w-5" onClick={closeWindow}>
           <X className="h-4 w-4" />
         </Button>
       </div>
       
       {/* Main Content */}
-      <div className="flex-grow flex flex-col items-center justify-center p-2"
+      <div className="flex-grow flex flex-col items-center justify-center space-y-1"
            onDragEnter={handleDragEnter}
            onDragOver={handleDragOver}
            onDragLeave={handleDragLeave}
            onDrop={handleDrop}>
-        <div className="flex flex-col items-center p-4 rounded-lg">
-          {files.length > 0 ? (
-            <div className="relative w-32 h-32 mb-4" draggable onDragStart={handleStackDragStart}>
-              {stackedIcons}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center space-x-2 mb-4">
-              <Download className="h-5 w-5" />
-              <span className="text-lg">Drop items here</span>
-            </div>
-          )}
-        </div>
+        {files.length > 0 ? (
+          <div className="relative w-12 h-12" draggable onDragStart={handleStackDragStart}>
+            {stackedIcons}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center">
+            <Download className="h-5 w-5" />
+            <span className="text-[8px]">Drop here</span>
+          </div>
+        )}
+      </div>
+
+      {/* Dropdown Button at the Bottom */}
+      <div className="flex justify-center items-center mt-1">
         <Button
           variant="outline"
           onClick={openPopup}
-          className="flex items-center space-x-1 text-white border-gray-600 hover:bg-gray-600 rounded-full px-3 py-1 text-sm mt-4"
+          className="flex items-center justify-between text-white border-gray-600 hover:bg-gray-600 rounded px-2 py-0.5 text-[10px] w-20"
         >
-          <span>{files.length} items</span>
-          <ChevronDown className="h-3 w-3" />
+          <span>{files.length} file{files.length !== 1 ? 's' : ''}</span>
+          <ChevronDown className="h-2 w-2 ml-1" />
         </Button>
       </div>
     </div>
