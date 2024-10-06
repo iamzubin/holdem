@@ -9,6 +9,10 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use crate::file::FileMetadata;
 use crate::FileList;
 
+use base64::{engine::general_purpose, Engine as _};
+use serde::Deserialize;
+use windows_icons::{get_icon_base64_by_path, get_icon_by_path};
+
 #[tauri::command]
 pub fn add_files(
     app_handle: tauri::AppHandle,
@@ -136,6 +140,27 @@ pub fn start_drag(
     println!("Starting drag for file: {}", file_path);
     Ok(())
 }
+#[tauri::command]
+pub fn clear_files(
+    app_handle: tauri::AppHandle,
+    file_list: State<'_, FileList>,
+) -> Result<(), String> {
+    let mut list = file_list
+        .lock()
+        .map_err(|_| "Failed to acquire lock".to_string())?;
+
+    // Clear all files from the list
+    list.clear();
+
+    println!("Cleared all files");
+
+    // Emit an event to notify the frontend that all files have been cleared
+    app_handle
+        .emit("files_updated", ())
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
 
 #[tauri::command]
 pub fn start_multi_drag(
@@ -245,4 +270,9 @@ pub fn close_popup_window(
         .ok_or("Popup window not found")?;
     popup_window.close().map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[tauri::command]
+pub fn get_file_icon_base64(file_path: &str) -> Result<String, String> {
+    Ok(get_icon_base64_by_path(file_path))
 }

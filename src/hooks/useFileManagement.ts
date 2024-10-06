@@ -75,5 +75,15 @@ export const useFileManagement = () => {
     }
   }, []);
 
-  return { files, addFiles, removeFile, renameFile };
+  const getFileIcon = useCallback(async (filePath: string): Promise<string> => {
+    try {
+      const iconBase64: string = await invoke('get_file_icon_base64', { filePath });
+      return iconBase64;
+    } catch (error) {
+      console.error('Error fetching file icon:', error);
+      throw error;
+    }
+  }, []);
+
+  return { files, addFiles, removeFile, renameFile, getFileIcon };
 };

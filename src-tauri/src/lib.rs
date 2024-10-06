@@ -1,6 +1,6 @@
 use commands::{
-    add_files, close_popup_window, get_files, open_popup_window, remove_file, rename_file,
-    start_drag, start_multi_drag,
+    add_files, clear_files, close_popup_window, get_file_icon_base64, get_files, open_popup_window,
+    remove_file, rename_file, start_drag, start_multi_drag,
 };
 use file::FileMetadata;
 use mouse_monitor::start_mouse_monitor;
@@ -33,7 +33,9 @@ pub fn run() {
             add_files,
             remove_file,
             get_files,
-            rename_file
+            rename_file,
+            get_file_icon_base64,
+            clear_files,
         ])
         .setup(|app| {
             #[cfg(all(desktop))]
