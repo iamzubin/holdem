@@ -50,5 +50,3 @@ We welcome contributions! If you want to report a bug, request a feature, or sub
 Holdem is licensed under the [MIT License](LICENSE).
 
 ---
-
-Let me know if you'd like any adjustments or additional details!
