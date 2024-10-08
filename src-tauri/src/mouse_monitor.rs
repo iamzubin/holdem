@@ -1,13 +1,20 @@
+use active_win_pos_rs::get_active_window;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
-use tauri::{AppHandle, Listener, Manager, PhysicalPosition};
-use windows::Win32::Foundation::{HWND, POINT};
-use windows::Win32::UI::Input::KeyboardAndMouse::{DragDetect, GetAsyncKeyState, VK_LBUTTON};
+use tauri::{Listener, Manager, PhysicalPosition};
+use windows::Win32::Foundation::{CloseHandle, HANDLE, MAX_PATH};
+use windows::Win32::Foundation::{BOOL, HWND, POINT};
+use windows::Win32::System::Threading::{
+    OpenProcess, QueryFullProcessImageNameW, PROCESS_NAME_WIN32, PROCESS_QUERY_LIMITED_INFORMATION,
+};
+use windows::Win32::UI::Input::KeyboardAndMouse::{
+    DragDetect, GetActiveWindow, GetAsyncKeyState, VK_LBUTTON,
+};
 use windows::Win32::UI::WindowsAndMessaging::{
-    GetCursorPos, GetForegroundWindow, GetSystemMetrics, GetWindowLongW, GWL_STYLE, SM_CXSCREEN,
-    SM_CYSCREEN, WS_MAXIMIZE,
+    GetCursorPos, GetDesktopWindow, GetForegroundWindow, GetSystemMetrics, GetWindowTextW,
+    GetWindowThreadProcessId, SM_CXSCREEN, SM_CYSCREEN,
 };
 
 #[derive(Clone)]
@@ -49,6 +56,22 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app: tauri::AppHandle) {
         let mut last_direction: Option<i32> = None;
 
         loop {
+            match get_active_window() {
+                Ok(active_window) => {
+                    if !active_window
+                        .process_path
+                        .to_str()
+                        .unwrap()
+                        .contains("explorer.exe")
+                    {
+                        continue;
+                    }
+                }
+                Err(()) => {
+                    println!("error occurred while getting the active window");
+                }
+            }
+
             // Check if the left mouse button is pressed
             let is_mouse_down =
                 unsafe { GetAsyncKeyState(VK_LBUTTON.0 as i32) & 0x8000u16 as i16 != 0 };
@@ -57,7 +80,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app: tauri::AppHandle) {
                 let mut current_position = POINT::default();
                 unsafe { GetCursorPos(&mut current_position) };
 
-                let drag_detect_result = unsafe {
+                unsafe {
                     DragDetect(
                         HWND(
                             app.app_handle()

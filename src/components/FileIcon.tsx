@@ -9,24 +9,51 @@ interface DynamicFileIconProps {
 export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ filePath, ...props }) => {
   const [iconBase64, setIconBase64] = useState<string | null>(null);
   const { getFileIcon } = useFileManagement();
+  const [isVisible, setIsVisible] = useState(false);
+  const iconRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchIcon = async () => {
-      try {
-        const base64Icon = await getFileIcon(filePath);
-        setIconBase64(base64Icon);
-      } catch (error) {
-        console.error('Error fetching file icon:', error);
-      }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (iconRef.current) {
+      observer.observe(iconRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
     };
+  }, []);
 
-    fetchIcon();
-  }, [filePath, getFileIcon]);
+  useEffect(() => {
+    if (isVisible) {
+      const fetchIcon = async () => {
+        try {
+          const base64Icon = await getFileIcon(filePath);
+          setIconBase64(base64Icon);
+        } catch (error) {
+          console.error('Error fetching file icon:', error);
+        }
+      };
 
-  if (iconBase64) {
-    return <img {...props} className="h-full w-full" src={`data:image/png;base64,${iconBase64}`} alt="File icon" />;
-  }
+      fetchIcon();
+    }
+  }, [isVisible, filePath, getFileIcon]);
 
-  // Fallback to default FileIcon if no custom icon is available
-  return <FileIcon className="h-6 w-6 text-blue-500" />;
+  return (
+    <div ref={iconRef} {...props}>
+      {iconBase64 ? (
+        <img className="h-full w-full" src={`data:image/png;base64,${iconBase64}`} alt="File icon" />
+      ) : (
+        <FileIcon className="h-6 w-6 text-blue-500" />
+      )}
+    </div>
+  );
 };

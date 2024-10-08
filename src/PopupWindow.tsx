@@ -7,6 +7,9 @@ import { MoreHorizontal, List as ListIcon, Grid as GridIcon, Trash2 } from 'luci
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Toaster } from "sonner";
 import * as ContextMenu from '@radix-ui/react-context-menu';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import SimpleBar from 'simplebar-react';
+import 'simplebar-react/dist/simplebar.min.css';
 
 const PopupWindow: React.FC = () => {
   const { files } = useFileManagement();
@@ -19,7 +22,7 @@ const PopupWindow: React.FC = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (!hasInteracted) {
-        invoke('close_popup_window').catch((err) => console.error(err));
+      invoke('close_popup_window').catch((err) => console.error(err));
       }
     }, 3000);
 
@@ -43,19 +46,6 @@ const PopupWindow: React.FC = () => {
       clearTimeout(timeoutId);
     };
   }, [hasInteracted]);
-
-  const toggleFileSelection = (fileId: string | number) => {
-    setSelectedFiles(prev => {
-      const newSet = new Set(prev);
-      const idString = fileId.toString();
-      if (newSet.has(idString)) {
-        newSet.delete(idString);
-      } else {
-        newSet.add(idString);
-      }
-      return newSet;
-    });
-  };
 
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, file: any) => {
     e.stopPropagation();
@@ -110,55 +100,56 @@ const PopupWindow: React.FC = () => {
   };
 
   const handleRemoveSelectedFiles = useCallback(() => {
-    // Implement the logic to remove selected files
-    // This is a placeholder function - you'll need to implement the actual removal logic
-    console.log('Removing selected files:', Array.from(selectedFiles));
-    // After removing, clear the selection
-    setSelectedFiles(new Set());
+    invoke('remove_files', { fileIds: Array.from(selectedFiles).map(id => parseInt(id)) })
+      .then(() => {
+        setSelectedFiles(new Set());
+      })
+      .catch((err) => console.error(err));
   }, [selectedFiles]);
 
   return (
-    <div className="fixed inset-0 bg-black text-white p-2 overflow-auto">
+    <div className="fixed inset-0 bg-background  p-2 rounded border border-border">
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:accent-foreground rounded-full p-1">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-          <span className="text-xs">{files.length} items selected</span>
-          <span className="text-xs text-gray-400">{getTotalSize(files)}</span>
+          {files.length > 0 && (
+            <>
+              <span className="text-xs text-primary">{files.length} items selected</span>
+              <span className="text-xs text-primary">{getTotalSize(files)}</span>
+            </>
+          )}
         </div>
         <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`text-gray-400 hover:accent-foreground rounded-full p-1 ${viewMode === 'list' ? 'bg-gray-600' : ''}`}
-            onClick={toggleViewMode}
-          >
-            <ListIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`text-gray-400 hover:accent-foreground rounded-full p-1 ${viewMode === 'grid' ? 'bg-gray-600' : ''}`}
-            onClick={toggleViewMode}
-          >
-            <GridIcon className="h-4 w-4" />
-          </Button>
+          <ToggleGroup
+            type="single"
+            value={viewMode}
+            onValueChange={toggleViewMode}
+            >
+            <ToggleGroupItem value="list" className="text-primary">
+              <span className="sr-only">List</span>
+              <ListIcon className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="grid" className="text-primary">
+              <span className="sr-only">Grid</span>
+              <GridIcon className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
       </div>
-      <ContextMenu.Root>
-        <ContextMenu.Trigger className="flex-grow">
-          <div className={viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'space-y-1'}>
+      <SimpleBar id="RSC-Example" style={{ height: '100%' }}>
+      <div className="flex flex-col overflow-hidden">
+        <ContextMenu.Root>
+          <ContextMenu.Trigger> 
+          <div className={` overflow-auto ${viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'space-y-1'}`}>
             {files.map(file => (
               <div
                 key={file.id}
                 ref={el => fileRefs.current[file.id] = el}
                 className={`
                   ${viewMode === 'list'
-                    ? 'flex items-center space-x-2 p-1 rounded-md hover:accent-foreground'
-                    : 'flex flex-col items-center p-1 rounded-md hover:accent-foreground'
+                    ? 'flex items-center space-x-2 p-1 rounded'
+                    : 'flex flex-col items-center p-1 rounded'
                   }
-                  ${selectedFiles.has(file.id.toString()) ? 'bg-blue-500 bg-opacity-50' : ''}
+                  ${selectedFiles.has(file.id.toString()) ? 'bg-accent bg-opacity-50' : ''}
                   cursor-pointer
                 `}
                 onClick={(e) => handleFileClick(file.id.toString(), e)}
@@ -166,7 +157,7 @@ const PopupWindow: React.FC = () => {
                 onDragStart={(e) => handleDragStart(e, file)}
               >
                 <div className={`
-                  rounded-md flex items-center justify-center overflow-hidden
+                   flex items-center justify-center overflow-hidden
                   ${viewMode === 'list' ? 'w-8 h-8 flex-shrink-0' : 'w-12 h-12 mb-1'}
                 `}>
                   {file.preview ? (
@@ -178,22 +169,22 @@ const PopupWindow: React.FC = () => {
                 <div className={`
                   ${viewMode === 'list' ? 'flex-grow min-w-0' : 'w-full text-center'}
                 `}>
-                  <p className="text-xs font-medium truncate" title={file.name}>{file.name}</p>
+                  <p className="text-xs text-primary font-medium truncate" title={file.name}>{file.name}</p>
                   {viewMode === 'grid' && (
-                    <span className="text-[10px] text-gray-400">{formatFileSize(file.size)}</span>
+                    <span className="text-[10px] text-primary">{formatFileSize(file.size)}</span>
                   )}
                 </div>
                 {viewMode === 'list' && (
-                  <span className="text-[10px] text-gray-400 flex-shrink-0">{formatFileSize(file.size)}</span>
+                  <span className="text-[10px] text-primary flex-shrink-0">{formatFileSize(file.size)}</span>
                 )}
               </div>
             ))}
           </div>
         </ContextMenu.Trigger>
         <ContextMenu.Portal>
-          <ContextMenu.Content className="min-w-[200px] bg-gray-800 rounded-md overflow-hidden p-1">
+          <ContextMenu.Content className="min-w-[200px] bg-background rounded-md overflow-hidden p-1">
             <ContextMenu.Item 
-              className="text-sm text-white hover:bg-gray-700 rounded flex items-center px-2 py-1 cursor-pointer"
+              className="text-sm  hover:bg-secondary rounded flex items-center px-2 py-1 cursor-pointer text-primary"
               onClick={handleRemoveSelectedFiles}
               disabled={selectedFiles.size === 0}
             >
@@ -203,7 +194,11 @@ const PopupWindow: React.FC = () => {
           </ContextMenu.Content>
         </ContextMenu.Portal>
       </ContextMenu.Root>
+      
       <Toaster />
+      </div>
+      </SimpleBar>
+
     </div>
   );
 };

@@ -1,12 +1,16 @@
 use commands::{
-    add_files, clear_files, close_popup_window, get_file_icon_base64, get_files, open_popup_window,
-    remove_file, rename_file, start_drag, start_multi_drag,
+    add_files, clear_files, close_popup_window, get_file_icon_base64, get_files,
+    monitor_file_dropped, open_popup_window, remove_files, rename_file, start_drag,
+    start_multi_drag,
 };
 use file::FileMetadata;
 use mouse_monitor::start_mouse_monitor;
 use mouse_monitor::MouseMonitorConfig;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
+use tauri::Emitter;
+use tauri::Listener;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 mod commands;
@@ -31,13 +35,13 @@ pub fn run() {
             open_popup_window,
             close_popup_window,
             add_files,
-            remove_file,
+            remove_files,
             get_files,
             rename_file,
             get_file_icon_base64,
             clear_files,
         ])
-        .setup(|app| {
+        .setup(move |app| {
             #[cfg(all(desktop))]
             {
                 let handle = app.handle();
@@ -54,28 +58,58 @@ pub fn run() {
             };
             start_mouse_monitor(config, app_handle.clone());
 
-            // #[cfg(target_os = "macos")]
-            // apply_vibrancy(
-            //     &app_handle.get_webview_window("main").unwrap(),
-            //     NSVisualEffectMaterial::HudWindow,
-            //     None,
-            //     None,
-            // )
-            // .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
+            let file_list_clone = file_list.clone();
+            let app_handle = app.handle().clone();
 
-            // #[cfg(target_os = "windows")]
-            // apply_acrylic(
-            //     &app_handle.get_webview_window("main").unwrap(),
-            //     Some((106, 223, 0, 100)),
-            // )
-            // .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+            app.listen_any("tauri://drag-drop", move |event| {
+                println!("file dropped event received:");
+                let payload: serde_json::Value =
+                    serde_json::from_str(event.payload()).unwrap_or_default();
+                let files: Vec<String> = payload["paths"]
+                    .as_array()
+                    .map(|arr| {
+                        arr.iter()
+                            .filter_map(|v| v.as_str().map(String::from))
+                            .collect()
+                    })
+                    .unwrap_or_default();
+                let mut list = file_list_clone.lock().unwrap();
 
-            // #[cfg(target_os = "windows")]
-            // apply_acrylic(
-            //     &app.get_webview_window("popup").unwrap(),
-            //     Some((106, 223, 0, 100)),
-            // )
-            // .expect("Unsupported platform! 'apply_blur' is only supported on Windows");
+                for path_str in files.iter() {
+                    let path = PathBuf::from(path_str);
+                    if path.exists() {
+                        if let Ok(metadata) = path.metadata() {
+                            let file = FileMetadata {
+                                id: list.len() as u64,
+                                name: path
+                                    .file_name()
+                                    .and_then(|n| n.to_str())
+                                    .unwrap_or("Unknown")
+                                    .to_string(),
+                                path: path.clone(),
+                                size: metadata.len(),
+                                file_type: path
+                                    .extension()
+                                    .and_then(|ext| ext.to_str())
+                                    .unwrap_or("unknown")
+                                    .to_string(),
+                            };
+                            // Avoid duplicates
+                            if !list.iter().any(|f| f.path == file.path) {
+                                println!("file added: {:?}", file);
+                                list.push(file);
+                            }
+                        }
+                    }
+                }
+
+                // Drop the lock before emitting the event
+                drop(list);
+                app_handle.emit("files_updated", ()).unwrap();
+                if let Err(e) = app_handle.emit("files_updated", ()) {
+                    eprintln!("Failed to emit files_updated event: {}", e);
+                }
+            });
 
             Ok(())
         })

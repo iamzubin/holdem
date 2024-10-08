@@ -1,17 +1,13 @@
-use std::thread;
-use std::time::{Duration, Instant};
-use tauri::{Emitter, State};
-use tauri::{Listener, Manager, PhysicalPosition, WebviewUrl, WebviewWindowBuilder};
-
+use serde::Serialize;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
+use tauri::Event;
+use tauri::{Emitter, Listener, State};
+use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
 use crate::file::FileMetadata;
 use crate::FileList;
 
-use base64::{engine::general_purpose, Engine as _};
-use serde::Deserialize;
-use windows_icons::{get_icon_base64_by_path, get_icon_by_path};
+use windows_icons::get_icon_base64_by_path;
 
 #[tauri::command]
 pub fn add_files(
@@ -23,12 +19,12 @@ pub fn add_files(
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
 
-    for (index, path_str) in files.iter().enumerate() {
+    for (_index, path_str) in files.iter().enumerate() {
         let path = PathBuf::from(path_str);
         if path.exists() {
             let metadata = path.metadata().map_err(|e| e.to_string())?;
             let file = FileMetadata {
-                id: list.len() as u64 + index as u64 + 1,
+                id: list.len() as u64,
                 name: path
                     .file_name()
                     .and_then(|n| n.to_str())
@@ -46,9 +42,9 @@ pub fn add_files(
             if !list.iter().any(|f| f.path == file.path) {
                 list.push(file);
             }
-            let _ = app_handle.emit("file_added", "test");
-        } else {
-            println!("File does not exist: {}", path_str);
+            app_handle
+                .emit("files_updated", ())
+                .map_err(|e| e.to_string())?;
         }
     }
 
@@ -56,23 +52,25 @@ pub fn add_files(
 }
 
 #[tauri::command]
-pub fn remove_file(
+pub fn remove_files(
     app_handle: tauri::AppHandle,
     file_list: State<'_, FileList>,
-    file_id: u64,
+    file_ids: Vec<u64>,
 ) -> Result<(), String> {
     let mut list = file_list
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
-    if let Some(pos) = list.iter().position(|f| f.id == file_id) {
-        list.remove(pos);
-        println!("Removed file with ID: {}", file_id);
-
-        app_handle.emit("file_removed", "test").unwrap();
-        Ok(())
-    } else {
-        Err(format!("File with ID {} not found", file_id))
+    for file_id in file_ids {
+        if let Some(pos) = list.iter().position(|f| f.id == file_id) {
+            list.remove(pos);
+            app_handle
+                .emit("files_updated", ())
+                .map_err(|e| e.to_string())?;
+        } else {
+            return Err(format!("File with ID {} not found", file_id));
+        }
     }
+    Ok(())
 }
 
 #[tauri::command]
@@ -95,8 +93,10 @@ pub fn rename_file(
         .map_err(|_| "Failed to acquire lock".to_string())?;
     if let Some(file) = list.iter_mut().find(|f| f.id == file_id) {
         file.name = new_name.clone();
-        println!("Renamed file ID {} to {}", file_id, new_name);
-        app_handle.emit("file_renamed", "file").unwrap();
+        app_handle
+            .emit("files_updated", ())
+            .map_err(|e| e.to_string())?;
+
         Ok(())
     } else {
         Err(format!("File with ID {} not found", file_id))
@@ -104,12 +104,7 @@ pub fn rename_file(
 }
 
 #[tauri::command]
-pub fn start_drag(
-    app: tauri::AppHandle,
-    file_path: String,
-    file_list: State<'_, FileList>,
-) -> Result<(), String> {
-    println!("Starting drag for file: {}", file_path);
+pub fn start_drag(app: tauri::AppHandle, file_path: String) -> Result<(), String> {
     let item = match std::fs::canonicalize(file_path.clone()) {
         Ok(path) => {
             if !path.exists() {
@@ -122,10 +117,10 @@ pub fn start_drag(
         }
     };
 
-    let window = app.get_webview_window("main").unwrap();
+    let window = app.get_webview_window("main").unwrap().clone();
     // Define the on_drop_callback function
-    let on_drop_callback = |result: drag::DragResult, _: drag::CursorPosition| {
-        println!("Drag result: {:?}", result);
+    let on_drop_callback = move |_, _| {
+        println!("drop callback");
     };
 
     // Start the drag operation
@@ -137,7 +132,6 @@ pub fn start_drag(
     )
     .expect("Failed to start drag operation");
 
-    println!("Starting drag for file: {}", file_path);
     Ok(())
 }
 #[tauri::command]
@@ -152,8 +146,6 @@ pub fn clear_files(
     // Clear all files from the list
     list.clear();
 
-    println!("Cleared all files");
-
     // Emit an event to notify the frontend that all files have been cleared
     app_handle
         .emit("files_updated", ())
@@ -165,8 +157,8 @@ pub fn clear_files(
 #[tauri::command]
 pub fn start_multi_drag(
     app: tauri::AppHandle,
-    file_paths: Vec<String>,
     file_list: State<'_, FileList>,
+    file_paths: Vec<String>,
 ) -> Result<(), String> {
     println!(
         "Starting multi-file drag for files: {}",
@@ -180,12 +172,10 @@ pub fn start_multi_drag(
             Ok(path) => {
                 if path.exists() {
                     valid_paths.push(path);
-                } else {
-                    println!("File not found: {}", file_path);
                 }
             }
             Err(e) => {
-                println!("Error finding file: {} ({})", file_path, e);
+                println!("Error processing file: {}", e);
             }
         }
     }
@@ -197,8 +187,17 @@ pub fn start_multi_drag(
     let item = drag::DragItem::Files(valid_paths);
 
     let window = app.get_webview_window("main").unwrap();
-    let on_drop_callback = |result: drag::DragResult, _: drag::CursorPosition| {
-        println!("Multi-file drag result: {:?}", result);
+
+    // Clone the Arc<Mutex<Vec<FileMetadata>>> here
+    let file_list_clone = file_list.inner().clone();
+
+    let on_drop_callback = move |_: drag::DragResult, _: drag::CursorPosition| {
+        let _ = app
+            .get_webview_window("main")
+            .unwrap()
+            .hide()
+            .map_err(|e| e.to_string());
+        // Emit an event to notify the frontend that all files have been cleared
     };
 
     drag::start_drag(
@@ -215,10 +214,7 @@ pub fn start_multi_drag(
 // Define a struct for mouse monitor configuration
 
 #[tauri::command]
-pub fn open_popup_window(
-    app: tauri::AppHandle,
-    file_list: State<'_, FileList>,
-) -> Result<(), String> {
+pub fn open_popup_window(app: tauri::AppHandle) -> Result<(), String> {
     // Get the main window
     let main_window = app
         .get_webview_window("main")
@@ -236,35 +232,35 @@ pub fn open_popup_window(
     let popup_x = position.x as f64 + (size.width as f64 - popup_width) / 2.0;
     let popup_y = position.y as f64 + size.height as f64 + 5.0;
 
-    // Create the popup window
-    tauri::async_runtime::spawn(async move {
-        WebviewWindowBuilder::new(
-            &app,
-            "popup",                         // Window label
-            WebviewUrl::App("popup".into()), // Assuming same frontend build
-        )
-        .title("File List")
-        .decorations(false) // Remove window decorations for a popup feel
-        .transparent(true)
-        .shadow(false)
-        .resizable(false)
-        .inner_size(popup_width, popup_height)
-        .position(popup_x, popup_y)
-        .always_on_top(true)
-        .focused(false)
-        .build()
-        .map_err(|e| e.to_string())?;
-        Ok::<(), String>(())
-    });
-
+    if let Some(popup_window) = app.get_webview_window("popup") {
+        popup_window.close().map_err(|e| e.to_string())?;
+    } else {
+        // Create the popup window
+        tauri::async_runtime::spawn(async move {
+            WebviewWindowBuilder::new(
+                &app,
+                "popup",                         // Window label
+                WebviewUrl::App("popup".into()), // Assuming same frontend build
+            )
+            .title("File List")
+            .decorations(false) // Remove window decorations for a popup feel
+            .transparent(true)
+            .shadow(false)
+            .resizable(false)
+            .inner_size(popup_width, popup_height)
+            .position(popup_x, popup_y)
+            .always_on_top(true)
+            .focused(false)
+            .build()
+            .map_err(|e| e.to_string())?;
+            Ok::<(), String>(())
+        });
+    }
     Ok(())
 }
 
 #[tauri::command]
-pub fn close_popup_window(
-    app: tauri::AppHandle,
-    file_list: State<'_, FileList>,
-) -> Result<(), String> {
+pub fn close_popup_window(app: tauri::AppHandle) -> Result<(), String> {
     let popup_window = app
         .get_webview_window("popup")
         .ok_or("Popup window not found")?;
@@ -275,4 +271,57 @@ pub fn close_popup_window(
 #[tauri::command]
 pub fn get_file_icon_base64(file_path: &str) -> Result<String, String> {
     Ok(get_icon_base64_by_path(file_path))
+}
+
+// monitor file dropped
+use std::error::Error;
+
+// monitor file dropped
+pub fn monitor_file_dropped(
+    app: tauri::AppHandle,
+    file_list: FileList,
+) -> Result<(), Box<dyn Error>> {
+    let file_list = file_list.clone();
+    let app_clone = app.clone();
+
+    app.listen_any("tauri://file-drop", move |event| {
+        println!("file dropped event received");
+        let files: Vec<String> = serde_json::from_str(event.payload()).unwrap_or_default();
+        let mut list = file_list.lock().unwrap();
+
+        for path_str in files.iter() {
+            let path = PathBuf::from(path_str);
+            if path.exists() {
+                if let Ok(metadata) = path.metadata() {
+                    let file = FileMetadata {
+                        id: list.len() as u64,
+                        name: path
+                            .file_name()
+                            .and_then(|n| n.to_str())
+                            .unwrap_or("Unknown")
+                            .to_string(),
+                        path: path.clone(),
+                        size: metadata.len(),
+                        file_type: path
+                            .extension()
+                            .and_then(|ext| ext.to_str())
+                            .unwrap_or("unknown")
+                            .to_string(),
+                    };
+                    // Avoid duplicates
+                    if !list.iter().any(|f| f.path == file.path) {
+                        list.push(file);
+                    }
+                }
+            }
+        }
+
+        // Drop the lock before emitting the event
+        drop(list);
+
+        if let Err(e) = app_clone.emit("files_updated", ()) {
+            eprintln!("Failed to emit files_updated event: {}", e);
+        }
+    });
+    Ok(())
 }

@@ -17,20 +17,12 @@
         "height": 175,
         "dragDropEnabled": true,
         "decorations": false,
-        "transparent": true,
+        "transparent": false,
         "focus": false,
         "alwaysOnTop": true,
         "skipTaskbar": true,
         "resizable": false,
         "theme": "Dark"
-      },
-      {
-        "title": "popup",
-        "width": 350,
-        "height": 280,
-        "create": false,
-        "transparent": true,
-        "decorations": false
       }
     ],
     "security": {

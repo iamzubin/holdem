@@ -5,11 +5,11 @@ import { invoke } from '@tauri-apps/api/core';
 
 export const useFileManagement = () => {
   const [files, setFiles] = useState<FilePreview[]>([]);
-  const [_files, set_files] = useState<FilePreview[]>([]);
 
   const fetchFiles = useCallback(async () => {
     try {
       const fetchedFiles: FilePreview[] = await invoke('get_files');
+      console.log("fetchedFiles", fetchedFiles)
       setFiles(fetchedFiles);
     } catch (error) {
       console.error('Error fetching files:', error);
@@ -45,7 +45,7 @@ export const useFileManagement = () => {
       unlistenFileRenamed.then(f => f());
       unlistenFilesUpdated.then(f => f());
     };
-  }, [fetchFiles, files.length]);
+  }, []);
 
   const addFiles = useCallback(async (newFiles: FilePreview[]) => {
     const paths = newFiles.map(file => file.path);
@@ -57,13 +57,25 @@ export const useFileManagement = () => {
     }
   }, []);
 
-  const removeFile = useCallback(async (id: number) => {
+  const remove_files = useCallback(async (ids: number[]) => {
     try {
-      await invoke('remove_file', { fileId: id });
+      await invoke('remove_files', { fileIds: ids });
       // The backend will emit a 'file_removed' event, so we don't need to update the state here
     } catch (error) {
-      console.error('Error removing file:', error);
+      console.error('Error removing files:', error);
     }
+  }, []);
+
+  const clearFiles = useCallback(async (ids: number[]) => {
+    try {
+      await invoke('clear_files');
+    } catch (error) {
+      console.error('Error removing files:', error);
+    }
+  }, []);
+
+  const droppedFiles = useCallback(async () => {
+    fetchFiles();
   }, []);
 
   const renameFile = useCallback(async (id: number, newName: string) => {
@@ -85,5 +97,5 @@ export const useFileManagement = () => {
     }
   }, []);
 
-  return { files, addFiles, removeFile, renameFile, getFileIcon };
+  return { files, addFiles, remove_files, renameFile, getFileIcon, clearFiles, droppedFiles };
 };
