@@ -1,7 +1,5 @@
-use serde::Serialize;
 use std::path::PathBuf;
-use tauri::Event;
-use tauri::{Emitter, Listener, State};
+use tauri::{Emitter, State};
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
 use crate::file::FileMetadata;
@@ -188,10 +186,17 @@ pub fn start_multi_drag(
 
     let window = app.get_webview_window("main").unwrap();
 
-    // Clone the Arc<Mutex<Vec<FileMetadata>>> here
-    let file_list_clone = file_list.inner().clone();
+    let app_clone = app.clone();
+    let on_drop_callback = move |result: drag::DragResult, _: drag::CursorPosition| {
+        // check if the file is dropped on the app window
+        if matches!(result, drag::DragResult::Cancel) {
+            return;
+        }
 
-    let on_drop_callback = move |_: drag::DragResult, _: drag::CursorPosition| {
+        // check if the popup window is open
+        if app_clone.get_webview_window("popup").is_some() {
+            close_popup_window(app_clone.clone()).unwrap();
+        }
         let _ = app
             .get_webview_window("main")
             .unwrap()
@@ -270,58 +275,6 @@ pub fn close_popup_window(app: tauri::AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 pub fn get_file_icon_base64(file_path: &str) -> Result<String, String> {
-    Ok(get_icon_base64_by_path(file_path))
-}
-
-// monitor file dropped
-use std::error::Error;
-
-// monitor file dropped
-pub fn monitor_file_dropped(
-    app: tauri::AppHandle,
-    file_list: FileList,
-) -> Result<(), Box<dyn Error>> {
-    let file_list = file_list.clone();
-    let app_clone = app.clone();
-
-    app.listen_any("tauri://file-drop", move |event| {
-        println!("file dropped event received");
-        let files: Vec<String> = serde_json::from_str(event.payload()).unwrap_or_default();
-        let mut list = file_list.lock().unwrap();
-
-        for path_str in files.iter() {
-            let path = PathBuf::from(path_str);
-            if path.exists() {
-                if let Ok(metadata) = path.metadata() {
-                    let file = FileMetadata {
-                        id: list.len() as u64,
-                        name: path
-                            .file_name()
-                            .and_then(|n| n.to_str())
-                            .unwrap_or("Unknown")
-                            .to_string(),
-                        path: path.clone(),
-                        size: metadata.len(),
-                        file_type: path
-                            .extension()
-                            .and_then(|ext| ext.to_str())
-                            .unwrap_or("unknown")
-                            .to_string(),
-                    };
-                    // Avoid duplicates
-                    if !list.iter().any(|f| f.path == file.path) {
-                        list.push(file);
-                    }
-                }
-            }
-        }
-
-        // Drop the lock before emitting the event
-        drop(list);
-
-        if let Err(e) = app_clone.emit("files_updated", ()) {
-            eprintln!("Failed to emit files_updated event: {}", e);
-        }
-    });
-    Ok(())
+    let file_path = file_path.to_string();
+    Ok(get_icon_base64_by_path(&file_path))
 }
