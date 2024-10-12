@@ -2,19 +2,18 @@
 
 import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { handleMultiFileDragStart } from "@/lib/fileUtils";
 import { closeWindow } from "@/lib/windowUtils";
+import { FilePreview } from "@/types";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { readFile, stat} from "@tauri-apps/plugin-fs";
-import { ChevronDown, X, Download, Clipboard, Copy, Trash } from 'lucide-react';
+import { ChevronDown, Clipboard, Copy, Download, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FilePreview } from "@/types";
 import { getFileExtension } from "./lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { StackedIcons } from "./components/StackedIcons";
 
 function App() {
   const listenerSetup = useRef(false);
@@ -80,34 +79,6 @@ function App() {
     handleMultiFileDragStart(e, files);
   }, [files]);
 
-  const stackedIcons = useMemo(() => {
-    return files.slice(-5).map((file, index) => {
-      const rotation = Math.random() * 10 - 5;
-      const translateX = Math.random() * 10 - 5;
-      const translateY = Math.random() * 10 - 5;
-      const zIndex = files.length - index;
-    
-      return (
-        <div
-          key={index}
-          className="absolute flex items-center justify-center overflow-hidden"
-          style={{
-            transform: `rotate(${rotation}deg) translate(${translateX}px, ${translateY}px)`,
-            zIndex,
-          }}
-          draggable
-          onDragStart={handleStackDragStart}
-        >
-          {file.preview ? (
-            <img src={file.preview} alt={file.name} />
-          ) : (
-              <DynamicFileIcon filePath={file.path} />
-          )}
-        </div>
-      );
-    });
-  }, [files, handleStackDragStart]);
-
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsModalOpen(true);
@@ -138,8 +109,8 @@ function App() {
            onDragLeave={handleDragLeave}
            onDrop={handleDrop}>
         {files.length > 0 ? (
-          <div className="relative w-20 h-20 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
-            {stackedIcons}
+          <div className="relative w-10 h-10 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
+            <StackedIcons files={files} handleStackDragStart={handleStackDragStart} />
           </div>
         ) : (
           <div className="flex flex-col items-center">

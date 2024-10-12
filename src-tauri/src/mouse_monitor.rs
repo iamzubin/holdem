@@ -4,17 +4,12 @@ use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{Listener, Manager, PhysicalPosition};
-use windows::Win32::Foundation::{CloseHandle, HANDLE, MAX_PATH};
-use windows::Win32::Foundation::{BOOL, HWND, POINT};
-use windows::Win32::System::Threading::{
-    OpenProcess, QueryFullProcessImageNameW, PROCESS_NAME_WIN32, PROCESS_QUERY_LIMITED_INFORMATION,
-};
+use windows::Win32::Foundation::{HWND, POINT};
 use windows::Win32::UI::Input::KeyboardAndMouse::{
-    DragDetect, GetActiveWindow, GetAsyncKeyState, VK_LBUTTON,
+    DragDetect, GetAsyncKeyState, VK_LBUTTON,
 };
 use windows::Win32::UI::WindowsAndMessaging::{
-    GetCursorPos, GetDesktopWindow, GetForegroundWindow, GetSystemMetrics, GetWindowTextW,
-    GetWindowThreadProcessId, SM_CXSCREEN, SM_CYSCREEN,
+    GetCursorPos, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN,
 };
 
 #[derive(Clone)]
