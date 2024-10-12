@@ -5069,10 +5069,12 @@ dependencies = [
 [[package]]
 name = "windows-icons"
 version = "0.1.1"
+source = "git+https://github.com/iamzubin/windows-icons.git#4615ade7fb7bd2b3d460f53d188b47e17ea40528"
 dependencies = [
  "base64 0.22.1",
  "fast_image_resize",
  "image",
+ "winapi",
  "windows 0.58.0",
 ]
 
