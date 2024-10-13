@@ -1,3 +1,6 @@
+#[path = "windowsutils/mouse_monitor.rs"]
+mod mouse_monitor;
+
 use commands::{
     add_files, clear_files, close_popup_window, get_file_icon_base64, get_files, open_popup_window,
     remove_files, rename_file, start_drag, start_multi_drag,
@@ -18,7 +21,7 @@ mod commands;
 mod tray;
 
 mod file; // Make sure to include the file module
-mod mouse_monitor;
+
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
 fn handle_file_drop(event: tauri::Event, file_list: FileList, app_handle: tauri::AppHandle) {

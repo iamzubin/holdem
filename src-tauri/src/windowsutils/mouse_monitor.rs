@@ -5,9 +5,7 @@ use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{Listener, Manager, PhysicalPosition};
 use windows::Win32::Foundation::{HWND, POINT};
-use windows::Win32::UI::Input::KeyboardAndMouse::{
-    DragDetect, GetAsyncKeyState, VK_LBUTTON,
-};
+use windows::Win32::UI::Input::KeyboardAndMouse::{DragDetect, GetAsyncKeyState, VK_LBUTTON};
 use windows::Win32::UI::WindowsAndMessaging::{
     GetCursorPos, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN,
 };
