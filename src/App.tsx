@@ -20,6 +20,7 @@ function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { files, addFiles, getFileIcon, clearFiles, droppedFiles } = useFileManagement();
 
+  
   useEffect(() => {
     if (listenerSetup.current) return;
     listenerSetup.current = true;
