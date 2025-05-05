@@ -5,6 +5,7 @@ import { invoke } from '@tauri-apps/api/core';
 
 export const useFileManagement = () => {
   const [files, setFiles] = useState<FilePreview[]>([]);
+  const [isWindowVisible, setIsWindowVisible] = useState(true);
 
   const fetchFiles = useCallback(async () => {
     try {
@@ -16,8 +17,17 @@ export const useFileManagement = () => {
     }
   }, []);
 
-  useEffect(() => {
+  const refreshFiles = useCallback(async () => {
+    if (isWindowVisible) {
+      try {
+        await invoke('refresh_file_list');
+      } catch (error) {
+        console.error('Error refreshing files:', error);
+      }
+    }
+  }, [isWindowVisible]);
 
+  useEffect(() => {
     fetchFiles();
 
     const unlistenFileAdded = listen('file_added', (event: any) => {
@@ -39,13 +49,24 @@ export const useFileManagement = () => {
       fetchFiles();
     });
 
+    // Set up visibility change listener
+    const handleVisibilityChange = () => {
+      setIsWindowVisible(document.visibilityState === 'visible');
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Set up periodic refresh
+    const refreshInterval = setInterval(refreshFiles, 1000);
+
     return () => {
       unlistenFileAdded.then(f => f());
       unlistenFileRemoved.then(f => f());
       unlistenFileRenamed.then(f => f());
       unlistenFilesUpdated.then(f => f());
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(refreshInterval);
     };
-  }, []);
+  }, [fetchFiles, refreshFiles]);
 
   const addFiles = useCallback(async (newFiles: FilePreview[]) => {
     const paths = newFiles.map(file => file.path);

@@ -64,6 +64,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app: tauri::AppHandle) {
                 }
                 Err(()) => {
                     println!("error occurred while getting the active window");
+                    shake_count = 0;
                 }
             }
 
