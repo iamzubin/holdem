@@ -155,7 +155,7 @@ pub fn clear_files(
 #[tauri::command]
 pub fn start_multi_drag(
     app: tauri::AppHandle,
-    file_list: State<'_, FileList>,
+    _file_list: State<'_, FileList>,
     file_paths: Vec<String>,
 ) -> Result<(), String> {
     println!(
@@ -274,7 +274,47 @@ pub fn close_popup_window(app: tauri::AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn get_file_icon_base64(file_path: &str) -> Result<String, String> {
+pub fn get_file_icon_base64(
+    app_handle: tauri::AppHandle,
+    file_list: State<'_, FileList>,
+    file_path: &str,
+) -> Result<String, String> {
     let file_path = file_path.to_string();
+    if !std::path::Path::new(&file_path).exists() {
+        // Remove the file from the list if it no longer exists
+        let mut list = file_list.lock().map_err(|_| "Failed to acquire lock".to_string())?;
+        if let Some(pos) = list.iter().position(|f| f.path.to_string_lossy() == file_path) {
+            list.remove(pos);
+            app_handle.emit("files_updated", ()).map_err(|e| e.to_string())?;
+        }
+        return Ok("".to_string()); // Return empty string for non-existent files
+    }
     Ok(get_icon_base64_by_path(&file_path))
+}
+
+#[tauri::command]
+pub fn refresh_file_list(
+    app_handle: tauri::AppHandle,
+    file_list: State<'_, FileList>,
+) -> Result<(), String> {
+    let mut list = file_list.lock().map_err(|_| "Failed to acquire lock".to_string())?;
+    let mut needs_update = false;
+    
+    // Create a new list to store valid files
+    let mut new_list = Vec::new();
+    
+    for file in list.iter() {
+        if file.path.exists() {
+            new_list.push(file.clone());
+        } else {
+            needs_update = true;
+        }
+    }
+    
+    if needs_update {
+        *list = new_list;
+        app_handle.emit("files_updated", ()).map_err(|e| e.to_string())?;
+    }
+    
+    Ok(())
 }

@@ -39,5 +39,15 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://github.com/iamzubin/holdem/releases/latest/download/updater.json"
+      ],
+      "dialog": true,
+      "pubkey": "YOUR_PUBLIC_KEY_HERE"
+    }
   }
 }
