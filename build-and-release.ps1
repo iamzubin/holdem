@@ -1,16 +1,16 @@
 # Parameters
-$version = "0.1.2"
+$version = "0.1.5"
 # $token = "token"  # GitHub token should be set as an environment variable
 $owner = "iamzubin"  # Your GitHub username
 $repo = "holdem"      # Repository name
 
-# # Install dependencies
-# Write-Host "Installing dependencies..."
-# pnpm install
+# Install dependencies
+Write-Host "Installing dependencies..."
+pnpm install
 
-# # Build the application
-# Write-Host "Building application..."
-# pnpm tauri build
+# Build the application
+Write-Host "Building application..."
+pnpm tauri build
 
 # Get the installer and signature files
 $installerFile = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*setup.exe"

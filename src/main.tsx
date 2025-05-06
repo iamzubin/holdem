@@ -40,6 +40,8 @@ const Main =  () => {
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <Main />
+    <div className="border-2 border-zinc-800 h-screen w-screen rounded-lg">
+      <Main />
+    </div>
   </React.StrictMode>
 )

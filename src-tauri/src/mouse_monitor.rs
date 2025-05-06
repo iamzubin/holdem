@@ -1,18 +1,16 @@
+use crate::config::MouseMonitorConfig;
 use active_win_pos_rs::get_active_window;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
+use tauri::AppHandle;
 use tauri::{Listener, Manager, PhysicalPosition};
 use windows::Win32::Foundation::{HWND, POINT};
-use windows::Win32::UI::Input::KeyboardAndMouse::{
-    DragDetect, GetAsyncKeyState, VK_LBUTTON,
-};
+use windows::Win32::UI::Input::KeyboardAndMouse::{DragDetect, GetAsyncKeyState, VK_LBUTTON};
 use windows::Win32::UI::WindowsAndMessaging::{
     GetCursorPos, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN,
 };
-use crate::config::MouseMonitorConfig;
-use tauri::AppHandle;
 
 pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
     let files_dropped = Arc::new(AtomicBool::new(false));
@@ -40,7 +38,11 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             // Only check active window every 500ms instead of every iteration
             if last_active_window_check.elapsed() >= Duration::from_millis(500) {
                 is_explorer_active = match get_active_window() {
-                    Ok(active_window) => active_window.process_path.to_str().unwrap().contains("explorer.exe"),
+                    Ok(active_window) => active_window
+                        .process_path
+                        .to_str()
+                        .unwrap()
+                        .contains("explorer.exe"),
                     Err(_) => {
                         println!("error occurred while getting the active window");
                         false
@@ -55,7 +57,8 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             }
 
             // Check if the left mouse button is pressed
-            let is_mouse_down = unsafe { GetAsyncKeyState(VK_LBUTTON.0 as i32) & 0x8000u16 as i16 != 0 };
+            let is_mouse_down =
+                unsafe { GetAsyncKeyState(VK_LBUTTON.0 as i32) & 0x8000u16 as i16 != 0 };
 
             if !is_mouse_down {
                 // Reset shake count when mouse button is released
@@ -70,7 +73,8 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             unsafe {
                 DragDetect(
                     HWND(
-                        app_handle.get_webview_window("main")
+                        app_handle
+                            .get_webview_window("main")
                             .unwrap()
                             .hwnd()
                             .unwrap()

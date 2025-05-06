@@ -1,11 +1,13 @@
 use std::path::PathBuf;
+use std::sync::{Arc, Mutex};
 use tauri::{Emitter, State};
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
-use std::sync::{Arc, Mutex};
+use tauri_plugin_autostart::ManagerExt;
+use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
 
+use crate::config::AppConfig;
 use crate::file::FileMetadata;
 use crate::FileList;
-use crate::config::AppConfig;
 
 use windows_icons::get_icon_base64_by_path;
 
@@ -284,10 +286,17 @@ pub fn get_file_icon_base64(
     let file_path = file_path.to_string();
     if !std::path::Path::new(&file_path).exists() {
         // Remove the file from the list if it no longer exists
-        let mut list = file_list.lock().map_err(|_| "Failed to acquire lock".to_string())?;
-        if let Some(pos) = list.iter().position(|f| f.path.to_string_lossy() == file_path) {
+        let mut list = file_list
+            .lock()
+            .map_err(|_| "Failed to acquire lock".to_string())?;
+        if let Some(pos) = list
+            .iter()
+            .position(|f| f.path.to_string_lossy() == file_path)
+        {
             list.remove(pos);
-            app_handle.emit("files_updated", ()).map_err(|e| e.to_string())?;
+            app_handle
+                .emit("files_updated", ())
+                .map_err(|e| e.to_string())?;
         }
         return Ok("".to_string()); // Return empty string for non-existent files
     }
@@ -299,12 +308,14 @@ pub fn refresh_file_list(
     app_handle: tauri::AppHandle,
     file_list: State<'_, FileList>,
 ) -> Result<(), String> {
-    let mut list = file_list.lock().map_err(|_| "Failed to acquire lock".to_string())?;
+    let mut list = file_list
+        .lock()
+        .map_err(|_| "Failed to acquire lock".to_string())?;
     let mut needs_update = false;
-    
+
     // Create a new list to store valid files
     let mut new_list = Vec::new();
-    
+
     for file in list.iter() {
         if file.path.exists() {
             new_list.push(file.clone());
@@ -312,12 +323,14 @@ pub fn refresh_file_list(
             needs_update = true;
         }
     }
-    
+
     if needs_update {
         *list = new_list;
-        app_handle.emit("files_updated", ()).map_err(|e| e.to_string())?;
+        app_handle
+            .emit("files_updated", ())
+            .map_err(|e| e.to_string())?;
     }
-    
+
     Ok(())
 }
 
@@ -327,7 +340,11 @@ pub fn get_config(config: State<Arc<Mutex<AppConfig>>>) -> AppConfig {
 }
 
 #[tauri::command]
-pub fn save_config(new_config: AppConfig, config: State<Arc<Mutex<AppConfig>>>, app_handle: tauri::AppHandle) -> Result<(), String> {
+pub fn save_config(
+    new_config: AppConfig,
+    config: State<Arc<Mutex<AppConfig>>>,
+    app_handle: tauri::AppHandle,
+) -> Result<(), String> {
     let mut config = config.lock().unwrap();
     *config = new_config;
     config.save(&app_handle)
@@ -348,25 +365,20 @@ pub fn open_settings_window(app: tauri::AppHandle) -> Result<(), String> {
     let settings_width = 500.0;
     let settings_height = 600.0;
 
-
     if let Some(settings_window) = app.get_webview_window("settings") {
         settings_window.close().map_err(|e| e.to_string())?;
     } else {
         // Create the settings window
         tauri::async_runtime::spawn(async move {
-            WebviewWindowBuilder::new(
-                &app,
-                "settings",
-                WebviewUrl::App("settings".into()),
-            )
-            .title("Settings")
-            .decorations(false)
-            .transparent(true)
-            .shadow(false)
-            .inner_size(settings_width, settings_height)
-            .focused(true)
-            .build()
-            .map_err(|e| e.to_string())?;
+            WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App("settings".into()))
+                .title("Settings")
+                .decorations(false)
+                .transparent(true)
+                .shadow(false)
+                .inner_size(settings_width, settings_height)
+                .focused(true)
+                .build()
+                .map_err(|e| e.to_string())?;
             Ok::<(), String>(())
         });
     }
@@ -384,5 +396,131 @@ pub fn close_settings_window(app: tauri::AppHandle) -> Result<(), String> {
 #[tauri::command]
 pub fn restart_app(app: tauri::AppHandle) -> Result<(), String> {
     app.restart();
+    Ok(())
+}
+
+#[tauri::command]
+pub fn set_autostart(app_handle: tauri::AppHandle, enabled: bool) -> Result<(), String> {
+    let autostart_manager = app_handle.autolaunch();
+    if enabled {
+        autostart_manager.enable().map_err(|e| e.to_string())?;
+    } else {
+        autostart_manager.disable().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn register_hotkey(app_handle: tauri::AppHandle, shortcut_str: String) -> Result<(), String> {
+    if shortcut_str.is_empty() {
+        return Ok(());
+    }
+
+    let app_handle_clone = app_handle.clone();
+    println!("Registering hotkey: {}", shortcut_str);
+
+    // Parse the shortcut string
+    let mut modifiers = Modifiers::empty();
+    let mut code = Code::KeyN; // Default key
+
+    for part in shortcut_str.split('+') {
+        let part = part.trim();
+        println!("part: {}", part);
+        match part.to_uppercase().as_str() {
+            "CTRL" | "Ctrl" | "CONTROL" => modifiers |= Modifiers::CONTROL,
+            "SHIFT" | "Shift" => modifiers |= Modifiers::SHIFT,
+            "ALT" | "Alt" => modifiers |= Modifiers::ALT,
+            "META" | "Meta" | "WIN" | "Win" | "COMMAND" => modifiers |= Modifiers::META,
+            key => {
+                // Handle letter keys
+                if key.len() == 1 && key.chars().next().unwrap().is_alphabetic() {
+                    code = match key {
+                        "A" => Code::KeyA,
+                        "B" => Code::KeyB,
+                        "C" => Code::KeyC,
+                        "D" => Code::KeyD,
+                        "E" => Code::KeyE,
+                        "F" => Code::KeyF,
+                        "G" => Code::KeyG,
+                        "H" => Code::KeyH,
+                        "I" => Code::KeyI,
+                        "J" => Code::KeyJ,
+                        "K" => Code::KeyK,
+                        "L" => Code::KeyL,
+                        "M" => Code::KeyM,
+                        "N" => Code::KeyN,
+                        "O" => Code::KeyO,
+                        "P" => Code::KeyP,
+                        "Q" => Code::KeyQ,
+                        "R" => Code::KeyR,
+                        "S" => Code::KeyS,
+                        "T" => Code::KeyT,
+                        "U" => Code::KeyU,
+                        "V" => Code::KeyV,
+                        "W" => Code::KeyW,
+                        "X" => Code::KeyX,
+                        "Y" => Code::KeyY,
+                        "Z" => Code::KeyZ,
+                        _ => Code::KeyN,
+                    };
+                } else {
+                    // Try to parse other keys
+                    if let Ok(k) = key.parse::<Code>() {
+                        code = k;
+                    } else {
+                        println!("Failed to parse key: {}", key);
+                    }
+                }
+            }
+        }
+    }
+
+    println!("Final code: {:?}", code);
+    println!("Final modifiers: {:?}", modifiers);
+
+    let shortcut = Shortcut::new(Some(modifiers), code);
+    println!("Created shortcut: {:?}", shortcut);
+
+    // First unregister all hotkeys
+    if let Err(e) = app_handle.global_shortcut().unregister_all() {
+        println!("Failed to unregister all hotkeys: {}", e);
+    }
+
+    // Register the shortcut
+    app_handle
+        .global_shortcut()
+        .register(shortcut)
+        .map_err(|e| format!("Failed to register shortcut: {}", e))?;
+
+    // Set up the callback to show the window
+    app_handle
+        .global_shortcut()
+        .on_shortcut(shortcut, move |_app, _shortcut, _event| {
+            println!("Shortcut pressed");
+            if let Some(window) = app_handle_clone.get_webview_window("main") {
+                // Show the window first
+                if let Err(e) = window.show() {
+                    println!("Failed to show window: {}", e);
+                    return;
+                }
+
+                // Then try to focus it
+                if let Err(e) = window.set_focus() {
+                    println!("Failed to focus window: {}", e);
+                }
+            }
+        })
+        .map_err(|e| format!("Failed to set shortcut callback: {}", e))?;
+
+    println!("Hotkey registered successfully");
+    Ok(())
+}
+
+#[tauri::command]
+pub fn show_main_window(app_handle: tauri::AppHandle) -> Result<(), String> {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        window.show().map_err(|e| e.to_string())?;
+        window.set_focus().map_err(|e| e.to_string())?;
+    }
     Ok(())
 }

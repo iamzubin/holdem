@@ -52,8 +52,8 @@ Make sure you have cargo (rust) and pnpm (nodejs) installed.
 
 - [x] Basic drag and drop.
 - [x] Tray icon.
-- [ ] Global hotkey.
-- [ ] Auto start on startup.
+- [x] Global hotkey.
+- [x] Auto start on startup.
 - [ ] Drop data(images, text, etc) to the holding area.
 - [ ] Multiple Shelfs.
 

@@ -1,13 +1,14 @@
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager, Runtime, Emitter,
+    Emitter, Manager, Runtime,
 };
 use tauri_plugin_updater::UpdaterExt;
 
 pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
     let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
-    let check_update_i = MenuItem::with_id(app, "check_update", "Check for Updates", true, None::<&str>)?;
+    let check_update_i =
+        MenuItem::with_id(app, "check_update", "Check for Updates", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&check_update_i, &quit_i])?;
 
     let _ = TrayIconBuilder::with_id("tray")
@@ -22,19 +23,17 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
                 let app_handle = app.clone();
                 tauri::async_runtime::spawn(async move {
                     match app_handle.updater() {
-                        Ok(updater) => {
-                            match updater.check().await {
-                                Ok(Some(update)) => {
-                                    let _ = update.download_and_install(|_, _| {}, || {}).await;
-                                }
-                                Ok(None) => {
-                                    let _ = app_handle.emit("update_available", false);
-                                }
-                                Err(e) => {
-                                    let _ = app_handle.emit("update_error", e.to_string());
-                                }
+                        Ok(updater) => match updater.check().await {
+                            Ok(Some(update)) => {
+                                let _ = update.download_and_install(|_, _| {}, || {}).await;
                             }
-                        }
+                            Ok(None) => {
+                                let _ = app_handle.emit("update_available", false);
+                            }
+                            Err(e) => {
+                                let _ = app_handle.emit("update_error", e.to_string());
+                            }
+                        },
                         Err(e) => {
                             let _ = app_handle.emit("update_error", e.to_string());
                         }
