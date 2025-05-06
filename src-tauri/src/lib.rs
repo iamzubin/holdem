@@ -1,10 +1,11 @@
 use commands::{
     add_files, clear_files, close_popup_window, get_file_icon_base64, get_files, open_popup_window,
-    remove_files, rename_file, start_drag, start_multi_drag, refresh_file_list,
+    remove_files, rename_file, start_drag, start_multi_drag, refresh_file_list, get_config, save_config,
+    open_settings_window, close_settings_window, restart_app,
 };
 use file::FileMetadata;
 use mouse_monitor::start_mouse_monitor;
-use mouse_monitor::MouseMonitorConfig;
+use config::AppConfig;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -21,10 +22,8 @@ mod tray;
 
 mod file; // Make sure to include the file module
 mod mouse_monitor;
+mod config;
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
-
-#[derive(Default)]
-struct UpdaterState(Arc<Mutex<Option<tauri_plugin_updater::Update>>>);
 
 fn handle_file_drop(event: tauri::Event, file_list: FileList, app_handle: tauri::AppHandle) {
     let payload: serde_json::Value = serde_json::from_str(event.payload()).unwrap_or_default();
@@ -86,7 +85,7 @@ pub fn run() {
                     .plugin(tauri_plugin_fs::init())
                     .plugin(tauri_plugin_shell::init())
                     .plugin(tauri_plugin_updater::Builder::new().build())
-                    .manage(UpdaterState::default())
+                    .plugin(tauri_plugin_dialog::init())
                     .invoke_handler(tauri::generate_handler![
                         start_drag,
                         start_multi_drag,
@@ -99,11 +98,20 @@ pub fn run() {
                         get_file_icon_base64,
                         clear_files,
                         refresh_file_list,
+                        get_config,
+                        save_config,
+                        open_settings_window,
+                        close_settings_window,
+                        restart_app,
                     ])
                     .setup(|app| {
                         // Create file list here
                         let file_list: FileList = Arc::new(Mutex::new(Vec::new()));
                         app.manage(file_list.clone());
+
+                        // Load configuration
+                        let config = AppConfig::load(&app.handle());
+                        app.manage(Arc::new(Mutex::new(config)));
 
                         #[cfg(all(desktop))]
                         {
@@ -111,15 +119,11 @@ pub fn run() {
                             tray::create_tray(handle)?;
                         }
 
-                        // Start the mouse monitor with custom configuration
+                        // Start the mouse monitor with configuration
                         let app_handle = app.handle().clone();
-                        let config = MouseMonitorConfig {
-                            required_shakes: 5,
-                            shake_time_limit: 1500,
-                            shake_threshold: 100,
-                            window_close_delay: 3000,
-                        };
-                        start_mouse_monitor(config, app_handle.clone());
+                        let config = app.state::<Arc<Mutex<AppConfig>>>();
+                        let config = config.lock().unwrap();
+                        start_mouse_monitor(config.mouse_monitor.clone(), app_handle.clone());
 
                         let file_list_clone = file_list.clone();
                         let app_handle = app.handle().clone();

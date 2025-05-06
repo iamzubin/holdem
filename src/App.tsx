@@ -10,7 +10,7 @@ import { FilePreview } from "@/types";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { ChevronDown, Clipboard, Copy, Download, X } from 'lucide-react';
+import { ChevronDown, Clipboard, Copy, Download, Settings, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFileExtension } from "./lib/utils";
 import { StackedIcons } from "./components/StackedIcons";
@@ -18,6 +18,7 @@ import { StackedIcons } from "./components/StackedIcons";
 function App() {
   const listenerSetup = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const { files, addFiles, getFileIcon, clearFiles, droppedFiles } = useFileManagement();
 
   useEffect(() => {
@@ -84,6 +85,10 @@ function App() {
     setIsModalOpen(true);
   }, []);
 
+  const openSettings = () => {
+    invoke('open_settings_window').catch((err) => console.error(err));
+  };
+
   return (
     <div 
       className="fixed inset-0 text-foreground flex flex-col bg-background p-2"
@@ -92,45 +97,55 @@ function App() {
       {/* Handle and Title Bar */}
       <div className="relative flex justify-end items-center h-5" data-tauri-drag-region onDragStart={(e)=>{
         console.log("drag start")
-        // invoke("plugin:window|start_dragging")
         e.preventDefault();
       }}>
         <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2">
           <div className="w-10 h-0.5 bg-foreground rounded-full" data-tauri-drag-region></div>
         </div>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-foreground hover:bg-gray-500 hover:text-background rounded h-5 w-5 mr-1" 
+          onClick={openSettings}
+        >
+          <Settings className="h-4 w-4" />
+        </Button>
         <Button variant="ghost" size="icon" className="text-foreground hover:bg-red-500 hover:text-background rounded h-5 w-5" onClick={closeWindow}>
           <X className="h-4 w-4" />
         </Button>
       </div>
-      {/* Main Content */}
-      <div className="flex-grow flex flex-col items-center justify-center space-y-1"
-           onDragEnter={handleDragEnter}
-           onDragOver={handleDragOver}
-           onDragLeave={handleDragLeave}
-           onDrop={handleDrop}>
-        {files.length > 0 ? (
-          <div className="relative w-10 h-10 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
-            <StackedIcons files={files} handleStackDragStart={handleStackDragStart} />
-          </div>
-        ) : (
-          <div className="flex flex-col items-center">
-            <Download className="h-5 w-5" />
-            <span className="text-[8px]">Drop here</span>
-          </div>
-        )}
-      </div>
 
-      {/* Dropdown Button at the Bottom */}
-      <div className="flex justify-center items-center mt-1">
-        <Button
-          onClick={openPopup}
-          variant="secondary"
-          
-        >
-          <span>{files.length} file{files.length !== 1 ? 's' : ''}</span>
-          <ChevronDown className="h-2 w-2 ml-1" />
-        </Button>
-      </div>
+
+        <>
+          {/* Main Content */}
+          <div className="flex-grow flex flex-col items-center justify-center space-y-1"
+               onDragEnter={handleDragEnter}
+               onDragOver={handleDragOver}
+               onDragLeave={handleDragLeave}
+               onDrop={handleDrop}>
+            {files.length > 0 ? (
+              <div className="relative w-10 h-10 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
+                <StackedIcons files={files} handleStackDragStart={handleStackDragStart} />
+              </div>
+            ) : (
+              <div className="flex flex-col items-center">
+                <Download className="h-5 w-5" />
+                <span className="text-[8px]">Drop here</span>
+              </div>
+            )}
+          </div>
+
+          {/* Dropdown Button at the Bottom */}
+          <div className="flex justify-center items-center mt-1">
+            <Button
+              onClick={openPopup}
+              variant="secondary"
+            >
+              <span>{files.length} file{files.length !== 1 ? 's' : ''}</span>
+              <ChevronDown className="h-2 w-2 ml-1" />
+            </Button>
+          </div>
+        </>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent 
@@ -170,7 +185,6 @@ function App() {
                 className="w-full text-left justify-start  hover:bg-secondary transition-colors"
                 variant="ghost"
               >
-                {/* paste icon */}
                 <Clipboard className="h-4 w-4 mr-2" />
                 Paste
               </Button>

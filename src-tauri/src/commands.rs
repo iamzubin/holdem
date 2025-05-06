@@ -1,9 +1,11 @@
 use std::path::PathBuf;
 use tauri::{Emitter, State};
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
+use std::sync::{Arc, Mutex};
 
 use crate::file::FileMetadata;
 use crate::FileList;
+use crate::config::AppConfig;
 
 use windows_icons::get_icon_base64_by_path;
 
@@ -316,5 +318,71 @@ pub fn refresh_file_list(
         app_handle.emit("files_updated", ()).map_err(|e| e.to_string())?;
     }
     
+    Ok(())
+}
+
+#[tauri::command]
+pub fn get_config(config: State<Arc<Mutex<AppConfig>>>) -> AppConfig {
+    config.lock().unwrap().clone()
+}
+
+#[tauri::command]
+pub fn save_config(new_config: AppConfig, config: State<Arc<Mutex<AppConfig>>>, app_handle: tauri::AppHandle) -> Result<(), String> {
+    let mut config = config.lock().unwrap();
+    *config = new_config;
+    config.save(&app_handle)
+}
+
+#[tauri::command]
+pub fn open_settings_window(app: tauri::AppHandle) -> Result<(), String> {
+    // Get the main window
+    let main_window = app
+        .get_webview_window("main")
+        .ok_or("Main window not found")?;
+
+    // Get the position and size of the main window
+    let position = main_window.outer_position().map_err(|e| e.to_string())?;
+    let size = main_window.outer_size().map_err(|e| e.to_string())?;
+
+    // Define settings window dimensions
+    let settings_width = 500.0;
+    let settings_height = 600.0;
+
+
+    if let Some(settings_window) = app.get_webview_window("settings") {
+        settings_window.close().map_err(|e| e.to_string())?;
+    } else {
+        // Create the settings window
+        tauri::async_runtime::spawn(async move {
+            WebviewWindowBuilder::new(
+                &app,
+                "settings",
+                WebviewUrl::App("settings".into()),
+            )
+            .title("Settings")
+            .decorations(false)
+            .transparent(true)
+            .shadow(false)
+            .inner_size(settings_width, settings_height)
+            .focused(true)
+            .build()
+            .map_err(|e| e.to_string())?;
+            Ok::<(), String>(())
+        });
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn close_settings_window(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(settings_window) = app.get_webview_window("settings") {
+        settings_window.close().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn restart_app(app: tauri::AppHandle) -> Result<(), String> {
+    app.restart();
     Ok(())
 }

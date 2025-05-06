@@ -4,7 +4,8 @@
   "description": "Capability for the main window",
   "windows": [
     "main",
-    "popup"
+    "popup",
+    "settings"
   ],
   "permissions": [
     "core:default",
@@ -18,6 +19,12 @@
     "fs:read-meta",
     "fs:allow-read-file",
     "fs:allow-read",
-    "fs:allow-open"
+    "fs:allow-open",
+    "updater:allow-check",
+    "updater:default",
+    "updater:allow-download-and-install",
+    "dialog:allow-ask",
+    "dialog:allow-message",
+    "dialog:default"
   ]
 }

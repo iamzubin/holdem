@@ -1,0 +1,11 @@
+﻿{
+    "platforms":  {
+                      "windows-x86_64":  {
+                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZU5ZU3NpZE1jRlV6TTBnSTk0NWFRUnVqZjFWOUJCczVJeDdPLytpWmE3U0FWRlBTY293VzErYVV5dVNBSXVBT0xZdlgramFxaDlFb3J4KzhSS0YwdlFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQ2NTM2NjU1CWZpbGU6aG9sZGVtXzAuMS4yX3g2NC1zZXR1cC5leGUKakxxTWVLY21FcExjQXZDV2hmaUp1ZDUrUHdVcnR2eXFBbWVSZ2dINkdHVlVYaW1KWkRuTGMvU0FZeENVM292MUMweGJFdVlZeXNoVXVjVllSb2RNRFE9PQo=",
+                                             "url":  "https://github.com/iamzubin/holdem/releases/download/0.1.2/holdem_0.1.2_x64-setup.exe"
+                                         }
+                  },
+    "pub_date":  "2025-05-06T14:00:36Z",
+    "version":  "0.1.2",
+    "notes":  "Release notes for Holdem 0.1.2"
+}

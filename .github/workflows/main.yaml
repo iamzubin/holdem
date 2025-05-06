@@ -8,52 +8,38 @@ on:
 
 jobs:
   publish-tauri:
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # - platform: 'macos-latest' # for Arm based macs (M1 and above).
-          #   args: '--target aarch64-apple-darwin'
-          # - platform: 'macos-latest' # for Intel based macs.
-          #   args: '--target x86_64-apple-darwin'
-          - platform: 'windows-latest'
-            args: ''
-
-    runs-on: ${{ matrix.platform }}
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
           
       - name: Install PNPM
-        run: npm i -g pnpm
+        run: npm install -g pnpm
 
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
-        with:
-          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
 
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
+      - name: Install frontend dependencies
+        run: pnpm install
 
-      - name: install frontend dependencies
-        run: yarn install # change this to npm or pnpm depending on which one you use.
+      - name: Build Tauri
+        run: pnpm tauri build
 
-      - uses: tauri-apps/tauri-action@v0
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'Holdem v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
-          releaseDraft: true
+          files: |
+            src-tauri/target/release/*.msi
+            src-tauri/target/release/*.exe
+            src-tauri/target/release/*.json
+          tag_name: v__VERSION__
+          name: Holdem v__VERSION__
+          body: See the assets to download this version and install.
+          draft: true
           prerelease: false
-          args: ${{ matrix.args }}
