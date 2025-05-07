@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Parameters
-const version = "0.1.9";
+const version = "0.2.1";
 // const token = "token";  // GitHub token should be set as an environment variable
 const owner = "iamzubin";  // Your GitHub username
 const repo = "holdem";      // Repository name
@@ -49,7 +49,7 @@ async function main() {
         const nsisDir = path.join("src-tauri", "target", "release", "bundle", "nsis");
         const releaseDir = path.join("src-tauri", "target", "release");
 
-        const installerFile = findFile(nsisDir, new RegExp(`holdem_${version}_x64-setup\\.exe`));
+        const installerFile = findFile(nsisDir, new RegExp(`holdem_${version}_x64-setup.exe`));
         const signatureFile = findFile(nsisDir, /\.sig$/);
         const binaryFile = findFile(releaseDir, /\.exe$/);
 
