@@ -29,7 +29,7 @@ Make sure you have cargo (rust) and pnpm (nodejs) installed.
    ```
 2. Navigate to the project directory:
    ```bash
-   cd holdem
+   cd holdem/app
    ```
 3. Install dependencies:
    ```bash
