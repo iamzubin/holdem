@@ -68,6 +68,23 @@ function GitHubStarButton() {
 }
 
 export default function Home() {
+  const [downloadUrl, setDownloadUrl] = useState<string>('')
+
+  useEffect(() => {
+    fetch('/update.json')
+      .then((res) => res.json())
+      .then((data) => {
+        const windowsUrl = data.platforms['windows-x86_64']?.url
+        if (windowsUrl) {
+          setDownloadUrl(windowsUrl)
+        }
+      })
+      .catch(() => {
+        // Fallback to hardcoded URL if fetch fails
+        setDownloadUrl('https://github.com/iamzubin/holdem/releases/download/0.2.0/holdem_0.2.0_x64-setup.exe')
+      })
+  }, [])
+
   return (
     <motion.main
       className="space-y-20"
@@ -91,7 +108,7 @@ export default function Home() {
 
         <div className="flex flex-row items-center justify-center gap-3">
           <a 
-            href="https://github.com/iamzubin/holdem/releases/download/0.1.5/holdem_0.1.5_x64-setup.exe" 
+            href={downloadUrl}
             className="px-5 py-2 rounded-lg font-medium flex items-center gap-2 shadow transition-colors bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 border border-transparent dark:border-zinc-200"
             target="_blank"
             rel="noopener noreferrer"

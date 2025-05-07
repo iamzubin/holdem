@@ -1,11 +1,11 @@
-﻿{
-    "platforms":  {
-                      "windows-x86_64":  {
-                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUdKaDdIblcyMllrbGxCUjVTUG53aHdxMGVsUDU0Wm1ZdjJ1L0JUM3E1eTRYZFZvTkN6bU1VTktYdEZ2ZnR0ei9wWDM4UVk1KzEzZUNucXkxSm1ZNWdZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQ2NjUyMDgxCWZpbGU6aG9sZGVtXzAuMi4wX3g2NC1zZXR1cC5leGUKS3NnR21SRDQ5Y0JZWlhTQnB6UDB3MzU3WU1JM01rZUNVYjlxL0psOVVPeHJCbnZHR05saS9WMW5NNnFpL3lNRUlOUEFwbVN4c3YxWVNQUjJvc0wwQ3c9PQo=",
-                                             "url":  "https://github.com/iamzubin/holdem/releases/download/0.2.0/holdem_0.2.0_x64-setup.exe"
-                                         }
-                  },
-    "pub_date":  "2025-05-07T21:08:01Z",
-    "version":  "0.2.0",
-    "notes":  "Release notes for Holdem 0.2.0"
+{
+  "version": "0.2.0",
+  "notes": "Release notes for Holdem 0.2.0",
+  "pub_date": "2025-05-07T21:43:45.309Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZU1vaU93RVR1YlNtcG1PM3VDRXRQZFhrbUcwb1ByZUtITzV1NzhpN0VBSUVVVittT0xtWTN0MCtaSHRYUVg2L2dYWW1OUm5zUFVUNkxSTFlCK2ZjQWdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQ2NjU0MTc1CWZpbGU6aG9sZGVtXzAuMi4wX3g2NC1zZXR1cC5leGUKdDVBcDNSMXN4Nlk3Q0dvRWVsOFRQaHpyQmVHaER5YVRIcS9yNkFhcjh3QTlYRjQvRnJIOWJ5N2xFQlFjZklndGFBT01ZeHVMZWQ3RkdFUTdzRVo5REE9PQo=",
+      "url": "https://github.com/iamzubin/holdem/releases/download/0.2.0/holdem_0.2.0_x64-setup.exe"
+    }
+  }
 }
