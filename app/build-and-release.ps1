@@ -1,5 +1,5 @@
 # Parameters
-$version = "0.1.5"
+$version = "0.2.0"
 # $token = "token"  # GitHub token should be set as an environment variable
 $owner = "iamzubin"  # Your GitHub username
 $repo = "holdem"      # Repository name

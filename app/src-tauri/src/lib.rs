@@ -37,14 +37,17 @@ type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
 fn handle_file_drop(event: tauri::Event, file_list: FileList, app_handle: tauri::AppHandle) {
     let payload: serde_json::Value = serde_json::from_str(event.payload()).unwrap_or_default();
+    
     // Handle text drops
     if let Some(text) = payload["text"].as_str() {
         let temp_dir = std::env::temp_dir();
-        let timestamp = chrono::Local::now().format("%Y%m%d_%H%M%S");
-        let temp_subdir = temp_dir.join("holdem").join(timestamp.to_string());
-        std::fs::create_dir_all(&temp_subdir).ok();
-        let file_name = format!("dropped_text_{}.txt", timestamp);
-        let file_path = temp_subdir.join(&file_name);
+        let timestamp = chrono::Local::now();
+        let folder_name = timestamp.format("%Y%m%d").to_string();
+        let drop_folder = temp_dir.join("holdem_drops").join(&folder_name);
+        std::fs::create_dir_all(&drop_folder).ok();
+        
+        let file_name = format!("dropped_text_{}.txt", timestamp.format("%H%M%S"));
+        let file_path = drop_folder.join(&file_name);
         
         if let Ok(_) = std::fs::write(&file_path, text) {
             let mut list = file_list.lock().unwrap();
@@ -81,13 +84,15 @@ fn handle_file_drop(event: tauri::Event, file_list: FileList, app_handle: tauri:
         let path = PathBuf::from(path_str);
         if path.exists() {
             if let Ok(metadata) = path.metadata() {
-                // If file is in temp directory, copy it to a timestamped temp subfolder
+                // If file is in temp directory, copy it to a permanent location
                 let final_path = if path.starts_with(std::env::temp_dir()) {
-                    let timestamp = chrono::Local::now().format("%Y%m%d_%H%M%S");
-                    let temp_subdir = std::env::temp_dir().join("holdem").join(timestamp.to_string());
-                    std::fs::create_dir_all(&temp_subdir).ok();
+                    let timestamp = chrono::Local::now();
+                    let folder_name = timestamp.format("%Y%m%d").to_string();
+                    let drop_folder = std::env::temp_dir().join("holdem_drops").join(&folder_name);
+                    std::fs::create_dir_all(&drop_folder).ok();
+                    
                     let file_name = path.file_name().unwrap_or_default();
-                    let new_path = temp_subdir.join(file_name);
+                    let new_path = drop_folder.join(file_name);
                     if let Ok(_) = std::fs::copy(&path, &new_path) {
                         new_path
                     } else {
@@ -137,22 +142,22 @@ fn handle_file_drop(event: tauri::Event, file_list: FileList, app_handle: tauri:
         eprintln!("Failed to emit files_updated event: {}", e);
     }
 
-    // Clean up old temp folders
-    cleanup_old_temp_folders();
+    // Cleanup old files
+    cleanup_old_files();
 }
 
-fn cleanup_old_temp_folders() {
-    let temp_dir = std::env::temp_dir().join("holdem");
+fn cleanup_old_files() {
+    let temp_dir = std::env::temp_dir().join("holdem_drops");
     if let Ok(entries) = std::fs::read_dir(temp_dir) {
-        let now = chrono::Local::now();
+        let today = chrono::Local::now().format("%Y%m%d").to_string();
         for entry in entries.flatten() {
-            if let Ok(metadata) = entry.metadata() {
-                if let Ok(modified) = metadata.modified() {
-                    let modified = chrono::DateTime::<chrono::Local>::from(modified);
-                    let age = now.signed_duration_since(modified);
-                    // Delete folders older than 1 day
-                    if age.num_hours() >= 24 {
-                        let _ = std::fs::remove_dir_all(entry.path());
+            if let Ok(file_type) = entry.file_type() {
+                if file_type.is_dir() {
+                    if let Some(folder_name) = entry.file_name().to_str() {
+                        // If the folder is not from today, delete it
+                        if folder_name != today {
+                            let _ = std::fs::remove_dir_all(entry.path());
+                        }
                     }
                 }
             }
@@ -188,9 +193,7 @@ pub fn run() {
 
                                             // Get current cursor position
                                             let mut cursor_pos = POINT { x: 0, y: 0 };
-                                            unsafe {
-                                                GetCursorPos(&mut cursor_pos);
-                                            }
+                                            let _ = GetCursorPos(&mut cursor_pos);
 
                                             // Define margin to consider as "corner"
                                             let margin = 200; // Same as shake_threshold in mouse monitor
@@ -201,13 +204,13 @@ pub fn run() {
 
                                             // Check if cursor is near the right or bottom edge
                                             if cursor_pos.x + margin
-                                                > unsafe { GetSystemMetrics(SM_CXSCREEN) }
+                                                > GetSystemMetrics(SM_CXSCREEN)
                                             {
                                                 window_x = cursor_pos.x - margin;
                                             }
 
                                             if cursor_pos.y + margin
-                                                > unsafe { GetSystemMetrics(SM_CYSCREEN) }
+                                                > GetSystemMetrics(SM_CYSCREEN)
                                             {
                                                 window_y = cursor_pos.y - margin;
                                             }

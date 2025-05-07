@@ -58,21 +58,15 @@ function App() {
     e.stopPropagation();
 
     const droppedFiles = Array.from(e.dataTransfer.files);
-    const newFiles: FilePreview[] = droppedFiles.map((file, index) => {
-      // Only create preview for small images (less than 5MB)
-      const isSmallImage = file.type.startsWith('image/') && file.size < 5 * 1024 * 1024;
-      const preview = isSmallImage ? URL.createObjectURL(file) : '';
-      
-      return {
-        id: Date.now() + index,
-        name: file.name,
-        preview,
-        type: 'file',
-        size: file.size,
-        path: (file as any).path,
-        icon: getFileExtension(file.name)
-      };
-    });
+    const newFiles: FilePreview[] = droppedFiles.map((file, index) => ({
+      id: Date.now() + index,
+      name: file.name,
+      preview: URL.createObjectURL(file),
+      type: 'file',
+      size: file.size,
+      path: (file as any).path,
+      icon: getFileExtension(file.name)
+    }));
 
     addFiles(newFiles);
   }, [addFiles]);

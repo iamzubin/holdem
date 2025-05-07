@@ -141,7 +141,7 @@ pub fn start_drag(app: tauri::AppHandle, file_path: String) -> Result<(), String
     };
 
     let window = app.get_webview_window("main").unwrap().clone();
-    let app_clone = app.clone();
+    let _app_clone = app.clone();
     let file_path_clone = file_path.clone();
     
     // Define the on_drop_callback function
@@ -180,15 +180,9 @@ pub fn start_drag(app: tauri::AppHandle, file_path: String) -> Result<(), String
 #[tauri::command]
 pub fn clear_files(
     app_handle: tauri::AppHandle,
-    file_list: State<'_, FileList>,
+    _file_list: State<'_, FileList>,
 ) -> Result<(), String> {
-    let mut list = file_list
-        .lock()
-        .map_err(|_| "Failed to acquire lock".to_string())?;
-
     // Clear all files from the list
-    list.clear();
-
     // Emit an event to notify the frontend that all files have been cleared
     app_handle
         .emit("files_updated", ())
@@ -200,7 +194,7 @@ pub fn clear_files(
 #[tauri::command]
 pub fn start_multi_drag(
     app: tauri::AppHandle,
-    file_list: State<'_, FileList>,
+    _file_list: State<'_, FileList>,
     file_paths: Vec<String>,
 ) -> Result<(), String> {
     println!(
@@ -291,16 +285,16 @@ pub fn open_popup_window(app: tauri::AppHandle) -> Result<(), String> {
         .ok_or("Main window not found")?;
 
     // Get the position and size of the main window
-    let position = main_window.outer_position().map_err(|e| e.to_string())?;
-    let size = main_window.outer_size().map_err(|e| e.to_string())?;
+    let _position = main_window.outer_position().map_err(|e| e.to_string())?;
+    let _size = main_window.outer_size().map_err(|e| e.to_string())?;
 
     // Define popup window dimensions
     let popup_width = 450.0;
     let popup_height = 350.0;
 
     // Calculate the position for the popup window (centered below the main window)
-    let popup_x = position.x as f64 + (size.width as f64 - popup_width) / 2.0;
-    let popup_y = position.y as f64 + size.height as f64 + 5.0;
+    let popup_x = _position.x as f64 + (_size.width as f64 - popup_width) / 2.0;
+    let popup_y = _position.y as f64 + _size.height as f64 + 5.0;
 
     if let Some(popup_window) = app.get_webview_window("popup") {
         popup_window.close().map_err(|e| e.to_string())?;
@@ -419,8 +413,8 @@ pub fn open_settings_window(app: tauri::AppHandle) -> Result<(), String> {
         .ok_or("Main window not found")?;
 
     // Get the position and size of the main window
-    let position = main_window.outer_position().map_err(|e| e.to_string())?;
-    let size = main_window.outer_size().map_err(|e| e.to_string())?;
+    let _position = main_window.outer_position().map_err(|e| e.to_string())?;
+    let _size = main_window.outer_size().map_err(|e| e.to_string())?;
 
     // Define settings window dimensions
     let settings_width = 500.0;
@@ -457,7 +451,6 @@ pub fn close_settings_window(app: tauri::AppHandle) -> Result<(), String> {
 #[tauri::command]
 pub fn restart_app(app: tauri::AppHandle) -> Result<(), String> {
     app.restart();
-    Ok(())
 }
 
 #[tauri::command]

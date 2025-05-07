@@ -2,7 +2,6 @@ import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { handleMultiFileDragStart } from "@/lib/fileUtils";
-import { formatFileSize } from "@/lib/utils";
 import { invoke } from "@tauri-apps/api/core";
 import { MoreHorizontal, List as ListIcon, Grid as GridIcon, Trash2 } from 'lucide-react';
 import React, { useEffect, useState, useCallback, useRef } from "react";
@@ -89,6 +88,13 @@ const PopupWindow: React.FC = () => {
     return formatFileSize(totalBytes);
   };
 
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   const toggleViewMode = () => {
     setViewMode(prev => prev === 'list' ? 'grid' : 'list');
   };
@@ -154,13 +160,8 @@ const PopupWindow: React.FC = () => {
                    flex items-center justify-center overflow-hidden
                   ${viewMode === 'list' ? 'w-8 h-8 flex-shrink-0' : 'w-12 h-12 mb-1'}
                 `}>
-                  {file.preview && file.size < 5 * 1024 * 1024 ? (
-                    <img 
-                      src={file.preview} 
-                      alt={file.name} 
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
+                  {file.preview ? (
+                    <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
                   ) : (
                     <DynamicFileIcon filePath={file.path} />
                   )}

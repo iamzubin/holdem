@@ -68,7 +68,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             }
 
             let mut current_position = POINT::default();
-            unsafe { GetCursorPos(&mut current_position) };
+            let _ = unsafe { GetCursorPos(&mut current_position) };
 
             unsafe {
                 DragDetect(

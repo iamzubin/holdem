@@ -171,6 +171,10 @@ export default function Home() {
               title="Drag and Drop Support" 
               description="Drag files or folders in and out of the shelf with ease." 
             />
+            <Feature 
+              title="Browser Image Support" 
+              description="Drop images directly from your web browser into the shelf." 
+            />
           </div>
           <div>
             <Feature 
