@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Parameters
-const version = "0.2.0";
+const version = "0.1.9";
 // const token = "token";  // GitHub token should be set as an environment variable
 const owner = "iamzubin";  // Your GitHub username
 const repo = "holdem";      // Repository name
@@ -37,13 +37,13 @@ function findFile(dir, pattern) {
 
 async function main() {
     try {
-        // // Install dependencies
-        // console.log("Installing dependencies...");
-        // execCommand("pnpm install");
+        // Install dependencies
+        console.log("Installing dependencies...");
+        execCommand("pnpm install");
 
-        // // Build the application
-        // console.log("Building application...");
-        // execCommand("pnpm tauri build");
+        // Build the application
+        console.log("Building application...");
+        execCommand("pnpm tauri build");
 
         // Get the installer and signature files
         const nsisDir = path.join("src-tauri", "target", "release", "bundle", "nsis");
@@ -143,11 +143,7 @@ async function main() {
         );
         console.log("Successfully uploaded NSIS installer");
 
-        // Update the updater.json URL in tauri.conf.json
-        const tauriConfPath = path.join("src-tauri", "tauri.conf.json");
-        const tauriConf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf8'));
-        tauriConf.plugins.updater.endpoints = [`https://raw.githubusercontent.com/${owner}/${repo}/main/updater.json`];
-        fs.writeFileSync(tauriConfPath, JSON.stringify(tauriConf, null, 2));
+
 
         console.log("Release process completed!");
     } catch (error) {

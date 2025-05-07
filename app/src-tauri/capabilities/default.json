@@ -5,7 +5,8 @@
   "windows": [
     "main",
     "popup",
-    "settings"
+    "settings",
+    "updater"
   ],
   "permissions": [
     "core:default",

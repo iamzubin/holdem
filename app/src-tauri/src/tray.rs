@@ -1,10 +1,11 @@
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager, Runtime,
+    Manager, Runtime, WebviewUrl, WebviewWindowBuilder,
 };
 use tauri_plugin_updater::UpdaterExt;
 use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
+use tauri::Emitter;
 
 pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
     let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
@@ -21,46 +22,25 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
                 app.exit(0);
             }
             "check_update" => {
-                let app_handle = app.clone();
-                tauri::async_runtime::spawn(async move {
-                    match app_handle.updater() {
-                        Ok(updater) => match updater.check().await {
-                            Ok(Some(update)) => {
-                                let empty = String::new();
-                                let body = update.body.as_ref().unwrap_or(&empty);
-                                let _ = app_handle.dialog()
-                                    .message(format!("Update to {} is available!\n\nRelease notes: {}", update.version, body))
-                                    .title("Update Available")
-                                    .kind(MessageDialogKind::Info)
-                                    .blocking_show();
-                                
-                                // Since we can't get the user's choice directly, we'll proceed with the update
-                                let _ = update.download_and_install(|_, _| {}, || {}).await;
-                            }
-                            Ok(None) => {
-                                let _ = app_handle.dialog()
-                                    .message("You're running the latest version!")
-                                    .title("No Updates")
-                                    .kind(MessageDialogKind::Info)
-                                    .blocking_show();
-                            }
-                            Err(e) => {
-                                let _ = app_handle.dialog()
-                                    .message(format!("Failed to check for updates: {}", e))
-                                    .title("Update Error")
-                                    .kind(MessageDialogKind::Error)
-                                    .blocking_show();
-                            }
-                        },
-                        Err(e) => {
-                            let _ = app_handle.dialog()
-                                .message(format!("Failed to check for updates: {}", e))
-                                .title("Update Error")
-                                .kind(MessageDialogKind::Error)
-                                .blocking_show();
-                        }
-                    }
-                });
+                // Open a dedicated updater window
+                // First check if window already exists
+                if let Some(existing_window) = app.get_webview_window("updater") {
+                    let _ = existing_window.show();
+                    let _ = existing_window.set_focus();
+                } else {
+                    // Create a new window for the updater
+                    let _ = WebviewWindowBuilder::new(
+                        app,
+                        "updater",
+                        WebviewUrl::App("/updater".into())
+                    )
+                    .title("Software Updates")
+                    .inner_size(500.0, 400.0)
+                    .decorations(false)
+                    .center()
+                    .build();
+                }
+                // The update check is now handled directly by the Updater component
             }
             _ => {}
         })

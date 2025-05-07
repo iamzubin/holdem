@@ -14,12 +14,15 @@ import { ChevronDown, Clipboard, Copy, Download, Settings, X } from 'lucide-reac
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getFileExtension } from "./lib/utils";
 import { StackedIcons } from "./components/StackedIcons";
+import { useNavigate } from "react-router-dom";
+import { listen } from "@tauri-apps/api/event";
 
 function App() {
   const listenerSetup = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const { files, addFiles, getFileIcon, clearFiles, droppedFiles } = useFileManagement();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (listenerSetup.current) return;
@@ -35,7 +38,18 @@ function App() {
     };
 
     setupFileListener();
-  }, [addFiles, getFileIcon]);
+
+    // Set up navigation event listener
+    const unlisten = listen<string>("navigate_to", (event) => {
+      if (event.payload) {
+        navigate(event.payload);
+      }
+    });
+
+    return () => {
+      unlisten.then(fn => fn());
+    };
+  }, [addFiles, getFileIcon, navigate]);
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();

@@ -16,7 +16,7 @@ use tauri::Listener;
 use tauri::Manager;
 use tauri::PhysicalPosition;
 use tauri_plugin_updater::UpdaterExt;
-use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
+use tauri_plugin_dialog::{DialogExt, MessageDialogKind, MessageDialogButtons};
 use windows::Win32::Foundation::POINT;
 use windows::Win32::Foundation::WAIT_OBJECT_0;
 use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
@@ -24,7 +24,8 @@ use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
 use windows::Win32::UI::WindowsAndMessaging::GetSystemMetrics;
 use windows::Win32::UI::WindowsAndMessaging::SM_CXSCREEN;
 use windows::Win32::UI::WindowsAndMessaging::SM_CYSCREEN;
-
+use tauri::WebviewUrl;
+use tauri::WebviewWindowBuilder;
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 mod commands;
 #[cfg(desktop)]
@@ -263,15 +264,22 @@ pub fn run() {
                         tauri::async_runtime::spawn(async move {
                             if let Ok(updater) = app_handle.updater() {
                                 if let Ok(Some(update)) = updater.check().await {
-                                    let empty = String::new();
-                                    let body = update.body.as_ref().unwrap_or(&empty);
-                                    let _ = app_handle.dialog()
-                                        .message(format!("Update to {} is available!\n\nRelease notes: {}", update.version, body))
-                                        .title("Update Available")
-                                        .kind(MessageDialogKind::Info)
-                                        .blocking_show();
-                                    
-                                    let _ = update.download_and_install(|_, _| {}, || {}).await;
+                                    // Open the updater window if an update is available
+                                    if let Some(existing_window) = app_handle.get_webview_window("updater") {
+                                        let _ = existing_window.show();
+                                        let _ = existing_window.set_focus();
+                                    } else {
+                                        let _ = WebviewWindowBuilder::new(
+                                            &app_handle,
+                                            "updater",
+                                            WebviewUrl::App("/updater".into())
+                                        )
+                                        .title("Software Updates")
+                                        .inner_size(500.0, 400.0)
+                                        .center()
+                                        .decorations(false)
+                                        .build();
+                                    }
                                 }
                             }
                         });

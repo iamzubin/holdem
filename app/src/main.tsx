@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
 import { getCurrentWindow, Theme } from '@tauri-apps/api/window';
 import SettingsWindow from "./pages/Settings";
+import Updater from "./pages/Updater";
 
 const Main =  () => {
   const window = getCurrentWindow();
@@ -32,6 +33,7 @@ const Main =  () => {
           <Route path="/" element={<App />} />
           <Route path="/popup" element={<PopupWindow />} />
           <Route path="/settings" element={<SettingsWindow />} />
+          <Route path="/updater" element={<Updater />} />
         </Routes>
       </Router>
     </ThemeProvider>
