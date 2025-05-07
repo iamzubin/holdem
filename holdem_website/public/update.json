@@ -1,11 +1,11 @@
 ﻿{
     "platforms":  {
                       "windows-x86_64":  {
-                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUtTNEhkcnpyNGkzdE94L2Y1dmxyNHRkcDBPQzVBdlRuaHFRMTFPOFRMZzBWcDYyZUpTZi9aMTNSS1dWNm03di9SNEs2aTFBQm1sL24vY3l4elZ6b3dFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQ2NjUxNjU5CWZpbGU6aG9sZGVtXzAuMi4wX3g2NC1zZXR1cC5leGUKWTFNRGdlQmk5cnVxZkZmMDRtTmlRUFQ5OENzMCs2MGJSRitlVC9wdGN0ZllzTDZ2K09tOWJXUXVHM1luc2JWdGVGWnZFdWorNFVFTnRGUHcrKzdiQnc9PQo=",
+                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUdKaDdIblcyMllrbGxCUjVTUG53aHdxMGVsUDU0Wm1ZdjJ1L0JUM3E1eTRYZFZvTkN6bU1VTktYdEZ2ZnR0ei9wWDM4UVk1KzEzZUNucXkxSm1ZNWdZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzQ2NjUyMDgxCWZpbGU6aG9sZGVtXzAuMi4wX3g2NC1zZXR1cC5leGUKS3NnR21SRDQ5Y0JZWlhTQnB6UDB3MzU3WU1JM01rZUNVYjlxL0psOVVPeHJCbnZHR05saS9WMW5NNnFpL3lNRUlOUEFwbVN4c3YxWVNQUjJvc0wwQ3c9PQo=",
                                              "url":  "https://github.com/iamzubin/holdem/releases/download/0.2.0/holdem_0.2.0_x64-setup.exe"
                                          }
                   },
-    "pub_date":  "2025-05-07T21:00:59Z",
+    "pub_date":  "2025-05-07T21:08:01Z",
     "version":  "0.2.0",
     "notes":  "Release notes for Holdem 0.2.0"
 }

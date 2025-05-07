@@ -1,6 +1,6 @@
 [package]
 name = "holdem"
-version = "0.1.5"
+version = "0.2.0"
 description = "A Tauri App"
 authors = ["Zubin"]
 edition = "2021"
