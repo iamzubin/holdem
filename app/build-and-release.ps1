@@ -13,9 +13,17 @@ Write-Host "Building application..."
 pnpm tauri build
 
 # Get the installer and signature files
-$installerFile = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*setup.exe"
-$signatureFile = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.sig"
-$binaryFile = Get-ChildItem -Path "src-tauri/target/release" -Filter "*.exe"
+$installerFile = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "holdem_$version`_x64-setup.exe" | Select-Object -First 1
+$signatureFile = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.sig" | Select-Object -First 1
+$binaryFile = Get-ChildItem -Path "src-tauri/target/release" -Filter "*.exe" | Select-Object -First 1
+
+if (-not $installerFile -or -not $signatureFile -or -not $binaryFile) {
+    Write-Host "Error: Could not find required files"
+    Write-Host "Installer: $($installerFile.FullName)"
+    Write-Host "Signature: $($signatureFile.FullName)"
+    Write-Host "Binary: $($binaryFile.FullName)"
+    exit 1
+}
 
 # Read the signature
 $signature = Get-Content $signatureFile.FullName -Raw
@@ -28,7 +36,7 @@ $updateJson = @{
     platforms = @{
         "windows-x86_64" = @{
             signature = $signature.Trim()
-            url = "https://github.com/$owner/$repo/releases/download/$version/$($installerFile.Name)"
+            url = "https://github.com/$owner/$repo/releases/download/$version/holdem_$version`_x64-setup.exe"
         }
     }
 } | ConvertTo-Json -Depth 10
@@ -68,6 +76,7 @@ try {
 try {
     $uploadUrl = $release.upload_url -replace "\{\?name,label\}", "?name=$($installerFile.Name)"
     Write-Host "Uploading installer..."
+    Write-Host "Installer path: $($installerFile.FullName)"
     $fileBytes = [System.IO.File]::ReadAllBytes($installerFile.FullName)
     $uploadHeaders = @{
         "Accept" = "application/vnd.github+json"
@@ -80,6 +89,7 @@ try {
 } catch {
     Write-Host "Error uploading installer: $_"
     Write-Host "Response: $($_.ErrorDetails.Message)"
+    Write-Host "Installer path: $($installerFile.FullName)"
 }
 
 # Upload the binary
@@ -97,6 +107,24 @@ try {
     Write-Host "Successfully uploaded binary"
 } catch {
     Write-Host "Error uploading binary: $_"
+    Write-Host "Response: $($_.ErrorDetails.Message)"
+}
+
+# Upload the NSIS installer
+try {
+    $uploadUrl = $release.upload_url -replace "\{\?name,label\}", "?name=$($installerFile.Name)"
+    Write-Host "Uploading NSIS installer..."
+    $fileBytes = [System.IO.File]::ReadAllBytes($installerFile.FullName)
+    $uploadHeaders = @{
+        "Accept" = "application/vnd.github+json"
+        "Authorization" = "Bearer $token"
+        "X-GitHub-Api-Version" = "2022-11-28"
+        "Content-Type" = "application/octet-stream"
+    }
+    Invoke-RestMethod -Uri $uploadUrl -Method Post -Headers $uploadHeaders -Body $fileBytes
+    Write-Host "Successfully uploaded NSIS installer"
+} catch {
+    Write-Host "Error uploading NSIS installer: $_"
     Write-Host "Response: $($_.ErrorDetails.Message)"
 }
 
