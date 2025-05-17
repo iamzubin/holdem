@@ -1,10 +1,11 @@
 use tauri::{
+    AppHandle, Manager,
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager, Runtime, WebviewUrl, WebviewWindowBuilder,
+    Runtime, WebviewUrl, WebviewWindowBuilder,
 };
+use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_updater::UpdaterExt;
-use tauri_plugin_dialog::{DialogExt, MessageDialogKind};
 use tauri::Emitter;
 
 pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
