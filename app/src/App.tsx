@@ -168,7 +168,7 @@ function App() {
           <div className="flex flex-col items-start text-foreground">
             {files.length > 0 ? (
               <>
-                <Button 
+                {/* <Button 
                   className="w-full text-left justify-start"
                   variant="ghost"
                 >
@@ -182,7 +182,7 @@ function App() {
                   <Clipboard className="h-4 w-4 mr-2 " />
                   Paste
                 </Button>
-                <div className="w-[90%] h-[1px] bg-foreground mx-[5%]"></div>
+                <div className="w-[90%] h-[1px] bg-foreground mx-[5%]"></div> */}
                 <Button 
                   className="w-full text-left justify-start hover:bg-secondary transition-colors"
                   variant="ghost"

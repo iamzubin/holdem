@@ -111,8 +111,14 @@ pub fn rename_file(
 #[tauri::command]
 pub fn clear_files(
     app_handle: AppHandle,
-    _file_list: State<'_, FileList>,
+    file_list: State<'_, FileList>,
 ) -> Result<(), String> {
+    let mut list = file_list
+    .lock()
+    .map_err(|_| "Failed to acquire lock".to_string())?;
+    
+    list.clear();
+
     app_handle
         .emit("files_updated", ())
         .map_err(|e| e.to_string())?;

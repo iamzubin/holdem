@@ -50,7 +50,11 @@ pub fn run() {
                     .plugin(tauri_plugin_shell::init())
                     .plugin(tauri_plugin_updater::Builder::new().build())
                     .plugin(tauri_plugin_dialog::init())
-                    .plugin(tauri_plugin_autostart::Builder::new().build())
+                    .plugin(
+                        tauri_plugin_autostart::Builder::new()
+                            .args(vec!["--autostart"])
+                            .build()
+                    )
                     .plugin(
                         tauri_plugin_global_shortcut::Builder::new()
                             .with_handler(move |app, shortcut, event| {
@@ -193,6 +197,15 @@ pub fn run() {
                             println!("file dropped event received in setup");
                             file_drop::handle_file_drop(event, file_list_clone.clone(), app_handle.clone());
                         });
+
+                        let is_autostart = std::env::args().any(|arg| arg == "--autostart");
+                        if is_autostart {
+                            if let Some(window) = app.get_webview_window("main") {
+                                let _ = window.hide();
+                            }
+                        } else {
+                            // Normal launch, show the main window
+                        }
 
                         Ok(())
                     })
