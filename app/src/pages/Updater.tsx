@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface UpdateInfo {
   version: string;
@@ -23,16 +27,16 @@ const Updater: React.FC = () => {
   const checkForUpdates = async () => {
     try {
       setStatus("checking");
-      
+
       const update = await check();
-      
+
       if (update) {
         setUpdateInfo({
           version: update.version,
           notes: update.body || "No release notes available"
         });
         setStatus("available");
-        
+
         // Start download after a short delay
         setTimeout(() => {
           downloadAndInstallUpdate(update);
@@ -51,7 +55,7 @@ const Updater: React.FC = () => {
       setStatus("downloading");
       let downloaded = 0;
       let contentLength = 0;
-      
+
       await update.downloadAndInstall((event: any) => {
         switch (event.event) {
           case 'Started':
@@ -70,10 +74,10 @@ const Updater: React.FC = () => {
             break;
         }
       });
-      
+
       console.log('Update installed');
       setStatus("installing");
-      
+
       // Short delay before relaunch
       setTimeout(async () => {
         await relaunch();
@@ -88,91 +92,115 @@ const Updater: React.FC = () => {
     switch (status) {
       case "checking":
         return (
-          <div className="p-5 rounded-lg bg-gray-50">
-            <div className="w-8 h-8 border-4 border-t-blue-500 border-gray-200 rounded-full mx-auto mb-4 animate-spin"></div>
-            <p className="text-gray-600">Checking for updates...</p>
-          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-4 border-t-primary border-muted mb-4" />
+              <span className="text-muted-foreground">Checking for updates...</span>
+            </CardContent>
+          </Card>
         );
       case "downloading":
         return (
-          <div className="p-5 rounded-lg bg-gray-50">
-            <div className="my-4">
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div 
-                  className="bg-blue-500 h-3 rounded-full transition-all duration-300" 
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-              <p className="text-center mt-2">{progress}%</p>
-            </div>
-            <p className="text-gray-600">Downloading update...</p>
-          </div>
+          <Card>
+            <CardContent className="py-8">
+              <Progress value={progress} className="mb-4" />
+              <div className="text-center text-sm mb-2">{progress}%</div>
+              <span className="text-muted-foreground">Downloading update...</span>
+            </CardContent>
+          </Card>
         );
       case "downloaded":
         return (
-          <div className="p-5 rounded-lg bg-gray-50">
-            <div className="text-green-500 text-4xl mb-3">✓</div>
-            <p className="text-gray-700">Download completed!</p>
-            <p className="text-gray-600 mt-2">Preparing to install...</p>
-          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center py-8">
+              <div className="text-green-600 text-4xl mb-3">✓</div>
+              <span className="font-medium">Download completed!</span>
+              <span className="text-muted-foreground mt-2">Preparing to install...</span>
+            </CardContent>
+          </Card>
         );
       case "installing":
         return (
-          <div className="p-5 rounded-lg bg-gray-50">
-            <div className="w-8 h-8 border-4 border-t-blue-500 border-gray-200 rounded-full mx-auto mb-4 animate-spin"></div>
-            <p className="text-gray-600">Installing update and restarting application...</p>
-          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-4 border-t-primary border-muted mb-4" />
+              <span className="text-muted-foreground">Installing update and restarting application...</span>
+            </CardContent>
+          </Card>
         );
       case "available":
         return (
-          <div className="p-5 rounded-lg bg-gray-50">
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Update Available!</h3>
-            {updateInfo && (
-              <>
-                <p className="text-lg font-semibold text-blue-600 mb-4">Version {updateInfo.version}</p>
-                <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4 max-h-48 overflow-y-auto text-left">
-                  <h4 className="font-medium mb-2">Release Notes:</h4>
-                  <p className="text-gray-700 whitespace-pre-line">{updateInfo.notes}</p>
-                </div>
-                <p className="text-gray-600">Download will start automatically...</p>
-              </>
-            )}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Update Available!</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {updateInfo && (
+                <>
+                  <div className="text-primary font-semibold mb-2">
+                    Version {updateInfo.version}
+                  </div>
+                  <Alert className="mb-4">
+                    <AlertTitle>Release Notes</AlertTitle>
+                    <AlertDescription className="whitespace-pre-line">
+                      {updateInfo.notes}
+                    </AlertDescription>
+                  </Alert>
+                  <span className="text-muted-foreground">Download will start automatically...</span>
+                </>
+              )}
+            </CardContent>
+          </Card>
         );
       case "no_update":
         return (
-          <div className="p-5 rounded-lg bg-gray-50">
-            <div className="text-green-500 text-4xl mb-3">✓</div>
-            <p className="text-gray-700">You're running the latest version!</p>
-          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center py-8">
+              <div className="text-green-600 text-4xl mb-3">✓</div>
+              <span className="font-medium">You're running the latest version!</span>
+            </CardContent>
+          </Card>
         );
       case "error":
         return (
-          <div className="p-5 rounded-lg bg-gray-50">
-            <div className="text-red-500 text-4xl mb-3">✗</div>
-            <p className="text-gray-700">Error checking for updates</p>
-            <p className="text-red-500 mt-2">{errorMessage}</p>
-          </div>
+          <Card>
+            <CardContent className="flex flex-col items-center py-8">
+              <div className="text-destructive text-4xl mb-3">✗</div>
+              <span className="font-medium">Error checking for updates</span>
+              <span className="text-destructive mt-2">{errorMessage}</span>
+            </CardContent>
+          </Card>
         );
       default:
         return (
-          <div className="p-5 rounded-lg bg-gray-50">
-            <p className="text-gray-600">Waiting to check for updates...</p>
-          </div>
+          <Card>
+            <CardContent className="py-8">
+              <span className="text-muted-foreground">Waiting to check for updates...</span>
+            </CardContent>
+          </Card>
         );
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto my-10 p-8 bg-white rounded-xl shadow-md">
-      <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={() => getCurrentWindow().close()}>
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+    <Card className="relative w-full h-full" data-tauri-drag-region>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-2"
+        onClick={() => getCurrentWindow().close()}
+        aria-label="Close"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="#ff0000" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
-      </button>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Software Updates</h2>
-      {renderContent()}
-    </div>
+      </Button>
+      <CardHeader data-tauri-drag-region>
+        <CardTitle data-tauri-drag-region className="text-center">Software Updates</CardTitle>
+      </CardHeader>
+      <CardContent>{renderContent()}</CardContent>
+    </Card>
   );
 };
 

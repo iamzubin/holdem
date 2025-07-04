@@ -22,7 +22,6 @@ tauri-plugin-autostart = "2.3.0"
 tauri-plugin-global-shortcut = "2.2.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-drag = { git = "https://github.com/AudiogenAI/drag.git", version = "0.9.0" }
 tauri-plugin-fs = "2.2.1"
 chrono = "0.4"
 windows = { version = "0.52.0", features = [
@@ -36,11 +35,13 @@ windows = { version = "0.52.0", features = [
 ] }
 window-vibrancy = "0.5.3"
 # windows-icons = { path = "../../windows-icons" }
-windows-icons = { git = "https://github.com/iamzubin/windows-icons.git" }
+windows-icons = { git = "https://github.com/zmconnelly/windows-icons" }
 base64 = "0.22.1"
 active-win-pos-rs = "0.8"
 tauri-plugin-process = "2.2.1"
-
+drag = "2.1.0"
+image = "0.25"
+glob = "0.3.2"
 
 [profile.release]
 lto = true

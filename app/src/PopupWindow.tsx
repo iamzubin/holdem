@@ -163,7 +163,7 @@ const PopupWindow: React.FC = () => {
                   {file.preview ? (
                     <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
                   ) : (
-                    <DynamicFileIcon filePath={file.path} />
+                    <DynamicFileIcon file={file} />
                   )}
                 </div>
                 <div className={`

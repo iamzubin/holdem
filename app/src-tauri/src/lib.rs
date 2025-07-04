@@ -3,7 +3,7 @@ use std::sync::Mutex;
 use tauri::{Manager, Listener};
 use tauri::PhysicalPosition;
 use tauri_plugin_updater::UpdaterExt;
-use tauri_plugin_dialog::DialogExt;
+// use tauri_plugin_dialog::DialogExt;
 use windows::Win32::Foundation::POINT;
 use windows::Win32::Foundation::WAIT_OBJECT_0;
 use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
@@ -21,6 +21,7 @@ mod config;
 mod file;
 mod mouse_monitor;
 mod file_drop;
+mod utils;
 
 use commands::{
     file_ops::*,
@@ -31,6 +32,9 @@ use commands::{
 use config::AppConfig;
 use file::FileMetadata;
 use mouse_monitor::start_mouse_monitor;
+
+
+
 
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
@@ -102,7 +106,7 @@ pub fn run() {
                             .build(),
                     )
                     .invoke_handler(tauri::generate_handler![
-                        start_drag,
+                        // start_drag,
                         start_multi_drag,
                         open_popup_window,
                         close_popup_window,

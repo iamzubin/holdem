@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 use tauri::{AppHandle, State, Emitter};
-use crate::file::{get_dir_size, FileMetadata};
+use crate::file::{ get_dir_size, FileMetadata};
 use crate::FileList;
+use crate::utils::win_icons::get_explorer_thumbnail_base64;
 
 #[tauri::command]
 pub fn add_files(
@@ -159,26 +160,11 @@ pub fn refresh_file_list(
 
 #[tauri::command]
 pub fn get_file_icon_base64(
-    app_handle: AppHandle,
-    file_list: State<'_, FileList>,
+    _app_handle: AppHandle,
+    _file_list: State<'_, FileList>,
     file_path: &str,
 ) -> Result<String, String> {
     let file_path = file_path.to_string();
-    if !std::path::Path::new(&file_path).exists() {
-        // Remove the file from the list if it no longer exists
-        let mut list = file_list
-            .lock()
-            .map_err(|_| "Failed to acquire lock".to_string())?;
-        if let Some(pos) = list
-            .iter()
-            .position(|f| f.path.to_string_lossy() == file_path)
-        {
-            list.remove(pos);
-            app_handle
-                .emit("files_updated", ())
-                .map_err(|e| e.to_string())?;
-        }
-        return Ok("".to_string()); // Return empty string for non-existent files
-    }
-    Ok(windows_icons::get_icon_base64_by_path(&file_path))
+    return get_explorer_thumbnail_base64(&file_path)
+        .map_err(|e| e.to_string());
 } 

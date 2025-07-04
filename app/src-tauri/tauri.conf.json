@@ -21,8 +21,7 @@
         "focus": false,
         "alwaysOnTop": true,
         "skipTaskbar": true,
-        "resizable": false,
-        "theme": "Dark"
+        "resizable": false
       }
     ],
     "security": {

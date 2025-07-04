@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { DynamicFileIcon } from './FileIcon';
 
-interface File {
+export interface File {
   preview?: string;
   name: string;
   path: string;
@@ -15,6 +15,7 @@ interface StackedIconsProps {
 
 export const StackedIcons: React.FC<StackedIconsProps> = ({ files, handleStackDragStart }) => {
   const stackedIcons = useMemo(() => {
+    console.log("files", files)
     return files.slice(-5).map((file, index) => {
       const rotation = Math.random() * 10 - 5;
       const translateX = Math.random() * 10 - 5;
@@ -32,7 +33,7 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files, handleStackDr
           draggable
           onDragStart={handleStackDragStart}
         >
-          {file.preview && file.size < 5 * 1024 * 1024 ? (
+          {file.preview ? (
             <img 
               src={file.preview} 
               alt={file.name} 
@@ -40,7 +41,12 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files, handleStackDr
               loading="lazy"
             />
           ) : (
-            <DynamicFileIcon filePath={file.path} />
+            <>
+              <DynamicFileIcon file={file} />
+              {/* <div className="absolute bottom-0 left-0 right-0 text-white text-xs bg-black/50 p-1">
+                {file.name}
+              </div> */}
+            </>
           )}
         </div>
       );

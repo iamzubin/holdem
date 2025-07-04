@@ -59,10 +59,10 @@ export const useFileManagement = () => {
     const refreshInterval = setInterval(refreshFiles, 1000);
 
     return () => {
-      unlistenFileAdded.then(f => f());
-      unlistenFileRemoved.then(f => f());
-      unlistenFileRenamed.then(f => f());
-      unlistenFilesUpdated.then(f => f());
+      // unlistenFileAdded.then(f => f());
+      // unlistenFileRemoved.then(f => f());
+      // unlistenFileRenamed.then(f => f());
+      // unlistenFilesUpdated.then(f => f());
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(refreshInterval);
     };

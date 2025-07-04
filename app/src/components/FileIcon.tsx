@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FileIcon } from 'lucide-react';
 import { useFileManagement } from '../hooks/useFileManagement';
+import { File } from './StackedIcons';
 
 interface DynamicFileIconProps {
-  filePath: string;
+  file: File
 }
 
-export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ filePath, ...props }) => {
+export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file, ...props }) => {
   const [iconBase64, setIconBase64] = useState<string | null>(null);
   const { getFileIcon } = useFileManagement();
   const [isVisible, setIsVisible] = useState(false);
@@ -36,7 +37,7 @@ export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ filePath, ...p
     if (isVisible) {
       const fetchIcon = async () => {
         try {
-          const base64Icon = await getFileIcon(filePath);
+          const base64Icon = await getFileIcon(file.path);
           setIconBase64(base64Icon);
         } catch (error) {
           console.error('Error fetching file icon:', error);
@@ -45,7 +46,7 @@ export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ filePath, ...p
 
       fetchIcon();
     }
-  }, [isVisible, filePath, getFileIcon]);
+  }, [isVisible, file.path, getFileIcon]);
 
   return (
     <div ref={iconRef} {...props}>

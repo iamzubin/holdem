@@ -17,6 +17,10 @@ import { StackedIcons } from "./components/StackedIcons";
 import { useNavigate } from "react-router-dom";
 import { listen } from "@tauri-apps/api/event";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 function App() {
   const listenerSetup = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,7 +51,7 @@ function App() {
     });
 
     return () => {
-      unlisten.then(fn => fn());
+      // unlisten.then(fn => fn());
     };
   }, [addFiles, getFileIcon, navigate]);
 
@@ -119,7 +123,7 @@ function App() {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-foreground hover:bg-gray-500 hover:text-background rounded h-5 w-5 mr-1" 
+          className="text-foreground hover:bg-gray-500 hover:text-background rounded h-5 w-5" 
           onClick={openSettings}
         >
           <Settings className="h-4 w-4" />
@@ -190,7 +194,7 @@ function App() {
                     clearFiles(files.map(file => file.id));
                   }}
                 >
-                  <X  className="h-4 w-4 mr-2" />
+                  <X  className="h-4 w-4" />
                   Clear
                 </Button>
               </>

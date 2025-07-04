@@ -27,7 +27,7 @@ pub fn restart_app(app: AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 pub fn set_autostart(app_handle: AppHandle, enabled: bool) -> Result<(), String> {
-    let mut autostart_manager = app_handle.autolaunch();
+    let autostart_manager = app_handle.autolaunch();
 
     if enabled {
         autostart_manager.enable().map_err(|e| e.to_string())?;
