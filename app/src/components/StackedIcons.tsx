@@ -16,16 +16,17 @@ interface StackedIconsProps {
 export const StackedIcons: React.FC<StackedIconsProps> = ({ files, handleStackDragStart }) => {
   const stackedIcons = useMemo(() => {
     console.log("files", files)
-    return files.slice(-5).map((file, index) => {
-      const rotation = Math.random() * 10 - 5;
-      const translateX = Math.random() * 10 - 5;
-      const translateY = Math.random() * 10 - 5;
+    console.log("files sliced", files.slice(-5).reverse())
+    return files.slice(-5).reverse().map((file, index) => {
+      const rotation = - index * 10; // Adjust rotation angle as needed
+      const translateX = -index;
+      const translateY = -index;
       const zIndex = files.length - index;
     
       return (
         <div
           key={index}
-          className="absolute inset-0 flex items-center justify-center overflow-hidden"
+          className="absolute inset-0 flex items-center"
           style={{
             transform: `rotate(${rotation}deg) translate(${translateX}px, ${translateY}px)`,
             zIndex,
