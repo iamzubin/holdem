@@ -6,7 +6,8 @@
     "main",
     "popup",
     "settings",
-    "updater"
+    "updater",
+    "consent"
   ],
   "permissions": [
     "core:default",

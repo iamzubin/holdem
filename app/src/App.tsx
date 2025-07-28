@@ -28,6 +28,32 @@ function App() {
   const { files, addFiles, getFileIcon, clearFiles, droppedFiles } = useFileManagement();
   const navigate = useNavigate();
 
+  // Check analytics consent on mount
+  useEffect(() => {
+    const checkConsent = async () => {
+      try {
+        console.log('Checking if config file exists...');
+        const configExists = await invoke<boolean>('check_config_exists');
+        console.log('Config file exists:', configExists);
+        
+        if (!configExists) {
+          console.log('Config file does not exist, opening consent window...');
+          // Add a small delay to ensure main window is fully loaded
+          setTimeout(async () => {
+            await invoke('open_consent_window');
+          }, 500);
+        } else {
+          console.log('Config file exists, skipping consent window');
+        }
+      } catch (error) {
+        console.error('Failed to check config existence:', error);
+        // If we can't check, don't show consent window to be safe
+      }
+    };
+
+    checkConsent();
+  }, []);
+
   useEffect(() => {
     if (listenerSetup.current) return;
     listenerSetup.current = true;

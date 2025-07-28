@@ -105,4 +105,40 @@ pub fn show_main_window(app_handle: AppHandle) -> Result<(), String> {
         window.set_focus().map_err(|e| e.to_string())?;
     }
     Ok(())
+}
+
+#[tauri::command]
+pub fn open_consent_window(app: AppHandle) -> Result<(), String> {
+    if let Some(consent_window) = app.get_webview_window("consent") {
+        consent_window.show().map_err(|e| e.to_string())?;
+        consent_window.set_focus().map_err(|e| e.to_string())?;
+    } else {
+        // Create the consent window
+        let app_clone = app.clone();
+        tauri::async_runtime::spawn(async move {
+            WebviewWindowBuilder::new(&app_clone, "consent", WebviewUrl::App("/consent".into()))
+                .title("Analytics Consent")
+                .decorations(false)
+                .transparent(false)
+                .shadow(true)
+                .inner_size(450.0, 500.0)
+                .center()
+                .focused(true)
+                .always_on_top(true)
+                .skip_taskbar(true)
+                .resizable(false)
+                .build()
+                .map_err(|e| e.to_string())?;
+            Ok::<(), String>(())
+        });
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn close_consent_window(app: AppHandle) -> Result<(), String> {
+    if let Some(consent_window) = app.get_webview_window("consent") {
+        consent_window.close().map_err(|e| e.to_string())?;
+    }
+    Ok(())
 } 
