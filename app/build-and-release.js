@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Parameters
-const version = "0.2.1";
+const version = "0.2.3";
 // const token = "token";  // GitHub token should be set as an environment variable
 const owner = "iamzubin";  // Your GitHub username
 const repo = "holdem";      // Repository name
