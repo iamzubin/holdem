@@ -9,6 +9,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import { getCurrentWindow, Theme } from '@tauri-apps/api/window';
 import SettingsWindow from "./pages/Settings";
 import Updater from "./pages/Updater";
+import Consent from "./pages/Consent";
 
 const Main =  () => {
   const window = getCurrentWindow();
@@ -34,6 +35,7 @@ const Main =  () => {
           <Route path="/popup" element={<PopupWindow />} />
           <Route path="/settings" element={<SettingsWindow />} />
           <Route path="/updater" element={<Updater />} />
+          <Route path="/consent" element={<Consent />} />
         </Routes>
       </Router>
     </ThemeProvider>

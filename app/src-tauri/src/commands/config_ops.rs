@@ -2,6 +2,7 @@ use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, State, Manager};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
 use tauri_plugin_autostart::ManagerExt;
+use posthog_rs;
 use crate::config::AppConfig;
 
 #[tauri::command]
@@ -142,4 +143,58 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
 
     println!("Hotkey registered successfully");
     Ok(())
+}
+
+#[tauri::command]
+pub fn accept_analytics_consent(
+    config: State<Arc<Mutex<AppConfig>>>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
+    let mut config = config.lock().unwrap();
+    config.analytics_enabled = true;
+    config.save(&app_handle)?;
+    
+    println!("[Analytics] User accepted analytics consent");
+    
+    // Send initial analytics event after consent
+    let posthog_key = std::env::var("POSTHOG_KEY");
+    if let Ok(key) = posthog_key {
+        let uuid = config.analytics_uuid.clone();
+        tauri::async_runtime::spawn(async move {
+            println!("[PostHog] Sending consent_accepted event...");
+            let client = posthog_rs::client(key.as_str()).await;
+            let event = posthog_rs::Event::new("consent_accepted", &uuid);
+            let res = client.capture(event).await;
+            match res {
+                Ok(_) => println!("[PostHog] consent_accepted event sent!"),
+                Err(e) => println!("[PostHog] Error sending consent_accepted event: {:?}", e),
+            }
+        });
+    }
+    
+    Ok(())
+}
+
+#[tauri::command]
+pub fn decline_analytics_consent(
+    config: State<Arc<Mutex<AppConfig>>>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
+    let mut config = config.lock().unwrap();
+    config.analytics_enabled = false;
+    config.save(&app_handle)?;
+    
+    println!("[Analytics] User declined analytics consent");
+    Ok(())
+}
+
+#[tauri::command]
+pub fn check_analytics_consent(config: State<Arc<Mutex<AppConfig>>>) -> bool {
+    let config = config.lock().unwrap();
+    config.analytics_enabled
+}
+
+#[tauri::command]
+pub fn check_config_exists(app_handle: AppHandle) -> bool {
+    AppConfig::config_exists(&app_handle)
 } 

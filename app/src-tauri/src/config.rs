@@ -3,12 +3,15 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::AppHandle;
 use tauri::Manager;
+use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
     pub mouse_monitor: MouseMonitorConfig,
     pub autostart: bool,
     pub hotkey: String,
+    pub analytics_enabled: bool,
+    pub analytics_uuid: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -30,22 +33,35 @@ impl Default for AppConfig {
             },
             autostart: false,
             hotkey: "".to_string(),
+            analytics_enabled: false,
+            analytics_uuid: uuid::Uuid::new_v4().to_string(),
         }
     }
 }
 
 impl AppConfig {
+    pub fn config_exists(app_handle: &AppHandle) -> bool {
+        let config_path = Self::get_config_path(app_handle);
+        config_path.exists()
+    }
+
     pub fn load(app_handle: &AppHandle) -> Self {
         let config_path = Self::get_config_path(app_handle);
         println!("Loading config from: {:?}", config_path);
 
         if let Ok(contents) = fs::read_to_string(&config_path) {
-            if let Ok(config) = serde_json::from_str(&contents) {
+            if let Ok(mut config) = serde_json::from_str::<AppConfig>(&contents) {
+                // Check if analytics fields are missing (for backward compatibility)
+                if config.analytics_uuid.is_empty() {
+                    config.analytics_uuid = Uuid::new_v4().to_string();
+                    println!("[Config] Generated new analytics UUID: {}", config.analytics_uuid);
+                }
                 return config;
             }
         }
 
         // If loading fails, return default config
+        println!("[Config] Using default config (analytics_enabled: false)");
         Self::default()
     }
 

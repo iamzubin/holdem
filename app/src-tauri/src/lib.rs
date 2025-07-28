@@ -13,6 +13,8 @@ use windows::Win32::UI::WindowsAndMessaging::SM_CXSCREEN;
 use windows::Win32::UI::WindowsAndMessaging::SM_CYSCREEN;
 use tauri::WebviewUrl;
 use tauri::WebviewWindowBuilder;
+use dotenv::dotenv;
+use posthog_rs::{client, Event as PostHogEvent};
 
 mod commands;
 #[cfg(desktop)]
@@ -40,6 +42,8 @@ type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Load environment variables
+    dotenv().ok();
     // Check for existing instance
     unsafe {
         let mutex_name = windows::core::w!("Global\\HoldemAppMutex");
@@ -110,6 +114,8 @@ pub fn run() {
                         start_multi_drag,
                         open_popup_window,
                         close_popup_window,
+                        open_consent_window,
+                        close_consent_window,
                         add_files,
                         remove_files,
                         get_files,
@@ -125,8 +131,28 @@ pub fn run() {
                         set_autostart,
                         register_hotkey,
                         show_main_window,
+                        accept_analytics_consent,
+                        decline_analytics_consent,
+                        check_analytics_consent,
+                        check_config_exists,
                     ])
                     .setup(|app| {
+                        // PostHog analytics logic
+                        let config = AppConfig::load(&app.handle());
+                        if config.analytics_enabled {
+                            println!("[PostHog] Analytics enabled, sending app_started event...");
+                            let posthog_key = std::env::var("POSTHOG_KEY").expect("POSTHOG_KEY not set");
+                            let uuid = config.analytics_uuid.clone();
+                            tauri::async_runtime::spawn(async move {
+                                let client = client(posthog_key.as_str()).await;
+                                let event = PostHogEvent::new("app_started", &uuid);
+                                let res = client.capture(event).await;
+                                match res {
+                                    Ok(_) => println!("[PostHog] app_started event sent!"),
+                                    Err(e) => println!("[PostHog] Error sending app_started event: {:?}", e),
+                                }
+                            });
+                        }
                         // Create file list here
                         let file_list: FileList = Arc::new(Mutex::new(Vec::new()));
                         app.manage(file_list.clone());

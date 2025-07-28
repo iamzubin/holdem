@@ -1,6 +1,12 @@
-use crate::FileList;
-use tauri::{AppHandle, Manager, State};
+use std::sync::{Arc, Mutex};
+use tauri::{AppHandle, State, Manager};
+use crate::config::AppConfig;
+use crate::file::FileMetadata;
+use dotenv::dotenv;
+use posthog_rs::{Event as PostHogEvent};
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VK_CONTROL, VK_SHIFT};
+
+type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
 // Helper function to check if control or shift is pressed
 fn is_move_key_pressed() -> bool {
@@ -15,12 +21,40 @@ fn is_move_key_pressed() -> bool {
 pub fn start_multi_drag(
     app: AppHandle,
     _file_list: State<'_, FileList>,
+    config: State<'_, Arc<Mutex<AppConfig>>>,
     file_paths: Vec<String>,
 ) -> Result<(), String> {
     println!(
         "Starting multi-file drag for files: {}",
         file_paths.join(", ")
     );
+
+    // Send PostHog event asynchronously
+    let num_files = file_paths.len();
+    let config = config.lock().unwrap();
+    let uuid = config.analytics_uuid.clone();
+    drop(config); // Release lock before async block
+    
+    tauri::async_runtime::spawn(async move {
+        dotenv().ok();
+        match std::env::var("POSTHOG_KEY") {
+            Ok(posthog_key) => {
+                println!("[PostHog] Sending files dropped event ({} files)...", num_files);
+                println!("[PostHog] Key loaded: {}...", &posthog_key[..6]);
+                let client = posthog_rs::client(posthog_key.as_str()).await;
+                let mut event = PostHogEvent::new("files dropped", &uuid);
+                let _ = event.insert_prop("num_files", num_files as i64);
+                let res = client.capture(event).await;
+                match res {
+                    Ok(_) => println!("[PostHog] files dropped event sent!"),
+                    Err(e) => println!("[PostHog] Error sending files dropped event: {:?}", e),
+                }
+            }
+            Err(_) => {
+                println!("[PostHog] POSTHOG_KEY not set in environment");
+            }
+        }
+    });
 
     let mut valid_paths = Vec::new();
 
