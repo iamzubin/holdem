@@ -14,6 +14,8 @@ interface AppConfig {
     mouse_monitor: MouseMonitorConfig;
     autostart: boolean;
     hotkey: string;
+    analytics_enabled: boolean;
+    analytics_uuid: string;
 }
 
 export default function SettingsPage() {
@@ -107,6 +109,28 @@ export default function SettingsPage() {
             ...config,
             autostart: !config.autostart,
         });
+    };
+
+    const toggleAnalytics = async () => {
+        if (!config) return;
+        
+        const newAnalyticsState = !config.analytics_enabled;
+        
+        try {
+            if (newAnalyticsState) {
+                await invoke('accept_analytics_consent');
+            } else {
+                await invoke('decline_analytics_consent');
+            }
+            
+            // Update local state
+            setConfig({
+                ...config,
+                analytics_enabled: newAnalyticsState,
+            });
+        } catch (error) {
+            console.error('Failed to update analytics consent:', error);
+        }
     };
 
     const startKeyListener = () => {
@@ -257,6 +281,24 @@ export default function SettingsPage() {
                                 >
                                     <span
                                         className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform border ${config.autostart ? 'translate-x-4 border-primary' : 'translate-x-1 border-gray-400'}`}
+                                    />
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <label className="text-xs font-medium text-foreground">
+                                        Enable Analytics
+                                    </label>
+                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                        Help improve Holdem by sharing anonymous usage data
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={toggleAnalytics}
+                                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors focus:outline-none focus:ring-1 focus:ring-primary focus:ring-offset-1 border`}
+                                >
+                                    <span
+                                        className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform border ${config.analytics_enabled ? 'translate-x-4 border-primary' : 'translate-x-1 border-gray-400'}`}
                                     />
                                 </button>
                             </div>
