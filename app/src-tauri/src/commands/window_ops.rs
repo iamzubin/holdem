@@ -1,4 +1,5 @@
 use tauri::{AppHandle, WebviewUrl, WebviewWindowBuilder, Manager};
+use crate::analytics;
 
 #[tauri::command]
 pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
@@ -23,6 +24,7 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
         popup_window.close().map_err(|e| e.to_string())?;
     } else {
         // Create the popup window
+        let app_clone = app.clone();
         tauri::async_runtime::spawn(async move {
             WebviewWindowBuilder::new(
                 &app,
@@ -40,6 +42,12 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
             .focused(false)
             .build()
             .map_err(|e| e.to_string())?;
+            
+            // Send analytics event
+            if let Err(e) = analytics::send_popup_window_opened_event(&app_clone).await {
+                eprintln!("[Analytics] Failed to send popup_window_opened event: {}", e);
+            }
+            
             Ok::<(), String>(())
         });
     }
@@ -74,6 +82,7 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
         settings_window.close().map_err(|e| e.to_string())?;
     } else {
         // Create the settings window
+        let app_clone = app.clone();
         tauri::async_runtime::spawn(async move {
             WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App("settings".into()))
                 .title("Settings")
@@ -84,6 +93,12 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
                 .focused(true)
                 .build()
                 .map_err(|e| e.to_string())?;
+                
+            // Send analytics event
+            if let Err(e) = analytics::send_settings_opened_event(&app_clone).await {
+                eprintln!("[Analytics] Failed to send settings_opened event: {}", e);
+            }
+            
             Ok::<(), String>(())
         });
     }

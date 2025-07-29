@@ -14,7 +14,6 @@ use windows::Win32::UI::WindowsAndMessaging::SM_CYSCREEN;
 use tauri::WebviewUrl;
 use tauri::WebviewWindowBuilder;
 use dotenv::dotenv;
-use posthog_rs::{client, Event as PostHogEvent};
 
 mod commands;
 #[cfg(desktop)]
@@ -24,6 +23,7 @@ mod file;
 mod mouse_monitor;
 mod file_drop;
 mod utils;
+mod analytics;
 
 use commands::{
     file_ops::*,
@@ -34,6 +34,7 @@ use commands::{
 use config::AppConfig;
 use file::FileMetadata;
 use mouse_monitor::start_mouse_monitor;
+use analytics::AnalyticsService;
 
 
 
@@ -137,22 +138,71 @@ pub fn run() {
                         check_config_exists,
                     ])
                     .setup(|app| {
-                        // PostHog analytics logic
+                        // Ensure config directory exists first
+                        let config_dir = app.handle().path().app_config_dir().unwrap_or_else(|_| {
+                            eprintln!("Failed to get app config directory");
+                            std::process::exit(1);
+                        });
+                        println!("App config directory: {:?}", config_dir);
+                        if !config_dir.exists() {
+                            println!("Creating app config directory...");
+                            if let Err(e) = std::fs::create_dir_all(&config_dir) {
+                                eprintln!("Failed to create app config directory: {}", e);
+                                return Err(format!("Failed to create app config directory: {}", e).into());
+                            }
+                        }
+
+                        // Load configuration once
                         let config = AppConfig::load(&app.handle());
+                        app.manage(Arc::new(Mutex::new(config.clone())));
+
+                        // Initialize analytics service
+                        let analytics_service = AnalyticsService::new();
+                        let analytics_enabled = config.analytics_enabled;
+                        let uuid = config.analytics_uuid.clone();
+                        
+                        // Store analytics service in app state first
+                        let analytics_state = Arc::new(Mutex::new(analytics_service));
+                        app.manage(analytics_state.clone());
+                        
+                        // Initialize analytics service asynchronously
+                        let analytics_state_clone = analytics_state.clone();
+                        tauri::async_runtime::spawn(async move {
+                            // Initialize the service without holding the mutex guard across await
+                            let posthog_key = std::env::var("POSTHOG_KEY");
+                            let mut client = None;
+                            
+                            if analytics_enabled {
+                                if let Ok(key) = posthog_key {
+                                    println!("[Analytics] Initializing PostHog client...");
+                                    let c = posthog_rs::client(key.as_str()).await;
+                                    client = Some(std::sync::Arc::new(c));
+                                    println!("[Analytics] PostHog client initialized successfully");
+                                } else {
+                                    println!("[Analytics] POSTHOG_KEY environment variable not set, skipping analytics");
+                                }
+                            } else {
+                                println!("[Analytics] Analytics disabled, skipping initialization");
+                            }
+                            
+                            // Update the service with the initialized client
+                            if let Ok(mut service) = analytics_state_clone.lock() {
+                                service.enabled = analytics_enabled;
+                                service.uuid = uuid;
+                                service.client = client;
+                            }
+                        });
+
+                        // Send app_started event if analytics is enabled
                         if config.analytics_enabled {
-                            println!("[PostHog] Analytics enabled, sending app_started event...");
-                            let posthog_key = std::env::var("POSTHOG_KEY").expect("POSTHOG_KEY not set");
-                            let uuid = config.analytics_uuid.clone();
+                            let app_handle = app.handle().clone();
                             tauri::async_runtime::spawn(async move {
-                                let client = client(posthog_key.as_str()).await;
-                                let event = PostHogEvent::new("app_started", &uuid);
-                                let res = client.capture(event).await;
-                                match res {
-                                    Ok(_) => println!("[PostHog] app_started event sent!"),
-                                    Err(e) => println!("[PostHog] Error sending app_started event: {:?}", e),
+                                if let Err(e) = analytics::send_analytics_event(&app_handle, "app_started", None).await {
+                                    eprintln!("[Analytics] Failed to send app_started event: {}", e);
                                 }
                             });
                         }
+
                         // Create file list here
                         let file_list: FileList = Arc::new(Mutex::new(Vec::new()));
                         app.manage(file_list.clone());
@@ -162,6 +212,11 @@ pub fn run() {
                         tauri::async_runtime::spawn(async move {
                             if let Ok(updater) = app_handle.updater() {
                                 if let Ok(Some(_update)) = updater.check().await {
+                                    // Send analytics event for update available
+                                    if let Err(e) = analytics::send_update_checked_event(&app_handle, true).await {
+                                        eprintln!("[Analytics] Failed to send update_checked event: {}", e);
+                                    }
+                                    
                                     // Open the updater window if an update is available
                                     if let Some(existing_window) = app_handle.get_webview_window("updater") {
                                         let _ = existing_window.show();
@@ -178,23 +233,14 @@ pub fn run() {
                                         .decorations(false)
                                         .build();
                                     }
+                                } else {
+                                    // Send analytics event for no update available
+                                    if let Err(e) = analytics::send_update_checked_event(&app_handle, false).await {
+                                        eprintln!("[Analytics] Failed to send update_checked event: {}", e);
+                                    }
                                 }
                             }
                         });
-
-                        // Ensure config directory exists
-                        let config_dir = app.handle().path().app_config_dir().unwrap();
-                        println!("App config directory: {:?}", config_dir);
-                        if !config_dir.exists() {
-                            println!("Creating app config directory...");
-                            std::fs::create_dir_all(&config_dir).map_err(|e| {
-                                format!("Failed to create app config directory: {}", e)
-                            })?;
-                        }
-
-                        // Load configuration
-                        let config = AppConfig::load(&app.handle());
-                        app.manage(Arc::new(Mutex::new(config.clone())));
 
                         // Register hotkey if configured
                         if !config.hotkey.is_empty() {
@@ -216,9 +262,11 @@ pub fn run() {
 
                         // Start the mouse monitor with configuration
                         let app_handle = app.handle().clone();
-                        let config = app.state::<Arc<Mutex<AppConfig>>>();
-                        let config = config.lock().unwrap();
-                        start_mouse_monitor(config.mouse_monitor.clone(), app_handle.clone());
+                        let config_state = app.state::<Arc<Mutex<AppConfig>>>();
+                        let config_guard = config_state.lock().map_err(|e| {
+                            format!("Failed to lock config: {}", e)
+                        })?;
+                        start_mouse_monitor(config_guard.mouse_monitor.clone(), app_handle.clone());
 
                         let file_list_clone = file_list.clone();
                         let app_handle = app.handle().clone();

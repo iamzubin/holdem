@@ -3,6 +3,7 @@ use tauri::{AppHandle, State, Emitter};
 use crate::file::{ get_dir_size, FileMetadata};
 use crate::FileList;
 use crate::utils::win_icons::get_explorer_thumbnail_base64;
+use crate::analytics;
 
 #[tauri::command]
 pub fn add_files(
@@ -66,9 +67,13 @@ pub fn remove_files(
     let mut list = file_list
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
+    
+    let mut removed_files = Vec::new();
     for file_id in file_ids {
         if let Some(pos) = list.iter().position(|f| f.id == file_id) {
+            let file_name = list[pos].name.clone();
             list.remove(pos);
+            removed_files.push(file_name);
             app_handle
                 .emit("files_updated", ())
                 .map_err(|e| e.to_string())?;
@@ -76,6 +81,17 @@ pub fn remove_files(
             return Err(format!("File with ID {} not found", file_id));
         }
     }
+    
+    // Send analytics events for removed files
+    let app_handle_clone = app_handle.clone();
+    tauri::async_runtime::spawn(async move {
+        for file_name in removed_files {
+            if let Err(e) = analytics::send_file_removed_event(&app_handle_clone, &file_name).await {
+                eprintln!("[Analytics] Failed to send file_removed event: {}", e);
+            }
+        }
+    });
+    
     Ok(())
 }
 
@@ -98,14 +114,25 @@ pub fn rename_file(
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
     if let Some(file) = list.iter_mut().find(|f| f.id == file_id) {
+        let old_name = file.name.clone();
         file.name = new_name.clone();
+        
+        // Send analytics event for file rename
+        let app_handle_clone = app_handle.clone();
+        let old_name_clone = old_name.clone();
+        let new_name_clone = new_name.clone();
+        tauri::async_runtime::spawn(async move {
+            if let Err(e) = analytics::send_file_renamed_event(&app_handle_clone, &old_name_clone, &new_name_clone).await {
+                eprintln!("[Analytics] Failed to send file_renamed event: {}", e);
+            }
+        });
+        
         app_handle
             .emit("files_updated", ())
             .map_err(|e| e.to_string())?;
-
         Ok(())
     } else {
-        Err(format!("File with ID {} not found", file_id))
+        Err("File not found".to_string())
     }
 }
 
@@ -115,15 +142,23 @@ pub fn clear_files(
     file_list: State<'_, FileList>,
 ) -> Result<(), String> {
     let mut list = file_list
-    .lock()
-    .map_err(|_| "Failed to acquire lock".to_string())?;
+        .lock()
+        .map_err(|_| "Failed to acquire lock".to_string())?;
     
+    let num_files = list.len();
     list.clear();
-
+    
+    // Send analytics event for clearing files
+    let app_handle_clone = app_handle.clone();
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = analytics::send_files_cleared_event(&app_handle_clone, num_files).await {
+            eprintln!("[Analytics] Failed to send files_cleared event: {}", e);
+        }
+    });
+    
     app_handle
         .emit("files_updated", ())
         .map_err(|e| e.to_string())?;
-
     Ok(())
 }
 

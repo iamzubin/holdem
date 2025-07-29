@@ -2,8 +2,7 @@ use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, State, Manager};
 use crate::config::AppConfig;
 use crate::file::FileMetadata;
-use dotenv::dotenv;
-use posthog_rs::{Event as PostHogEvent};
+use crate::analytics;
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VK_CONTROL, VK_SHIFT};
 
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
@@ -21,7 +20,7 @@ fn is_move_key_pressed() -> bool {
 pub fn start_multi_drag(
     app: AppHandle,
     _file_list: State<'_, FileList>,
-    config: State<'_, Arc<Mutex<AppConfig>>>,
+    _config: State<'_, Arc<Mutex<AppConfig>>>,
     file_paths: Vec<String>,
 ) -> Result<(), String> {
     println!(
@@ -29,30 +28,15 @@ pub fn start_multi_drag(
         file_paths.join(", ")
     );
 
-    // Send PostHog event asynchronously
+    // Send analytics event asynchronously using centralized service
     let num_files = file_paths.len();
-    let config = config.lock().unwrap();
-    let uuid = config.analytics_uuid.clone();
-    drop(config); // Release lock before async block
+    let app_handle = app.clone();
     
     tauri::async_runtime::spawn(async move {
-        dotenv().ok();
-        match std::env::var("POSTHOG_KEY") {
-            Ok(posthog_key) => {
-                println!("[PostHog] Sending files dropped event ({} files)...", num_files);
-                println!("[PostHog] Key loaded: {}...", &posthog_key[..6]);
-                let client = posthog_rs::client(posthog_key.as_str()).await;
-                let mut event = PostHogEvent::new("files dropped", &uuid);
-                let _ = event.insert_prop("num_files", num_files as i64);
-                let res = client.capture(event).await;
-                match res {
-                    Ok(_) => println!("[PostHog] files dropped event sent!"),
-                    Err(e) => println!("[PostHog] Error sending files dropped event: {:?}", e),
-                }
-            }
-            Err(_) => {
-                println!("[PostHog] POSTHOG_KEY not set in environment");
-            }
+        if let Err(e) = analytics::send_analytics_event(&app_handle, "files_dropped", Some(vec![
+            ("num_files", serde_json::Value::Number((num_files as i64).into())),
+        ])).await {
+            eprintln!("[Analytics] Failed to send files_dropped event: {}", e);
         }
     });
 
@@ -77,7 +61,8 @@ pub fn start_multi_drag(
 
     let item = drag::DragItem::Files(valid_paths);
 
-    let window = app.get_webview_window("main").unwrap();
+    let window = app.get_webview_window("main")
+        .ok_or("Main window not found")?;
     let app_clone = app.clone();
     let is_move = is_move_key_pressed();
 
@@ -91,13 +76,15 @@ pub fn start_multi_drag(
 
         // check if the popup window is open
         if app_clone.get_webview_window("popup").is_some() {
-            super::window_ops::close_popup_window(app_clone.clone()).unwrap();
+            if let Err(e) = super::window_ops::close_popup_window(app_clone.clone()) {
+                println!("Failed to close popup window: {}", e);
+            }
         }
-        let _ = app
-            .get_webview_window("main")
-            .unwrap()
-            .hide()
-            .map_err(|e| e.to_string());
+        if let Some(main_window) = app.get_webview_window("main") {
+            if let Err(e) = main_window.hide() {
+                println!("Failed to hide main window: {}", e);
+            }
+        }
     };
 
     drag::start_drag(

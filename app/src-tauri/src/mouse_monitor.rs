@@ -11,6 +11,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{DragDetect, GetAsyncKeyState, 
 use windows::Win32::UI::WindowsAndMessaging::{
     GetCursorPos, GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN,
 };
+use crate::analytics;
 
 pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
     let files_dropped = Arc::new(AtomicBool::new(false));
@@ -70,19 +71,17 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             let mut current_position = POINT::default();
             let _ = unsafe { GetCursorPos(&mut current_position) };
 
-            unsafe {
-                DragDetect(
-                    HWND(
-                        app_handle
-                            .get_webview_window("main")
-                            .unwrap()
-                            .hwnd()
-                            .unwrap()
-                            .0 as isize,
-                    ),
-                    current_position,
-                )
-            };
+            // Safely get the window handle
+            if let Some(window) = app_handle.get_webview_window("main") {
+                if let Ok(hwnd) = window.hwnd() {
+                    unsafe {
+                        DragDetect(
+                            HWND(hwnd.0 as isize),
+                            current_position,
+                        )
+                    };
+                }
+            }
 
             // Calculate the distance moved on the x-axis
             let distance_x = current_position.x - last_position.x;
@@ -119,6 +118,15 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             if shake_count >= config.required_shakes {
                 println!("Shake detected! Opening window...");
 
+                // Send analytics event for mouse shake detection
+                let app_clone = app_handle.clone();
+                let shake_count_clone = shake_count;
+                tauri::async_runtime::spawn(async move {
+                    if let Err(e) = analytics::send_mouse_shake_detected_event(&app_clone, shake_count_clone).await {
+                        eprintln!("[Analytics] Failed to send mouse_shake_detected event: {}", e);
+                    }
+                });
+
                 // Ensure the window does not open off-screen or in the corner
                 let mut window_x = current_position.x;
                 let mut window_y = current_position.y;
@@ -136,7 +144,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
                 }
 
                 // Show the window at the adjusted position
-                let app = app_handle.app_handle();
+                let app = app_handle.clone();
                 if let Some(window) = app.get_webview_window("main") {
                     let _ = window.set_position(PhysicalPosition {
                         x: window_x,
@@ -146,6 +154,14 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
                     let _ = window.unminimize();
                     let _ = window.set_focus();
                     println!("Window opened successfully");
+                    
+                    // Send analytics event for window opened via mouse shake
+                    let app_clone = app.clone();
+                    tauri::async_runtime::spawn(async move {
+                        if let Err(e) = analytics::send_window_opened_event(&app_clone, "main_shake").await {
+                            eprintln!("[Analytics] Failed to send window_opened event: {}", e);
+                        }
+                    });
                 }
                 shake_count = 0;
             }
