@@ -13,7 +13,6 @@ use windows::Win32::UI::WindowsAndMessaging::SM_CXSCREEN;
 use windows::Win32::UI::WindowsAndMessaging::SM_CYSCREEN;
 use tauri::WebviewUrl;
 use tauri::WebviewWindowBuilder;
-use dotenv::dotenv;
 
 mod commands;
 #[cfg(desktop)]
@@ -43,8 +42,6 @@ type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Load environment variables
-    dotenv().ok();
     // Check for existing instance
     unsafe {
         let mutex_name = windows::core::w!("Global\\HoldemAppMutex");
@@ -169,18 +166,15 @@ pub fn run() {
                         let analytics_state_clone = analytics_state.clone();
                         tauri::async_runtime::spawn(async move {
                             // Initialize the service without holding the mutex guard across await
-                            let posthog_key = std::env::var("POSTHOG_KEY");
                             let mut client = None;
                             
                             if analytics_enabled {
-                                if let Ok(key) = posthog_key {
-                                    println!("[Analytics] Initializing PostHog client...");
-                                    let c = posthog_rs::client(key.as_str()).await;
-                                    client = Some(std::sync::Arc::new(c));
-                                    println!("[Analytics] PostHog client initialized successfully");
-                                } else {
-                                    println!("[Analytics] POSTHOG_KEY environment variable not set, skipping analytics");
-                                }
+                                // Use compile-time environment variable
+                                let posthog_key = env!("POSTHOG_KEY", "POSTHOG_KEY not set at compile time");
+                                println!("[Analytics] Initializing PostHog client...");
+                                let c = posthog_rs::client(posthog_key).await;
+                                client = Some(std::sync::Arc::new(c));
+                                println!("[Analytics] PostHog client initialized successfully");
                             } else {
                                 println!("[Analytics] Analytics disabled, skipping initialization");
                             }

@@ -26,19 +26,13 @@ impl AnalyticsService {
             return Ok(());
         }
 
-        match std::env::var("POSTHOG_KEY") {
-            Ok(posthog_key) => {
-                println!("[Analytics] Initializing PostHog client...");
-                let client = client(posthog_key.as_str()).await;
-                self.client = Some(Arc::new(client));
-                println!("[Analytics] PostHog client initialized successfully");
-                Ok(())
-            }
-            Err(_) => {
-                println!("[Analytics] POSTHOG_KEY environment variable not set, skipping analytics");
-                Ok(())
-            }
-        }
+        // Use compile-time environment variable
+        let posthog_key = env!("POSTHOG_KEY", "POSTHOG_KEY not set at compile time");
+        println!("[Analytics] Initializing PostHog client...");
+        let client = client(posthog_key).await;
+        self.client = Some(Arc::new(client));
+        println!("[Analytics] PostHog client initialized successfully");
+        Ok(())
     }
 
     pub async fn send_event(&self, event_name: &str, properties: Option<Vec<(&str, serde_json::Value)>>) -> Result<(), String> {

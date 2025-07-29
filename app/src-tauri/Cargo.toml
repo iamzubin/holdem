@@ -42,7 +42,6 @@ tauri-plugin-process = "2.2.1"
 drag = "2.1.0"
 image = "0.25"
 glob = "0.3.2"
-dotenv = "0.15.0"
 posthog-rs = "0.3.5"
 tokio = "1.47.0"
 uuid = { version = "1.0", features = ["v4"] }
