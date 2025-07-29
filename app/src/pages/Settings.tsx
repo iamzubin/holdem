@@ -42,6 +42,19 @@ export default function SettingsPage() {
             setConfig(config);
         } catch (error) {
             console.error('Failed to load config:', error);
+            // Set a default config if loading fails
+            setConfig({
+                mouse_monitor: {
+                    required_shakes: 5,
+                    shake_time_limit: 1500,
+                    shake_threshold: 100,
+                    window_close_delay: 3000,
+                },
+                autostart: false,
+                hotkey: '',
+                analytics_enabled: false,
+                analytics_uuid: '',
+            });
         }
     };
 

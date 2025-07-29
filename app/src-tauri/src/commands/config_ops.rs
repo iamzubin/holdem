@@ -2,12 +2,12 @@ use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, State, Manager};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
 use tauri_plugin_autostart::ManagerExt;
-use posthog_rs;
 use crate::config::AppConfig;
+use crate::analytics;
 
 #[tauri::command]
-pub fn get_config(config: State<Arc<Mutex<AppConfig>>>) -> AppConfig {
-    config.lock().unwrap().clone()
+pub fn get_config(config: State<Arc<Mutex<AppConfig>>>) -> Result<AppConfig, String> {
+    config.lock().map_err(|e| format!("Failed to lock config: {}", e)).map(|c| c.clone())
 }
 
 #[tauri::command]
@@ -16,13 +16,21 @@ pub fn save_config(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
-    let mut config = config.lock().unwrap();
+    let mut config = config.lock().map_err(|e| format!("Failed to lock config: {}", e))?;
     *config = new_config;
     config.save(&app_handle)
 }
 
 #[tauri::command]
 pub fn restart_app(app: AppHandle) -> Result<(), String> {
+    // Send analytics event for app restart
+    let app_clone = app.clone();
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = analytics::send_app_restarted_event(&app_clone).await {
+            eprintln!("[Analytics] Failed to send app_restarted event: {}", e);
+        }
+    });
+    
     app.restart();
 }
 
@@ -35,6 +43,13 @@ pub fn set_autostart(app_handle: AppHandle, enabled: bool) -> Result<(), String>
     } else {
         autostart_manager.disable().map_err(|e| e.to_string())?;
     }
+
+    // Send analytics event
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = analytics::send_autostart_toggled_event(&app_handle, enabled).await {
+            eprintln!("[Analytics] Failed to send autostart_toggled event: {}", e);
+        }
+    });
 
     Ok(())
 }
@@ -142,6 +157,16 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
         .map_err(|e| format!("Failed to set shortcut callback: {}", e))?;
 
     println!("Hotkey registered successfully");
+
+    // Send analytics event
+    let app_handle_clone = app_handle.clone();
+    let shortcut_str_clone = shortcut_str.clone();
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await {
+            eprintln!("[Analytics] Failed to send hotkey_registered event: {}", e);
+        }
+    });
+
     Ok(())
 }
 
@@ -150,27 +175,18 @@ pub fn accept_analytics_consent(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
-    let mut config = config.lock().unwrap();
+    let mut config = config.lock().map_err(|e| format!("Failed to lock config: {}", e))?;
     config.analytics_enabled = true;
     config.save(&app_handle)?;
     
     println!("[Analytics] User accepted analytics consent");
     
-    // Send initial analytics event after consent
-    let posthog_key = std::env::var("POSTHOG_KEY");
-    if let Ok(key) = posthog_key {
-        let uuid = config.analytics_uuid.clone();
-        tauri::async_runtime::spawn(async move {
-            println!("[PostHog] Sending consent_accepted event...");
-            let client = posthog_rs::client(key.as_str()).await;
-            let event = posthog_rs::Event::new("consent_accepted", &uuid);
-            let res = client.capture(event).await;
-            match res {
-                Ok(_) => println!("[PostHog] consent_accepted event sent!"),
-                Err(e) => println!("[PostHog] Error sending consent_accepted event: {:?}", e),
-            }
-        });
-    }
+    // Send initial analytics event after consent using centralized service
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = analytics::send_analytics_event(&app_handle, "consent_accepted", None).await {
+            eprintln!("[Analytics] Failed to send consent_accepted event: {}", e);
+        }
+    });
     
     Ok(())
 }
@@ -180,18 +196,25 @@ pub fn decline_analytics_consent(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
-    let mut config = config.lock().unwrap();
+    let mut config = config.lock().map_err(|e| format!("Failed to lock config: {}", e))?;
     config.analytics_enabled = false;
     config.save(&app_handle)?;
     
     println!("[Analytics] User declined analytics consent");
+    
+    // Send analytics event for declined consent
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = analytics::send_consent_declined_event(&app_handle).await {
+            eprintln!("[Analytics] Failed to send consent_declined event: {}", e);
+        }
+    });
+    
     Ok(())
 }
 
 #[tauri::command]
-pub fn check_analytics_consent(config: State<Arc<Mutex<AppConfig>>>) -> bool {
-    let config = config.lock().unwrap();
-    config.analytics_enabled
+pub fn check_analytics_consent(config: State<Arc<Mutex<AppConfig>>>) -> Result<bool, String> {
+    config.lock().map_err(|e| format!("Failed to lock config: {}", e)).map(|c| c.analytics_enabled)
 }
 
 #[tauri::command]

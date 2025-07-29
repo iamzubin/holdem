@@ -41,23 +41,42 @@ impl Default for AppConfig {
 
 impl AppConfig {
     pub fn config_exists(app_handle: &AppHandle) -> bool {
-        let config_path = Self::get_config_path(app_handle);
-        config_path.exists()
+        if let Ok(config_path) = Self::get_config_path(app_handle) {
+            config_path.exists()
+        } else {
+            false
+        }
     }
 
     pub fn load(app_handle: &AppHandle) -> Self {
-        let config_path = Self::get_config_path(app_handle);
+        let config_path = match Self::get_config_path(app_handle) {
+            Ok(path) => path,
+            Err(e) => {
+                eprintln!("[Config] Failed to get config path: {}", e);
+                println!("[Config] Using default config due to path error");
+                return Self::default();
+            }
+        };
+        
         println!("Loading config from: {:?}", config_path);
 
         if let Ok(contents) = fs::read_to_string(&config_path) {
-            if let Ok(mut config) = serde_json::from_str::<AppConfig>(&contents) {
-                // Check if analytics fields are missing (for backward compatibility)
-                if config.analytics_uuid.is_empty() {
-                    config.analytics_uuid = Uuid::new_v4().to_string();
-                    println!("[Config] Generated new analytics UUID: {}", config.analytics_uuid);
+            match serde_json::from_str::<AppConfig>(&contents) {
+                Ok(mut config) => {
+                    // Check if analytics fields are missing (for backward compatibility)
+                    if config.analytics_uuid.is_empty() {
+                        config.analytics_uuid = Uuid::new_v4().to_string();
+                        println!("[Config] Generated new analytics UUID: {}", config.analytics_uuid);
+                    }
+                    return config;
                 }
-                return config;
+                Err(e) => {
+                    eprintln!("[Config] Failed to parse config file: {}", e);
+                    println!("[Config] Using default config due to parse error");
+                }
             }
+        } else {
+            println!("[Config] Config file not found or unreadable");
         }
 
         // If loading fails, return default config
@@ -66,7 +85,7 @@ impl AppConfig {
     }
 
     pub fn save(&self, app_handle: &AppHandle) -> Result<(), String> {
-        let config_path = Self::get_config_path(app_handle);
+        let config_path = Self::get_config_path(app_handle)?;
         println!("Saving config to: {:?}", config_path);
 
         let config_dir = config_path.parent().ok_or("Invalid config path")?;
@@ -88,10 +107,11 @@ impl AppConfig {
         Ok(())
     }
 
-    fn get_config_path(app_handle: &AppHandle) -> PathBuf {
-        let app_dir = app_handle.path().app_config_dir().unwrap();
+    fn get_config_path(app_handle: &AppHandle) -> Result<PathBuf, String> {
+        let app_dir = app_handle.path().app_config_dir()
+            .map_err(|e| format!("Failed to get app config directory: {}", e))?;
         let config_path = app_dir.join("config.json");
         println!("Config path: {:?}", config_path);
-        config_path
+        Ok(config_path)
     }
 }
