@@ -1967,7 +1967,7 @@ dependencies = [
  "tokio",
  "uuid",
  "window-vibrancy 0.5.3",
- "windows 0.52.0",
+ "windows 0.61.3",
  "windows-icons",
 ]
 
