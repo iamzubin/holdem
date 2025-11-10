@@ -19,7 +19,7 @@ tauri-plugin-shell = "2.2.1"
 tauri-plugin-updater = "2.7.1"
 tauri-plugin-dialog = "2.2.1"
 tauri-plugin-autostart = "2.3.0"
-tauri-plugin-global-shortcut = "2.2.0"
+tauri-plugin-global-shortcut = "2.3.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-fs = "2.2.1"
@@ -50,6 +50,6 @@ uuid = { version = "1.0", features = ["v4"] }
 lto = true
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-tauri-plugin-global-shortcut = "2.2.0"
+tauri-plugin-global-shortcut = "2.3.1"
 tauri-plugin-single-instance = "2.2.3"
 # thinlto = true
