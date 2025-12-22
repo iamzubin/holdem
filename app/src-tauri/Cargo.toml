@@ -37,7 +37,7 @@ window-vibrancy = "0.5.3"
 # windows-icons = { path = "../../windows-icons" }
 windows-icons = { git = "https://github.com/zmconnelly/windows-icons" }
 base64 = "0.22.1"
-active-win-pos-rs = "0.8"
+active-win-pos-rs = "0.9"
 tauri-plugin-process = "2.2.1"
 drag = "2.1.0"
 image = "0.25"
