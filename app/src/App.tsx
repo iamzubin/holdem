@@ -6,7 +6,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { handleMultiFileDragStart } from "@/lib/fileUtils";
 import { closeWindow } from "@/lib/windowUtils";
-import { FilePreview } from "@/types";
+import { FilePreview, FileWithPath } from "@/types";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
@@ -32,18 +32,13 @@ function App() {
   useEffect(() => {
     const checkConsent = async () => {
       try {
-        console.log('Checking if config file exists...');
         const configExists = await invoke<boolean>('check_config_exists');
-        console.log('Config file exists:', configExists);
-        
+
         if (!configExists) {
-          console.log('Config file does not exist, opening consent window...');
           // Add a small delay to ensure main window is fully loaded
           setTimeout(async () => {
             await invoke('open_consent_window');
           }, 500);
-        } else {
-          console.log('Config file exists, skipping consent window');
         }
       } catch (error) {
         console.error('Failed to check config existence:', error);
@@ -92,7 +87,6 @@ function App() {
   }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    console.log("handleDragOver")
     e.preventDefault();
     e.stopPropagation();
   }, []);
@@ -108,7 +102,7 @@ function App() {
       preview: URL.createObjectURL(file),
       type: 'file',
       size: file.size,
-      path: (file as any).path,
+      path: (file as FileWithPath).path,
       icon: getFileExtension(file.name)
     }));
 
@@ -134,22 +128,21 @@ function App() {
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 text-foreground flex flex-col bg-background p-2"
       onContextMenu={handleContextMenu}
     >
       {/* Handle and Title Bar */}
-      <div className="relative flex justify-end items-center h-5" data-tauri-drag-region onDragStart={(e)=>{
-        console.log("drag start")
+      <div className="relative flex justify-end items-center h-5" data-tauri-drag-region onDragStart={(e) => {
         e.preventDefault();
       }}>
         <div className="absolute left-1/2 transform -translate-x-1/2 top-1/2 -translate-y-1/2">
           <div className="w-10 h-0.5 bg-foreground rounded-full" data-tauri-drag-region></div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="text-foreground hover:bg-gray-500 hover:text-background rounded h-5 w-5" 
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-foreground hover:bg-gray-500 hover:text-background rounded h-5 w-5"
           onClick={openSettings}
         >
           <Settings className="h-4 w-4" />
@@ -160,39 +153,39 @@ function App() {
       </div>
 
 
-        <>
-          {/* Main Content */}
-          <div className="flex-grow flex flex-col items-center justify-center space-y-1"
-               onDragEnter={handleDragEnter}
-               onDragOver={handleDragOver}
-               onDragLeave={handleDragLeave}
-               onDrop={handleDrop}>
-            {files.length > 0 ? (
-              <div className="relative w-10 h-10 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
-                <StackedIcons files={files} handleStackDragStart={handleStackDragStart} />
-              </div>
-            ) : (
-              <div className="flex flex-col items-center">
-                <Download className="h-5 w-5" />
-                <span className="text-[8px]">Drop here</span>
-              </div>
-            )}
-          </div>
+      <>
+        {/* Main Content */}
+        <div className="flex-grow flex flex-col items-center justify-center space-y-1"
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}>
+          {files.length > 0 ? (
+            <div className="relative w-10 h-10 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
+              <StackedIcons files={files} handleStackDragStart={handleStackDragStart} />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <Download className="h-5 w-5" />
+              <span className="text-[8px]">Drop here</span>
+            </div>
+          )}
+        </div>
 
-          {/* Dropdown Button at the Bottom */}
-          <div className="flex justify-center items-center mt-1">
-            <Button
-              onClick={openPopup}
-              variant="secondary"
-            >
-              <span>{files.length} file{files.length !== 1 ? 's' : ''}</span>
-              <ChevronDown className="h-2 w-2 ml-1" />
-            </Button>
-          </div>
-        </>
+        {/* Dropdown Button at the Bottom */}
+        <div className="flex justify-center items-center mt-1">
+          <Button
+            onClick={openPopup}
+            variant="secondary"
+          >
+            <span>{files.length} file{files.length !== 1 ? 's' : ''}</span>
+            <ChevronDown className="h-2 w-2 ml-1" />
+          </Button>
+        </div>
+      </>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent 
+        <DialogContent
           className="rounded-md p-0 mt-2 w-[90vw]"
         >
           <div className="flex flex-col items-start text-foreground">
@@ -213,19 +206,19 @@ function App() {
                   Paste
                 </Button>
                 <div className="w-[90%] h-[1px] bg-foreground mx-[5%]"></div> */}
-                <Button 
+                <Button
                   className="w-full text-left justify-start hover:bg-secondary transition-colors"
                   variant="ghost"
                   onClick={() => {
                     clearFiles(files.map(file => file.id));
                   }}
                 >
-                  <X  className="h-4 w-4" />
+                  <X className="h-4 w-4" />
                   Clear
                 </Button>
               </>
             ) : (
-              <Button 
+              <Button
                 className="w-full text-left justify-start  hover:bg-secondary transition-colors"
                 variant="ghost"
               >

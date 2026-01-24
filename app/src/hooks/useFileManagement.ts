@@ -10,7 +10,6 @@ export const useFileManagement = () => {
   const fetchFiles = useCallback(async () => {
     try {
       const fetchedFiles: FilePreview[] = await invoke('get_files');
-      console.log("fetchedFiles", fetchedFiles)
       setFiles(fetchedFiles);
     } catch (error) {
       console.error('Error fetching files:', error);
@@ -30,23 +29,37 @@ export const useFileManagement = () => {
   useEffect(() => {
     fetchFiles();
 
-    const unlistenFileAdded = listen('file_added', (event: any) => {
-      console.log('file_added', event);
-      setFiles(prevFiles => [...prevFiles, event.payload]);
-    });
+    // Initialize listeners
+    const setupListeners = async () => {
+      const unlistenAdded = await listen<FilePreview>('file_added', (event) => {
+        setFiles(prevFiles => [...prevFiles, event.payload]);
+      });
 
-    const unlistenFileRemoved = listen('file_removed', (event: any) => {
-      setFiles(prevFiles => prevFiles.filter(file => file.id !== event.payload));
-    });
+      const unlistenRemoved = await listen<number>('file_removed', (event) => {
+        setFiles(prevFiles => prevFiles.filter(file => file.id !== event.payload));
+      });
 
-    const unlistenFileRenamed = listen('file_renamed', (event: any) => {
-      setFiles(prevFiles => prevFiles.map(file => 
-        file.id === event.payload.id ? { ...file, name: event.payload.newName } : file
-      ));
-    });
+      const unlistenRenamed = await listen<{ id: number, newName: string }>('file_renamed', (event) => {
+        setFiles(prevFiles => prevFiles.map(file =>
+          file.id === event.payload.id ? { ...file, name: event.payload.newName } : file
+        ));
+      });
 
-    const unlistenFilesUpdated = listen('files_updated', () => {
-      fetchFiles();
+      const unlistenUpdated = await listen('files_updated', () => {
+        fetchFiles();
+      });
+
+      return () => {
+        unlistenAdded();
+        unlistenRemoved();
+        unlistenRenamed();
+        unlistenUpdated();
+      };
+    };
+
+    let cleanupListeners: (() => void) | undefined;
+    setupListeners().then(cleanup => {
+      cleanupListeners = cleanup;
     });
 
     // Set up visibility change listener
@@ -59,10 +72,7 @@ export const useFileManagement = () => {
     const refreshInterval = setInterval(refreshFiles, 1000);
 
     return () => {
-      // unlistenFileAdded.then(f => f());
-      // unlistenFileRemoved.then(f => f());
-      // unlistenFileRenamed.then(f => f());
-      // unlistenFilesUpdated.then(f => f());
+      if (cleanupListeners) cleanupListeners();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(refreshInterval);
     };

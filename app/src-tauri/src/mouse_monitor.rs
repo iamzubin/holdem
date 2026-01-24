@@ -36,15 +36,20 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
         let mut is_explorer_active = false;
 
         loop {
-            // Only check active window every 500ms instead of every iteration
-            if last_active_window_check.elapsed() >= Duration::from_millis(500) {
-                is_explorer_active = match get_active_window() {
-                    Ok(active_window) => active_window
-                        .process_path
-                        .to_str()
-                        .unwrap()
-                        .contains("explorer.exe"),
-                    Err(_) => {
+                if last_active_window_check.elapsed() >= Duration::from_millis(500) {
+                    is_explorer_active = match get_active_window() {
+                        Ok(active_window) => {
+                            let process_path = active_window
+                                .process_path
+                                .to_str()
+                                .unwrap_or("")
+                                .to_lowercase();
+                            
+                            config.whitelist.iter().any(|app_name| {
+                                process_path.contains(&app_name.to_lowercase())
+                            })
+                        },
+                        Err(_) => {
                         println!("error occurred while getting the active window");
                         false
                     }
@@ -75,10 +80,10 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             if let Some(window) = app_handle.get_webview_window("main") {
                 if let Ok(hwnd) = window.hwnd() {
                     unsafe {
-                        DragDetect(
-                            HWND(hwnd.0 as isize),
+                        let _ = DragDetect(
+                            HWND(hwnd.0 as *mut std::ffi::c_void),
                             current_position,
-                        )
+                        );
                     };
                 }
             }
