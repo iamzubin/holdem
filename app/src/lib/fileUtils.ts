@@ -10,7 +10,6 @@ export const handleDragStart = async (e: React.DragEvent<HTMLDivElement>, file: 
 
   try {
     await invoke('start_drag', { filePath: file.path });
-    console.log('Drag started successfully');
   } catch (error) {
     console.error('Error starting drag:', error);
   }
@@ -26,7 +25,6 @@ export const handleMultiFileDragStart = async (e: React.DragEvent<HTMLDivElement
 
   try {
     await invoke('start_multi_drag', { filePaths: files.map(file => file.path) });
-    console.log('Multi-file drag started successfully');
   } catch (error) {
     console.error('Error starting multi-file drag:', error);
   }

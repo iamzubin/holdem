@@ -1139,6 +1139,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "dotenvy"
+version = "0.15.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b"
+
+[[package]]
 name = "downcast-rs"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1943,11 +1949,12 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "holdem"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "active-win-pos-rs",
  "base64 0.22.1",
  "chrono",
+ "dotenvy",
  "drag",
  "glob",
  "image",

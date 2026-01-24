@@ -2,7 +2,7 @@ use std::{ffi::c_void, os::windows::ffi::OsStrExt};
 use windows::{
     core::{Error, HRESULT, PCWSTR},
     Win32::{
-        Foundation::{HWND, SIZE},
+        Foundation::SIZE,
         Graphics::Gdi::{BITMAPINFO, BITMAPINFOHEADER, DIB_RGB_COLORS, GetDIBits, GetDC},
         System::Com::{CoInitializeEx, CoUninitialize, COINIT_APARTMENTTHREADED},
         UI::Shell::{IShellItemImageFactory, SHCreateItemFromParsingName, SIIGBF},
@@ -48,7 +48,7 @@ fn crop_transparent_bounds(p: &[u8], w: usize, h: usize) -> (Vec<u8>, u32, u32) 
 
 pub fn get_explorer_thumbnail_base64(input_path: &str) -> windows::core::Result<String> {
     unsafe {
-        CoInitializeEx(None, COINIT_APARTMENTTHREADED).ok();
+        let _ = CoInitializeEx(None, COINIT_APARTMENTTHREADED).ok();
 
         let shell: IShellItemImageFactory = SHCreateItemFromParsingName(
             PCWSTR(wide(input_path).as_ptr()), None)?;
@@ -61,9 +61,9 @@ pub fn get_explorer_thumbnail_base64(input_path: &str) -> windows::core::Result<
                 break;
             }
         }
-        let bmp = bmp_opt.ok_or_else(|| Error::new(HRESULT(0x80004005u32 as i32), "No image or icon".into()))?;
+        let bmp = bmp_opt.ok_or_else(|| Error::new(HRESULT(0x80004005u32 as i32), "No image or icon"))?;
 
-        let dc = GetDC(HWND(0));
+        let dc = GetDC(None);
         let mut info = BITMAPINFO {
             bmiHeader: BITMAPINFOHEADER {
                 biSize: std::mem::size_of::<BITMAPINFOHEADER>() as u32,
@@ -90,7 +90,7 @@ pub fn get_explorer_thumbnail_base64(input_path: &str) -> windows::core::Result<
         {
             let encoder = PngEncoder::new(&mut png_data);
             encoder.write_image(&cropped, w, h, ColorType::Rgba8.into())
-                .map_err(|e| Error::new(HRESULT(0x80004005u32 as i32), e.to_string().into()))?;
+                .map_err(|e| Error::new(HRESULT(0x80004005u32 as i32), e.to_string()))?;
         }
 
         CoUninitialize();

@@ -1,6 +1,6 @@
 [package]
 name = "holdem"
-version = "0.2.3"
+version = "0.2.4"
 description = "A Tauri App"
 authors = ["Zubin"]
 edition = "2021"
@@ -12,6 +12,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2.2.0", features = [] }
+dotenvy = "0.15"
 
 [dependencies]
 tauri = { version = "2.5.1", features = ["tray-icon"] }

@@ -20,6 +20,12 @@ pub struct MouseMonitorConfig {
     pub shake_time_limit: u64,
     pub shake_threshold: i32,
     pub window_close_delay: u64,
+    #[serde(default = "default_whitelist")]
+    pub whitelist: Vec<String>,
+}
+
+fn default_whitelist() -> Vec<String> {
+    vec!["explorer.exe".to_string()]
 }
 
 impl Default for AppConfig {
@@ -30,6 +36,7 @@ impl Default for AppConfig {
                 shake_time_limit: 1500,
                 shake_threshold: 100,
                 window_close_delay: 3000,
+                whitelist: default_whitelist(),
             },
             autostart: false,
             hotkey: "".to_string(),
