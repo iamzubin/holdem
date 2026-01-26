@@ -23,7 +23,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.11",
-    "@tauri-apps/api": ">=2.0.0-rc.0",
+    "@tauri-apps/api": ">=2.9.1",
     "@tauri-apps/plugin-autostart": "^2.5.1",
     "@tauri-apps/plugin-dialog": "^2.2.1",
     "@tauri-apps/plugin-fs": "^2.0.0",
