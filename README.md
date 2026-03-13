@@ -1,13 +1,13 @@
 # Holdem
 
 [![Downloads](https://img.shields.io/github/downloads/iamzubin/holdem/total.svg?style=flat)](https://github.com/iamzubin/holdem/releases)
+[![Release](https://img.shields.io/github/v/release/iamzubin/holdem)](https://github.com/iamzubin/holdem/releases/latest)
 [![License](https://img.shields.io/github/license/iamzubin/holdem)](LICENSE)
-**Platform:** Windows
+[![Platform](https://img.shields.io/badge/platform-Windows-blue)](https://github.com/iamzubin/holdem/releases)
 
 Holdem is an open-source tool inspired by Dropover for macOS, built using [Tauri](https://tauri.app). It simplifies file drag-and-drop management, offering a temporary holding area for files or folders, making multitasking and file organization smoother across your desktop.
 
 ![Holdem](./assets/screen.gif)
-
 
 ## Features
 
@@ -19,7 +19,6 @@ Holdem is an open-source tool inspired by Dropover for macOS, built using [Tauri
 
 <center><a href="https://github.com/iamzubin/holdem/releases"><img src="./assets/icons8-download-48.png"></a></center>
 <center>Download the latest release from the <a href="https://github.com/iamzubin/holdem/releases">releases page</a></center>
-
 
 ## Installation
 
@@ -50,7 +49,6 @@ Make sure you have cargo (rust) and pnpm (nodejs) installed.
 2. Shake your mouse like crazy while holding some files
 3. Drag files into the floating window that appears.
 4. Files will remain in the holding area until dragged out.
-
 
 ## Features
 
