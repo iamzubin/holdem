@@ -1,5 +1,9 @@
 # Holdem
 
+[![Downloads](https://img.shields.io/github/downloads/iamzubin/holdem/total.svg?style=flat)](https://github.com/iamzubin/holdem/releases)
+[![License](https://img.shields.io/github/license/iamzubin/holdem)](LICENSE)
+**Platform:** Windows
+
 Holdem is an open-source tool inspired by Dropover for macOS, built using [Tauri](https://tauri.app). It simplifies file drag-and-drop management, offering a temporary holding area for files or folders, making multitasking and file organization smoother across your desktop.
 
 ![Holdem](./assets/screen.gif)
