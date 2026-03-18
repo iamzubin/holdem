@@ -55,6 +55,9 @@ export default function SettingsPage() {
             setConfig(config);
         } catch (error) {
             console.error('Failed to load config:', error);
+            // Detect platform for default whitelist
+            const isMac = navigator.platform.toLowerCase().includes('mac');
+            const defaultWhitelist = isMac ? ['Finder'] : ['explorer.exe'];
             // Set a default config if loading fails
             setConfig({
                 mouse_monitor: {
@@ -62,7 +65,7 @@ export default function SettingsPage() {
                     shake_time_limit: 1500,
                     shake_threshold: 100,
                     window_close_delay: 3000,
-                    whitelist: ['explorer.exe'],
+                    whitelist: defaultWhitelist,
                 },
                 autostart: false,
                 hotkey: '',

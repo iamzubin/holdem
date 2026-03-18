@@ -3,17 +3,50 @@ use tauri::{AppHandle, State, Manager};
 use crate::config::AppConfig;
 use crate::file::FileMetadata;
 use crate::analytics;
+
+#[cfg(target_os = "windows")]
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VK_CONTROL, VK_SHIFT};
+
+#[cfg(not(target_os = "windows"))]
+use device_query::{DeviceQuery, DeviceState};
 
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
-// Helper function to check if control or shift is pressed
+#[cfg(target_os = "windows")]
 fn is_move_key_pressed() -> bool {
     unsafe {
         let ctrl_pressed = GetAsyncKeyState(VK_CONTROL.0 as i32) < 0;
         let shift_pressed: bool = GetAsyncKeyState(VK_SHIFT.0 as i32) < 0;
         ctrl_pressed || shift_pressed
     }
+}
+
+#[cfg(not(target_os = "windows"))]
+fn is_move_key_pressed() -> bool {
+    let device_state = DeviceState::new();
+    let keys = device_state.get_keys();
+    
+    use device_query::Keycode;
+    keys.contains(&Keycode::LShift) || 
+    keys.contains(&Keycode::RShift) ||
+    keys.contains(&Keycode::LControl) || 
+    keys.contains(&Keycode::RControl)
+}
+
+fn get_drag_icon(file_path: &str) -> drag::Image {
+    if let Ok(icon) = file_icon_provider::get_file_icon(file_path, 64) {
+        // Encode the RGBA pixels as PNG
+        use image::codecs::png::PngEncoder;
+        use image::ColorType;
+        use image::ImageEncoder;
+        
+        let mut png_data = Vec::new();
+        let encoder = PngEncoder::new(&mut png_data);
+        if encoder.write_image(&icon.pixels, icon.width, icon.height, ColorType::Rgba8.into()).is_ok() {
+            return drag::Image::Raw(png_data);
+        }
+    }
+    drag::Image::Raw(Vec::new())
 }
 
 #[tauri::command]
@@ -59,6 +92,12 @@ pub fn start_multi_drag(
         return Err("No valid files to drag".to_string());
     }
 
+    let drag_image = if let Some(first_path) = valid_paths.first() {
+        get_drag_icon(&first_path.to_string_lossy())
+    } else {
+        drag::Image::Raw(Vec::new())
+    };
+
     let item = drag::DragItem::Files(valid_paths);
 
     let window = app.get_webview_window("main")
@@ -90,8 +129,7 @@ pub fn start_multi_drag(
     drag::start_drag(
         &window,
         item,
-        /* drag::Image */
-        drag::Image::Raw(Vec::new()),
+        drag_image,
         on_drop_callback,
         drag::Options {
             skip_animatation_on_cancel_or_failure: true,

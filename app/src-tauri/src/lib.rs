@@ -3,16 +3,9 @@ use std::sync::Mutex;
 use tauri::{Manager, Listener};
 use tauri::PhysicalPosition;
 use tauri_plugin_updater::UpdaterExt;
-// use tauri_plugin_dialog::DialogExt;
-use windows::Win32::Foundation::POINT;
-use windows::Win32::Foundation::WAIT_OBJECT_0;
-use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
-use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
-use windows::Win32::UI::WindowsAndMessaging::GetSystemMetrics;
-use windows::Win32::UI::WindowsAndMessaging::SM_CXSCREEN;
-use windows::Win32::UI::WindowsAndMessaging::SM_CYSCREEN;
 use tauri::WebviewUrl;
 use tauri::WebviewWindowBuilder;
+use device_query::DeviceQuery;
 
 mod commands;
 #[cfg(desktop)]
@@ -42,71 +35,80 @@ type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Check for existing instance
-    unsafe {
-        let mutex_name = windows::core::w!("Global\\HoldemAppMutex");
-        let mutex = CreateMutexW(None, true, mutex_name);
+    tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(
+            tauri_plugin_autostart::Builder::new()
+                .args(vec!["--autostart"])
+                .build()
+        )
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            if let Some(window) = app.get_webview_window("main") {
+                let _ = window.show();
+                let _ = window.set_focus();
+            }
+        }))
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(move |app, shortcut, event| {
+                    println!("Hotkey pressed: {:?}", shortcut);
+                    if let Some(window) = app.get_webview_window("main") {
+                        match event.state() {
+                            tauri_plugin_global_shortcut::ShortcutState::Pressed => {
+                                println!("Showing window");
 
-        if let Ok(mutex) = mutex {
-            if WaitForSingleObject(mutex, 0) == WAIT_OBJECT_0 {
-                tauri::Builder::default()
-                    .plugin(tauri_plugin_process::init())
-                    .plugin(tauri_plugin_global_shortcut::Builder::new().build())
-                    .plugin(tauri_plugin_fs::init())
-                    .plugin(tauri_plugin_shell::init())
-                    .plugin(tauri_plugin_updater::Builder::new().build())
-                    .plugin(tauri_plugin_dialog::init())
-                    .plugin(
-                        tauri_plugin_autostart::Builder::new()
-                            .args(vec!["--autostart"])
-                            .build()
-                    )
-                    .plugin(
-                        tauri_plugin_global_shortcut::Builder::new()
-                            .with_handler(move |app, shortcut, event| {
-                                println!("Hotkey pressed: {:?}", shortcut);
-                                if let Some(window) = app.get_webview_window("main") {
-                                    match event.state() {
-                                        tauri_plugin_global_shortcut::ShortcutState::Pressed => {
-                                            println!("Showing window");
+                                // Get cursor position using device_query
+                                let device_state = device_query::DeviceState::new();
+                                let mouse = device_state.get_mouse();
+                                let (cursor_x, cursor_y) = mouse.coords;
 
-                                            // Get current cursor position
-                                            let mut cursor_pos = POINT { x: 0, y: 0 };
-                                            let _ = GetCursorPos(&mut cursor_pos);
+                                // Get screen size from Tauri monitors
+                                let monitors = app.available_monitors().unwrap_or_default();
+                                let (screen_width, screen_height) = monitors.first()
+                                    .map(|m| {
+                                        let size = m.size();
+                                        (size.width as i32, size.height as i32)
+                                    })
+                                    .unwrap_or((1920, 1080));
 
-                                            // Define margin to consider as "corner"
-                                            let margin = 200; // Same as shake_threshold in mouse monitor
+                                // Define margin to consider as "corner"
+                                let margin = 200; // Same as shake_threshold in mouse monitor
 
-                                            // Adjust position to avoid off-screen
-                                            let mut window_x = cursor_pos.x;
-                                            let mut window_y = cursor_pos.y;
+                                // Adjust position to avoid off-screen
+                                let mut window_x = cursor_x;
+                                let mut window_y = cursor_y;
 
-                                            // Check if cursor is near the right or bottom edge
-                                            if cursor_pos.x + margin > GetSystemMetrics(SM_CXSCREEN) {
-                                                window_x = cursor_pos.x - margin;
-                                            }
-
-                                            if cursor_pos.y + margin > GetSystemMetrics(SM_CYSCREEN) {
-                                                window_y = cursor_pos.y - margin;
-                                            }
-
-                                            // Set window position and show it
-                                            let _ = window.set_position(PhysicalPosition {
-                                                x: window_x,
-                                                y: window_y,
-                                            });
-                                            let _ = window.show();
-                                            let _ = window.unminimize();
-                                            let _ = window.set_focus();
-                                        }
-                                        tauri_plugin_global_shortcut::ShortcutState::Released => {
-                                            println!("Window shown");
-                                        }
-                                    }
+                                // Check if cursor is near the right or bottom edge
+                                if cursor_x + margin > screen_width {
+                                    window_x = cursor_x - margin;
                                 }
-                            })
-                            .build(),
-                    )
+
+                                if cursor_y + margin > screen_height {
+                                    window_y = cursor_y - margin;
+                                }
+
+                                // Set window position and show it
+                                let _ = window.set_position(PhysicalPosition {
+                                    x: window_x,
+                                    y: window_y,
+                                });
+                                let _ = window.show();
+                                let _ = window.unminimize();
+                                let _ = window.set_focus();
+                            }
+                            tauri_plugin_global_shortcut::ShortcutState::Released => {
+                                println!("Window shown");
+                            }
+                        }
+                    }
+                })
+                .build(),
+        )
                     .invoke_handler(tauri::generate_handler![
                         // start_drag,
                         start_multi_drag,
@@ -165,16 +167,20 @@ pub fn run() {
                         // Initialize analytics service asynchronously
                         let analytics_state_clone = analytics_state.clone();
                         tauri::async_runtime::spawn(async move {
-                            // Initialize the service without holding the mutex guard across await
                             let mut client = None;
                             
                             if analytics_enabled {
-                                // Use compile-time environment variable
-                                let posthog_key = env!("POSTHOG_KEY", "POSTHOG_KEY not set at compile time");
-                                println!("[Analytics] Initializing PostHog client...");
-                                let c = posthog_rs::client(posthog_key).await;
-                                client = Some(std::sync::Arc::new(c));
-                                println!("[Analytics] PostHog client initialized successfully");
+                                // Try to get POSTHOG_KEY from environment
+                                let posthog_key = option_env!("POSTHOG_KEY");
+                                
+                                if let Some(key) = posthog_key {
+                                    println!("[Analytics] Initializing PostHog client...");
+                                    let c = posthog_rs::client(key).await;
+                                    client = Some(std::sync::Arc::new(c));
+                                    println!("[Analytics] PostHog client initialized successfully");
+                                } else {
+                                    println!("[Analytics] POSTHOG_KEY not set, analytics disabled at runtime");
+                                }
                             } else {
                                 println!("[Analytics] Analytics disabled, skipping initialization");
                             }
@@ -283,14 +289,4 @@ pub fn run() {
                     })
                     .run(tauri::generate_context!())
                     .expect("error while running tauri application");
-
-                // Clean up the mutex
-                let _ = ReleaseMutex(mutex);
-            } else {
-                // Another instance is already running
-                println!("Another instance of the application is already running.");
-                std::process::exit(0);
-            }
-        }
-    }
 }

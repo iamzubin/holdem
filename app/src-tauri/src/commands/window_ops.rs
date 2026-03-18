@@ -32,8 +32,7 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
                 WebviewUrl::App("popup".into()), // Assuming same frontend build
             )
             .title("File List")
-            .decorations(false) // Remove window decorations for a popup feel
-            .transparent(true)
+            .decorations(false)
             .shadow(false)
             .resizable(false)
             .inner_size(popup_width, popup_height)
@@ -87,7 +86,6 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
             WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App("settings".into()))
                 .title("Settings")
                 .decorations(false)
-                .transparent(true)
                 .shadow(false)
                 .inner_size(settings_width, settings_height)
                 .focused(true)
@@ -134,7 +132,6 @@ pub fn open_consent_window(app: AppHandle) -> Result<(), String> {
             WebviewWindowBuilder::new(&app_clone, "consent", WebviewUrl::App("/consent".into()))
                 .title("Analytics Consent")
                 .decorations(false)
-                .transparent(false)
                 .shadow(true)
                 .inner_size(450.0, 500.0)
                 .center()
