@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { handleMultiFileDragStart } from "@/lib/fileUtils";
-import { closeWindow } from "@/lib/windowUtils";
+import { closeWindow as hideWindow } from "@/lib/windowUtils";
 import { FilePreview, FileWithPath } from "@/types";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { invoke } from "@tauri-apps/api/core";
@@ -147,7 +147,7 @@ function App() {
         >
           <Settings className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" className="text-foreground hover:bg-red-500 hover:text-background rounded h-5 w-5" onClick={closeWindow}>
+        <Button variant="ghost" size="icon" className="text-foreground hover:bg-red-500 hover:text-background rounded h-5 w-5" onClick={hideWindow}>
           <X className="h-4 w-4" />
         </Button>
       </div>

@@ -25,7 +25,18 @@ pub struct MouseMonitorConfig {
 }
 
 fn default_whitelist() -> Vec<String> {
-    vec!["explorer.exe".to_string()]
+    #[cfg(target_os = "windows")]
+    {
+        vec!["explorer.exe".to_string()]
+    }
+    #[cfg(target_os = "macos")]
+    {
+        vec!["Finder".to_string()]
+    }
+    #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+    {
+        vec![]
+    }
 }
 
 impl Default for AppConfig {
@@ -64,7 +75,7 @@ impl AppConfig {
                 return Self::default();
             }
         };
-        
+
         println!("Loading config from: {:?}", config_path);
 
         if let Ok(contents) = fs::read_to_string(&config_path) {
@@ -73,7 +84,10 @@ impl AppConfig {
                     // Check if analytics fields are missing (for backward compatibility)
                     if config.analytics_uuid.is_empty() {
                         config.analytics_uuid = Uuid::new_v4().to_string();
-                        println!("[Config] Generated new analytics UUID: {}", config.analytics_uuid);
+                        println!(
+                            "[Config] Generated new analytics UUID: {}",
+                            config.analytics_uuid
+                        );
                     }
                     return config;
                 }
@@ -115,7 +129,9 @@ impl AppConfig {
     }
 
     fn get_config_path(app_handle: &AppHandle) -> Result<PathBuf, String> {
-        let app_dir = app_handle.path().app_config_dir()
+        let app_dir = app_handle
+            .path()
+            .app_config_dir()
             .map_err(|e| format!("Failed to get app config directory: {}", e))?;
         let config_path = app_dir.join("config.json");
         println!("Config path: {:?}", config_path);
