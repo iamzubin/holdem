@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use tauri::{AppHandle, State, Emitter};
 use crate::file::{ get_dir_size, FileMetadata};
 use crate::FileList;
-use crate::utils::win_icons::get_explorer_thumbnail_base64;
+use crate::thumbnail::get_thumbnail_base64;
 use crate::analytics;
 
 #[tauri::command]
@@ -200,6 +200,6 @@ pub fn get_file_icon_base64(
     file_path: &str,
 ) -> Result<String, String> {
     let file_path = file_path.to_string();
-    return get_explorer_thumbnail_base64(&file_path)
+    return get_thumbnail_base64(&file_path)
         .map_err(|e| e.to_string());
 } 

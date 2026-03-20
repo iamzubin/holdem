@@ -49,11 +49,12 @@ const PopupWindow: React.FC = () => {
 
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, file: any) => {
     e.stopPropagation();
+    const sourceEl = e.currentTarget as HTMLElement;
     if (selectedFiles.size > 0) {
       const selectedFileObjects = files.filter(f => selectedFiles.has(f.id.toString()));
-      handleMultiFileDragStart(e, selectedFileObjects);
+      handleMultiFileDragStart(e, selectedFileObjects, sourceEl);
     } else {
-      handleMultiFileDragStart(e, [file]);
+      handleMultiFileDragStart(e, [file], sourceEl);
     }
   }, [files, selectedFiles]);
 
