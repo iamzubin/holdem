@@ -1,3 +1,5 @@
+#![cfg(target_os = "windows")]
+
 use crate::config::MouseMonitorConfig;
 use active_win_pos_rs::get_active_window;
 use std::sync::atomic::{AtomicBool, Ordering};

@@ -447,6 +447,32 @@ export default function SettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
+                                <Info className="w-4 h-4 text-primary" />
+                                Drag &amp; Drop Behavior
+                            </CardTitle>
+                            <CardDescription>How files are transferred when dragging out of Holdem</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <div className="rounded-md bg-muted/40 border p-3 space-y-2">
+                                <div className="flex items-start gap-2">
+                                    <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">drag</kbd>
+                                    <span className="text-sm text-foreground">Copy files to destination</span>
+                                </div>
+                                <div className="flex items-start gap-2">
+                                    <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">⌥ opt</kbd>
+                                    <span className="text-sm text-foreground">Hold <strong>Option</strong> while dropping to <strong>move</strong> files</span>
+                                </div>
+                            </div>
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                <Info className="w-3 h-3 shrink-0" />
+                                macOS shows a green <strong>+</strong> badge when copying. No badge = move operation.
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base flex items-center gap-2">
                                 <Monitor className="w-4 h-4 text-primary" />
                                 Mouse Monitor
                             </CardTitle>

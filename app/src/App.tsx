@@ -113,9 +113,11 @@ function App() {
     invoke('open_popup_window').catch((err) => console.error(err));
   };
 
+  const stackedIconsRef = useRef<HTMLDivElement>(null);
+
   const handleStackDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    handleMultiFileDragStart(e, files);
+    handleMultiFileDragStart(e, files, stackedIconsRef.current ?? undefined);
   }, [files]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
@@ -161,7 +163,7 @@ function App() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}>
           {files.length > 0 ? (
-            <div className="relative w-10 h-10 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
+            <div ref={stackedIconsRef} className="relative w-10 h-10 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
               <StackedIcons files={files} handleStackDragStart={handleStackDragStart} />
             </div>
           ) : (

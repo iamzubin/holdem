@@ -33,7 +33,6 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
             )
             .title("File List")
             .decorations(false) // Remove window decorations for a popup feel
-            .transparent(true)
             .shadow(false)
             .resizable(false)
             .inner_size(popup_width, popup_height)
@@ -41,7 +40,7 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
             .always_on_top(true)
             .focused(false)
             .build()
-            .map_err(|e| e.to_string())?;
+            .map_err(|e: tauri::Error| e.to_string())?;
             
             // Send analytics event
             if let Err(e) = analytics::send_popup_window_opened_event(&app_clone).await {
@@ -87,12 +86,11 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
             WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App("settings".into()))
                 .title("Settings")
                 .decorations(false)
-                .transparent(true)
                 .shadow(false)
                 .inner_size(settings_width, settings_height)
                 .focused(true)
                 .build()
-                .map_err(|e| e.to_string())?;
+                .map_err(|e: tauri::Error| e.to_string())?;
                 
             // Send analytics event
             if let Err(e) = analytics::send_settings_opened_event(&app_clone).await {
@@ -134,7 +132,6 @@ pub fn open_consent_window(app: AppHandle) -> Result<(), String> {
             WebviewWindowBuilder::new(&app_clone, "consent", WebviewUrl::App("/consent".into()))
                 .title("Analytics Consent")
                 .decorations(false)
-                .transparent(false)
                 .shadow(true)
                 .inner_size(450.0, 500.0)
                 .center()
@@ -143,7 +140,7 @@ pub fn open_consent_window(app: AppHandle) -> Result<(), String> {
                 .skip_taskbar(true)
                 .resizable(false)
                 .build()
-                .map_err(|e| e.to_string())?;
+                .map_err(|e: tauri::Error| e.to_string())?;
             Ok::<(), String>(())
         });
     }
