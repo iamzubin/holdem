@@ -2,11 +2,9 @@ use crate::analytics;
 use crate::config::MouseMonitorConfig;
 use crate::mouse_monitor::common::DRAG_PASTEBOARD_NAME;
 use crate::utils::get_screen_bounds_from_handle;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
-use tauri::{AppHandle, Listener, Manager, PhysicalPosition};
+use tauri::{AppHandle, Manager, PhysicalPosition};
 
 use objc2::rc::Retained;
 use objc2_foundation::{NSArray, NSString};
@@ -87,14 +85,6 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
     println!("[MACOS_MONITOR] Config: threshold={}, shakes={}, time_limit={}ms",
         config.shake_threshold, config.required_shakes, config.shake_time_limit);
 
-    let files_dropped = Arc::new(AtomicBool::new(false));
-    let files_dropped_clone = files_dropped.clone();
-
-    let _unlistener = app_handle.listen("file_added", move |_| {
-        println!("[MACOS_MONITOR] files_dropped event received");
-        files_dropped_clone.store(true, Ordering::SeqCst);
-    });
-
     thread::spawn(move || {
         let mut window_opened_by_shake = false;
         let mut window_position: Option<(f64, f64)> = None;
@@ -119,7 +109,6 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
         let mut last_change_count = get_pasteboard_change_count(&pasteboard);
         let mut is_drag_active = false;
         let mut drag_start_time: Option<Instant> = None;
-        let mut pending_drag_end_time: Option<Instant> = None;
         let mut debug_counter = 0u32;
 
         println!("[MACOS_MONITOR] Initial changeCount: {}", last_change_count);
@@ -145,8 +134,6 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
                     is_drag_active = true;
                     drag_start_time = Some(Instant::now());
                     last_change_count = current_change_count;
-                    // Reset for new drag session
-                    files_dropped.store(false, Ordering::SeqCst);
                     // Reset shake timer so inactivity timeout doesn't fire from a stale previous shake
                     last_shake_time = Instant::now();
                     println!("[DRAG_START] File drag detected! changeCount={}", current_change_count);
@@ -170,48 +157,48 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
                 );
 
                 if drag_ended {
-                    if pending_drag_end_time.is_none() {
-                        println!("[DRAG_END_PENDING] Mouse released, waiting 300ms for IPC drop events...");
-                        pending_drag_end_time = Some(Instant::now() + Duration::from_millis(300));
-                    }
-                } else if pending_drag_end_time.is_some() {
-                    // If drag resumed (unlikely but safe to handle)
-                    pending_drag_end_time = None;
-                }
-
-                if let Some(end_time) = pending_drag_end_time {
-                    if Instant::now() >= end_time {
-                        let files_were_dropped = files_dropped.load(Ordering::SeqCst);
+                    // Check if they released the mouse over or near our window
+                    let mut dropped_in_window = false;
+                    
+                    if let Some((win_x, win_y)) = window_position {
+                        let dx = current_position.0 - win_x;
+                        let dy = current_position.1 - win_y;
+                        let distance = (dx * dx + dy * dy).sqrt();
                         
-                        println!("[DRAG_END] files_dropped={}", files_were_dropped);
-                        
-                        is_drag_active = false;
-                        drag_start_time = None;
-                        shake_count = 0;
-                        last_direction = None;
-                        last_change_count = current_change_count;
-                        pending_drag_end_time = None;
-                        
-                        if !files_were_dropped {
-                            // Check if window is visible - close it regardless of how it was opened
-                            let app = app_handle.app_handle();
-                            if let Some(window) = app.get_webview_window("main") {
-                                println!("[DRAG_END] Attempting to hide window");
-                                if let Ok(true) = window.is_visible() {
-                                    let _ = window.hide();
-                                    println!("[DRAG_END] Drag ended externally, hiding window");
-                                } else {
-                                    println!("[DRAG_END] Window wasn't visible, so we didn't hide it");
-                                }
-                            }
-                            window_opened_by_shake = false;
-                            window_position = None;
-                        } else {
-                            println!("[DRAG_END] Drag ended with files dropped in app");
-                            files_dropped.store(false, Ordering::SeqCst);
-                            window_opened_by_shake = false;
-                            window_position = None;
+                        if distance < window_proximity_threshold {
+                            dropped_in_window = true;
                         }
+                    }
+                    
+                    println!("[DRAG_END] mouse_down={} dropped_in_window={}", mouse_down, dropped_in_window);
+                    
+                    is_drag_active = false;
+                    drag_start_time = None;
+                    shake_count = 0;
+                    last_direction = None;
+                    last_change_count = current_change_count;
+                    
+                    if !dropped_in_window {
+                        // Check if window is visible - close it since they didn't drop inside it
+                        let app = app_handle.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            println!("[DRAG_END] Attempting to hide window");
+                            if let Ok(true) = window.is_visible() {
+                                let _ = window.hide();
+                                println!("[DRAG_END] Drag ended externally, hiding window");
+                            } else {
+                                println!("[DRAG_END] Window wasn't visible, so we didn't hide it");
+                            }
+                        }
+                        window_opened_by_shake = false;
+                        window_position = None;
+                    } else {
+                        println!("[DRAG_END] Drag ended with files dropped in app bounds.");
+                        // The user dropped files into our app! 
+                        // We must keep the window open for them, and disable auto-closing.
+                        window_opened_by_shake = false;
+                        // But wait! We don't nullify window_position!
+                        // That way the window stays alive and normal.
                     }
                 }
             }
@@ -300,8 +287,9 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
 
             last_position = current_position;
 
-            // Check if user moved away from a visible window without dropping files
-            if !files_dropped.load(Ordering::SeqCst) {
+            // Check if user moved away from a visible window after opening it with shake
+            // If they drop files, window_opened_by_shake becomes false, so this safely bypasses!
+            if window_opened_by_shake {
                 if let Some((win_x, win_y)) = window_position {
                     let dx = current_position.0 - win_x;
                     let dy = current_position.1 - win_y;
@@ -329,7 +317,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             }
 
             // Timeout fallback: close window if no activity for configured delay
-            if window_opened_by_shake && !files_dropped.load(Ordering::SeqCst) {
+            if window_opened_by_shake {
                 let elapsed = last_shake_time.elapsed();
                 if elapsed >= Duration::from_secs(config.window_close_delay) {
                     let app = app_handle.app_handle();
