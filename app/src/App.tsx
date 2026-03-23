@@ -4,7 +4,6 @@ import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useFileManagement } from "@/hooks/useFileManagement";
-import { handleMultiFileDragStart } from "@/lib/fileUtils";
 import { closeWindow } from "@/lib/windowUtils";
 import { FilePreview, FileWithPath } from "@/types";
 import { DialogClose } from "@radix-ui/react-dialog";
@@ -115,11 +114,6 @@ function App() {
 
   const stackedIconsRef = useRef<HTMLDivElement>(null);
 
-  const handleStackDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    handleMultiFileDragStart(e, files, stackedIconsRef.current ?? undefined);
-  }, [files]);
-
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsModalOpen(true);
@@ -163,8 +157,8 @@ function App() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}>
           {files.length > 0 ? (
-            <div ref={stackedIconsRef} className="relative w-10 h-10 flex items-center justify-center" draggable onDragStart={handleStackDragStart}>
-              <StackedIcons files={files} handleStackDragStart={handleStackDragStart} />
+            <div ref={stackedIconsRef} className="relative w-10 h-10 flex items-center justify-center">
+              <StackedIcons files={files} />
             </div>
           ) : (
             <div className="flex flex-col items-center">

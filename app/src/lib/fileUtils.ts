@@ -89,21 +89,80 @@ function drawCountBadge(ctx: CanvasRenderingContext2D, canvasSize: number, count
   ctx.fillText(label, cx, cy);
 }
 
-export const handleDragStart = async (e: React.DragEvent<HTMLDivElement>, file: FilePreview) => {
+// Store drag image data to be used synchronously
+let pendingDragImage: string | null = null;
+// Store pending files for drag
+let pendingFiles: FilePreview[] = [];
+
+export const prepareDragImage = async (element: HTMLElement): Promise<void> => {
+  pendingDragImage = await captureElementAsImage(element);
+};
+
+export const setPendingFiles = (files: FilePreview[]): void => {
+  pendingFiles = files;
+};
+
+export const clearPendingFiles = (): void => {
+  pendingFiles = [];
+  pendingDragImage = null;
+};
+
+/**
+ * Trigger native drag for the pending files.
+ * Call this synchronously from mousedown to avoid browser drag conflicts.
+ */
+export const triggerNativeDrag = (): void => {
+  if (pendingFiles.length === 0) {
+    console.log('[Drag] No pending files to drag');
+    return;
+  }
+
+  console.log('[Drag] Triggering native drag for', pendingFiles.length, 'files');
+  console.log('[Drag] Files:', pendingFiles.map(f => f.name).join(', '));
+
+  const dragImage = pendingDragImage;
+  
+  // Clear after use
+  const filesToDrag = [...pendingFiles];
+  pendingFiles = [];
+  pendingDragImage = null;
+
+  // Start native drag immediately without awaiting
+  invoke('start_multi_drag', {
+    filePaths: filesToDrag.map(file => file.path),
+    dragImage,
+  }).then(() => {
+    console.log('[Drag] Native drag started successfully');
+  }).catch((error) => {
+    console.error('[Drag] Error starting native drag:', error);
+  });
+};
+
+/**
+ * Legacy drag handlers - kept for compatibility but should not be used with draggable attribute
+ */
+export const handleDragStart = (e: React.DragEvent<HTMLDivElement>, file: FilePreview) => {
   e.preventDefault();
   e.stopPropagation();
 
-  // No text/plain data — the native drag from the backend provides file URLs to the pasteboard
-  e.dataTransfer.effectAllowed = 'copyMove';
+  console.log('[Drag] handleDragStart called for file:', file.name);
 
   try {
-    await invoke('start_multi_drag', { filePaths: [file.path], dragImage: null });
+    // Start native drag immediately - don't await, run it synchronously
+    invoke('start_multi_drag', { 
+      filePaths: [file.path], 
+      dragImage: null 
+    }).then(() => {
+      console.log('[Drag] Native drag started successfully');
+    }).catch((error) => {
+      console.error('[Drag] Error starting native drag:', error);
+    });
   } catch (error) {
-    console.error('Error starting drag:', error);
+    console.error('[Drag] Error invoking drag:', error);
   }
 };
 
-export const handleMultiFileDragStart = async (
+export const handleMultiFileDragStart = (
   e: React.DragEvent<HTMLDivElement>,
   files: FilePreview[],
   dragSourceElement?: HTMLElement
@@ -111,21 +170,24 @@ export const handleMultiFileDragStart = async (
   e.preventDefault();
   e.stopPropagation();
 
-  // No text/plain — native drag handles file URLs properly
-  e.dataTransfer.effectAllowed = 'copyMove';
+  console.log('[Drag] handleMultiFileDragStart called for', files.length, 'files');
+  console.log('[Drag] Files:', files.map(f => f.name).join(', '));
 
-  // Capture the drag source element as a PNG for the cursor image
-  let dragImage: string | null = null;
-  if (dragSourceElement) {
-    dragImage = await captureElementAsImage(dragSourceElement);
-  }
+  // Use pre-captured drag image if available
+  const dragImage = pendingDragImage;
+  pendingDragImage = null; // Clear after use
 
   try {
-    await invoke('start_multi_drag', {
+    // Start native drag immediately without awaiting
+    invoke('start_multi_drag', {
       filePaths: files.map(file => file.path),
       dragImage,
+    }).then(() => {
+      console.log('[Drag] Native multi-file drag started successfully');
+    }).catch((error) => {
+      console.error('[Drag] Error starting multi-file drag:', error);
     });
   } catch (error) {
-    console.error('Error starting multi-file drag:', error);
+    console.error('[Drag] Error invoking multi-file drag:', error);
   }
 };
