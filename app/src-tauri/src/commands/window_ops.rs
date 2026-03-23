@@ -39,13 +39,12 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
             .position(popup_x, popup_y)
             .always_on_top(true)
             .focused(false)
+            .visible_on_all_workspaces(true)
             .build()
             .map_err(|e: tauri::Error| e.to_string())?;
             
-            // Send analytics event
-            if let Err(e) = analytics::send_popup_window_opened_event(&app_clone).await {
-                eprintln!("[Analytics] Failed to send popup_window_opened event: {}", e);
-            }
+            // Send analytics event (fire and forget)
+            let _ = analytics::send_popup_window_opened_event(&app_clone);
             
             Ok::<(), String>(())
         });
@@ -89,13 +88,12 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
                 .shadow(false)
                 .inner_size(settings_width, settings_height)
                 .focused(true)
+                .visible_on_all_workspaces(true)
                 .build()
                 .map_err(|e: tauri::Error| e.to_string())?;
                 
-            // Send analytics event
-            if let Err(e) = analytics::send_settings_opened_event(&app_clone).await {
-                eprintln!("[Analytics] Failed to send settings_opened event: {}", e);
-            }
+            // Send analytics event (fire and forget)
+            let _ = analytics::send_settings_opened_event(&app_clone);
             
             Ok::<(), String>(())
         });
@@ -139,6 +137,7 @@ pub fn open_consent_window(app: AppHandle) -> Result<(), String> {
                 .always_on_top(true)
                 .skip_taskbar(true)
                 .resizable(false)
+                .visible_on_all_workspaces(true)
                 .build()
                 .map_err(|e: tauri::Error| e.to_string())?;
             Ok::<(), String>(())

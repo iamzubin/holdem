@@ -125,13 +125,11 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
             if shake_count >= config.required_shakes {
                 println!("Shake detected! Opening window...");
 
-                // Send analytics event for mouse shake detection
+                // Send analytics event for mouse shake detection (fire and forget)
                 let app_clone = app_handle.clone();
                 let shake_count_clone = shake_count;
                 tauri::async_runtime::spawn(async move {
-                    if let Err(e) = analytics::send_mouse_shake_detected_event(&app_clone, shake_count_clone).await {
-                        eprintln!("[Analytics] Failed to send mouse_shake_detected event: {}", e);
-                    }
+                    let _ = analytics::send_mouse_shake_detected_event(&app_clone, shake_count_clone).await;
                 });
 
                 // Ensure the window does not open off-screen or in the corner
@@ -162,12 +160,10 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
                     let _ = window.set_focus();
                     println!("Window opened successfully");
                     
-                    // Send analytics event for window opened via mouse shake
+                    // Send analytics event for window opened via mouse shake (fire and forget)
                     let app_clone = app.clone();
                     tauri::async_runtime::spawn(async move {
-                        if let Err(e) = analytics::send_window_opened_event(&app_clone, "main_shake").await {
-                            eprintln!("[Analytics] Failed to send window_opened event: {}", e);
-                        }
+                        let _ = analytics::send_window_opened_event(&app_clone, "main_shake").await;
                     });
                 }
                 shake_count = 0;

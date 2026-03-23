@@ -82,13 +82,11 @@ pub fn remove_files(
         }
     }
     
-    // Send analytics events for removed files
+    // Send analytics events for removed files (fire and forget)
     let app_handle_clone = app_handle.clone();
     tauri::async_runtime::spawn(async move {
         for file_name in removed_files {
-            if let Err(e) = analytics::send_file_removed_event(&app_handle_clone, &file_name).await {
-                eprintln!("[Analytics] Failed to send file_removed event: {}", e);
-            }
+            let _ = analytics::send_file_removed_event(&app_handle_clone, &file_name).await;
         }
     });
     
@@ -117,14 +115,12 @@ pub fn rename_file(
         let old_name = file.name.clone();
         file.name = new_name.clone();
         
-        // Send analytics event for file rename
+        // Send analytics event for file rename (fire and forget)
         let app_handle_clone = app_handle.clone();
         let old_name_clone = old_name.clone();
         let new_name_clone = new_name.clone();
         tauri::async_runtime::spawn(async move {
-            if let Err(e) = analytics::send_file_renamed_event(&app_handle_clone, &old_name_clone, &new_name_clone).await {
-                eprintln!("[Analytics] Failed to send file_renamed event: {}", e);
-            }
+            let _ = analytics::send_file_renamed_event(&app_handle_clone, &old_name_clone, &new_name_clone).await;
         });
         
         app_handle
@@ -148,12 +144,10 @@ pub fn clear_files(
     let num_files = list.len();
     list.clear();
     
-    // Send analytics event for clearing files
+    // Send analytics event for clearing files (fire and forget)
     let app_handle_clone = app_handle.clone();
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = analytics::send_files_cleared_event(&app_handle_clone, num_files).await {
-            eprintln!("[Analytics] Failed to send files_cleared event: {}", e);
-        }
+        let _ = analytics::send_files_cleared_event(&app_handle_clone, num_files).await;
     });
     
     app_handle

@@ -23,12 +23,10 @@ pub fn save_config(
 
 #[tauri::command]
 pub fn restart_app(app: AppHandle) -> Result<(), String> {
-    // Send analytics event for app restart
+    // Send analytics event for app restart (fire and forget)
     let app_clone = app.clone();
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = analytics::send_app_restarted_event(&app_clone).await {
-            eprintln!("[Analytics] Failed to send app_restarted event: {}", e);
-        }
+        let _ = analytics::send_app_restarted_event(&app_clone).await;
     });
     
     app.restart();
@@ -44,11 +42,9 @@ pub fn set_autostart(app_handle: AppHandle, enabled: bool) -> Result<(), String>
         autostart_manager.disable().map_err(|e| e.to_string())?;
     }
 
-    // Send analytics event
+    // Send analytics event (fire and forget)
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = analytics::send_autostart_toggled_event(&app_handle, enabled).await {
-            eprintln!("[Analytics] Failed to send autostart_toggled event: {}", e);
-        }
+        let _ = analytics::send_autostart_toggled_event(&app_handle, enabled).await;
     });
 
     Ok(())
@@ -158,13 +154,11 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
 
     println!("Hotkey registered successfully");
 
-    // Send analytics event
+    // Send analytics event (fire and forget)
     let app_handle_clone = app_handle.clone();
     let shortcut_str_clone = shortcut_str.clone();
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await {
-            eprintln!("[Analytics] Failed to send hotkey_registered event: {}", e);
-        }
+        let _ = analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
     });
 
     Ok(())
@@ -181,11 +175,9 @@ pub fn accept_analytics_consent(
     
     println!("[Analytics] User accepted analytics consent");
     
-    // Send initial analytics event after consent using centralized service
+    // Send initial analytics event after consent using centralized service (fire and forget)
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = analytics::send_analytics_event(&app_handle, "consent_accepted", None).await {
-            eprintln!("[Analytics] Failed to send consent_accepted event: {}", e);
-        }
+        let _ = analytics::send_analytics_event(&app_handle, "consent_accepted", None).await;
     });
     
     Ok(())
@@ -202,11 +194,9 @@ pub fn decline_analytics_consent(
     
     println!("[Analytics] User declined analytics consent");
     
-    // Send analytics event for declined consent
+    // Send analytics event for declined consent (fire and forget)
     tauri::async_runtime::spawn(async move {
-        if let Err(e) = analytics::send_consent_declined_event(&app_handle).await {
-            eprintln!("[Analytics] Failed to send consent_declined event: {}", e);
-        }
+        let _ = analytics::send_consent_declined_event(&app_handle).await;
     });
     
     Ok(())
