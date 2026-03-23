@@ -55,6 +55,11 @@ pub fn add_files(
         }
     }
 
+    if !files.is_empty() {
+        // Emit file_added event to notify mouse monitor that a drop occurred
+        let _ = app_handle.emit("file_added", ());
+    }
+
     Ok(())
 }
 
