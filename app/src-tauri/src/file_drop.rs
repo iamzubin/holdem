@@ -1,11 +1,11 @@
-use std::path::PathBuf;
-use tauri::{AppHandle, Event, Emitter};
 use crate::file::{get_dir_size, FileMetadata};
 use crate::FileList;
+use std::path::PathBuf;
+use tauri::{AppHandle, Emitter, Event};
 
 pub fn handle_file_drop(event: Event, file_list: FileList, app_handle: AppHandle) {
     let payload: serde_json::Value = serde_json::from_str(event.payload()).unwrap_or_default();
-    
+
     // Handle text drops
     if let Some(text) = payload["text"].as_str() {
         let temp_dir = std::env::temp_dir();
@@ -13,11 +13,11 @@ pub fn handle_file_drop(event: Event, file_list: FileList, app_handle: AppHandle
         let folder_name = timestamp.format("%Y%m%d").to_string();
         let drop_folder = temp_dir.join("holdem_drops").join(&folder_name);
         std::fs::create_dir_all(&drop_folder).ok();
-        
+
         let file_name = format!("dropped_text_{}.txt", timestamp.format("%H%M%S"));
         let file_path = drop_folder.join(&file_name);
-        
-        if let Ok(_) = std::fs::write(&file_path, text) {
+
+        if std::fs::write(&file_path, text).is_ok() {
             let mut list = file_list.lock().unwrap();
             let file = FileMetadata {
                 id: list.len() as u64,
@@ -58,10 +58,10 @@ pub fn handle_file_drop(event: Event, file_list: FileList, app_handle: AppHandle
                     let folder_name = timestamp.format("%Y%m%d").to_string();
                     let drop_folder = std::env::temp_dir().join("holdem_drops").join(&folder_name);
                     std::fs::create_dir_all(&drop_folder).ok();
-                    
+
                     let file_name = path.file_name().unwrap_or_default();
                     let new_path = drop_folder.join(file_name);
-                    if let Ok(_) = std::fs::copy(&path, &new_path) {
+                    if std::fs::copy(&path, &new_path).is_ok() {
                         new_path
                     } else {
                         path.clone()
@@ -131,4 +131,4 @@ fn cleanup_old_files() {
             }
         }
     }
-} 
+}

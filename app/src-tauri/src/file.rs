@@ -22,17 +22,11 @@ pub fn get_dir_size(path: &PathBuf) -> io::Result<u64> {
             let path = entry.path();
 
             if path.is_dir() {
-                // Recursively calculate the size of subdirectories
-                match get_dir_size(&path) {
-                    Ok(size) => total_size += size,
-                    Err(_) => {} // Skip directories we can't access
+                if let Ok(size) = get_dir_size(&path) {
+                    total_size += size;
                 }
-            } else {
-                // Add the file size
-                match fs::metadata(&path) {
-                    Ok(metadata) => total_size += metadata.len(),
-                    Err(_) => {} // Skip files we can't access
-                }
+            } else if let Ok(metadata) = fs::metadata(&path) {
+                total_size += metadata.len();
             }
         }
     }

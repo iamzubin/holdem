@@ -15,7 +15,7 @@ pub fn add_files(
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
 
-    for (_index, path_str) in files.iter().enumerate() {
+    for path_str in files.iter() {
         let path = PathBuf::from(path_str);
         if path.exists() {
             let metadata = path.metadata().map_err(|e| e.to_string())?;
@@ -194,6 +194,6 @@ pub fn get_file_icon_base64(
     file_path: &str,
 ) -> Result<String, String> {
     let file_path = file_path.to_string();
-    return get_thumbnail_base64(&file_path)
-        .map_err(|e| e.to_string());
+    get_thumbnail_base64(&file_path)
+        .map_err(|e| e.to_string())
 } 

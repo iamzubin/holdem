@@ -6,32 +6,17 @@ use tauri::PhysicalPosition;
 use tauri_plugin_updater::UpdaterExt;
 use tauri::WebviewUrl;
 use tauri::WebviewWindowBuilder;
-
-#[cfg(target_os = "windows")]
-use windows::Win32::Foundation::POINT;
-#[cfg(target_os = "windows")]
-use windows::Win32::Foundation::WAIT_OBJECT_0;
-#[cfg(target_os = "windows")]
-use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
-#[cfg(target_os = "windows")]
-use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
-#[cfg(target_os = "windows")]
-use windows::Win32::UI::WindowsAndMessaging::GetSystemMetrics;
-#[cfg(target_os = "windows")]
-use windows::Win32::UI::WindowsAndMessaging::SM_CXSCREEN;
-#[cfg(target_os = "windows")]
-use windows::Win32::UI::WindowsAndMessaging::SM_CYSCREEN;
-
 mod commands;
 #[cfg(desktop)]
 mod tray;
 mod config;
 mod file;
-#[cfg(target_os = "windows")]
+#[cfg(any(target_os = "windows", target_os = "macos"))]
 mod mouse_monitor;
 mod file_drop;
 mod thumbnail;
 mod analytics;
+mod logging;
 
 use commands::{
     file_ops::*,
@@ -41,7 +26,7 @@ use commands::{
 };
 use config::AppConfig;
 use file::FileMetadata;
-#[cfg(target_os = "windows")]
+#[cfg(any(target_os = "windows", target_os = "macos"))]
 use mouse_monitor::start_mouse_monitor;
 use analytics::AnalyticsService;
 
@@ -156,7 +141,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             }
 
             // Load configuration once
-            let config = AppConfig::load(&app.handle());
+            let config = AppConfig::load(app.handle());
             app.manage(Arc::new(Mutex::new(config.clone())));
 
             // Initialize analytics service
@@ -198,7 +183,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 if let Ok(updater) = app_handle.updater() {
                     if let Ok(Some(_update)) = updater.check().await {
                         // Send analytics event for update available (fire and forget)
-                        let _ = analytics::send_update_checked_event(&app_handle, true);
+                        std::mem::drop(analytics::send_update_checked_event(&app_handle, true));
                         
                         // Open the updater window if an update is available
                         if let Some(existing_window) = app_handle.get_webview_window("updater") {
@@ -218,7 +203,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                         }
                     } else {
                         // Send analytics event for no update available (fire and forget)
-                        let _ = analytics::send_update_checked_event(&app_handle, false);
+                        std::mem::drop(analytics::send_update_checked_event(&app_handle, false));
                     }
                 }
             });
@@ -235,14 +220,14 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 }
             }
 
-            #[cfg(all(desktop))]
+            #[cfg(desktop)]
             {
                 let handle = app.handle();
                 tray::create_tray(handle)?;
             }
 
-            // Start the mouse monitor with configuration (Windows only)
-            #[cfg(target_os = "windows")]
+            // Start the mouse monitor with configuration (Windows and macOS)
+            #[cfg(any(target_os = "windows", target_os = "macos"))]
             {
                 let app_handle = app.handle().clone();
                 let config_state = app.state::<Arc<Mutex<AppConfig>>>();
@@ -275,6 +260,9 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    logging::setup_logging();
+    tracing::info!("Starting holdem application");
+
     #[cfg(target_os = "windows")]
     {
         // Check for existing instance

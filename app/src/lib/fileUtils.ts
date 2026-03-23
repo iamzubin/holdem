@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { FilePreview } from "../types.ts";
 
 /**
@@ -127,15 +128,21 @@ export const triggerNativeDrag = (): void => {
   pendingFiles = [];
   pendingDragImage = null;
 
-  // Start native drag immediately without awaiting
-  invoke('start_multi_drag', {
-    filePaths: filesToDrag.map(file => file.path),
-    dragImage,
-  }).then(() => {
-    console.log('[Drag] Native drag started successfully');
-  }).catch((error) => {
-    console.error('[Drag] Error starting native drag:', error);
-  });
+  // Focus window first on macOS to enable drag from unfocused window
+  const window = getCurrentWindow();
+  window.setFocus().catch(console.error);
+
+  // Start native drag after a small delay to ensure window is focused
+  setTimeout(() => {
+    invoke('start_multi_drag', {
+      filePaths: filesToDrag.map(file => file.path),
+      dragImage,
+    }).then(() => {
+      console.log('[Drag] Native drag started successfully');
+    }).catch((error) => {
+      console.error('[Drag] Error starting native drag:', error);
+    });
+  }, 50);
 };
 
 /**
@@ -148,15 +155,18 @@ export const handleDragStart = (e: React.DragEvent<HTMLDivElement>, file: FilePr
   console.log('[Drag] handleDragStart called for file:', file.name);
 
   try {
-    // Start native drag immediately - don't await, run it synchronously
-    invoke('start_multi_drag', { 
-      filePaths: [file.path], 
-      dragImage: null 
-    }).then(() => {
-      console.log('[Drag] Native drag started successfully');
-    }).catch((error) => {
-      console.error('[Drag] Error starting native drag:', error);
-    });
+    const win = getCurrentWindow();
+    win.setFocus().catch(console.error);
+    setTimeout(() => {
+      invoke('start_multi_drag', { 
+        filePaths: [file.path], 
+        dragImage: null 
+      }).then(() => {
+        console.log('[Drag] Native drag started successfully');
+      }).catch((error) => {
+        console.error('[Drag] Error starting native drag:', error);
+      });
+    }, 50);
   } catch (error) {
     console.error('[Drag] Error invoking drag:', error);
   }
@@ -178,15 +188,18 @@ export const handleMultiFileDragStart = (
   pendingDragImage = null; // Clear after use
 
   try {
-    // Start native drag immediately without awaiting
-    invoke('start_multi_drag', {
-      filePaths: files.map(file => file.path),
-      dragImage,
-    }).then(() => {
-      console.log('[Drag] Native multi-file drag started successfully');
-    }).catch((error) => {
-      console.error('[Drag] Error starting multi-file drag:', error);
-    });
+    const win = getCurrentWindow();
+    win.setFocus().catch(console.error);
+    setTimeout(() => {
+      invoke('start_multi_drag', {
+        filePaths: files.map(file => file.path),
+        dragImage,
+      }).then(() => {
+        console.log('[Drag] Native multi-file drag started successfully');
+      }).catch((error) => {
+        console.error('[Drag] Error starting multi-file drag:', error);
+      });
+    }, 50);
   } catch (error) {
     console.error('[Drag] Error invoking multi-file drag:', error);
   }
