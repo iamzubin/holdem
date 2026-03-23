@@ -1,6 +1,7 @@
 use crate::analytics;
 use crate::config::MouseMonitorConfig;
 use crate::mouse_monitor::common::DRAG_PASTEBOARD_NAME;
+use crate::utils::get_screen_bounds_from_handle;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread;
@@ -17,6 +18,10 @@ extern "C" {
     fn CGEventGetLocation(event: *mut std::ffi::c_void) -> CGPoint;
     fn CGEventCreate(source: *mut std::ffi::c_void) -> *mut std::ffi::c_void;
     fn CFRelease(cf: *mut std::ffi::c_void);
+    /// Returns true if the specified mouse button is currently down.
+    /// stateID: kCGEventSourceStateHIDSystemState = 1
+    /// button: kCGMouseButtonLeft = 0
+    fn CGEventSourceButtonState(stateID: u32, button: u32) -> bool;
 }
 
 fn get_cursor_position() -> (f64, f64) {
@@ -32,8 +37,19 @@ fn get_cursor_position() -> (f64, f64) {
     }
 }
 
-fn get_screen_size() -> (f64, f64) {
-    (1920.0, 1080.0)
+/// Check if the left mouse button is currently held down.
+/// Uses kCGEventSourceStateHIDSystemState (1) to query hardware state.
+fn is_mouse_button_down() -> bool {
+    const K_CG_EVENT_SOURCE_STATE_HID_SYSTEM_STATE: u32 = 1;
+    const K_CG_MOUSE_BUTTON_LEFT: u32 = 0;
+    unsafe { CGEventSourceButtonState(K_CG_EVENT_SOURCE_STATE_HID_SYSTEM_STATE, K_CG_MOUSE_BUTTON_LEFT) }
+}
+
+fn get_screen_size(app_handle: &AppHandle) -> (f64, f64) {
+    match get_screen_bounds_from_handle(app_handle) {
+        Ok(bounds) => (bounds.width, bounds.height),
+        Err(_) => (1920.0, 1080.0),
+    }
 }
 
 fn get_drag_pasteboard() -> Option<Retained<NSPasteboard>> {
@@ -103,6 +119,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
         let mut last_change_count = get_pasteboard_change_count(&pasteboard);
         let mut is_drag_active = false;
         let mut drag_start_time: Option<Instant> = None;
+        let mut pending_drag_end_time: Option<Instant> = None;
         let mut debug_counter = 0u32;
 
         println!("[MACOS_MONITOR] Initial changeCount: {}", last_change_count);
@@ -116,10 +133,11 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
 
             debug_counter += 1;
             if debug_counter.is_multiple_of(20) {
-                println!("[DEBUG] pos=({:.0},{:.0}) changeCount={} prev={} changed={} has_files={} dragging={}",
+                println!("[DEBUG] pos=({:.0},{:.0}) changeCount={} prev={} changed={} has_files={} dragging={} mouse_down={}",
                     current_position.0, current_position.1,
                     current_change_count, last_change_count,
-                    change_count_changed, has_files, is_drag_active);
+                    change_count_changed, has_files, is_drag_active,
+                    is_mouse_button_down());
             }
 
             if !is_drag_active {
@@ -127,30 +145,73 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
                     is_drag_active = true;
                     drag_start_time = Some(Instant::now());
                     last_change_count = current_change_count;
+                    // Reset for new drag session
+                    files_dropped.store(false, Ordering::SeqCst);
+                    // Reset shake timer so inactivity timeout doesn't fire from a stale previous shake
+                    last_shake_time = Instant::now();
                     println!("[DRAG_START] File drag detected! changeCount={}", current_change_count);
                 }
             } else {
                 let time_since_drag_start = drag_start_time.map(|t| t.elapsed()).unwrap_or(Duration::MAX);
+                let mouse_down = is_mouse_button_down();
+                
+                // Grace period: don't check for drag end in the first 200ms after drag start
+                // to avoid polling race conditions
+                let past_grace_period = time_since_drag_start > Duration::from_millis(200);
+                
+                // Detect drag end:
+                // 1. Mouse button released (primary signal) — drag is definitively over
+                // 2. Pasteboard changeCount changed after initial drag start (>100ms) — new drag or pasteboard cleared
+                // 3. Pasteboard no longer has files — drag data was cleared
+                let drag_ended = past_grace_period && (
+                    !mouse_down
+                    || (change_count_changed && time_since_drag_start > Duration::from_millis(100))
+                    || !has_files
+                );
 
-                if (change_count_changed && time_since_drag_start > Duration::from_millis(100)) || !has_files {
-                    let drag_ended_externally = !files_dropped.load(Ordering::SeqCst) && window_opened_by_shake;
-                    
-                    is_drag_active = false;
-                    drag_start_time = None;
-                    shake_count = 0;
-                    last_direction = None;
-                    last_change_count = current_change_count;
-                    
-                    if drag_ended_externally {
-                        println!("[DRAG_END] Drag ended externally (files not dropped in app), hiding window");
-                        let app = app_handle.app_handle();
-                        if let Some(window) = app.get_webview_window("main") {
-                            let _ = window.hide();
-                            println!("[WINDOW] Hidden due to external drop");
+                if drag_ended {
+                    if pending_drag_end_time.is_none() {
+                        println!("[DRAG_END_PENDING] Mouse released, waiting 300ms for IPC drop events...");
+                        pending_drag_end_time = Some(Instant::now() + Duration::from_millis(300));
+                    }
+                } else if pending_drag_end_time.is_some() {
+                    // If drag resumed (unlikely but safe to handle)
+                    pending_drag_end_time = None;
+                }
+
+                if let Some(end_time) = pending_drag_end_time {
+                    if Instant::now() >= end_time {
+                        let files_were_dropped = files_dropped.load(Ordering::SeqCst);
+                        
+                        println!("[DRAG_END] files_dropped={}", files_were_dropped);
+                        
+                        is_drag_active = false;
+                        drag_start_time = None;
+                        shake_count = 0;
+                        last_direction = None;
+                        last_change_count = current_change_count;
+                        pending_drag_end_time = None;
+                        
+                        if !files_were_dropped {
+                            // Check if window is visible - close it regardless of how it was opened
+                            let app = app_handle.app_handle();
+                            if let Some(window) = app.get_webview_window("main") {
+                                println!("[DRAG_END] Attempting to hide window");
+                                if let Ok(true) = window.is_visible() {
+                                    let _ = window.hide();
+                                    println!("[DRAG_END] Drag ended externally, hiding window");
+                                } else {
+                                    println!("[DRAG_END] Window wasn't visible, so we didn't hide it");
+                                }
+                            }
+                            window_opened_by_shake = false;
+                            window_position = None;
+                        } else {
+                            println!("[DRAG_END] Drag ended with files dropped in app");
+                            files_dropped.store(false, Ordering::SeqCst);
+                            window_opened_by_shake = false;
+                            window_position = None;
                         }
-                        window_opened_by_shake = false;
-                    } else {
-                        println!("[DRAG_END] Drag ended. changeCount={}", current_change_count);
                     }
                 }
             }
@@ -202,7 +263,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
                 let mut window_x = current_position.0;
                 let mut window_y = current_position.1;
                 let margin = config.shake_threshold as f64;
-                let (screen_width, screen_height) = get_screen_size();
+                let (screen_width, screen_height) = get_screen_size(&app_handle);
 
                 if current_position.0 + margin > screen_width {
                     window_x = current_position.0 - margin;
@@ -235,14 +296,12 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
 
                 shake_count = 0;
                 last_direction = None;
-                is_drag_active = false;
-                drag_start_time = None;
             }
 
             last_position = current_position;
 
-            // Check if user moved away from the window after shake-opened it
-            if window_opened_by_shake && !files_dropped.load(Ordering::SeqCst) {
+            // Check if user moved away from a visible window without dropping files
+            if !files_dropped.load(Ordering::SeqCst) {
                 if let Some((win_x, win_y)) = window_position {
                     let dx = current_position.0 - win_x;
                     let dy = current_position.1 - win_y;
@@ -255,33 +314,34 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
                         // User moved away from window
                         let time_away = last_time_near_window.elapsed();
                         if time_away >= Duration::from_secs(2) {
-                            println!("[WINDOW] User moved away from window, hiding");
                             let app = app_handle.app_handle();
                             if let Some(window) = app.get_webview_window("main") {
-                                let _ = window.hide();
-                                window_opened_by_shake = false;
-                                window_position = None;
-                                println!("[WINDOW] Hidden due to user moving away");
+                                if let Ok(true) = window.is_visible() {
+                                    let _ = window.hide();
+                                    println!("[WINDOW] User moved away, hiding window");
+                                }
                             }
+                            window_opened_by_shake = false;
+                            window_position = None;
                         }
                     }
                 }
             }
 
-            if !files_dropped.load(Ordering::SeqCst) {
+            // Timeout fallback: close window if no activity for configured delay
+            if window_opened_by_shake && !files_dropped.load(Ordering::SeqCst) {
                 let elapsed = last_shake_time.elapsed();
                 if elapsed >= Duration::from_secs(config.window_close_delay) {
                     let app = app_handle.app_handle();
                     if let Some(window) = app.get_webview_window("main") {
-                        let _ = window.hide();
-                        files_dropped.store(false, Ordering::SeqCst);
-                        window_opened_by_shake = false;
-                        println!("[WINDOW] Hidden");
+                        if let Ok(true) = window.is_visible() {
+                            let _ = window.hide();
+                            println!("[WINDOW] Hidden due to inactivity timeout");
+                        }
                     }
+                    window_opened_by_shake = false;
+                    window_position = None;
                 }
-            } else {
-                window_opened_by_shake = false;
-                window_position = None;
             }
 
             thread::sleep(check_interval);
