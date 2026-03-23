@@ -68,10 +68,12 @@ impl AnalyticsService {
         }
     }
 
+    #[allow(dead_code)]
     pub async fn send_app_started(&self) -> Result<(), String> {
         self.send_event("app_started", None).await
     }
 
+    #[allow(dead_code)]
     pub async fn send_consent_accepted(&self) -> Result<(), String> {
         self.send_event("consent_accepted", None).await
     }
@@ -80,6 +82,7 @@ impl AnalyticsService {
         self.send_event("consent_declined", None).await
     }
 
+    #[allow(dead_code)]
     pub async fn send_files_dropped(&self, num_files: usize) -> Result<(), String> {
         let properties = vec![
             ("num_files", serde_json::Value::Number((num_files as i64).into())),

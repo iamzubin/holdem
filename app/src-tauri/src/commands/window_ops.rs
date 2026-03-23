@@ -1,5 +1,6 @@
 use tauri::{AppHandle, WebviewUrl, WebviewWindowBuilder, Manager};
 use crate::analytics;
+use tracing::info;
 
 #[tauri::command]
 pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
@@ -8,17 +9,31 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
         .get_webview_window("main")
         .ok_or("Main window not found")?;
 
-    // Get the position and size of the main window
-    let _position = main_window.outer_position().map_err(|e| e.to_string())?;
-    let _size = main_window.outer_size().map_err(|e| e.to_string())?;
+    // Get the scale factor to convert between physical and logical pixels
+    let scale_factor = main_window.scale_factor().map_err(|e| e.to_string())?;
+    
+    // Get the position and size of the main window (physical pixels)
+    let position = main_window.inner_position().map_err(|e| e.to_string())?;
+    let size = main_window.inner_size().map_err(|e| e.to_string())?;
 
-    // Define popup window dimensions
+    // Convert to logical pixels for positioning
+    let logical_x = (position.x as f64 / scale_factor) as i32;
+    let logical_y = (position.y as f64 / scale_factor) as i32;
+    let logical_width = (size.width as f64 / scale_factor) as i32;
+    let logical_height = (size.height as f64 / scale_factor) as i32;
+
+    // Define popup window dimensions (logical pixels)
     let popup_width = 450.0;
     let popup_height = 350.0;
 
-    // Calculate the position for the popup window (centered below the main window)
-    let popup_x = _position.x as f64 + (_size.width as f64 - popup_width) / 2.0;
-    let popup_y = _position.y as f64 + _size.height as f64 + 5.0;
+    // Calculate centered position below the main window
+    let popup_x = logical_x as f64 + (logical_width as f64 - popup_width) / 2.0;
+    let popup_y = logical_y as f64 + logical_height as f64 + 5.0;
+
+    info!(
+        "Opening popup window - scale_factor={}, main_window: pos=({}, {}), size=({}, {}), logical=({}, {}, {}), popup_pos=({}, {}), popup_size=({}, {})",
+        scale_factor, position.x, position.y, size.width, size.height, logical_x, logical_y, logical_height, popup_x, popup_y, popup_width, popup_height
+    );
 
     if let Some(popup_window) = app.get_webview_window("popup") {
         popup_window.close().map_err(|e| e.to_string())?;
@@ -39,12 +54,13 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
             .position(popup_x, popup_y)
             .always_on_top(true)
             .focused(false)
+            .accept_first_mouse(true)
             .visible_on_all_workspaces(true)
             .build()
             .map_err(|e: tauri::Error| e.to_string())?;
             
             // Send analytics event (fire and forget)
-            let _ = analytics::send_popup_window_opened_event(&app_clone);
+            std::mem::drop(analytics::send_popup_window_opened_event(&app_clone));
             
             Ok::<(), String>(())
         });
@@ -93,7 +109,7 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
                 .map_err(|e: tauri::Error| e.to_string())?;
                 
             // Send analytics event (fire and forget)
-            let _ = analytics::send_settings_opened_event(&app_clone);
+            std::mem::drop(analytics::send_settings_opened_event(&app_clone));
             
             Ok::<(), String>(())
         });
