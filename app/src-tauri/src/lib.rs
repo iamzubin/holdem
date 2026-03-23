@@ -184,9 +184,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             if config.analytics_enabled {
                 let app_handle = app.handle().clone();
                 tauri::async_runtime::spawn(async move {
-                    if let Err(e) = analytics::send_analytics_event(&app_handle, "app_started", None).await {
-                        eprintln!("[Analytics] Failed to send app_started event: {}", e);
-                    }
+                    let _ = analytics::send_analytics_event(&app_handle, "app_started", None).await;
                 });
             }
 
@@ -199,10 +197,8 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             tauri::async_runtime::spawn(async move {
                 if let Ok(updater) = app_handle.updater() {
                     if let Ok(Some(_update)) = updater.check().await {
-                        // Send analytics event for update available
-                        if let Err(e) = analytics::send_update_checked_event(&app_handle, true).await {
-                            eprintln!("[Analytics] Failed to send update_checked event: {}", e);
-                        }
+                        // Send analytics event for update available (fire and forget)
+                        let _ = analytics::send_update_checked_event(&app_handle, true);
                         
                         // Open the updater window if an update is available
                         if let Some(existing_window) = app_handle.get_webview_window("updater") {
@@ -221,10 +217,8 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                             .build();
                         }
                     } else {
-                        // Send analytics event for no update available
-                        if let Err(e) = analytics::send_update_checked_event(&app_handle, false).await {
-                            eprintln!("[Analytics] Failed to send update_checked event: {}", e);
-                        }
+                        // Send analytics event for no update available (fire and forget)
+                        let _ = analytics::send_update_checked_event(&app_handle, false);
                     }
                 }
             });
