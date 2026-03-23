@@ -1,19 +1,16 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useCallback } from 'react';
 import { DynamicFileIcon } from './FileIcon';
-
-export interface File {
-  preview?: string;
-  name: string;
-  path: string;
-  size: number;
-}
+import { FilePreview } from '@/types';
+import { setPendingFiles, prepareDragImage, triggerNativeDrag } from '@/lib/fileUtils';
 
 interface StackedIconsProps {
-  files: File[];
-  handleStackDragStart: (e: React.DragEvent<HTMLDivElement>) => void;
+  files: FilePreview[];
 }
 
-export const StackedIcons: React.FC<StackedIconsProps> = ({ files, handleStackDragStart }) => {
+export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragTimeoutRef = useRef<number | null>(null);
+
   const stackedIcons = useMemo(() => {
     console.log("files", files)
     console.log("files sliced", files.slice(-5).reverse())
@@ -26,13 +23,11 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files, handleStackDr
       return (
         <div
           key={index}
-          className="absolute inset-0 flex items-center"
+          className="absolute inset-0 flex items-center pointer-events-none"
           style={{
             transform: `rotate(${rotation}deg) translate(${translateX}px, ${translateY}px)`,
             zIndex,
           }}
-          draggable
-          onDragStart={handleStackDragStart}
         >
           {file.preview ? (
             <img 
@@ -44,15 +39,55 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files, handleStackDr
           ) : (
             <>
               <DynamicFileIcon file={file} />
-              {/* <div className="absolute bottom-0 left-0 right-0 text-white text-xs bg-black/50 p-1">
-                {file.name}
-              </div> */}
             </>
           )}
         </div>
       );
     });
-  }, [files, handleStackDragStart]);
+  }, [files]);
 
-  return <div className="relative w-full h-full">{stackedIcons}</div>;
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    // Only trigger on left mouse button
+    if (e.button !== 0) return;
+    
+    console.log('[Drag] MouseDown on StackedIcons, setting pending files:', files.length);
+    
+    // Set the files to be dragged
+    setPendingFiles(files);
+    
+    // Capture drag image from the container
+    const container = containerRef.current;
+    if (container) {
+      prepareDragImage(container).then(() => {
+        // Small delay to ensure image is captured
+        dragTimeoutRef.current = window.setTimeout(() => {
+          triggerNativeDrag();
+        }, 10);
+      });
+    } else {
+      // No container, just trigger drag with default image
+      dragTimeoutRef.current = window.setTimeout(() => {
+        triggerNativeDrag();
+      }, 10);
+    }
+  }, [files]);
+
+  const handleMouseUp = useCallback(() => {
+    if (dragTimeoutRef.current) {
+      clearTimeout(dragTimeoutRef.current);
+      dragTimeoutRef.current = null;
+    }
+  }, []);
+
+  return (
+    <div 
+      ref={containerRef}
+      className="relative w-full h-full cursor-grab active:cursor-grabbing"
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
+      {stackedIcons}
+    </div>
+  );
 };

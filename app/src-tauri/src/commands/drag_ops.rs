@@ -1,8 +1,7 @@
-use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, State, Manager};
 use crate::config::AppConfig;
 use crate::file::FileMetadata;
-use crate::analytics;
+use std::sync::{Arc, Mutex};
+use tauri::{AppHandle, Manager, State};
 
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
@@ -15,33 +14,26 @@ pub fn start_multi_drag(
     drag_image: Option<String>,
 ) -> Result<(), String> {
     println!(
-        "Starting multi-file drag for files: {}",
-        file_paths.join(", ")
+        "[Drag] Starting multi-file drag for {} files",
+        file_paths.len()
     );
-
-    // Send analytics event asynchronously using centralized service
-    let num_files = file_paths.len();
-    let app_handle = app.clone();
-    
-    tauri::async_runtime::spawn(async move {
-        if let Err(e) = analytics::send_analytics_event(&app_handle, "files_dropped", Some(vec![
-            ("num_files", serde_json::Value::Number((num_files as i64).into())),
-        ])).await {
-            eprintln!("[Analytics] Failed to send files_dropped event: {}", e);
-        }
-    });
+    println!("[Drag] File paths: {:?}", file_paths);
 
     let mut valid_paths = Vec::new();
 
     for file_path in &file_paths {
+        println!("[Drag] Processing path: {}", file_path);
         match std::fs::canonicalize(file_path.clone()) {
             Ok(path) => {
                 if path.exists() {
+                    println!("[Drag] Valid path: {:?}", path);
                     valid_paths.push(path);
+                } else {
+                    println!("[Drag] Path does not exist: {:?}", path);
                 }
             }
             Err(e) => {
-                println!("Error processing file: {}", e);
+                println!("[Drag ERROR] Error canonicalizing path: {}", e);
             }
         }
     }
@@ -58,14 +50,14 @@ pub fn start_multi_drag(
         } else {
             &base64_data
         };
-        
+
         match base64::Engine::decode(&base64::engine::general_purpose::STANDARD, base64_str) {
             Ok(bytes) => {
-                println!("Using frontend drag image ({} bytes)", bytes.len());
+                println!("[Drag] Using frontend drag image ({} bytes)", bytes.len());
                 drag::Image::Raw(bytes)
             }
             Err(e) => {
-                println!("Failed to decode drag image: {}, using file icon", e);
+                println!("[Drag] Failed to decode drag image: {}, using file icon", e);
                 generate_drag_image(valid_paths.len())
             }
         }
@@ -73,10 +65,28 @@ pub fn start_multi_drag(
         generate_drag_image(valid_paths.len())
     };
 
-    let item = drag::DragItem::Files(valid_paths);
+    let item = drag::DragItem::Files(valid_paths.clone());
+    println!("[Drag] Created DragItem with {} files", valid_paths.len());
 
-    let window = app.get_webview_window("main")
+    let window = app
+        .get_webview_window("main")
         .ok_or("Main window not found")?;
+    println!("[Drag] Got main window handle");
+
+    // Ensure window is shown and activated for drag to work on macOS
+    #[cfg(target_os = "macos")]
+    {
+        if let Err(e) = window.show() {
+            println!("[Drag WARNING] Failed to show window before drag: {}", e);
+        }
+        if let Err(e) = window.set_focus() {
+            println!("[Drag WARNING] Failed to focus window before drag: {}", e);
+        }
+        // Small delay to ensure window is properly activated
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        println!("[Drag] Window prepared for drag");
+    }
+
     let app_clone = app.clone();
 
     let on_drop_callback = move |result: drag::DragResult, _: drag::CursorPosition| {
@@ -90,22 +100,25 @@ pub fn start_multi_drag(
                 println!("Failed to close popup window: {}", e);
             }
         }
-        if let Some(main_window) = app.get_webview_window("main") {
+        if let Some(main_window) = app_clone.get_webview_window("main") {
             if let Err(e) = main_window.hide() {
                 println!("Failed to hide main window: {}", e);
             }
         }
     };
 
-    // On macOS, use CopyMove mode (17 = NSDragOperationCopy | NSDragOperationMove)
-    // so the OS handles modifier key detection (Option = Move, default = Copy).
-    // On Windows, check the key state at drag start.
+    // On macOS, the drag crate only supports Copy or Move individually, not combined.
+    // Using Copy as default (standard macOS behavior where Option key changes to Move).
     #[cfg(target_os = "macos")]
-    let mode: drag::DragMode = unsafe { std::mem::transmute(17u64) };
+    let mode = drag::DragMode::Copy;
     #[cfg(not(target_os = "macos"))]
-    let mode = if is_move_key_pressed() { drag::DragMode::Move } else { drag::DragMode::Copy };
+    let mode = if is_move_key_pressed() {
+        drag::DragMode::Move
+    } else {
+        drag::DragMode::Copy
+    };
 
-    drag::start_drag(
+    match drag::start_drag(
         &window,
         item,
         image,
@@ -114,27 +127,36 @@ pub fn start_multi_drag(
             skip_animatation_on_cancel_or_failure: true,
             mode,
         },
-    )
-    .map_err(|e| format!("Failed to start multi-file drag operation: {}", e))?;
-
-    Ok(())
+    ) {
+        Ok(_) => {
+            println!("[Drag] Drag operation started successfully");
+            Ok(())
+        }
+        Err(e) => {
+            println!("[Drag ERROR] Failed to start drag: {:?}", e);
+            Err(format!(
+                "Failed to start multi-file drag operation: {:?}",
+                e
+            ))
+        }
+    }
 }
 
 /// Generate a simple drag image with file count badge using the `image` crate.
 /// Returns a PNG-encoded drag::Image::Raw at 128x128 (good enough for Retina).
 fn generate_drag_image(file_count: usize) -> drag::Image {
-    use image::{RgbaImage, Rgba};
-    
+    use image::{Rgba, RgbaImage};
+
     let size = 128u32;
     let mut img = RgbaImage::new(size, size);
-    
+
     // Draw a simple file icon (white rectangle with gray border and folded corner)
     let margin = 16u32;
     let fold = 24u32;
     let border_color = Rgba([160, 160, 160, 255]);
     let fill_color = Rgba([245, 245, 245, 255]);
     let fold_color = Rgba([200, 200, 200, 255]);
-    
+
     // Fill the file body
     for y in margin..size - margin {
         for x in margin..size - margin {
@@ -145,7 +167,7 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
             img.put_pixel(x, y, fill_color);
         }
     }
-    
+
     // Draw fold triangle
     for y in margin..margin + fold {
         for x in (size - margin - fold)..(size - margin) {
@@ -156,7 +178,7 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
             }
         }
     }
-    
+
     // Draw border
     for x in margin..size - margin - fold {
         img.put_pixel(x, margin, border_color); // top
@@ -176,13 +198,7 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
             img.put_pixel(x, y, border_color);
         }
     }
-    // Fold vertical
-    for y in margin + fold..size - margin {
-        if size - margin - 1 < size {
-            // already drawn in right border
-        }
-    }
-    
+
     // If multiple files, draw a badge circle with count
     if file_count > 1 {
         let badge_radius = 18i32;
@@ -190,7 +206,7 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
         let badge_cy = (size - margin) as i32;
         let badge_color = Rgba([59, 130, 246, 255]); // Blue
         let _badge_text_color = Rgba([255, 255, 255, 255]);
-        
+
         // Draw badge circle
         for y in 0..size as i32 {
             for x in 0..size as i32 {
@@ -201,24 +217,31 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
                 }
             }
         }
-        
+
         // Draw count number (simple pixel art for single/double digit)
-        let count_str = if file_count > 99 { "99+".to_string() } else { file_count.to_string() };
+        let count_str = if file_count > 99 {
+            "99+".to_string()
+        } else {
+            file_count.to_string()
+        };
         // For simplicity, just draw a small dot pattern - the badge itself is informative
         let _ = count_str; // Count shown by badge presence; actual text rendering is complex with `image` crate
-        
+
         // Draw a simple "+" or number shape in the badge center
         // For now, just the badge alone indicates multiple files
     }
-    
+
     // Encode to PNG
     let mut png_bytes: Vec<u8> = Vec::new();
-    if let Err(e) = img.write_to(&mut std::io::Cursor::new(&mut png_bytes), image::ImageFormat::Png) {
+    if let Err(e) = img.write_to(
+        &mut std::io::Cursor::new(&mut png_bytes),
+        image::ImageFormat::Png,
+    ) {
         println!("Failed to encode drag image: {}", e);
         // Fallback: return a 1x1 transparent PNG
         return drag::Image::Raw(vec![]);
     }
-    
+
     drag::Image::Raw(png_bytes)
 }
 

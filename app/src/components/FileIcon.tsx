@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FileIcon } from 'lucide-react';
 import { useFileManagement } from '../hooks/useFileManagement';
-import { File } from './StackedIcons';
+import { FilePreview } from '@/types';
 
 interface DynamicFileIconProps {
-  file: File
+  file: FilePreview
 }
 
 export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file, ...props }) => {

@@ -1,7 +1,7 @@
 import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
 import { useFileManagement } from "@/hooks/useFileManagement";
-import { handleMultiFileDragStart } from "@/lib/fileUtils";
+import { setPendingFiles, prepareDragImage, triggerNativeDrag } from "@/lib/fileUtils";
 import { invoke } from "@tauri-apps/api/core";
 import { MoreHorizontal, List as ListIcon, Grid as GridIcon, Trash2 } from 'lucide-react';
 import React, { useEffect, useState, useCallback, useRef } from "react";
@@ -18,6 +18,7 @@ const PopupWindow: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [lastSelectedFile, setLastSelectedFile] = useState<string | null>(null);
   const fileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const dragTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -47,16 +48,46 @@ const PopupWindow: React.FC = () => {
     };
   }, [hasInteracted]);
 
-  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, file: any) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>, file: any) => {
+    // Only trigger on left mouse button
+    if (e.button !== 0) return;
+    
     e.stopPropagation();
-    const sourceEl = e.currentTarget as HTMLElement;
+    
+    console.log('[Drag] MouseDown on file item');
+    
+    // Determine which files to drag
+    let filesToDrag: any[];
     if (selectedFiles.size > 0) {
-      const selectedFileObjects = files.filter(f => selectedFiles.has(f.id.toString()));
-      handleMultiFileDragStart(e, selectedFileObjects, sourceEl);
+      filesToDrag = files.filter(f => selectedFiles.has(f.id.toString()));
     } else {
-      handleMultiFileDragStart(e, [file], sourceEl);
+      filesToDrag = [file];
+    }
+    
+    console.log('[Drag] Setting pending files:', filesToDrag.length);
+    setPendingFiles(filesToDrag);
+    
+    // Get the element for image capture
+    const element = fileRefs.current[file.id];
+    if (element) {
+      prepareDragImage(element).then(() => {
+        dragTimeoutRef.current = window.setTimeout(() => {
+          triggerNativeDrag();
+        }, 10);
+      });
+    } else {
+      dragTimeoutRef.current = window.setTimeout(() => {
+        triggerNativeDrag();
+      }, 10);
     }
   }, [files, selectedFiles]);
+
+  const handleMouseUp = useCallback(() => {
+    if (dragTimeoutRef.current) {
+      clearTimeout(dragTimeoutRef.current);
+      dragTimeoutRef.current = null;
+    }
+  }, []);
 
   const handleFileClick = useCallback((fileId: string, event: React.MouseEvent) => {
     setSelectedFiles(prev => {
@@ -151,11 +182,12 @@ const PopupWindow: React.FC = () => {
                     : 'flex flex-col items-center p-1 rounded'
                   }
                   ${selectedFiles.has(file.id.toString()) ? 'bg-accent bg-opacity-50' : ''}
-                  cursor-pointer
+                  cursor-grab active:cursor-grabbing
                 `}
                 onClick={(e) => handleFileClick(file.id.toString(), e)}
-                draggable
-                onDragStart={(e) => handleDragStart(e, file)}
+                onMouseDown={(e) => handleMouseDown(e, file)}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
               >
                 <div className={`
                    flex items-center justify-center overflow-hidden
