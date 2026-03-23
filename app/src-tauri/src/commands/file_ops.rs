@@ -11,6 +11,12 @@ pub fn add_files(
     file_list: State<'_, FileList>,
     files: Vec<String>,
 ) -> Result<(), String> {
+    if !files.is_empty() {
+        // Immediately notify monitor that files were dropped to prevent auto-close!
+        // Do this FIRST before doing any heavy disk I/O like get_dir_size which might take >300ms
+        let _ = app_handle.emit("file_added", ());
+    }
+
     let mut list = file_list
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
@@ -53,11 +59,6 @@ pub fn add_files(
                 .emit("files_updated", ())
                 .map_err(|e| e.to_string())?;
         }
-    }
-
-    if !files.is_empty() {
-        // Emit file_added event to notify mouse monitor that a drop occurred
-        let _ = app_handle.emit("file_added", ());
     }
 
     Ok(())
