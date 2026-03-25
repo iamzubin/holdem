@@ -1,7 +1,9 @@
 use crate::analytics;
 use crate::config::MouseMonitorConfig;
+use crate::DragState;
 use crate::mouse_monitor::common::DRAG_PASTEBOARD_NAME;
 use crate::utils::get_screen_bounds_from_handle;
+use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Manager, PhysicalPosition};
@@ -80,7 +82,7 @@ fn pasteboard_has_files(pasteboard: &NSPasteboard) -> bool {
     has_file_url || has_filenames
 }
 
-pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle) {
+pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, _drag_state: Arc<DragState>) {
     println!("[MACOS_MONITOR] Starting with correct pasteboard name: {}", DRAG_PASTEBOARD_NAME);
     println!("[MACOS_MONITOR] Config: threshold={}, shakes={}, time_limit={}ms",
         config.shake_threshold, config.required_shakes, config.shake_time_limit);
