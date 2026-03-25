@@ -3,6 +3,10 @@ use std::sync::Mutex;
 use tauri::{Manager, Listener};
 #[cfg(target_os = "windows")]
 use tauri::PhysicalPosition;
+#[cfg(target_os = "windows")]
+use windows::Win32::UI::Input::KeyboardAndMouse::GetCursorPos;
+#[cfg(target_os = "windows")]
+use windows::Win32::Foundation::POINT;
 use tauri_plugin_updater::UpdaterExt;
 use tauri::WebviewUrl;
 use tauri::WebviewWindowBuilder;
@@ -17,6 +21,7 @@ mod file_drop;
 mod thumbnail;
 mod analytics;
 mod logging;
+mod utils;
 
 use commands::{
     file_ops::*,
@@ -36,9 +41,8 @@ use analytics::AnalyticsService;
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
 fn build_app() -> tauri::Builder<tauri::Wry> {
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -47,8 +51,11 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             tauri_plugin_autostart::Builder::new()
                 .args(vec!["--autostart"])
                 .build()
-        )
-        .plugin(
+        );
+
+    #[cfg(target_os = "windows")]
+    {
+        builder = builder.plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(move |app, shortcut, event| {
                     println!("Hotkey pressed: {:?}", shortcut);
@@ -57,32 +64,19 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                             tauri_plugin_global_shortcut::ShortcutState::Pressed => {
                                 println!("Showing window");
 
-                                #[cfg(target_os = "windows")]
-                                {
-                                    // Get current cursor position
-                                    let mut cursor_pos = POINT { x: 0, y: 0 };
-                                    let _ = unsafe { GetCursorPos(&mut cursor_pos) };
+                                let mut cursor_pos = POINT { x: 0, y: 0 };
+                                let _ = unsafe { GetCursorPos(&mut cursor_pos) };
+                                let margin = 200.0;
 
-                                    // Define margin to consider as "corner"
-                                    let margin = 200;
-
-                                    // Adjust position to avoid off-screen
-                                    let mut window_x = cursor_pos.x;
-                                    let mut window_y = cursor_pos.y;
-
-                                    // Check if cursor is near the right or bottom edge
-                                    if cursor_pos.x + margin > unsafe { GetSystemMetrics(SM_CXSCREEN) } {
-                                        window_x = cursor_pos.x - margin;
-                                    }
-
-                                    if cursor_pos.y + margin > unsafe { GetSystemMetrics(SM_CYSCREEN) } {
-                                        window_y = cursor_pos.y - margin;
-                                    }
-
-                                    // Set window position and show it
+                                if let Ok(bounds) = crate::utils::ScreenBounds::from_window(&window) {
+                                    let (window_x, window_y) = bounds.constrain_position(
+                                        cursor_pos.x as f64,
+                                        cursor_pos.y as f64,
+                                        margin,
+                                    );
                                     let _ = window.set_position(PhysicalPosition {
-                                        x: window_x,
-                                        y: window_y,
+                                        x: window_x as i32,
+                                        y: window_y as i32,
                                     });
                                 }
 
@@ -97,7 +91,15 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                     }
                 })
                 .build(),
-        )
+        );
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        builder = builder.plugin(tauri_plugin_key_intercept::init());
+    }
+
+    builder
         .invoke_handler(tauri::generate_handler![
             // start_drag,
             start_multi_drag,
@@ -124,6 +126,8 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             decline_analytics_consent,
             check_analytics_consent,
             check_config_exists,
+            check_input_monitoring_permission,
+            open_input_monitoring_settings,
         ])
         .setup(|app| {
             // Ensure config directory exists first
