@@ -1,15 +1,23 @@
 use std::sync::Arc;
 use std::sync::Mutex;
-use tauri::{Manager, Listener};
+use std::sync::atomic::{AtomicBool, Ordering};
+use tauri::{Manager, Listener, PhysicalPosition};
+
+#[derive(Clone)]
+struct DragState {
+    drag_started: Arc<AtomicBool>,
+    successful_drop: Arc<AtomicBool>,
+}
 #[cfg(target_os = "windows")]
-use tauri::PhysicalPosition;
+use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
 #[cfg(target_os = "windows")]
-use windows::Win32::UI::Input::KeyboardAndMouse::GetCursorPos;
+use windows::Win32::Foundation::{POINT, WAIT_OBJECT_0};
 #[cfg(target_os = "windows")]
-use windows::Win32::Foundation::POINT;
+use windows::Win32::System::Threading::{CreateMutexW, WaitForSingleObject, ReleaseMutex};
 use tauri_plugin_updater::UpdaterExt;
 use tauri::WebviewUrl;
 use tauri::WebviewWindowBuilder;
+use tauri::{DragDropEvent, WindowEvent};
 mod commands;
 #[cfg(desktop)]
 mod tray;
@@ -181,6 +189,13 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             let file_list: FileList = Arc::new(Mutex::new(Vec::new()));
             app.manage(file_list.clone());
 
+            // Create drag state
+            let drag_state = Arc::new(DragState {
+                drag_started: Arc::new(AtomicBool::new(false)),
+                successful_drop: Arc::new(AtomicBool::new(false)),
+            });
+            app.manage(drag_state.clone());
+
             // Check for updates on startup
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
@@ -238,16 +253,8 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 let config_guard = config_state.lock().map_err(|e| {
                     format!("Failed to lock config: {}", e)
                 })?;
-                start_mouse_monitor(config_guard.mouse_monitor.clone(), app_handle.clone());
+                start_mouse_monitor(config_guard.mouse_monitor.clone(), app_handle.clone(), drag_state.clone());
             }
-
-            let file_list_clone = file_list.clone();
-            let app_handle = app.handle().clone();
-
-            app.listen_any("tauri://drag-drop", move |event| {
-                println!("file dropped event received in setup");
-                file_drop::handle_file_drop(event, file_list_clone.clone(), app_handle.clone());
-            });
 
             let is_autostart = std::env::args().any(|arg| arg == "--autostart");
             if is_autostart {
@@ -259,6 +266,29 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             }
 
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            if let WindowEvent::DragDrop(drop_event) = event {
+                let drag_state = window.app_handle().state::<Arc<DragState>>().inner();
+                match drop_event {
+                    DragDropEvent::Enter { .. } => {
+                        println!("Drag entered the window bounds");
+                        drag_state.drag_started.store(true, Ordering::Relaxed);
+                    }
+                    DragDropEvent::Drop { paths, .. } => {
+                        println!("Dropped cleanly in the app! Files: {:?}", paths);
+                        // Handle the file drop
+                        let app_handle = window.app_handle();
+                        let file_list_state = app_handle.state::<FileList>();
+                        file_drop::handle_file_drop_from_paths(paths.clone(), file_list_state.inner().clone(), app_handle.clone());
+                        
+                        // Do not hide the window after processing - let user interact with the files
+                        drag_state.drag_started.store(false, Ordering::Relaxed);
+                        drag_state.successful_drop.store(true, Ordering::Relaxed);
+                    }
+                    _ => {}
+                }
+            }
         })
 }
 

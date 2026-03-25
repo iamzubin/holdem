@@ -1,7 +1,8 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
-  "description": "Capability for the main window",
+  "identifier": "macos",
+  "description": "Capability for the main window on macOS",
+  "platforms": ["macOS"],
   "windows": [
     "main",
     "popup",
@@ -31,6 +32,14 @@
     "global-shortcut:allow-is-registered",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
-    "global-shortcut:default"
+    "global-shortcut:default",
+    "key-intercept:default",
+    "key-intercept:allow-check-permission",
+    "key-intercept:allow-open-input-monitoring-settings",
+    "key-intercept:allow-register",
+    "key-intercept:allow-unregister",
+    "key-intercept:allow-is-registered",
+    "key-intercept:allow-get-keycode-table",
+    "key-intercept:allow-discover-keycode"
   ]
 }

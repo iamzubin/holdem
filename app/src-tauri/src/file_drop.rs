@@ -1,55 +1,12 @@
 use crate::file::{get_dir_size, FileMetadata};
 use crate::FileList;
 use std::path::PathBuf;
-use tauri::{AppHandle, Emitter, Event};
+use tauri::{AppHandle, Emitter};
 
-pub fn handle_file_drop(event: Event, file_list: FileList, app_handle: AppHandle) {
-    let payload: serde_json::Value = serde_json::from_str(event.payload()).unwrap_or_default();
-
-    // Handle text drops
-    if let Some(text) = payload["text"].as_str() {
-        let temp_dir = std::env::temp_dir();
-        let timestamp = chrono::Local::now();
-        let folder_name = timestamp.format("%Y%m%d").to_string();
-        let drop_folder = temp_dir.join("holdem_drops").join(&folder_name);
-        std::fs::create_dir_all(&drop_folder).ok();
-
-        let file_name = format!("dropped_text_{}.txt", timestamp.format("%H%M%S"));
-        let file_path = drop_folder.join(&file_name);
-
-        if std::fs::write(&file_path, text).is_ok() {
-            let mut list = file_list.lock().unwrap();
-            let file = FileMetadata {
-                id: list.len() as u64,
-                name: file_name,
-                path: file_path.clone(),
-                size: text.len() as u64,
-                file_type: "txt".to_string(),
-            };
-            if !list.iter().any(|f| f.path == file.path) {
-                println!("text file added: {:?}", file);
-                list.push(file);
-            }
-            drop(list);
-            if let Err(e) = app_handle.emit("files_updated", ()) {
-                eprintln!("Failed to emit files_updated event: {}", e);
-            }
-        }
-        return;
-    }
-
-    let files: Vec<String> = payload["paths"]
-        .as_array()
-        .map(|arr| {
-            arr.iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect()
-        })
-        .unwrap_or_default();
+pub fn handle_file_drop_from_paths(paths: Vec<PathBuf>, file_list: FileList, app_handle: AppHandle) {
     let mut list = file_list.lock().unwrap();
 
-    for path_str in files.iter() {
-        let path = PathBuf::from(path_str);
+    for path in paths.iter() {
         if path.exists() {
             if let Ok(metadata) = path.metadata() {
                 // If file is in temp directory, copy it to a permanent location
