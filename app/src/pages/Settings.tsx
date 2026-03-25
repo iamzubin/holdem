@@ -1,6 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { register, unregisterAll } from '@tauri-apps/plugin-global-shortcut';
-import { X, Plus, Trash2, Keyboard, Monitor, Settings, Info } from 'lucide-react';
+import { X, Plus, Trash2, Keyboard, Monitor, Settings, Info, AlertTriangle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -12,6 +11,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+
+const isMac = navigator.platform.toLowerCase().includes('mac');
 
 
 interface MouseMonitorConfig {
@@ -36,11 +37,13 @@ export default function SettingsPage() {
     const [isListening, setIsListening] = useState(false);
     const [currentHotkey, setCurrentHotkey] = useState<string>('');
     const [newWhitelistItem, setNewWhitelistItem] = useState('');
+    const [platform] = useState(isMac ? 'mac' : 'win');
+    const [inputMonitoringGranted, setInputMonitoringGranted] = useState<boolean | null>(null);
 
     useEffect(() => {
         loadConfig();
+        checkInputMonitoringPermission();
 
-        // Clean up event listeners when component unmounts
         return () => {
             if (isListening) {
                 window.removeEventListener('keydown', handleKeyDown);
@@ -48,6 +51,30 @@ export default function SettingsPage() {
             }
         };
     }, []);
+
+    const checkInputMonitoringPermission = async () => {
+        if (isMac) {
+            try {
+                const hasPermission = await invoke<boolean>('plugin:key-intercept|check_permission');
+                setInputMonitoringGranted(hasPermission);
+            } catch (error) {
+                console.error('Failed to check input monitoring permission:', error);
+                setInputMonitoringGranted(false);
+            }
+        } else {
+            setInputMonitoringGranted(true);
+        }
+    };
+
+    const openInputMonitoringSettingsHandler = async () => {
+        if (isMac) {
+            try {
+                await invoke('plugin:key-intercept|open_input_monitoring_settings');
+            } catch (error) {
+                console.error('Failed to open input monitoring settings:', error);
+            }
+        }
+    };
 
     const loadConfig = async () => {
         try {
@@ -77,37 +104,23 @@ export default function SettingsPage() {
 
         setSaving(true);
         try {
-            // Save config first
             await invoke('save_config', { newConfig: config });
 
-            // Then update autostart
             try {
                 await invoke('set_autostart', { enabled: config.autostart });
             } catch (error) {
                 console.error('Failed to update autostart:', error);
             }
 
-            // Then register hotkey
             try {
-                // Unregister all existing hotkeys
-                await unregisterAll();
-
-                // Register new hotkey if not empty
-                if (config.hotkey) {
-                    await register(config.hotkey, () => {
-                        console.log('Hotkey pressed');
-                        invoke('show_main_window');
-                    });
-                }
+                await invoke('register_hotkey', { shortcutStr: config.hotkey });
             } catch (error) {
                 console.error('Failed to register hotkey:', error);
             }
 
-            // Finally restart the app
             await invoke('restart_app');
         } catch (error) {
             console.error('Failed to save config:', error);
-            // Don't restart if config save failed
         } finally {
             setSaving(false);
         }
@@ -205,10 +218,11 @@ export default function SettingsPage() {
 
     const buildHotkeyString = (e: KeyboardEvent): string => {
         const parts: string[] = [];
+        const altKeyName = platform === 'mac' ? 'Opt' : 'Alt';
 
         // Add modifier keys in the correct order
         if (e.ctrlKey) parts.push('Ctrl');
-        if (e.altKey) parts.push('Alt');
+        if (e.altKey) parts.push(altKeyName);
         if (e.shiftKey) parts.push('Shift');
         if (e.metaKey) parts.push('Meta');
 
@@ -360,6 +374,35 @@ export default function SettingsPage() {
             {/* Settings Content */}
             <div className="flex-grow p-6 overflow-auto space-y-6 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
 
+                {/* macOS Input Monitoring Permission Warning */}
+                {isMac && inputMonitoringGranted === false && (
+                    <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 p-4">
+                        <div className="flex items-start gap-3">
+                            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                                <h3 className="font-medium text-amber-800 dark:text-amber-200">
+                                    Input Monitoring Permission Required
+                                </h3>
+                                <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                                    To use global shortcuts like Option+Space or Ctrl+Space, 
+                                    this app needs Input Monitoring permission. This is a macOS system requirement.
+                                </p>
+                                <Button
+                                    onClick={openInputMonitoringSettingsHandler}
+                                    variant="outline"
+                                    className="mt-3 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/50"
+                                    size="sm"
+                                >
+                                    Open System Settings
+                                </Button>
+                                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+                                    After granting permission, restart the app for changes to take effect.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* General Settings */}
                 <div className="grid gap-6">
                     <Card>
@@ -459,13 +502,15 @@ export default function SettingsPage() {
                                     <span className="text-sm text-foreground">Copy files to destination</span>
                                 </div>
                                 <div className="flex items-start gap-2">
-                                    <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">⌥ opt</kbd>
-                                    <span className="text-sm text-foreground">Hold <strong>Option</strong> while dropping to <strong>move</strong> files</span>
+                                    <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">{platform === 'mac' ? '⌥ opt' : 'alt'}</kbd>
+                                    <span className="text-sm text-foreground">Hold <strong>{platform === 'mac' ? 'Option' : 'Alt'}</strong> while dropping to <strong>move</strong> files</span>
                                 </div>
                             </div>
                             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                                 <Info className="w-3 h-3 shrink-0" />
-                                macOS shows a green <strong>+</strong> badge when copying. No badge = move operation.
+                                {platform === 'mac' 
+                                    ? 'macOS shows a green + badge when copying. No badge = move operation.'
+                                    : 'Windows Explorer shows a dotted overlay when copying. A move arrow shows for move operation.'}
                             </p>
                         </CardContent>
                     </Card>

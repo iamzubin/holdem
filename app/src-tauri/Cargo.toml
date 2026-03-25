@@ -12,7 +12,6 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2.2.0", features = [] }
-dotenvy = "0.15"
 
 [dependencies]
 tauri = { version = "2.5.1", features = ["tray-icon"] }
@@ -25,12 +24,10 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-fs = "2.2.1"
 chrono = "0.4"
-window-vibrancy = "0.5.3"
 base64 = "0.22.1"
 tauri-plugin-process = "2.2.1"
 drag = "2.1.0"
 image = "0.25"
-glob = "0.3.2"
 posthog-rs = "0.3.5"
 tokio = "1.47.0"
 uuid = { version = "1.0", features = ["v4"] }
@@ -45,6 +42,7 @@ objc2 = "0.6"
 objc2-foundation = "0.3"
 objc2-app-kit = "0.3"
 core-graphics-types = "0.1"
+tauri-plugin-key-intercept = { git = "https://github.com/yigitkonur/tauri-plugin-key-intercept" }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows = { version = "0.61.3", features = [
@@ -60,8 +58,3 @@ active-win-pos-rs = "0.8"
 
 [profile.release]
 lto = true
-
-[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-tauri-plugin-global-shortcut = "2.3.1"
-tauri-plugin-single-instance = "2.2.3"
-# thinlto = true
