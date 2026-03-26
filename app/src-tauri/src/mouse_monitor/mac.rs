@@ -78,22 +78,33 @@ fn show_main_window(app: &AppHandle, pos: (f64, f64), _config: &MouseMonitorConf
     if let Some(window) = app.get_webview_window("main") {
         let scale_factor = window.scale_factor().unwrap_or(1.0);
         
-        // The cursor position from window.cursor_position() is already in physical pixels
-        // relative to the desktop, so we use it directly for window positioning
-        let physical_x = pos.0;
-        let physical_y = pos.1;
+        // Convert physical cursor position to logical window position for Retina displays
+        // cursor_position() returns physical pixels, set_position() expects logical pixels
+        let logical_x = pos.0 / scale_factor;
+        let logical_y = pos.1 / scale_factor;
 
-        println!("[WINDOW] Cursor position: ({:.0}, {:.0})", physical_x, physical_y);
+        println!("[WINDOW] Physical cursor position: ({:.0}, {:.0})", pos.0, pos.1);
         println!("[WINDOW] Scale factor: {}", scale_factor);
+        println!("[WINDOW] Logical window position: ({:.0}, {:.0})", logical_x, logical_y);
+        println!("[WINDOW] Attempting to set window position to: ({}, {})", logical_x as i32, logical_y as i32);
 
         let _ = window.set_position(PhysicalPosition {
-            x: physical_x as i32,
-            y: physical_y as i32,
+            x: logical_x as i32,
+            y: logical_y as i32,
         });
 
         // Log the actual position after setting
         if let Ok(actual_pos) = window.outer_position() {
-            println!("[WINDOW] Actual position: ({}, {})", actual_pos.x, actual_pos.y);
+            println!("[WINDOW] Actual position set: ({}, {})", actual_pos.x, actual_pos.y);
+            
+            // Calculate offset (comparing logical target to actual physical position converted to logical)
+            let actual_logical_x = actual_pos.x as f64 / scale_factor;
+            let actual_logical_y = actual_pos.y as f64 / scale_factor;
+            let offset_x = logical_x - actual_logical_x;
+            let offset_y = logical_y - actual_logical_y;
+            println!("[WINDOW] Position offset: ({:.0}, {:.0})", offset_x, offset_y);
+        } else {
+            println!("[WINDOW] Failed to get actual position after setting");
         }
 
         let _ = window.show();
