@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, Ordering};
-use tauri::{Manager, Listener, PhysicalPosition};
+use tauri::{Manager};
 
 #[derive(Clone)]
 struct DragState {

@@ -2,8 +2,8 @@ use crate::analytics;
 use crate::config::MouseMonitorConfig;
 use crate::DragState;
 use crate::mouse_monitor::common::DRAG_PASTEBOARD_NAME;
-use crate::utils::get_screen_bounds_from_handle;
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Manager, PhysicalPosition};
@@ -18,9 +18,6 @@ extern "C" {
     fn CGEventGetLocation(event: *mut std::ffi::c_void) -> CGPoint;
     fn CGEventCreate(source: *mut std::ffi::c_void) -> *mut std::ffi::c_void;
     fn CFRelease(cf: *mut std::ffi::c_void);
-    /// Returns true if the specified mouse button is currently down.
-    /// stateID: kCGEventSourceStateHIDSystemState = 1
-    /// button: kCGMouseButtonLeft = 0
     fn CGEventSourceButtonState(stateID: u32, button: u32) -> bool;
 }
 
@@ -37,19 +34,10 @@ fn get_cursor_position() -> (f64, f64) {
     }
 }
 
-/// Check if the left mouse button is currently held down.
-/// Uses kCGEventSourceStateHIDSystemState (1) to query hardware state.
 fn is_mouse_button_down() -> bool {
     const K_CG_EVENT_SOURCE_STATE_HID_SYSTEM_STATE: u32 = 1;
     const K_CG_MOUSE_BUTTON_LEFT: u32 = 0;
     unsafe { CGEventSourceButtonState(K_CG_EVENT_SOURCE_STATE_HID_SYSTEM_STATE, K_CG_MOUSE_BUTTON_LEFT) }
-}
-
-fn get_screen_size(app_handle: &AppHandle) -> (f64, f64) {
-    match get_screen_bounds_from_handle(app_handle) {
-        Ok(bounds) => (bounds.width, bounds.height),
-        Err(_) => (1920.0, 1080.0),
-    }
 }
 
 fn get_drag_pasteboard() -> Option<Retained<NSPasteboard>> {
@@ -82,16 +70,38 @@ fn pasteboard_has_files(pasteboard: &NSPasteboard) -> bool {
     has_file_url || has_filenames
 }
 
-pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, _drag_state: Arc<DragState>) {
-    println!("[MACOS_MONITOR] Starting with correct pasteboard name: {}", DRAG_PASTEBOARD_NAME);
+fn hide_main_window(app: &AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.hide();
+    }
+}
+
+fn show_main_window(app: &AppHandle, pos: (f64, f64), _config: &MouseMonitorConfig) {
+    if let Some(window) = app.get_webview_window("main") {
+        let scale_factor = window.scale_factor().unwrap_or(1.0);
+        let logical_x = pos.0 / scale_factor;
+        let logical_y = pos.1 / scale_factor;
+
+        println!("[WINDOW] Physical: ({:.0}, {:.0}), Scale: {}, Logical: ({:.0}, {:.0})",
+            pos.0, pos.1, scale_factor, logical_x, logical_y);
+
+        let _ = window.set_position(PhysicalPosition {
+            x: logical_x as i32,
+            y: logical_y as i32,
+        });
+        let _ = window.show();
+        let _ = window.unminimize();
+        let _ = window.set_focus();
+    }
+}
+
+pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, drag_state: Arc<DragState>) {
+    println!("[MACOS_MONITOR] Starting with pasteboard name: {}", DRAG_PASTEBOARD_NAME);
     println!("[MACOS_MONITOR] Config: threshold={}, shakes={}, time_limit={}ms",
         config.shake_threshold, config.required_shakes, config.shake_time_limit);
 
     thread::spawn(move || {
         let mut window_opened_by_shake = false;
-        let mut window_position: Option<(f64, f64)> = None;
-        let mut last_time_near_window = Instant::now();
-        let window_proximity_threshold = 300.0; // pixels
         let mut last_position = get_cursor_position();
         let check_interval = Duration::from_millis(50);
         let shake_threshold_x = config.shake_threshold as f64;
@@ -111,229 +121,122 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, _d
         let mut last_change_count = get_pasteboard_change_count(&pasteboard);
         let mut is_drag_active = false;
         let mut drag_start_time: Option<Instant> = None;
-        let mut debug_counter = 0u32;
-
-        println!("[MACOS_MONITOR] Initial changeCount: {}", last_change_count);
 
         loop {
             let current_position = get_cursor_position();
             let current_change_count = get_pasteboard_change_count(&pasteboard);
             let has_files = pasteboard_has_files(&pasteboard);
+            let mouse_down = is_mouse_button_down();
 
             let change_count_changed = current_change_count != last_change_count && current_change_count > 0;
 
-            debug_counter += 1;
-            if debug_counter.is_multiple_of(20) {
-                println!("[DEBUG] pos=({:.0},{:.0}) changeCount={} prev={} changed={} has_files={} dragging={} mouse_down={}",
-                    current_position.0, current_position.1,
-                    current_change_count, last_change_count,
-                    change_count_changed, has_files, is_drag_active,
-                    is_mouse_button_down());
+            // --- Detect drag start ---
+            if !is_drag_active && change_count_changed && has_files {
+                is_drag_active = true;
+                drag_start_time = Some(Instant::now());
+                last_change_count = current_change_count;
+                last_shake_time = Instant::now();
+                println!("[DRAG_START] File drag detected! changeCount={}", current_change_count);
             }
 
-            if !is_drag_active {
-                if change_count_changed && has_files {
-                    is_drag_active = true;
-                    drag_start_time = Some(Instant::now());
-                    last_change_count = current_change_count;
-                    // Reset shake timer so inactivity timeout doesn't fire from a stale previous shake
-                    last_shake_time = Instant::now();
-                    println!("[DRAG_START] File drag detected! changeCount={}", current_change_count);
+            // --- Detect drag end (mouse released) ---
+            // Only check mouse button - pasteboard can flicker during drag
+            let drag_ended = is_drag_active && !mouse_down;
+
+            if drag_ended {
+                let drag_started = drag_state.drag_started.load(Ordering::Relaxed);
+                let successful_drop = drag_state.successful_drop.load(Ordering::Relaxed);
+
+                println!("[DRAG_END] drag_started={}, successful_drop={}", drag_started, successful_drop);
+
+                // Reset drag state flags for next drag
+                drag_state.drag_started.store(false, Ordering::Relaxed);
+                drag_state.successful_drop.store(false, Ordering::Relaxed);
+
+                // If drag ended but files weren't dropped in our window, close the window
+                if window_opened_by_shake && !drag_started && !successful_drop {
+                    hide_main_window(&app_handle.app_handle());
+                    println!("[DRAG_END] Drag ended outside window, hiding");
                 }
-            } else {
-                let time_since_drag_start = drag_start_time.map(|t| t.elapsed()).unwrap_or(Duration::MAX);
-                let mouse_down = is_mouse_button_down();
-                
-                // Grace period: don't check for drag end in the first 200ms after drag start
-                // to avoid polling race conditions
-                let past_grace_period = time_since_drag_start > Duration::from_millis(200);
-                
-                // Detect drag end:
-                // 1. Mouse button released (primary signal) — drag is definitively over
-                // 2. Pasteboard changeCount changed after initial drag start (>100ms) — new drag or pasteboard cleared
-                // 3. Pasteboard no longer has files — drag data was cleared
-                let drag_ended = past_grace_period && (
-                    !mouse_down
-                    || (change_count_changed && time_since_drag_start > Duration::from_millis(100))
-                    || !has_files
-                );
 
-                if drag_ended {
-                    // Check if they released the mouse over or near our window
-                    let mut dropped_in_window = false;
-                    
-                    if let Some((win_x, win_y)) = window_position {
-                        let dx = current_position.0 - win_x;
-                        let dy = current_position.1 - win_y;
-                        let distance = (dx * dx + dy * dy).sqrt();
-                        
-                        if distance < window_proximity_threshold {
-                            dropped_in_window = true;
-                        }
-                    }
-                    
-                    println!("[DRAG_END] mouse_down={} dropped_in_window={}", mouse_down, dropped_in_window);
-                    
-                    is_drag_active = false;
-                    drag_start_time = None;
-                    shake_count = 0;
-                    last_direction = None;
-                    last_change_count = current_change_count;
-                    
-                    if !dropped_in_window {
-                        // Check if window is visible - close it since they didn't drop inside it
-                        let app = app_handle.app_handle();
-                        if let Some(window) = app.get_webview_window("main") {
-                            println!("[DRAG_END] Attempting to hide window");
-                            if let Ok(true) = window.is_visible() {
-                                let _ = window.hide();
-                                println!("[DRAG_END] Drag ended externally, hiding window");
-                            } else {
-                                println!("[DRAG_END] Window wasn't visible, so we didn't hide it");
-                            }
-                        }
-                        window_opened_by_shake = false;
-                        window_position = None;
-                    } else {
-                        println!("[DRAG_END] Drag ended with files dropped in app bounds.");
-                        // The user dropped files into our app! 
-                        // We must keep the window open for them, and disable auto-closing.
-                        window_opened_by_shake = false;
-                        // But wait! We don't nullify window_position!
-                        // That way the window stays alive and normal.
-                    }
-                }
-            }
-
-            if !is_drag_active {
-                thread::sleep(check_interval);
-                last_position = current_position;
-                continue;
-            }
-
-            let distance_x = current_position.0 - last_position.0;
-
-            let direction = if distance_x > shake_threshold_x {
-                1
-            } else if distance_x < -shake_threshold_x {
-                -1
-            } else {
-                0
-            };
-
-            if direction != 0 {
-                if let Some(last_dir) = last_direction {
-                    if last_dir != direction {
-                        last_shake_time = Instant::now();
-                        shake_count += 1;
-                        println!("[SHAKE] {}/{} ({} -> {})", shake_count, config.required_shakes, last_dir, direction);
-                    }
-                } else {
-                    println!("[SHAKE] First movement: dir={}", direction);
-                }
-                last_direction = Some(direction);
-            }
-
-            if shake_count > 0 && last_shake_time.elapsed() > movement_time_limit {
-                println!("[SHAKE] Timeout, resetting");
+                // Reset state
+                is_drag_active = false;
+                drag_start_time = None;
                 shake_count = 0;
                 last_direction = None;
+                last_change_count = current_change_count;
+                window_opened_by_shake = false;
             }
 
-            if shake_count >= config.required_shakes {
-                println!("[SHAKE_DETECTED] Opening window at ({:.0}, {:.0})", current_position.0, current_position.1);
+            // --- Shake detection while dragging ---
+            if is_drag_active {
+                let distance_x = current_position.0 - last_position.0;
 
-                let app_clone = app_handle.clone();
-                let shake_count_clone = shake_count;
-                tauri::async_runtime::spawn(async move {
-                    let _ = analytics::send_mouse_shake_detected_event(&app_clone, shake_count_clone).await;
-                });
+                let direction = if distance_x > shake_threshold_x {
+                    1
+                } else if distance_x < -shake_threshold_x {
+                    -1
+                } else {
+                    0
+                };
 
-                let mut window_x = current_position.0;
-                let mut window_y = current_position.1;
-                let margin = config.shake_threshold as f64;
-                let (screen_width, screen_height) = get_screen_size(&app_handle);
-
-                if current_position.0 + margin > screen_width {
-                    window_x = current_position.0 - margin;
+                if direction != 0 {
+                    if let Some(last_dir) = last_direction {
+                        if last_dir != direction {
+                            last_shake_time = Instant::now();
+                            shake_count += 1;
+                            println!("[SHAKE] {}/{} ({} -> {})", shake_count, config.required_shakes, last_dir, direction);
+                        }
+                    } else {
+                        println!("[SHAKE] First movement: dir={}", direction);
+                    }
+                    last_direction = Some(direction);
                 }
-                if current_position.1 + margin > screen_height {
-                    window_y = current_position.1 - margin;
+
+                // Reset shake if too much time passes between wiggles
+                if last_shake_time.elapsed() > movement_time_limit {
+                    shake_count = 0;
+                    last_direction = None;
                 }
 
-                let app = app_handle.clone();
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.set_position(PhysicalPosition {
-                        x: window_x as i32,
-                        y: window_y as i32,
+                // Trigger window open on shake
+                if shake_count >= config.required_shakes && !window_opened_by_shake {
+                    println!("[SHAKE_DETECTED] Opening window at ({:.0}, {:.0})", current_position.0, current_position.1);
+
+                    let app_clone = app_handle.clone();
+                    let shake_count_clone = shake_count;
+                    tauri::async_runtime::spawn(async move {
+                        let _ = analytics::send_mouse_shake_detected_event(&app_clone, shake_count_clone).await;
                     });
-                    let _ = window.show();
-                    let _ = window.unminimize();
-                    let _ = window.set_focus();
-                    window_opened_by_shake = true;
-                    window_position = Some((window_x, window_y));
-                    last_time_near_window = Instant::now();
-                    println!("[WINDOW] Opened at x={}, y={}", window_x, window_y);
 
-                    let app_clone2 = app.clone();
+                    show_main_window(&app_handle, current_position, &config);
+                    window_opened_by_shake = true;
+
+                    // Spawn timeout thread to auto-hide if no drop (and mouse is released)
+                    let app_handle_clone = app_handle.clone();
+                    let drag_state_clone = Arc::clone(&drag_state);
+                    thread::spawn(move || {
+                        thread::sleep(Duration::from_millis(2000));
+                        let drag_started = drag_state_clone.drag_started.load(Ordering::Relaxed);
+                        let successful_drop = drag_state_clone.successful_drop.load(Ordering::Relaxed);
+                        let mouse_down = is_mouse_button_down();
+                        if !drag_started && !successful_drop && !mouse_down {
+                            hide_main_window(&app_handle_clone.app_handle());
+                            println!("[TIMEOUT] Auto-hiding window after 2s (mouse released, no drop)");
+                        }
+                    });
+
+                    let app_clone2 = app_handle.clone();
                     tauri::async_runtime::spawn(async move {
                         let _ = analytics::send_window_opened_event(&app_clone2, "main_shake").await;
                     });
-                } else {
-                    println!("[WINDOW] ERROR: Could not get main window!");
-                }
 
-                shake_count = 0;
-                last_direction = None;
+                    shake_count = 0;
+                    last_direction = None;
+                }
             }
 
             last_position = current_position;
-
-            // Check if user moved away from a visible window after opening it with shake
-            // If they drop files, window_opened_by_shake becomes false, so this safely bypasses!
-            if window_opened_by_shake {
-                if let Some((win_x, win_y)) = window_position {
-                    let dx = current_position.0 - win_x;
-                    let dy = current_position.1 - win_y;
-                    let distance = (dx * dx + dy * dy).sqrt();
-                    
-                    if distance < window_proximity_threshold {
-                        // User is still near the window
-                        last_time_near_window = Instant::now();
-                    } else {
-                        // User moved away from window
-                        let time_away = last_time_near_window.elapsed();
-                        if time_away >= Duration::from_secs(2) {
-                            let app = app_handle.app_handle();
-                            if let Some(window) = app.get_webview_window("main") {
-                                if let Ok(true) = window.is_visible() {
-                                    let _ = window.hide();
-                                    println!("[WINDOW] User moved away, hiding window");
-                                }
-                            }
-                            window_opened_by_shake = false;
-                            window_position = None;
-                        }
-                    }
-                }
-            }
-
-            // Timeout fallback: close window if no activity for configured delay
-            if window_opened_by_shake {
-                let elapsed = last_shake_time.elapsed();
-                if elapsed >= Duration::from_secs(config.window_close_delay) {
-                    let app = app_handle.app_handle();
-                    if let Some(window) = app.get_webview_window("main") {
-                        if let Ok(true) = window.is_visible() {
-                            let _ = window.hide();
-                            println!("[WINDOW] Hidden due to inactivity timeout");
-                        }
-                    }
-                    window_opened_by_shake = false;
-                    window_position = None;
-                }
-            }
-
             thread::sleep(check_interval);
         }
     });
