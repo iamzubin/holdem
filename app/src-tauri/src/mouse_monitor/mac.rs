@@ -150,6 +150,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
             // --- Detect drag start ---
             if !is_drag_active && change_count_changed && has_files {
                 is_drag_active = true;
+                drag_state.successful_drop.store(false, Ordering::Relaxed);
                 last_change_count = current_change_count;
                 last_shake_time = Instant::now();
                 println!("[DRAG_START] File drag detected! changeCount={}", current_change_count);
@@ -167,7 +168,6 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
 
                 // Reset drag state flags for next drag
                 drag_state.drag_started.store(false, Ordering::Relaxed);
-                drag_state.successful_drop.store(false, Ordering::Relaxed);
 
                 // If drag ended but files weren't dropped in our window, close the window
                 if window_opened_by_shake && !drag_started && !successful_drop {

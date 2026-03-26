@@ -100,6 +100,11 @@ pub fn start_multi_drag(
                 println!("Failed to close popup window: {}", e);
             }
         }
+        #[cfg(target_os = "macos")]
+        {
+            return;
+        }
+        #[cfg(not(target_os = "macos"))]
         if let Some(main_window) = app_clone.get_webview_window("main") {
             if let Err(e) = main_window.hide() {
                 println!("Failed to hide main window: {}", e);

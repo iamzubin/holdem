@@ -277,14 +277,15 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                     }
                     DragDropEvent::Drop { paths, .. } => {
                         println!("Dropped cleanly in the app! Files: {:?}", paths);
+                        drag_state.successful_drop.store(true, Ordering::Relaxed);
+                        drag_state.drag_started.store(false, Ordering::Relaxed);
+
                         // Handle the file drop
                         let app_handle = window.app_handle();
                         let file_list_state = app_handle.state::<FileList>();
                         file_drop::handle_file_drop_from_paths(paths.clone(), file_list_state.inner().clone(), app_handle.clone());
                         
                         // Do not hide the window after processing - let user interact with the files
-                        drag_state.drag_started.store(false, Ordering::Relaxed);
-                        drag_state.successful_drop.store(true, Ordering::Relaxed);
                     }
                     _ => {}
                 }
