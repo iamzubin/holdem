@@ -134,10 +134,6 @@ pub fn start_mouse_monitor(
                 thread::spawn(move || {
                     let drag_started = drag_state_clone.drag_started.load(Ordering::Relaxed);
                     let successful_drop = drag_state_clone.successful_drop.load(Ordering::Relaxed);
-                    if !drag_started && !successful_drop {
-                        hide_main_window(&app_handle_clone);
-                        println!("[TIMEOUT] Auto-hiding window after 500ms");
-                    }
                 });
 
                 shake_count = 0;
