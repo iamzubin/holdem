@@ -12,8 +12,6 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
   const dragTimeoutRef = useRef<number | null>(null);
 
   const stackedIcons = useMemo(() => {
-    console.log("files", files)
-    console.log("files sliced", files.slice(-5).reverse())
     return files.slice(-5).reverse().map((file, index) => {
       const rotation = - index * 10; // Adjust rotation angle as needed
       const translateX = -index;
@@ -49,9 +47,7 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     // Only trigger on left mouse button
     if (e.button !== 0) return;
-    
-    console.log('[Drag] MouseDown on StackedIcons, setting pending files:', files.length);
-    
+
     // Set the files to be dragged
     setPendingFiles(files);
     

@@ -37,8 +37,6 @@ const ToggleGroupItem = React.forwardRef<
 >(({ className, children, variant, size, ...props }, ref) => {
 
   const context = React.useContext(ToggleGroupContext)
-  console.log("context")
-  console.log(variant, size)
   return (
     <ToggleGroupPrimitive.Item
       ref={ref}

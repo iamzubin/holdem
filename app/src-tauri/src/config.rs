@@ -3,6 +3,7 @@ use std::fs;
 use std::path::PathBuf;
 use tauri::AppHandle;
 use tauri::Manager;
+use tracing::{error, info, warn};
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -59,13 +60,13 @@ impl AppConfig {
         let config_path = match Self::get_config_path(app_handle) {
             Ok(path) => path,
             Err(e) => {
-                eprintln!("[Config] Failed to get config path: {}", e);
-                println!("[Config] Using default config due to path error");
+                error!("Failed to get config path: {}", e);
+                warn!("Using default config due to config path error");
                 return Self::default();
             }
         };
-        
-        println!("Loading config from: {:?}", config_path);
+
+        info!("Loading config from {:?}", config_path);
 
         if let Ok(contents) = fs::read_to_string(&config_path) {
             match serde_json::from_str::<AppConfig>(&contents) {
@@ -73,34 +74,33 @@ impl AppConfig {
                     // Check if analytics fields are missing (for backward compatibility)
                     if config.analytics_uuid.is_empty() {
                         config.analytics_uuid = Uuid::new_v4().to_string();
-                        println!("[Config] Generated new analytics UUID: {}", config.analytics_uuid);
+                        info!("Generated new analytics UUID while loading config");
                     }
                     return config;
                 }
                 Err(e) => {
-                    eprintln!("[Config] Failed to parse config file: {}", e);
-                    println!("[Config] Using default config due to parse error");
+                    error!("Failed to parse config file: {}", e);
+                    warn!("Using default config due to config parse error");
                 }
             }
         } else {
-            println!("[Config] Config file not found or unreadable");
+            warn!("Config file not found or unreadable");
         }
 
         // If loading fails, return default config
-        println!("[Config] Using default config (analytics_enabled: false)");
+        info!("Using default config");
         Self::default()
     }
 
     pub fn save(&self, app_handle: &AppHandle) -> Result<(), String> {
         let config_path = Self::get_config_path(app_handle)?;
-        println!("Saving config to: {:?}", config_path);
+        info!("Saving config to {:?}", config_path);
 
         let config_dir = config_path.parent().ok_or("Invalid config path")?;
-        println!("Config directory: {:?}", config_dir);
 
         // Create config directory if it doesn't exist
         if !config_dir.exists() {
-            println!("Creating config directory...");
+            info!("Creating config directory at {:?}", config_dir);
             fs::create_dir_all(config_dir)
                 .map_err(|e| format!("Failed to create config directory: {}", e))?;
         }
@@ -110,7 +110,7 @@ impl AppConfig {
         fs::write(&config_path, contents)
             .map_err(|e| format!("Failed to write config file: {}", e))?;
 
-        println!("Config saved successfully");
+        info!("Config saved successfully");
         Ok(())
     }
 
@@ -118,7 +118,6 @@ impl AppConfig {
         let app_dir = app_handle.path().app_config_dir()
             .map_err(|e| format!("Failed to get app config directory: {}", e))?;
         let config_path = app_dir.join("config.json");
-        println!("Config path: {:?}", config_path);
         Ok(config_path)
     }
 }

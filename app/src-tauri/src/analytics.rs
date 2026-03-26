@@ -1,6 +1,7 @@
 use std::sync::{Arc, Mutex};
 use posthog_rs::{client, Event as PostHogEvent, Client};
 use tauri::{AppHandle, Manager};
+use tracing::{error, info, warn};
 
 #[derive(Clone)]
 pub struct AnalyticsService {
@@ -23,18 +24,18 @@ impl AnalyticsService {
         self.uuid = uuid;
 
         if !self.enabled {
-            println!("[Analytics] Analytics disabled, skipping initialization");
+            info!("Analytics disabled; skipping initialization");
             return Ok(());
         }
 
         // Use compile-time environment variable
         if let Some(posthog_key) = option_env!("POSTHOG_KEY") {
-            println!("[Analytics] Initializing PostHog client...");
+            info!("Initializing PostHog client");
             let client = client(posthog_key).await;
             self.client = Some(Arc::new(client));
-            println!("[Analytics] PostHog client initialized successfully");
+            info!("PostHog client initialized successfully");
         } else {
-            println!("[Analytics] POSTHOG_KEY not set. Analytics disabled.");
+            warn!("POSTHOG_KEY is not set; analytics will remain disabled");
         }
         Ok(())
     }
@@ -55,11 +56,11 @@ impl AnalyticsService {
 
             match client.capture(event).await {
                 Ok(_) => {
-                    println!("[Analytics] Event '{}' sent successfully", event_name);
+                    info!("Analytics event sent: {}", event_name);
                     Ok(())
                 }
                 Err(e) => {
-                    eprintln!("[Analytics] Error sending event '{}': {:?}", event_name, e);
+                    error!("Failed to send analytics event '{}': {:?}", event_name, e);
                     Err(format!("Failed to send event: {}", e))
                 }
             }

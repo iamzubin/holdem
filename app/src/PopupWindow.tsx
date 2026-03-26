@@ -23,7 +23,9 @@ const PopupWindow: React.FC = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (!hasInteracted) {
-      invoke('close_popup_window').catch((err) => console.error(err));
+        invoke('close_popup_window').catch((error) => {
+          console.error('Failed to close popup window after inactivity:', error);
+        });
       }
     }, 3000);
 
@@ -34,7 +36,9 @@ const PopupWindow: React.FC = () => {
 
     const handleBlur = () => {
       if (hasInteracted) {
-        invoke('close_popup_window').catch((err) => console.error(err));
+        invoke('close_popup_window').catch((error) => {
+          console.error('Failed to close popup window on blur:', error);
+        });
       }
     };
 
@@ -54,8 +58,6 @@ const PopupWindow: React.FC = () => {
     
     e.stopPropagation();
     
-    console.log('[Drag] MouseDown on file item');
-    
     // Determine which files to drag
     let filesToDrag: any[];
     if (selectedFiles.size > 0) {
@@ -64,7 +66,6 @@ const PopupWindow: React.FC = () => {
       filesToDrag = [file];
     }
     
-    console.log('[Drag] Setting pending files:', filesToDrag.length);
     setPendingFiles(filesToDrag);
     
     // Get the element for image capture
@@ -136,7 +137,9 @@ const PopupWindow: React.FC = () => {
       .then(() => {
         setSelectedFiles(new Set());
       })
-      .catch((err) => console.error(err));
+      .catch((error) => {
+        console.error('Failed to remove selected files:', error);
+      });
   }, [selectedFiles]);
 
   return (

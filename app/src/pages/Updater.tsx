@@ -60,22 +60,18 @@ const Updater: React.FC = () => {
         switch (event.event) {
           case 'Started':
             contentLength = event.data.contentLength;
-            console.log(`Started downloading ${contentLength} bytes`);
             break;
           case 'Progress':
             downloaded += event.data.chunkLength;
             const percentage = Math.min(Math.round((downloaded / contentLength) * 100), 100);
             setProgress(percentage);
-            console.log(`Downloaded ${downloaded} of ${contentLength} bytes (${percentage}%)`);
             break;
           case 'Finished':
-            console.log('Download finished');
             setStatus("downloaded");
             break;
         }
       });
 
-      console.log('Update installed');
       setStatus("installing");
 
       // Short delay before relaunch

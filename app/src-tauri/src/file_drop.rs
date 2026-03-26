@@ -2,6 +2,7 @@ use crate::file::{get_dir_size, FileMetadata};
 use crate::FileList;
 use std::path::PathBuf;
 use tauri::{AppHandle, Emitter};
+use tracing::{error, info};
 
 pub fn handle_file_drop_from_paths(paths: Vec<PathBuf>, file_list: FileList, app_handle: AppHandle) {
     let mut list = file_list.lock().unwrap();
@@ -18,7 +19,7 @@ pub fn handle_file_drop_from_paths(paths: Vec<PathBuf>, file_list: FileList, app
 
                     let file_name = path.file_name().unwrap_or_default();
                     let new_path = drop_folder.join(file_name);
-                    if std::fs::copy(&path, &new_path).is_ok() {
+                    if std::fs::copy(path, &new_path).is_ok() {
                         new_path
                     } else {
                         path.clone()
@@ -29,7 +30,7 @@ pub fn handle_file_drop_from_paths(paths: Vec<PathBuf>, file_list: FileList, app
 
                 // Calculate size correctly for directories
                 let size = if metadata.is_dir() {
-                    get_dir_size(&path).unwrap_or(0)
+                    get_dir_size(path).unwrap_or(0)
                 } else {
                     metadata.len()
                 };
@@ -54,7 +55,7 @@ pub fn handle_file_drop_from_paths(paths: Vec<PathBuf>, file_list: FileList, app
                 };
                 // Avoid duplicates
                 if !list.iter().any(|f| f.path == file.path) {
-                    println!("file added: {:?}", file);
+                    info!("Added dropped file: {:?}", file.path);
                     list.push(file);
                 }
             }
@@ -64,7 +65,7 @@ pub fn handle_file_drop_from_paths(paths: Vec<PathBuf>, file_list: FileList, app
     // Drop the lock before emitting the event
     drop(list);
     if let Err(e) = app_handle.emit("files_updated", ()) {
-        eprintln!("Failed to emit files_updated event: {}", e);
+        error!("Failed to emit files_updated event: {}", e);
     }
 
     // Cleanup old files

@@ -1,7 +1,10 @@
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, Ordering};
-use tauri::{Manager, PhysicalPosition};
+use tauri::Manager;
+#[cfg(target_os = "windows")]
+use tauri::PhysicalPosition;
+use tracing::{error, info, warn};
 
 #[derive(Clone)]
 struct DragState {
@@ -66,12 +69,10 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
         builder = builder.plugin(
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(move |app, shortcut, event| {
-                    println!("Hotkey pressed: {:?}", shortcut);
+                    info!("Global hotkey event received: {:?}", shortcut);
                     if let Some(window) = app.get_webview_window("main") {
                         match event.state() {
                             tauri_plugin_global_shortcut::ShortcutState::Pressed => {
-                                println!("Showing window");
-
                                 let mut cursor_pos = POINT { x: 0, y: 0 };
                                 let _ = unsafe { GetCursorPos(&mut cursor_pos) };
                                 let margin = 200.0;
@@ -92,9 +93,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                                 let _ = window.unminimize();
                                 let _ = window.set_focus();
                             }
-                            tauri_plugin_global_shortcut::ShortcutState::Released => {
-                                println!("Window shown");
-                            }
+                            tauri_plugin_global_shortcut::ShortcutState::Released => {}
                         }
                     }
                 })
@@ -140,14 +139,13 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
         .setup(|app| {
             // Ensure config directory exists first
             let config_dir = app.handle().path().app_config_dir().unwrap_or_else(|_| {
-                eprintln!("Failed to get app config directory");
+                error!("Failed to get app config directory");
                 std::process::exit(1);
             });
-            println!("App config directory: {:?}", config_dir);
             if !config_dir.exists() {
-                println!("Creating app config directory...");
+                info!("Creating app config directory at {:?}", config_dir);
                 if let Err(e) = std::fs::create_dir_all(&config_dir) {
-                    eprintln!("Failed to create app config directory: {}", e);
+                    error!("Failed to create app config directory: {}", e);
                     return Err(format!("Failed to create app config directory: {}", e).into());
                 }
             }
@@ -229,13 +227,13 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
 
             // Register hotkey if configured
             if !config.hotkey.is_empty() {
-                println!("Registering startup hotkey: {}", config.hotkey);
+                info!("Registering startup hotkey");
                 // Wait a bit before registering the hotkey
                 std::thread::sleep(std::time::Duration::from_millis(100));
                 if let Err(e) = register_hotkey(app.handle().clone(), config.hotkey.clone()) {
-                    println!("Failed to register startup hotkey: {}", e);
+                    warn!("Failed to register startup hotkey: {}", e);
                 } else {
-                    println!("Successfully registered startup hotkey");
+                    info!("Startup hotkey registered successfully");
                 }
             }
 
@@ -272,11 +270,10 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 let drag_state = window.app_handle().state::<Arc<DragState>>().inner();
                 match drop_event {
                     DragDropEvent::Enter { .. } => {
-                        println!("Drag entered the window bounds");
                         drag_state.drag_started.store(true, Ordering::Relaxed);
                     }
                     DragDropEvent::Drop { paths, .. } => {
-                        println!("Dropped cleanly in the app! Files: {:?}", paths);
+                        info!("Received {} dropped file(s) in the app window", paths.len());
                         drag_state.successful_drop.store(true, Ordering::Relaxed);
                         drag_state.drag_started.store(false, Ordering::Relaxed);
 
@@ -315,7 +312,7 @@ pub fn run() {
                     let _ = ReleaseMutex(mutex);
                 } else {
                     // Another instance is already running
-                    println!("Another instance of the application is already running.");
+                    info!("Another instance of the application is already running");
                     std::process::exit(0);
                 }
             }
