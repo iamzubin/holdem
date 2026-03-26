@@ -5,14 +5,13 @@ import { invoke } from '@tauri-apps/api/core';
 import { closeWindow } from '@/lib/windowUtils';
 
 export default function Consent() {
-  console.log('Consent component rendered');
-
   // Handle window close events
   useEffect(() => {
-    console.log('Consent component mounted');
     const handleBeforeUnload = () => {
       // If user closes window without making a choice, decline by default
-      invoke('decline_analytics_consent').catch(console.error);
+      invoke('decline_analytics_consent').catch((error) => {
+        console.error('Failed to decline analytics consent during window close:', error);
+      });
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -22,7 +21,6 @@ export default function Consent() {
   }, []);
 
   const handleAccept = async () => {
-    console.log('Accepting analytics consent');
     try {
       await invoke('accept_analytics_consent');
       // Add a small delay before closing to ensure the event is sent
@@ -36,7 +34,6 @@ export default function Consent() {
   };
 
   const handleDecline = async () => {
-    console.log('Declining analytics consent');
     try {
       await invoke('decline_analytics_consent');
       // Add a small delay before closing to ensure the event is sent
@@ -96,4 +93,4 @@ export default function Consent() {
       </Card>
     </div>
   );
-} 
+}

@@ -2,6 +2,7 @@ use crate::config::AppConfig;
 use crate::file::FileMetadata;
 use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, Manager, State};
+use tracing::{error, info, warn};
 
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
@@ -13,27 +14,21 @@ pub fn start_multi_drag(
     file_paths: Vec<String>,
     drag_image: Option<String>,
 ) -> Result<(), String> {
-    println!(
-        "[Drag] Starting multi-file drag for {} files",
-        file_paths.len()
-    );
-    println!("[Drag] File paths: {:?}", file_paths);
+    info!("Starting native drag for {} file(s)", file_paths.len());
 
     let mut valid_paths = Vec::new();
 
     for file_path in &file_paths {
-        println!("[Drag] Processing path: {}", file_path);
         match std::fs::canonicalize(file_path.clone()) {
             Ok(path) => {
                 if path.exists() {
-                    println!("[Drag] Valid path: {:?}", path);
                     valid_paths.push(path);
                 } else {
-                    println!("[Drag] Path does not exist: {:?}", path);
+                    warn!("Skipping drag path because it does not exist: {:?}", path);
                 }
             }
             Err(e) => {
-                println!("[Drag ERROR] Error canonicalizing path: {}", e);
+                warn!("Failed to canonicalize drag path '{}': {}", file_path, e);
             }
         }
     }
@@ -53,11 +48,14 @@ pub fn start_multi_drag(
 
         match base64::Engine::decode(&base64::engine::general_purpose::STANDARD, base64_str) {
             Ok(bytes) => {
-                println!("[Drag] Using frontend drag image ({} bytes)", bytes.len());
+                info!("Using frontend-provided drag image ({} bytes)", bytes.len());
                 drag::Image::Raw(bytes)
             }
             Err(e) => {
-                println!("[Drag] Failed to decode drag image: {}, using file icon", e);
+                warn!(
+                    "Failed to decode drag image, falling back to generated image: {}",
+                    e
+                );
                 generate_drag_image(valid_paths.len())
             }
         }
@@ -66,25 +64,23 @@ pub fn start_multi_drag(
     };
 
     let item = drag::DragItem::Files(valid_paths.clone());
-    println!("[Drag] Created DragItem with {} files", valid_paths.len());
+    info!("Prepared drag item with {} valid file(s)", valid_paths.len());
 
     let window = app
         .get_webview_window("main")
         .ok_or("Main window not found")?;
-    println!("[Drag] Got main window handle");
 
     // Ensure window is shown and activated for drag to work on macOS
     #[cfg(target_os = "macos")]
     {
         if let Err(e) = window.show() {
-            println!("[Drag WARNING] Failed to show window before drag: {}", e);
+            warn!("Failed to show main window before drag: {}", e);
         }
         if let Err(e) = window.set_focus() {
-            println!("[Drag WARNING] Failed to focus window before drag: {}", e);
+            warn!("Failed to focus main window before drag: {}", e);
         }
         // Small delay to ensure window is properly activated
         std::thread::sleep(std::time::Duration::from_millis(50));
-        println!("[Drag] Window prepared for drag");
     }
 
     let app_clone = app.clone();
@@ -97,17 +93,12 @@ pub fn start_multi_drag(
         // check if the popup window is open
         if app_clone.get_webview_window("popup").is_some() {
             if let Err(e) = super::window_ops::close_popup_window(app_clone.clone()) {
-                println!("Failed to close popup window: {}", e);
+                error!("Failed to close popup window after drag: {}", e);
             }
         }
-        #[cfg(target_os = "macos")]
-        {
-            return;
-        }
-        #[cfg(not(target_os = "macos"))]
         if let Some(main_window) = app_clone.get_webview_window("main") {
             if let Err(e) = main_window.hide() {
-                println!("Failed to hide main window: {}", e);
+                error!("Failed to hide main window after drag: {}", e);
             }
         }
     };
@@ -134,11 +125,11 @@ pub fn start_multi_drag(
         },
     ) {
         Ok(_) => {
-            println!("[Drag] Drag operation started successfully");
+            info!("Native drag started successfully");
             Ok(())
         }
         Err(e) => {
-            println!("[Drag ERROR] Failed to start drag: {:?}", e);
+            error!("Failed to start native drag: {:?}", e);
             Err(format!(
                 "Failed to start multi-file drag operation: {:?}",
                 e
@@ -242,7 +233,7 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
         &mut std::io::Cursor::new(&mut png_bytes),
         image::ImageFormat::Png,
     ) {
-        println!("Failed to encode drag image: {}", e);
+        error!("Failed to encode generated drag image: {}", e);
         // Fallback: return a 1x1 transparent PNG
         return drag::Image::Raw(vec![]);
     }

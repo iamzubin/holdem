@@ -114,12 +114,8 @@ export const clearPendingFiles = (): void => {
  */
 export const triggerNativeDrag = (): void => {
   if (pendingFiles.length === 0) {
-    console.log('[Drag] No pending files to drag');
     return;
   }
-
-  console.log('[Drag] Triggering native drag for', pendingFiles.length, 'files');
-  console.log('[Drag] Files:', pendingFiles.map(f => f.name).join(', '));
 
   const dragImage = pendingDragImage;
   
@@ -130,17 +126,17 @@ export const triggerNativeDrag = (): void => {
 
   // Focus window first on macOS to enable drag from unfocused window
   const window = getCurrentWindow();
-  window.setFocus().catch(console.error);
+  window.setFocus().catch((error) => {
+    console.error('Failed to focus window before starting drag:', error);
+  });
 
   // Start native drag after a small delay to ensure window is focused
   setTimeout(() => {
     invoke('start_multi_drag', {
       filePaths: filesToDrag.map(file => file.path),
       dragImage,
-    }).then(() => {
-      console.log('[Drag] Native drag started successfully');
     }).catch((error) => {
-      console.error('[Drag] Error starting native drag:', error);
+      console.error('Failed to start native drag:', error);
     });
   }, 50);
 };
@@ -152,23 +148,21 @@ export const handleDragStart = (e: React.DragEvent<HTMLDivElement>, file: FilePr
   e.preventDefault();
   e.stopPropagation();
 
-  console.log('[Drag] handleDragStart called for file:', file.name);
-
   try {
     const win = getCurrentWindow();
-    win.setFocus().catch(console.error);
+    win.setFocus().catch((error) => {
+      console.error('Failed to focus window before starting drag:', error);
+    });
     setTimeout(() => {
       invoke('start_multi_drag', { 
         filePaths: [file.path], 
         dragImage: null 
-      }).then(() => {
-        console.log('[Drag] Native drag started successfully');
       }).catch((error) => {
-        console.error('[Drag] Error starting native drag:', error);
+        console.error('Failed to start native drag:', error);
       });
     }, 50);
   } catch (error) {
-    console.error('[Drag] Error invoking drag:', error);
+    console.error('Failed to invoke native drag:', error);
   }
 };
 
@@ -180,27 +174,24 @@ export const handleMultiFileDragStart = (
   e.preventDefault();
   e.stopPropagation();
 
-  console.log('[Drag] handleMultiFileDragStart called for', files.length, 'files');
-  console.log('[Drag] Files:', files.map(f => f.name).join(', '));
-
   // Use pre-captured drag image if available
   const dragImage = pendingDragImage;
   pendingDragImage = null; // Clear after use
 
   try {
     const win = getCurrentWindow();
-    win.setFocus().catch(console.error);
+    win.setFocus().catch((error) => {
+      console.error('Failed to focus window before starting drag:', error);
+    });
     setTimeout(() => {
       invoke('start_multi_drag', {
         filePaths: files.map(file => file.path),
         dragImage,
-      }).then(() => {
-        console.log('[Drag] Native multi-file drag started successfully');
       }).catch((error) => {
-        console.error('[Drag] Error starting multi-file drag:', error);
+        console.error('Failed to start native multi-file drag:', error);
       });
     }, 50);
   } catch (error) {
-    console.error('[Drag] Error invoking multi-file drag:', error);
+    console.error('Failed to invoke native multi-file drag:', error);
   }
 };

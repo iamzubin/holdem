@@ -3,6 +3,7 @@ use tauri::{AppHandle, State, Manager, Listener};
 use tauri_plugin_autostart::ManagerExt;
 use crate::config::AppConfig;
 use crate::analytics;
+use tracing::{error, info, warn};
 
 #[cfg(target_os = "windows")]
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
@@ -178,7 +179,7 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
 #[cfg(target_os = "windows")]
 fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
     let app_handle_clone = app_handle.clone();
-    println!("Registering hotkey (Windows): {}", shortcut_str);
+    info!("Registering Windows hotkey: {}", shortcut_str);
 
     let mut modifiers = Modifiers::empty();
     let mut code = Code::KeyN;
@@ -194,7 +195,7 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
                 if let Some(parsed_code) = parse_windows_code(key) {
                     code = parsed_code;
                 } else {
-                    println!("Failed to parse key: {}", key);
+                    warn!("Failed to parse Windows hotkey key: {}", key);
                 }
             }
         }
@@ -203,7 +204,7 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
     let shortcut = Shortcut::new(Some(modifiers), code);
 
     if let Err(e) = app_handle.global_shortcut().unregister_all() {
-        println!("Failed to unregister all hotkeys: {}", e);
+        warn!("Failed to unregister existing hotkeys: {}", e);
     }
 
     app_handle
@@ -214,20 +215,19 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
     app_handle
         .global_shortcut()
         .on_shortcut(shortcut, move |_app, _shortcut, _event| {
-            println!("Shortcut pressed");
             if let Some(window) = app_handle_clone.get_webview_window("main") {
                 if let Err(e) = window.show() {
-                    println!("Failed to show window: {}", e);
+                    error!("Failed to show window after hotkey press: {}", e);
                     return;
                 }
                 if let Err(e) = window.set_focus() {
-                    println!("Failed to focus window: {}", e);
+                    error!("Failed to focus window after hotkey press: {}", e);
                 }
             }
         })
         .map_err(|e| format!("Failed to set shortcut callback: {}", e))?;
 
-    println!("Hotkey registered successfully");
+    info!("Windows hotkey registered successfully");
 
     let app_handle_clone = app_handle.clone();
     let shortcut_str_clone = shortcut_str.clone();
@@ -241,7 +241,7 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
 #[cfg(target_os = "macos")]
 fn register_hotkey_mac(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
     let app_handle_clone = app_handle.clone();
-    println!("Registering hotkey (macOS): {}", shortcut_str);
+    info!("Registering macOS hotkey: {}", shortcut_str);
 
     let mut mac_modifiers = MacModifiers::empty();
     let mut keycode: Option<i64> = None;
@@ -257,7 +257,7 @@ fn register_hotkey_mac(app_handle: AppHandle, shortcut_str: String) -> Result<()
                 if let Some(kc) = parse_keycode(key) {
                     keycode = Some(kc);
                 } else {
-                    println!("Failed to parse key: {}", key);
+                    warn!("Failed to parse macOS hotkey key: {}", key);
                 }
             }
         }
@@ -284,22 +284,22 @@ fn register_hotkey_mac(app_handle: AppHandle, shortcut_str: String) -> Result<()
     drop(manager);
 
     let _listener = app_handle.listen(event_name.clone(), move |_event| {
-        println!("Hotkey triggered: {}", event_name);
+        info!("Hotkey triggered: {}", event_name);
         if let Some(window) = app_handle_clone.get_webview_window("main") {
             if let Err(e) = window.show() {
-                println!("Failed to show window: {}", e);
+                error!("Failed to show window after hotkey event: {}", e);
                 return;
             }
             if let Err(e) = window.unminimize() {
-                println!("Failed to unminimize window: {}", e);
+                error!("Failed to unminimize window after hotkey event: {}", e);
             }
             if let Err(e) = window.set_focus() {
-                println!("Failed to focus window: {}", e);
+                error!("Failed to focus window after hotkey event: {}", e);
             }
         }
     });
 
-    println!("Hotkey registered successfully");
+    info!("macOS hotkey registered successfully");
 
     let app_handle_clone = app_handle.clone();
     let shortcut_str_clone = shortcut_str.clone();
@@ -319,7 +319,7 @@ pub fn accept_analytics_consent(
     config.analytics_enabled = true;
     config.save(&app_handle)?;
     
-    println!("[Analytics] User accepted analytics consent");
+    info!("Analytics consent accepted");
     
     tauri::async_runtime::spawn(async move {
         let _ = analytics::send_analytics_event(&app_handle, "consent_accepted", None).await;
@@ -337,7 +337,7 @@ pub fn decline_analytics_consent(
     config.analytics_enabled = false;
     config.save(&app_handle)?;
     
-    println!("[Analytics] User declined analytics consent");
+    info!("Analytics consent declined");
     
     tauri::async_runtime::spawn(async move {
         let _ = analytics::send_consent_declined_event(&app_handle).await;

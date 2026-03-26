@@ -11,24 +11,19 @@ use tauri::{AppHandle, Manager, PhysicalPosition};
 use objc2::rc::Retained;
 use objc2_foundation::{NSArray, NSString};
 use objc2_app_kit::NSPasteboard;
-use core_graphics_types::geometry::CGPoint;
+use tracing::{info, warn};
 
 #[link(name = "CoreGraphics", kind = "framework")]
 extern "C" {
-    fn CGEventGetLocation(event: *mut std::ffi::c_void) -> CGPoint;
-    fn CGEventCreate(source: *mut std::ffi::c_void) -> *mut std::ffi::c_void;
-    fn CFRelease(cf: *mut std::ffi::c_void);
     fn CGEventSourceButtonState(stateID: u32, button: u32) -> bool;
 }
 
 fn get_cursor_position(app_handle: &AppHandle) -> (f64, f64) {
     if let Some(window) = app_handle.get_webview_window("main") {
         if let Ok(pos) = window.cursor_position() {
-            println!("[DEBUG] Window cursor position: ({}, {})", pos.x, pos.y);
-            return (pos.x as f64, pos.y as f64);
+            return (pos.x, pos.y);
         }
     }
-    println!("[DEBUG] Failed to get cursor position from window");
     (0.0, 0.0)
 }
 
@@ -83,40 +78,28 @@ fn show_main_window(app: &AppHandle, pos: (f64, f64), _config: &MouseMonitorConf
         let logical_x = pos.0 / scale_factor;
         let logical_y = pos.1 / scale_factor;
 
-        println!("[WINDOW] Physical cursor position: ({:.0}, {:.0})", pos.0, pos.1);
-        println!("[WINDOW] Scale factor: {}", scale_factor);
-        println!("[WINDOW] Logical window position: ({:.0}, {:.0})", logical_x, logical_y);
-        println!("[WINDOW] Attempting to set window position to: ({}, {})", logical_x as i32, logical_y as i32);
-
         let _ = window.set_position(PhysicalPosition {
             x: logical_x as i32,
             y: logical_y as i32,
         });
 
-        // Log the actual position after setting
-        if let Ok(actual_pos) = window.outer_position() {
-            println!("[WINDOW] Actual position set: ({}, {})", actual_pos.x, actual_pos.y);
-            
-            // Calculate offset (comparing logical target to actual physical position converted to logical)
-            let actual_logical_x = actual_pos.x as f64 / scale_factor;
-            let actual_logical_y = actual_pos.y as f64 / scale_factor;
-            let offset_x = logical_x - actual_logical_x;
-            let offset_y = logical_y - actual_logical_y;
-            println!("[WINDOW] Position offset: ({:.0}, {:.0})", offset_x, offset_y);
-        } else {
-            println!("[WINDOW] Failed to get actual position after setting");
-        }
-
         let _ = window.show();
         let _ = window.unminimize();
         let _ = window.set_focus();
+        info!(
+            "Opened main window at logical position ({:.0}, {:.0})",
+            logical_x, logical_y
+        );
     }
 }
 
 pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, drag_state: Arc<DragState>) {
-    println!("[MACOS_MONITOR] Starting with pasteboard name: {}", DRAG_PASTEBOARD_NAME);
-    println!("[MACOS_MONITOR] Config: threshold={}, shakes={}, time_limit={}ms",
-        config.shake_threshold, config.required_shakes, config.shake_time_limit);
+    info!(
+        "Starting macOS mouse monitor (threshold={}, required_shakes={}, time_limit_ms={})",
+        config.shake_threshold,
+        config.required_shakes,
+        config.shake_time_limit
+    );
 
     thread::spawn(move || {
         let mut window_opened_by_shake = false;
@@ -131,7 +114,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
         let pasteboard = match get_drag_pasteboard() {
             Some(pb) => pb,
             None => {
-                println!("[MACOS_MONITOR] ERROR: Could not get drag pasteboard!");
+                warn!("Could not access drag pasteboard, mouse monitor exiting");
                 return;
             }
         };
@@ -153,7 +136,6 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
                 drag_state.successful_drop.store(false, Ordering::Relaxed);
                 last_change_count = current_change_count;
                 last_shake_time = Instant::now();
-                println!("[DRAG_START] File drag detected! changeCount={}", current_change_count);
             }
 
             // --- Detect drag end (mouse released) ---
@@ -164,15 +146,12 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
                 let drag_started = drag_state.drag_started.load(Ordering::Relaxed);
                 let successful_drop = drag_state.successful_drop.load(Ordering::Relaxed);
 
-                println!("[DRAG_END] drag_started={}, successful_drop={}", drag_started, successful_drop);
-
                 // Reset drag state flags for next drag
                 drag_state.drag_started.store(false, Ordering::Relaxed);
 
                 // If drag ended but files weren't dropped in our window, close the window
                 if window_opened_by_shake && !drag_started && !successful_drop {
-                    hide_main_window(&app_handle.app_handle());
-                    println!("[DRAG_END] Drag ended outside window, hiding");
+                    hide_main_window(app_handle.app_handle());
                 }
 
                 // Reset state
@@ -200,10 +179,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
                         if last_dir != direction {
                             last_shake_time = Instant::now();
                             shake_count += 1;
-                            println!("[SHAKE] {}/{} ({} -> {})", shake_count, config.required_shakes, last_dir, direction);
                         }
-                    } else {
-                        println!("[SHAKE] First movement: dir={}", direction);
                     }
                     last_direction = Some(direction);
                 }
@@ -216,8 +192,6 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
 
                 // Trigger window open on shake
                 if shake_count >= config.required_shakes && !window_opened_by_shake {
-                    println!("[SHAKE_DETECTED] Opening window at ({:.0}, {:.0})", current_position.0, current_position.1);
-
                     let app_clone = app_handle.clone();
                     let shake_count_clone = shake_count;
                     tauri::async_runtime::spawn(async move {
@@ -236,8 +210,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
                         let successful_drop = drag_state_clone.successful_drop.load(Ordering::Relaxed);
                         let mouse_down = is_mouse_button_down();
                         if !drag_started && !successful_drop && !mouse_down {
-                            hide_main_window(&app_handle_clone.app_handle());
-                            println!("[TIMEOUT] Auto-hiding window after 2s (mouse released, no drop)");
+                            hide_main_window(app_handle_clone.app_handle());
                         }
                     });
 

@@ -5,6 +5,7 @@ use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Manager, PhysicalPosition};
+use tracing::info;
 use windows::Win32::Foundation::POINT;
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VK_LBUTTON};
 use windows::Win32::UI::WindowsAndMessaging::{
@@ -47,7 +48,10 @@ fn show_main_window(app: &AppHandle, pos: POINT, config: &MouseMonitorConfig) {
         });
         let _ = window.show();
         let _ = window.set_focus();
-        println!("[WINDOW] Opened at x={}, y={}", x, y);
+        info!(
+            "Opened main window at position ({}, {})",
+            x as i32, y as i32
+        );
     }
 }
 
@@ -80,7 +84,6 @@ pub fn start_mouse_monitor(
 
                     if !drag_started && !successful_drop {
                         hide_main_window(&app_handle);
-                        println!("[MOUSE_UP] Drag ended outside window, hiding");
                     }
 
                     // Reset drag state flags for next drag
@@ -108,13 +111,12 @@ pub fn start_mouse_monitor(
             };
 
             if direction != 0 {
-                if let Some(last_dir) = last_direction {
-                    if last_dir != direction {
-                        shake_count += 1;
-                        last_shake_time = Instant::now();
-                        println!("[WIN_MONITOR] Shake count: {}", shake_count);
+                    if let Some(last_dir) = last_direction {
+                        if last_dir != direction {
+                            shake_count += 1;
+                            last_shake_time = Instant::now();
+                        }
                     }
-                }
                 last_direction = Some(direction);
             }
 
@@ -127,14 +129,6 @@ pub fn start_mouse_monitor(
             if shake_count >= config.required_shakes && !window_opened_by_shake {
                 show_main_window(&app_handle, current_pos, &config);
                 window_opened_by_shake = true;
-
-                // Spawn timeout thread to auto-hide if no drop
-                let app_handle_clone = app_handle.clone();
-                let drag_state_clone = Arc::clone(&drag_state);
-                thread::spawn(move || {
-                    let drag_started = drag_state_clone.drag_started.load(Ordering::Relaxed);
-                    let successful_drop = drag_state_clone.successful_drop.load(Ordering::Relaxed);
-                });
 
                 shake_count = 0;
                 last_direction = None;
