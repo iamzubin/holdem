@@ -21,17 +21,15 @@ extern "C" {
     fn CGEventSourceButtonState(stateID: u32, button: u32) -> bool;
 }
 
-fn get_cursor_position() -> (f64, f64) {
-    unsafe {
-        let event = CGEventCreate(std::ptr::null_mut());
-        if !event.is_null() {
-            let point = CGEventGetLocation(event);
-            CFRelease(event);
-            (point.x, point.y)
-        } else {
-            (0.0, 0.0)
+fn get_cursor_position(app_handle: &AppHandle) -> (f64, f64) {
+    if let Some(window) = app_handle.get_webview_window("main") {
+        if let Ok(pos) = window.cursor_position() {
+            println!("[DEBUG] Window cursor position: ({}, {})", pos.x, pos.y);
+            return (pos.x as f64, pos.y as f64);
         }
     }
+    println!("[DEBUG] Failed to get cursor position from window");
+    (0.0, 0.0)
 }
 
 fn is_mouse_button_down() -> bool {
@@ -79,16 +77,25 @@ fn hide_main_window(app: &AppHandle) {
 fn show_main_window(app: &AppHandle, pos: (f64, f64), _config: &MouseMonitorConfig) {
     if let Some(window) = app.get_webview_window("main") {
         let scale_factor = window.scale_factor().unwrap_or(1.0);
-        let logical_x = pos.0 / scale_factor;
-        let logical_y = pos.1 / scale_factor;
+        
+        // The cursor position from window.cursor_position() is already in physical pixels
+        // relative to the desktop, so we use it directly for window positioning
+        let physical_x = pos.0;
+        let physical_y = pos.1;
 
-        println!("[WINDOW] Physical: ({:.0}, {:.0}), Scale: {}, Logical: ({:.0}, {:.0})",
-            pos.0, pos.1, scale_factor, logical_x, logical_y);
+        println!("[WINDOW] Cursor position: ({:.0}, {:.0})", physical_x, physical_y);
+        println!("[WINDOW] Scale factor: {}", scale_factor);
 
         let _ = window.set_position(PhysicalPosition {
-            x: logical_x as i32,
-            y: logical_y as i32,
+            x: physical_x as i32,
+            y: physical_y as i32,
         });
+
+        // Log the actual position after setting
+        if let Ok(actual_pos) = window.outer_position() {
+            println!("[WINDOW] Actual position: ({}, {})", actual_pos.x, actual_pos.y);
+        }
+
         let _ = window.show();
         let _ = window.unminimize();
         let _ = window.set_focus();
@@ -102,7 +109,7 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
 
     thread::spawn(move || {
         let mut window_opened_by_shake = false;
-        let mut last_position = get_cursor_position();
+        let mut last_position = get_cursor_position(&app_handle);
         let check_interval = Duration::from_millis(50);
         let shake_threshold_x = config.shake_threshold as f64;
         let mut shake_count = 0u32;
@@ -120,10 +127,9 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
 
         let mut last_change_count = get_pasteboard_change_count(&pasteboard);
         let mut is_drag_active = false;
-        let mut drag_start_time: Option<Instant> = None;
 
         loop {
-            let current_position = get_cursor_position();
+             let current_position = get_cursor_position(&app_handle);
             let current_change_count = get_pasteboard_change_count(&pasteboard);
             let has_files = pasteboard_has_files(&pasteboard);
             let mouse_down = is_mouse_button_down();
@@ -133,7 +139,6 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
             // --- Detect drag start ---
             if !is_drag_active && change_count_changed && has_files {
                 is_drag_active = true;
-                drag_start_time = Some(Instant::now());
                 last_change_count = current_change_count;
                 last_shake_time = Instant::now();
                 println!("[DRAG_START] File drag detected! changeCount={}", current_change_count);
@@ -161,7 +166,6 @@ pub fn start_mouse_monitor(config: MouseMonitorConfig, app_handle: AppHandle, dr
 
                 // Reset state
                 is_drag_active = false;
-                drag_start_time = None;
                 shake_count = 0;
                 last_direction = None;
                 last_change_count = current_change_count;

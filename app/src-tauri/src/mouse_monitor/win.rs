@@ -74,6 +74,7 @@ pub fn start_mouse_monitor(
             if !mouse_down {
                 // If window was opened by shake and drag didn't result in a drop, hide it
                 if window_opened_by_shake {
+                    thread::sleep(Duration::from_millis(500));
                     let drag_started = drag_state.drag_started.load(Ordering::Relaxed);
                     let successful_drop = drag_state.successful_drop.load(Ordering::Relaxed);
 
@@ -131,7 +132,6 @@ pub fn start_mouse_monitor(
                 let app_handle_clone = app_handle.clone();
                 let drag_state_clone = Arc::clone(&drag_state);
                 thread::spawn(move || {
-                    thread::sleep(Duration::from_millis(500));
                     let drag_started = drag_state_clone.drag_started.load(Ordering::Relaxed);
                     let successful_drop = drag_state_clone.successful_drop.load(Ordering::Relaxed);
                     if !drag_started && !successful_drop {
