@@ -2,6 +2,7 @@
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { HoldemDemo } from './components/holdem-demo'
 import { useEffect, useState } from 'react'
 
 const VARIANTS_CONTAINER = {
@@ -194,11 +195,8 @@ export default function Home() {
           </a>
         </div>
 
-        <div className="mx-auto mt-12 max-w-2xl overflow-hidden rounded-xl shadow-lg">
-          <video className="h-auto w-full" autoPlay loop muted playsInline>
-            <source src="/assets/herovideo.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+        <div className="mx-auto mt-12 w-full max-w-full">
+          <HoldemDemo />
         </div>
       </motion.section>
 
