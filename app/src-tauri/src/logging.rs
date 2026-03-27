@@ -1,6 +1,12 @@
+use std::sync::OnceLock;
 use tracing::{info, Level};
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_appender::{
+    non_blocking::WorkerGuard,
+    rolling::{RollingFileAppender, Rotation},
+};
 use tracing_subscriber::{fmt, prelude::*, EnvFilter};
+
+static LOG_GUARD: OnceLock<WorkerGuard> = OnceLock::new();
 
 pub fn setup_logging() {
     let log_dir = if cfg!(target_os = "windows") {
@@ -25,7 +31,8 @@ pub fn setup_logging() {
 
     let file_appender = RollingFileAppender::new(Rotation::DAILY, &log_dir, "holdem.log");
 
-    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+    let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
+    let _ = LOG_GUARD.set(guard);
 
     tracing_subscriber::registry()
         .with(EnvFilter::from_default_env().add_directive(Level::INFO.into()))

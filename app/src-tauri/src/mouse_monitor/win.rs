@@ -20,6 +20,10 @@ fn get_mouse_pos() -> POINT {
     pos
 }
 
+fn is_mouse_button_down() -> bool {
+    unsafe { GetAsyncKeyState(VK_LBUTTON.0 as i32) as u16 & 0x8000 != 0 }
+}
+
 fn hide_main_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.hide();
@@ -60,6 +64,13 @@ pub fn start_mouse_monitor(
     app_handle: AppHandle,
     drag_state: Arc<DragState>,
 ) {
+    info!(
+        "Starting Windows mouse monitor (threshold={}, required_shakes={}, time_limit_ms={})",
+        config.shake_threshold,
+        config.required_shakes,
+        config.shake_time_limit
+    );
+
     thread::spawn(move || {
         let mut window_opened_by_shake = false;
         let mut last_position = get_mouse_pos();
@@ -72,13 +83,12 @@ pub fn start_mouse_monitor(
 
         loop {
             let current_pos = get_mouse_pos();
-            let mouse_down = unsafe { GetAsyncKeyState(VK_LBUTTON.0 as i32) as u16 & 0x8000 != 0 };
+            let mouse_down = is_mouse_button_down();
 
             // --- CASE 1: USER RELEASES MOUSE ---
             if !mouse_down {
                 // If window was opened by shake and drag didn't result in a drop, hide it
                 if window_opened_by_shake {
-                    thread::sleep(Duration::from_millis(500));
                     let drag_started = drag_state.drag_started.load(Ordering::Relaxed);
                     let successful_drop = drag_state.successful_drop.load(Ordering::Relaxed);
 
@@ -88,7 +98,6 @@ pub fn start_mouse_monitor(
 
                     // Reset drag state flags for next drag
                     drag_state.drag_started.store(false, Ordering::Relaxed);
-                    drag_state.successful_drop.store(false, Ordering::Relaxed);
                 }
 
                 // Reset state
@@ -127,8 +136,21 @@ pub fn start_mouse_monitor(
 
             // Trigger Window
             if shake_count >= config.required_shakes && !window_opened_by_shake {
+                drag_state.successful_drop.store(false, Ordering::Relaxed);
                 show_main_window(&app_handle, current_pos, &config);
                 window_opened_by_shake = true;
+
+                let app_handle_clone = app_handle.clone();
+                let drag_state_clone = Arc::clone(&drag_state);
+                thread::spawn(move || {
+                    thread::sleep(Duration::from_millis(2000));
+                    let drag_started = drag_state_clone.drag_started.load(Ordering::Relaxed);
+                    let successful_drop = drag_state_clone.successful_drop.load(Ordering::Relaxed);
+                    let mouse_down = is_mouse_button_down();
+                    if !drag_started && !successful_drop && !mouse_down {
+                        hide_main_window(&app_handle_clone);
+                    }
+                });
 
                 shake_count = 0;
                 last_direction = None;
