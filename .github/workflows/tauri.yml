@@ -1,51 +1,63 @@
-name: "Build Tauri App"
+name: Tauri Build and Release
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  release:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - platform: "macos-latest"
-            args: "--target aarch64-apple-darwin"
-          - platform: "macos-latest"
-            args: "--target x86_64-apple-darwin"
-          - platform: "windows-latest"
-            args: ""
+          - runner: macos-13
+            target: x86_64-apple-darwin
+          - runner: macos-14
+            target: aarch64-apple-darwin
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install pnpm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: app/pnpm-lock.yaml
+
+      - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       - name: Install frontend dependencies
-        run: rm -f app/pnpm-workspace.yaml && cd app && pnpm install
+        working-directory: app
+        run: pnpm install --frozen-lockfile
 
-      - name: Install Rust
+      - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
 
-      - name: Setup Tauri
+      - name: Build and publish Tauri release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          args: ${{ matrix.args }}
+          tagName: ${{ github.ref_name }}
           projectPath: app
+          args: --target ${{ matrix.target }}
+          releaseName: "Holdem v__VERSION__"
+          releaseBody: "See the release assets for this version."
+          releaseDraft: false
+          prerelease: false
