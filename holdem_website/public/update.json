@@ -1,11 +1,27 @@
 {
-  "version": "0.2.4",
-  "notes": "Release notes for Holdem 0.2.4",
-  "pub_date": "2026-01-25T01:22:03.448Z",
+  "version": "0.3.0",
+  "notes": "See the release assets for this version.",
+  "pub_date": "2026-03-28T01:18:11.725Z",
   "platforms": {
+    "darwin-aarch64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUJRKzNpeHFUWVVBQ3l1Rmk4MGV3SldUL3FJeGJndkJTMnR3UEtDeFBUTGhtUjZYRGtrMmRYaWRsT1Z4RXlKa1hiL2IxM21yUWdFWHZYbG0vb0xmc0FFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0NjYwMjEwCWZpbGU6aG9sZGVtLmFwcC50YXIuZ3oKTkQwWlVDL1RDN2ZMMlM3OVg3ZmZpS1JPRzJPd0lSVU5yWnM3V3NkbkdYbkRIdjRNejJDYm5Sc21WV2ZzaVMyZysxTk9Eell5WnNVSzBGbmh3T3JYQVE9PQo=",
+      "url": "https://github.com/iamzubin/holdem/releases/download/v0.3.0/holdem_aarch64.app.tar.gz"
+    },
+    "darwin-aarch64-app": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUJRKzNpeHFUWVVBQ3l1Rmk4MGV3SldUL3FJeGJndkJTMnR3UEtDeFBUTGhtUjZYRGtrMmRYaWRsT1Z4RXlKa1hiL2IxM21yUWdFWHZYbG0vb0xmc0FFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0NjYwMjEwCWZpbGU6aG9sZGVtLmFwcC50YXIuZ3oKTkQwWlVDL1RDN2ZMMlM3OVg3ZmZpS1JPRzJPd0lSVU5yWnM3V3NkbkdYbkRIdjRNejJDYm5Sc21WV2ZzaVMyZysxTk9Eell5WnNVSzBGbmh3T3JYQVE9PQo=",
+      "url": "https://github.com/iamzubin/holdem/releases/download/v0.3.0/holdem_aarch64.app.tar.gz"
+    },
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZU94MUlSU3RtNldWRmxaanN6UDh5c1pMRUN2K3dvcWUxV3QyZGp4UUVsTFZFK3JUaDZobEdhYW9yKzNFV2o3MC9IYmR4OUZjaWd6TmdQZSt1c0dvRVE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY5MzA0MTIzCWZpbGU6aG9sZGVtXzAuMi40X3g2NC1zZXR1cC5leGUKb3NkOWxCbFZ0Q3FOYTJSUWxDNGtKUkRXRkVpbFZhTVZuU1U0ZlNUUHVtNlFVYjIvNG01MXpOTW0yT2lEa0NRNEMyeGtuYkI2T3YvcFJFejlHTmZuQ2c9PQo=",
-      "url": "https://github.com/iamzubin/holdem/releases/download/0.2.4/holdem_0.2.4_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUpXelRsVTU2NHRudENTRDhBcnYwN1lFblZybDQxYXBjUXpTMDMzZ1hjNGkvcWN0aWtPa3ZUWkRrVnZLOVZYeGt5K0RycTgxNTRhWEFCYVgvOVdvcUFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0NjYwNjg3CWZpbGU6aG9sZGVtXzAuMy4wX3g2NF9lbi1VUy5tc2kKYXNYUU94eDRvV3dFZVMvcTRSVE05dGtJNGJjc1NaTllvcnBjUU5vWDN5S0t2WENmRTVWU3g0ZFpJZkt2SkxPbnZOL1JoV2hVZHphTmVLbUw2dWxTRHc9PQo=",
+      "url": "https://github.com/iamzubin/holdem/releases/download/v0.3.0/holdem_0.3.0_x64_en-US.msi"
+    },
+    "windows-x86_64-msi": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUpXelRsVTU2NHRudENTRDhBcnYwN1lFblZybDQxYXBjUXpTMDMzZ1hjNGkvcWN0aWtPa3ZUWkRrVnZLOVZYeGt5K0RycTgxNTRhWEFCYVgvOVdvcUFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0NjYwNjg3CWZpbGU6aG9sZGVtXzAuMy4wX3g2NF9lbi1VUy5tc2kKYXNYUU94eDRvV3dFZVMvcTRSVE05dGtJNGJjc1NaTllvcnBjUU5vWDN5S0t2WENmRTVWU3g0ZFpJZkt2SkxPbnZOL1JoV2hVZHphTmVLbUw2dWxTRHc9PQo=",
+      "url": "https://github.com/iamzubin/holdem/releases/download/v0.3.0/holdem_0.3.0_x64_en-US.msi"
+    },
+    "windows-x86_64-nsis": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUxmT1l4d0l1bEFMSFVrVE0vOW1SRWgzSExockxkb3BmM2JRbi83eUt2c1FuTjJPUWQ4S3JiRXZyTHZHeVZPQWVTS2xqWEpHRmc5OEVzclJ6RTZtNmdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0NjYwNjg3CWZpbGU6aG9sZGVtXzAuMy4wX3g2NC1zZXR1cC5leGUKcDR2L1d1S25LeVpwNXI3REhYcEhHYjRpU2RFaS83WTEvTmFVMHFYMjhGQS9SV3VaTlh6Y0tEUThnUllkb09kaURKa0JyUWl5UmxPTy9DaEY4NWJDQ2c9PQo=",
+      "url": "https://github.com/iamzubin/holdem/releases/download/v0.3.0/holdem_0.3.0_x64-setup.exe"
     }
   }
 }
