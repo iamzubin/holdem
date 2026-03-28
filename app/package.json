@@ -10,6 +10,7 @@
     "tauri": "tauri",
     "build:tauri": "tauri build",
     "build:windows": "tauri build --target x86_64-pc-windows-msvc",
+    "build:mac:intel": "tauri build --target x86_64-apple-darwin",
     "build:mac:apple-silicon": "tauri build --target aarch64-apple-darwin"
   },
   "dependencies": {
