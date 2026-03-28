@@ -39,5 +39,9 @@
     "prettier-plugin-tailwindcss": "^0.6.10",
     "tailwindcss": "^4.0.0",
     "typescript": "^5"
-  }
+  },
+  "engines": {
+    "node": ">=20.11.1"
+  },
+  "packageManager": "pnpm@9.15.9"
 }

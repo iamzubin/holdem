@@ -24,16 +24,16 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: 9
           run_install: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: pnpm
@@ -54,6 +54,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
         with:
           tagName: ${{ github.ref_name }}
           projectPath: app
@@ -62,3 +63,52 @@ jobs:
           releaseBody: "See the release assets for this version."
           releaseDraft: false
           prerelease: false
+
+  sync-update-json-to-website:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (master)
+        uses: actions/checkout@v6
+        with:
+          ref: master
+
+      - name: Download latest.json from release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "latest.json" \
+            --output "latest.json"
+
+      - name: Validate updater targets (windows + mac intel + mac apple silicon)
+        run: |
+          node -e "
+          const fs = require('fs');
+          const update = JSON.parse(fs.readFileSync('latest.json', 'utf8'));
+          const platforms = update.platforms || {};
+          const required = ['windows-x86_64', 'darwin-x86_64', 'darwin-aarch64'];
+          const missing = required.filter((key) => !platforms[key]);
+          if (missing.length) {
+            console.error('Missing updater platforms in latest.json:', missing.join(', '));
+            process.exit(1);
+          }
+          console.log('Updater JSON includes all required platforms.');
+          "
+
+      - name: Copy validated updater JSON to website
+        run: cp latest.json holdem_website/public/update.json
+
+      - name: Commit updated website updater JSON
+        run: |
+          if git diff --quiet -- holdem_website/public/update.json; then
+            echo "No update.json changes detected."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add holdem_website/public/update.json
+          git commit -m "chore(website): sync updater JSON for ${{ github.ref_name }}"
+          git push origin master
