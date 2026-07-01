@@ -1,8 +1,7 @@
 use tauri::{
-    Manager,
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Runtime, WebviewUrl, WebviewWindowBuilder,
+    Manager, Runtime, WebviewUrl, WebviewWindowBuilder,
 };
 // use tauri_plugin_dialog::DialogExt;
 // use tauri_plugin_updater::UpdaterExt;
@@ -33,7 +32,7 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
                     let _ = WebviewWindowBuilder::new(
                         app,
                         "updater",
-                        WebviewUrl::App("/updater".into())
+                        WebviewUrl::App("/updater".into()),
                     )
                     .title("Software Updates")
                     .inner_size(500.0, 400.0)

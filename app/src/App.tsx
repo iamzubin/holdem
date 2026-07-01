@@ -2,7 +2,7 @@
 
 import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { closeWindow } from "@/lib/windowUtils";
 import { FilePreview, FileWithPath } from "@/types";
@@ -11,6 +11,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { ChevronDown, Clipboard, Copy, Download, Settings, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from 'sonner';
 import { getFileExtension } from "./lib/utils";
 import { StackedIcons } from "./components/StackedIcons";
 import { useNavigate } from "react-router-dom";
@@ -88,13 +89,117 @@ function App() {
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    e.dataTransfer.dropEffect = 'copy';
+  }, []);
+
+  useEffect(() => {
+    const handleGlobalPaste = (e: ClipboardEvent) => {
+      const items = Array.from(e.clipboardData?.items || []);
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = async () => {
+              const base64Data = (reader.result as string).split(',')[1];
+              let extension = 'png';
+              if (file.name && file.name.includes('.')) {
+                extension = file.name.split('.').pop()?.toLowerCase() || 'png';
+              } else if (item.type) {
+                extension = item.type.split('/')[1] || 'png';
+              }
+              try {
+                const path = await invoke<string>('save_pasted_data_base64', { 
+                  dataBase64: base64Data,
+                  extension
+                });
+                await invoke('add_files', { files: [path] });
+              } catch (err) {
+                console.error('Failed to paste image', err);
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        } else if (item.type === 'text/plain') {
+          item.getAsString((text) => {
+            if (!text) return;
+            invoke<string>('save_pasted_text', {
+              text: text,
+              extension: 'txt'
+            }).then(path => {
+              invoke('add_files', { files: [path] });
+            }).catch(err => console.error('Failed to paste text', err));
+          });
+        }
+      }
+    };
+
+    window.addEventListener('paste', handleGlobalPaste);
+    return () => window.removeEventListener('paste', handleGlobalPaste);
   }, []);
 
   const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    toast.info('Drop received in webview!');
 
     const droppedFiles = Array.from(e.dataTransfer.files);
+
+    if (droppedFiles.length === 0) {
+      toast.info('No files dropped, checking for text/html...');
+      const html = e.dataTransfer.getData("text/html");
+      if (html) {
+        const match = html.match(/<img.*?src="(.*?)"/);
+        if (match && match[1]) {
+          const src = match[1];
+          if (src.startsWith('data:image/')) {
+            const base64Data = src.split(',')[1];
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            try {
+              const path = await invoke<string>('save_pasted_data_base64', {
+                dataBase64: base64Data,
+                extension: 'png'
+              });
+              await invoke('add_files', { files: [path] });
+            } catch (err) {
+              console.error('Failed to save dropped base64 image', err);
+            }
+            return;
+          } else {
+             try {
+                const path = await invoke<string>('download_image_to_shelf', { url: src });
+                await invoke('add_files', { files: [path] });
+                return;
+             } catch(err) {
+                console.error('Failed to fetch and save dropped image URL', err);
+             }
+          }
+        }
+      }
+
+      let text = e.dataTransfer.getData("text/plain");
+      if (!text) {
+          text = e.dataTransfer.getData("text");
+      }
+      if (text) {
+        try {
+          const path = await invoke<string>('save_pasted_text', {
+            text: text,
+            extension: 'txt'
+          });
+          await invoke('add_files', { files: [path] });
+        } catch (err) {
+          console.error('Failed to drop text', err);
+        }
+      }
+      return;
+    }
+
     const newFiles: FilePreview[] = droppedFiles.map((file, index) => ({
       id: Date.now() + index,
       name: file.name,
@@ -125,8 +230,13 @@ function App() {
 
   return (
     <div
-      className="fixed inset-0 text-foreground flex flex-col bg-background p-2"
+      className="fixed inset-0 text-foreground flex flex-col bg-background p-2 focus:outline-none"
       onContextMenu={handleContextMenu}
+      tabIndex={0}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
     >
       {/* Handle and Title Bar */}
       <div className="relative flex justify-end items-center h-5" data-tauri-drag-region onDragStart={(e) => {
@@ -183,7 +293,9 @@ function App() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent
           className="rounded-md p-0 mt-2 w-[90vw]"
+          aria-describedby={undefined}
         >
+          <DialogTitle className="sr-only">Context Menu</DialogTitle>
           <div className="flex flex-col items-start text-foreground">
             {files.length > 0 ? (
               <>

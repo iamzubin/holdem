@@ -64,7 +64,10 @@ pub fn start_multi_drag(
     };
 
     let item = drag::DragItem::Files(valid_paths.clone());
-    info!("Prepared drag item with {} valid file(s)", valid_paths.len());
+    info!(
+        "Prepared drag item with {} valid file(s)",
+        valid_paths.len()
+    );
 
     let window = app
         .get_webview_window("main")
@@ -106,13 +109,9 @@ pub fn start_multi_drag(
     // On macOS, the drag crate only supports Copy or Move individually, not combined.
     // Using Copy as default (standard macOS behavior where Option key changes to Move).
     #[cfg(target_os = "macos")]
-    let mode = drag::DragMode::Copy;
+    let mode = drag::DragMode::CopyOrMove;
     #[cfg(not(target_os = "macos"))]
-    let mode = if is_move_key_pressed() {
-        drag::DragMode::Move
-    } else {
-        drag::DragMode::Copy
-    };
+    let mode = drag::DragMode::CopyOrMove;
 
     match drag::start_drag(
         &window,
@@ -241,17 +240,101 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
     drag::Image::Raw(png_bytes)
 }
 
-#[cfg(target_os = "windows")]
-fn is_move_key_pressed() -> bool {
-    use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VK_CONTROL, VK_SHIFT};
-    unsafe {
-        let ctrl_pressed = GetAsyncKeyState(VK_CONTROL.0 as i32) < 0;
-        let shift_pressed: bool = GetAsyncKeyState(VK_SHIFT.0 as i32) < 0;
-        ctrl_pressed || shift_pressed
-    }
-}
+#[tauri::command]
+pub fn start_text_drag(
+    app: AppHandle,
+    text: String,
+    drag_image: Option<String>,
+) -> Result<(), String> {
+    info!("Starting text drag");
 
-#[cfg(all(not(target_os = "windows"), not(target_os = "macos")))]
-fn is_move_key_pressed() -> bool {
-    false
+    // Use the drag image from the frontend if provided, otherwise generate one
+    let image = if let Some(base64_data) = drag_image {
+        let base64_str = if let Some(comma_pos) = base64_data.find(',') {
+            &base64_data[comma_pos + 1..]
+        } else {
+            &base64_data
+        };
+
+        match base64::Engine::decode(&base64::engine::general_purpose::STANDARD, base64_str) {
+            Ok(bytes) => drag::Image::Raw(bytes),
+            Err(e) => {
+                warn!("Failed to decode drag image, falling back: {}", e);
+                generate_drag_image(1)
+            }
+        }
+    } else {
+        generate_drag_image(1)
+    };
+
+    let text_clone = text.clone();
+    let provider: drag::DataProvider = Box::new(move |format: &str| -> Option<Vec<u8>> {
+        if format == "text/plain" {
+            Some(text_clone.as_bytes().to_vec())
+        } else {
+            None
+        }
+    });
+
+    let item = drag::DragItem::Data {
+        provider,
+        types: vec!["text/plain".to_string()],
+    };
+
+    let window = app
+        .get_webview_window("main")
+        .ok_or("Main window not found")?;
+
+    #[cfg(target_os = "macos")]
+    {
+        if let Err(e) = window.show() {
+            warn!("Failed to show main window before drag: {}", e);
+        }
+        if let Err(e) = window.set_focus() {
+            warn!("Failed to focus main window before drag: {}", e);
+        }
+        std::thread::sleep(std::time::Duration::from_millis(50));
+    }
+
+    let app_clone = app.clone();
+    let on_drop_callback = move |result: drag::DragResult, _: drag::CursorPosition| {
+        if matches!(result, drag::DragResult::Cancel) {
+            return;
+        }
+        if app_clone.get_webview_window("popup").is_some() {
+            if let Err(e) = super::window_ops::close_popup_window(app_clone.clone()) {
+                error!("Failed to close popup window after drag: {}", e);
+            }
+        }
+        if let Some(main_window) = app_clone.get_webview_window("main") {
+            if let Err(e) = main_window.hide() {
+                error!("Failed to hide main window after drag: {}", e);
+            }
+        }
+    };
+
+    #[cfg(target_os = "macos")]
+    let mode = drag::DragMode::CopyOrMove;
+    #[cfg(not(target_os = "macos"))]
+    let mode = drag::DragMode::CopyOrMove;
+
+    match drag::start_drag(
+        &window,
+        item,
+        image,
+        on_drop_callback,
+        drag::Options {
+            skip_animatation_on_cancel_or_failure: true,
+            mode,
+        },
+    ) {
+        Ok(_) => {
+            info!("Native text drag started successfully");
+            Ok(())
+        }
+        Err(e) => {
+            error!("Failed to start native text drag: {:?}", e);
+            Err(format!("Failed to start text drag operation: {:?}", e))
+        }
+    }
 }

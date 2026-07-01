@@ -1,9 +1,9 @@
-use std::path::PathBuf;
-use tauri::{AppHandle, State, Emitter};
-use crate::file::{ get_dir_size, FileMetadata};
-use crate::FileList;
-use crate::thumbnail::get_thumbnail_base64;
 use crate::analytics;
+use crate::file::{get_dir_size, FileMetadata};
+use crate::thumbnail::get_thumbnail_base64;
+use crate::FileList;
+use std::path::PathBuf;
+use tauri::{AppHandle, Emitter, State};
 
 #[tauri::command]
 pub fn add_files(
@@ -65,6 +65,77 @@ pub fn add_files(
 }
 
 #[tauri::command]
+pub fn save_pasted_text(text: String, extension: String) -> Result<String, String> {
+    use std::io::Write;
+    let timestamp = chrono::Local::now();
+    let folder_name = timestamp.format("%Y%m%d").to_string();
+    let drop_folder = std::env::temp_dir().join("holdem_drops").join(&folder_name);
+    if let Err(e) = std::fs::create_dir_all(&drop_folder) {
+        return Err(format!("Failed to create drop folder: {}", e));
+    }
+
+    let file_name = format!("pasted_{}.{}", timestamp.format("%H%M%S"), extension);
+    let new_path = drop_folder.join(&file_name);
+
+    let mut file = std::fs::File::create(&new_path).map_err(|e| e.to_string())?;
+    file.write_all(text.as_bytes()).map_err(|e| e.to_string())?;
+
+    Ok(new_path.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+pub fn save_pasted_data_base64(data_base64: String, extension: String) -> Result<String, String> {
+    use base64::{engine::general_purpose, Engine as _};
+    use std::io::Write;
+
+    let bytes = general_purpose::STANDARD
+        .decode(data_base64)
+        .map_err(|e| e.to_string())?;
+
+    let timestamp = chrono::Local::now();
+    let folder_name = timestamp.format("%Y%m%d").to_string();
+    let drop_folder = std::env::temp_dir().join("holdem_drops").join(&folder_name);
+    if let Err(e) = std::fs::create_dir_all(&drop_folder) {
+        return Err(format!("Failed to create drop folder: {}", e));
+    }
+
+    let file_name = format!("pasted_{}.{}", timestamp.format("%H%M%S"), extension);
+    let new_path = drop_folder.join(&file_name);
+
+    let mut file = std::fs::File::create(&new_path).map_err(|e| e.to_string())?;
+    file.write_all(&bytes).map_err(|e| e.to_string())?;
+
+    Ok(new_path.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+pub async fn download_image_to_shelf(url: String) -> Result<String, String> {
+    use std::io::Write;
+    let timestamp = chrono::Local::now();
+    let folder_name = timestamp.format("%Y%m%d").to_string();
+    let drop_folder = std::env::temp_dir().join("holdem_drops").join(&folder_name);
+    if let Err(e) = std::fs::create_dir_all(&drop_folder) {
+        return Err(format!("Failed to create drop folder: {}", e));
+    }
+
+    let url_path = std::path::Path::new(&url);
+    let ext = url_path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("png");
+
+    let file_name = format!("downloaded_{}.{}", timestamp.format("%H%M%S"), ext);
+    let new_path = drop_folder.join(&file_name);
+
+    let response = reqwest::get(&url).await.map_err(|e| e.to_string())?;
+    let bytes = response.bytes().await.map_err(|e| e.to_string())?;
+
+    let mut file = std::fs::File::create(&new_path).map_err(|e| e.to_string())?;
+    file.write_all(&bytes).map_err(|e| e.to_string())?;
+
+    Ok(new_path.to_string_lossy().to_string())
+}
+#[tauri::command]
 pub fn remove_files(
     app_handle: AppHandle,
     file_list: State<'_, FileList>,
@@ -73,7 +144,7 @@ pub fn remove_files(
     let mut list = file_list
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
-    
+
     let mut removed_files = Vec::new();
     for file_id in file_ids {
         if let Some(pos) = list.iter().position(|f| f.id == file_id) {
@@ -87,7 +158,7 @@ pub fn remove_files(
             return Err(format!("File with ID {} not found", file_id));
         }
     }
-    
+
     // Send analytics events for removed files (fire and forget)
     let app_handle_clone = app_handle.clone();
     tauri::async_runtime::spawn(async move {
@@ -95,7 +166,7 @@ pub fn remove_files(
             let _ = analytics::send_file_removed_event(&app_handle_clone, &file_name).await;
         }
     });
-    
+
     Ok(())
 }
 
@@ -120,15 +191,20 @@ pub fn rename_file(
     if let Some(file) = list.iter_mut().find(|f| f.id == file_id) {
         let old_name = file.name.clone();
         file.name = new_name.clone();
-        
+
         // Send analytics event for file rename (fire and forget)
         let app_handle_clone = app_handle.clone();
         let old_name_clone = old_name.clone();
         let new_name_clone = new_name.clone();
         tauri::async_runtime::spawn(async move {
-            let _ = analytics::send_file_renamed_event(&app_handle_clone, &old_name_clone, &new_name_clone).await;
+            let _ = analytics::send_file_renamed_event(
+                &app_handle_clone,
+                &old_name_clone,
+                &new_name_clone,
+            )
+            .await;
         });
-        
+
         app_handle
             .emit("files_updated", ())
             .map_err(|e| e.to_string())?;
@@ -139,23 +215,20 @@ pub fn rename_file(
 }
 
 #[tauri::command]
-pub fn clear_files(
-    app_handle: AppHandle,
-    file_list: State<'_, FileList>,
-) -> Result<(), String> {
+pub fn clear_files(app_handle: AppHandle, file_list: State<'_, FileList>) -> Result<(), String> {
     let mut list = file_list
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
-    
+
     let num_files = list.len();
     list.clear();
-    
+
     // Send analytics event for clearing files (fire and forget)
     let app_handle_clone = app_handle.clone();
     tauri::async_runtime::spawn(async move {
         let _ = analytics::send_files_cleared_event(&app_handle_clone, num_files).await;
     });
-    
+
     app_handle
         .emit("files_updated", ())
         .map_err(|e| e.to_string())?;
@@ -200,6 +273,5 @@ pub fn get_file_icon_base64(
     file_path: &str,
 ) -> Result<String, String> {
     let file_path = file_path.to_string();
-    get_thumbnail_base64(&file_path)
-        .map_err(|e| e.to_string())
-} 
+    get_thumbnail_base64(&file_path).map_err(|e| e.to_string())
+}

@@ -131,7 +131,21 @@ export const triggerNativeDrag = (): void => {
   });
 
   // Start native drag after a small delay to ensure window is focused
-  setTimeout(() => {
+  setTimeout(async () => {
+    if (filesToDrag.length === 1 && filesToDrag[0].name.startsWith('pasted_') && filesToDrag[0].name.endsWith('.txt')) {
+        try {
+            const { readTextFile } = await import('@tauri-apps/plugin-fs');
+            const text = await readTextFile(filesToDrag[0].path);
+            await invoke('start_text_drag', {
+                text,
+                dragImage
+            });
+            return;
+        } catch (error) {
+            console.error('Failed to read and drag text snippet:', error);
+        }
+    }
+
     invoke('start_multi_drag', {
       filePaths: filesToDrag.map(file => file.path),
       dragImage,

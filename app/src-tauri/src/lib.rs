@@ -1,6 +1,6 @@
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::Manager;
 #[cfg(target_os = "windows")]
 use tauri::PhysicalPosition;
@@ -11,43 +11,35 @@ struct DragState {
     drag_started: Arc<AtomicBool>,
     successful_drop: Arc<AtomicBool>,
 }
-#[cfg(target_os = "windows")]
-use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
-#[cfg(target_os = "windows")]
-use windows::Win32::Foundation::{POINT, WAIT_OBJECT_0};
-#[cfg(target_os = "windows")]
-use windows::Win32::System::Threading::{CreateMutexW, WaitForSingleObject, ReleaseMutex};
-use tauri_plugin_updater::UpdaterExt;
 use tauri::WebviewUrl;
 use tauri::WebviewWindowBuilder;
 use tauri::{DragDropEvent, WindowEvent};
+use tauri_plugin_updater::UpdaterExt;
+#[cfg(target_os = "windows")]
+use windows::Win32::Foundation::{POINT, WAIT_OBJECT_0};
+#[cfg(target_os = "windows")]
+use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
+#[cfg(target_os = "windows")]
+use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
+mod analytics;
 mod commands;
-#[cfg(desktop)]
-mod tray;
 mod config;
 mod file;
+mod file_drop;
+mod logging;
 #[cfg(any(target_os = "windows", target_os = "macos"))]
 mod mouse_monitor;
-mod file_drop;
 mod thumbnail;
-mod analytics;
-mod logging;
+#[cfg(desktop)]
+mod tray;
 mod utils;
 
-use commands::{
-    file_ops::*,
-    window_ops::*,
-    drag_ops::*,
-    config_ops::*,
-};
+use analytics::AnalyticsService;
+use commands::{config_ops::*, drag_ops::*, file_ops::*, window_ops::*};
 use config::AppConfig;
 use file::FileMetadata;
 #[cfg(any(target_os = "windows", target_os = "macos"))]
 use mouse_monitor::start_mouse_monitor;
-use analytics::AnalyticsService;
-
-
-
 
 type FileList = Arc<Mutex<Vec<FileMetadata>>>;
 
@@ -61,7 +53,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
         .plugin(
             tauri_plugin_autostart::Builder::new()
                 .args(vec!["--autostart"])
-                .build()
+                .build(),
         );
 
     #[cfg(target_os = "windows")]
@@ -77,7 +69,8 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                                 let _ = unsafe { GetCursorPos(&mut cursor_pos) };
                                 let margin = 200.0;
 
-                                if let Ok(bounds) = crate::utils::ScreenBounds::from_window(&window) {
+                                if let Ok(bounds) = crate::utils::ScreenBounds::from_window(&window)
+                                {
                                     let (window_x, window_y) = bounds.constrain_position(
                                         cursor_pos.x as f64,
                                         cursor_pos.y as f64,
@@ -110,11 +103,15 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
         .invoke_handler(tauri::generate_handler![
             // start_drag,
             start_multi_drag,
+            start_text_drag,
             open_popup_window,
             close_popup_window,
             open_consent_window,
             close_consent_window,
             add_files,
+            save_pasted_text,
+            save_pasted_data_base64,
+            download_image_to_shelf,
             remove_files,
             get_files,
             rename_file,
@@ -158,17 +155,17 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             let analytics_service = AnalyticsService::new();
             let analytics_enabled = config.analytics_enabled;
             let uuid = config.analytics_uuid.clone();
-            
+
             // Store analytics service in app state first
             let analytics_state = Arc::new(Mutex::new(analytics_service));
             app.manage(analytics_state.clone());
-            
+
             // Initialize analytics service asynchronously
             let analytics_state_clone = analytics_state.clone();
             tauri::async_runtime::spawn(async move {
                 let mut service = AnalyticsService::new();
                 let _ = service.initialize(analytics_enabled, uuid).await;
-                
+
                 // Update the service with the initialized client
                 if let Ok(mut state) = analytics_state_clone.lock() {
                     *state = service;
@@ -201,7 +198,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                     if let Ok(Some(_update)) = updater.check().await {
                         // Send analytics event for update available (fire and forget)
                         std::mem::drop(analytics::send_update_checked_event(&app_handle, true));
-                        
+
                         // Open the updater window if an update is available
                         if let Some(existing_window) = app_handle.get_webview_window("updater") {
                             let _ = existing_window.show();
@@ -210,7 +207,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                             let _ = WebviewWindowBuilder::new(
                                 &app_handle,
                                 "updater",
-                                WebviewUrl::App("/updater".into())
+                                WebviewUrl::App("/updater".into()),
                             )
                             .title("Software Updates")
                             .inner_size(500.0, 400.0)
@@ -248,10 +245,14 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             {
                 let app_handle = app.handle().clone();
                 let config_state = app.state::<Arc<Mutex<AppConfig>>>();
-                let config_guard = config_state.lock().map_err(|e| {
-                    format!("Failed to lock config: {}", e)
-                })?;
-                start_mouse_monitor(config_guard.mouse_monitor.clone(), app_handle.clone(), drag_state.clone());
+                let config_guard = config_state
+                    .lock()
+                    .map_err(|e| format!("Failed to lock config: {}", e))?;
+                start_mouse_monitor(
+                    config_guard.mouse_monitor.clone(),
+                    app_handle.clone(),
+                    drag_state.clone(),
+                );
             }
 
             let is_autostart = std::env::args().any(|arg| arg == "--autostart");
@@ -280,8 +281,12 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                         // Handle the file drop
                         let app_handle = window.app_handle();
                         let file_list_state = app_handle.state::<FileList>();
-                        file_drop::handle_file_drop_from_paths(paths.clone(), file_list_state.inner().clone(), app_handle.clone());
-                        
+                        file_drop::handle_file_drop_from_paths(
+                            paths.clone(),
+                            file_list_state.inner().clone(),
+                            app_handle.clone(),
+                        );
+
                         // Do not hide the window after processing - let user interact with the files
                     }
                     _ => {}

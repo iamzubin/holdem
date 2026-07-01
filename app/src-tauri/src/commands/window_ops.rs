@@ -1,5 +1,5 @@
-use tauri::{AppHandle, WebviewUrl, WebviewWindowBuilder, Manager};
 use crate::analytics;
+use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
 use tracing::info;
 
 #[tauri::command]
@@ -11,7 +11,7 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
 
     // Get the scale factor to convert between physical and logical pixels
     let scale_factor = main_window.scale_factor().map_err(|e| e.to_string())?;
-    
+
     // Get the position and size of the main window (physical pixels)
     let position = main_window.inner_position().map_err(|e| e.to_string())?;
     let size = main_window.inner_size().map_err(|e| e.to_string())?;
@@ -58,10 +58,10 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
             .visible_on_all_workspaces(true)
             .build()
             .map_err(|e: tauri::Error| e.to_string())?;
-            
+
             // Send analytics event (fire and forget)
             std::mem::drop(analytics::send_popup_window_opened_event(&app_clone));
-            
+
             Ok::<(), String>(())
         });
     }
@@ -107,10 +107,10 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
                 .visible_on_all_workspaces(true)
                 .build()
                 .map_err(|e: tauri::Error| e.to_string())?;
-                
+
             // Send analytics event (fire and forget)
             std::mem::drop(analytics::send_settings_opened_event(&app_clone));
-            
+
             Ok::<(), String>(())
         });
     }
@@ -168,4 +168,4 @@ pub fn close_consent_window(app: AppHandle) -> Result<(), String> {
         consent_window.close().map_err(|e| e.to_string())?;
     }
     Ok(())
-} 
+}

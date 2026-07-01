@@ -52,11 +52,14 @@ const PopupWindow: React.FC = () => {
     };
   }, [hasInteracted]);
 
+  const isMouseDownRef = useRef(false);
+
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>, file: any) => {
     // Only trigger on left mouse button
     if (e.button !== 0) return;
     
     e.stopPropagation();
+    isMouseDownRef.current = true;
     
     // Determine which files to drag
     let filesToDrag: any[];
@@ -72,18 +75,25 @@ const PopupWindow: React.FC = () => {
     const element = fileRefs.current[file.id];
     if (element) {
       prepareDragImage(element).then(() => {
-        dragTimeoutRef.current = window.setTimeout(() => {
-          triggerNativeDrag();
-        }, 10);
+        if (isMouseDownRef.current) {
+          dragTimeoutRef.current = window.setTimeout(() => {
+            if (isMouseDownRef.current) {
+              triggerNativeDrag();
+            }
+          }, 10);
+        }
       });
     } else {
       dragTimeoutRef.current = window.setTimeout(() => {
-        triggerNativeDrag();
+        if (isMouseDownRef.current) {
+          triggerNativeDrag();
+        }
       }, 10);
     }
   }, [files, selectedFiles]);
 
   const handleMouseUp = useCallback(() => {
+    isMouseDownRef.current = false;
     if (dragTimeoutRef.current) {
       clearTimeout(dragTimeoutRef.current);
       dragTimeoutRef.current = null;

@@ -44,9 +44,13 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
     });
   }, [files]);
 
+  const isMouseDownRef = useRef(false);
+
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     // Only trigger on left mouse button
     if (e.button !== 0) return;
+
+    isMouseDownRef.current = true;
 
     // Set the files to be dragged
     setPendingFiles(files);
@@ -56,19 +60,26 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
     if (container) {
       prepareDragImage(container).then(() => {
         // Small delay to ensure image is captured
-        dragTimeoutRef.current = window.setTimeout(() => {
-          triggerNativeDrag();
-        }, 10);
+        if (isMouseDownRef.current) {
+          dragTimeoutRef.current = window.setTimeout(() => {
+            if (isMouseDownRef.current) {
+              triggerNativeDrag();
+            }
+          }, 10);
+        }
       });
     } else {
       // No container, just trigger drag with default image
       dragTimeoutRef.current = window.setTimeout(() => {
-        triggerNativeDrag();
+        if (isMouseDownRef.current) {
+          triggerNativeDrag();
+        }
       }, 10);
     }
   }, [files]);
 
   const handleMouseUp = useCallback(() => {
+    isMouseDownRef.current = false;
     if (dragTimeoutRef.current) {
       clearTimeout(dragTimeoutRef.current);
       dragTimeoutRef.current = null;

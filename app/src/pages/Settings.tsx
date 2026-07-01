@@ -502,8 +502,8 @@ export default function SettingsPage() {
                                     <span className="text-sm text-foreground">Copy files to destination</span>
                                 </div>
                                 <div className="flex items-start gap-2">
-                                    <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">{platform === 'mac' ? '⌥ opt' : 'alt'}</kbd>
-                                    <span className="text-sm text-foreground">Hold <strong>{platform === 'mac' ? 'Option' : 'Alt'}</strong> while dropping to <strong>move</strong> files</span>
+                                    <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">shift</kbd>
+                                    <span className="text-sm text-foreground">Hold <strong>Shift</strong> while dropping to <strong>move</strong> files</span>
                                 </div>
                             </div>
                             <p className="text-xs text-muted-foreground flex items-center gap-1.5">

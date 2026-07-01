@@ -32,7 +32,9 @@ export const useFileManagement = () => {
     // Initialize listeners
     const setupListeners = async () => {
       const unlistenAdded = await listen<FilePreview>('file_added', (event) => {
-        setFiles(prevFiles => [...prevFiles, event.payload]);
+        if (event.payload) {
+          setFiles(prevFiles => [...prevFiles, event.payload]);
+        }
       });
 
       const unlistenRemoved = await listen<number>('file_removed', (event) => {

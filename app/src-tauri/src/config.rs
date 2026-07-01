@@ -115,7 +115,9 @@ impl AppConfig {
     }
 
     fn get_config_path(app_handle: &AppHandle) -> Result<PathBuf, String> {
-        let app_dir = app_handle.path().app_config_dir()
+        let app_dir = app_handle
+            .path()
+            .app_config_dir()
             .map_err(|e| format!("Failed to get app config directory: {}", e))?;
         let config_path = app_dir.join("config.json");
         Ok(config_path)

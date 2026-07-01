@@ -1,8 +1,8 @@
-use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, State, Manager, Listener};
-use tauri_plugin_autostart::ManagerExt;
-use crate::config::AppConfig;
 use crate::analytics;
+use crate::config::AppConfig;
+use std::sync::{Arc, Mutex};
+use tauri::{AppHandle, Listener, Manager, State};
+use tauri_plugin_autostart::ManagerExt;
 use tracing::{error, info, warn};
 
 #[cfg(target_os = "windows")]
@@ -13,7 +13,10 @@ use tauri_plugin_key_intercept::{Hotkey, KeyInterceptExt, Modifiers as MacModifi
 
 #[tauri::command]
 pub fn get_config(config: State<Arc<Mutex<AppConfig>>>) -> Result<AppConfig, String> {
-    config.lock().map_err(|e| format!("Failed to lock config: {}", e)).map(|c| c.clone())
+    config
+        .lock()
+        .map_err(|e| format!("Failed to lock config: {}", e))
+        .map(|c| c.clone())
 }
 
 #[tauri::command]
@@ -22,7 +25,9 @@ pub fn save_config(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
-    let mut config = config.lock().map_err(|e| format!("Failed to lock config: {}", e))?;
+    let mut config = config
+        .lock()
+        .map_err(|e| format!("Failed to lock config: {}", e))?;
     *config = new_config;
     config.save(&app_handle)
 }
@@ -33,7 +38,7 @@ pub fn restart_app(app: AppHandle) -> Result<(), String> {
     tauri::async_runtime::spawn(async move {
         let _ = analytics::send_app_restarted_event(&app_clone).await;
     });
-    
+
     app.restart();
 }
 
@@ -232,7 +237,8 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
     let app_handle_clone = app_handle.clone();
     let shortcut_str_clone = shortcut_str.clone();
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
+        let _ =
+            analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
     });
 
     Ok(())
@@ -275,10 +281,13 @@ fn register_hotkey_mac(app_handle: AppHandle, shortcut_str: String) -> Result<()
     };
 
     let monitor_state = app_handle.key_intercept();
-    let manager = monitor_state.manager.lock()
+    let manager = monitor_state
+        .manager
+        .lock()
         .map_err(|e| format!("Failed to lock manager: {}", e))?;
 
-    manager.register(hotkey)
+    manager
+        .register(hotkey)
         .map_err(|e| format!("Failed to register hotkey: {}", e))?;
 
     drop(manager);
@@ -304,7 +313,8 @@ fn register_hotkey_mac(app_handle: AppHandle, shortcut_str: String) -> Result<()
     let app_handle_clone = app_handle.clone();
     let shortcut_str_clone = shortcut_str.clone();
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
+        let _ =
+            analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
     });
 
     Ok(())
@@ -315,16 +325,18 @@ pub fn accept_analytics_consent(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
-    let mut config = config.lock().map_err(|e| format!("Failed to lock config: {}", e))?;
+    let mut config = config
+        .lock()
+        .map_err(|e| format!("Failed to lock config: {}", e))?;
     config.analytics_enabled = true;
     config.save(&app_handle)?;
-    
+
     info!("Analytics consent accepted");
-    
+
     tauri::async_runtime::spawn(async move {
         let _ = analytics::send_analytics_event(&app_handle, "consent_accepted", None).await;
     });
-    
+
     Ok(())
 }
 
@@ -333,22 +345,27 @@ pub fn decline_analytics_consent(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
-    let mut config = config.lock().map_err(|e| format!("Failed to lock config: {}", e))?;
+    let mut config = config
+        .lock()
+        .map_err(|e| format!("Failed to lock config: {}", e))?;
     config.analytics_enabled = false;
     config.save(&app_handle)?;
-    
+
     info!("Analytics consent declined");
-    
+
     tauri::async_runtime::spawn(async move {
         let _ = analytics::send_consent_declined_event(&app_handle).await;
     });
-    
+
     Ok(())
 }
 
 #[tauri::command]
 pub fn check_analytics_consent(config: State<Arc<Mutex<AppConfig>>>) -> Result<bool, String> {
-    config.lock().map_err(|e| format!("Failed to lock config: {}", e)).map(|c| c.analytics_enabled)
+    config
+        .lock()
+        .map_err(|e| format!("Failed to lock config: {}", e))
+        .map(|c| c.analytics_enabled)
 }
 
 #[tauri::command]
