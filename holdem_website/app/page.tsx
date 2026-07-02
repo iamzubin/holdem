@@ -1,7 +1,7 @@
 'use client'
 import { motion } from 'motion/react'
-import Link from 'next/link'
-import Image from 'next/image'
+// import Link from 'next/link'
+// import Image from 'next/image'
 import { HoldemDemo } from './components/holdem-demo'
 import { useEffect, useState } from 'react'
 
@@ -54,6 +54,7 @@ const ComingSoonFeature = ({
   </div>
 )
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function GitHubStarButton() {
   const [stars, setStars] = useState<number | null>(null)
 

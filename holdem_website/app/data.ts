@@ -34,35 +34,34 @@ export const PROJECTS: Project[] = [
     description:
       'Holdem is an open-source tool for smoother file drag-and-drop management, offering a temporary holding area for files and folders. ',
     link: 'https://github.com/iamzubin/holdem',
-    media:
-      '/assets/holdem.gif',
+    media: '/assets/holdem.gif',
     mediaType: 'image',
     id: 'project1',
   },
   {
     name: 'FFreed',
-    description: 'Simplifying Ethereum account management with ERC-4337 and Smart Contract Wallets. Easy Web3 integration, gas sponsorship, and seamless user onboarding..',
+    description:
+      'Simplifying Ethereum account management with ERC-4337 and Smart Contract Wallets. Easy Web3 integration, gas sponsorship, and seamless user onboarding..',
     link: 'https://x.com/ffreedwallet',
-    media:
-    '/assets/ffreed-image.jpg',
+    media: '/assets/ffreed-image.jpg',
     mediaType: 'image',
     id: 'project2',
   },
   {
     name: 'Stubs',
-    description: 'A creative page-builder that empowers creators to craft personalized websites with Web3 elements, like NFT showcases and blockchain integration.',
+    description:
+      'A creative page-builder that empowers creators to craft personalized websites with Web3 elements, like NFT showcases and blockchain integration.',
     link: 'https://github.com/iamzubin',
-    media:
-    '/assets/stubs.mp4',
+    media: '/assets/stubs.mp4',
     mediaType: 'video',
     id: 'project3',
   },
   {
     name: 'Chain Speak',
-    description: 'Conversational AI for seamless interactions with the Polygon ecosystem. Perform token transfers, swaps, staking, and cross-chain bridging effortlessly, making DeFi accessible to all.',
+    description:
+      'Conversational AI for seamless interactions with the Polygon ecosystem. Perform token transfers, swaps, staking, and cross-chain bridging effortlessly, making DeFi accessible to all.',
     link: 'https://github.com/iamzubin',
-    media:
-    '/assets/chain-speak.mp4',
+    media: '/assets/chain-speak.mp4',
     mediaType: 'video',
     id: 'project4',
   },

@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-type ToastVariant = "default" | "destructive"
+type ToastVariant = 'default' | 'destructive'
 
 interface Toast {
   title: string
@@ -24,4 +24,4 @@ export function useToast() {
 
 export function toast(toast: Toast) {
   console.log(`[Toast] ${toast.title}: ${toast.description}`)
-} 
+}

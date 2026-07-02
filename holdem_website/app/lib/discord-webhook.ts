@@ -3,7 +3,8 @@ export async function sendToDiscordWebhook(data: {
   name?: string
   message?: string
 }) {
-  const webhookUrl = 'https://discordapp.com/api/webhooks/1368904320590020648/4pVpMw4_gkVppZ6wjBub4pRKrk9H7OHVJNAc9exFeCCYzcC3rt6LOd73EOU_nvF052qf'
+  const webhookUrl =
+    'https://discordapp.com/api/webhooks/1368904320590020648/4pVpMw4_gkVppZ6wjBub4pRKrk9H7OHVJNAc9exFeCCYzcC3rt6LOd73EOU_nvF052qf'
 
   const content = [
     `**New Contact Form Submission**`,
@@ -38,4 +39,4 @@ export async function sendToDiscordWebhook(data: {
     console.error('Error sending to Discord:', error)
     return false
   }
-} 
+}
