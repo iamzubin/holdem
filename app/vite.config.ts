@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path"
 
+import tailwindcss from '@tailwindcss/vite';
+
 const host = process.env.TAURI_DEV_HOST;
 
 const exitOnBuildComplete = () => ({
@@ -14,7 +16,7 @@ const exitOnBuildComplete = () => ({
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react(), exitOnBuildComplete()],
+  plugins: [react(), tailwindcss(), exitOnBuildComplete()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

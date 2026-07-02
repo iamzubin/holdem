@@ -64,6 +64,134 @@ function App() {
 
     setupFileListener();
 
+    // Listen to native Windows drag drops
+    const unlistenNativeDrop = listen<{ type: 'Files', data: string[] } | { type: 'Text', data: string } | { type: 'Html', data: string }>('native_drop', (event) => {
+      const payload = event.payload;
+      if (payload.type === 'Files') {
+        invoke('add_files', { files: payload.data });
+        droppedFiles();
+      } else if (payload.type === 'Html') {
+        const html = payload.data;
+        
+        let sourceUrl = '';
+        const sourceMatch = html.match(/SourceURL:(.*?)[\r\n]/i);
+        if (sourceMatch && sourceMatch[1]) {
+          sourceUrl = sourceMatch[1].trim();
+        }
+
+        // Try to parse using DOM parser for robustness
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const img = doc.querySelector("img");
+        
+        let rawSrc = '';
+        if (img && img.getAttribute("src")) {
+          rawSrc = img.getAttribute("src") || '';
+        } else {
+          // Fallback to regex for background images or malformed tags
+          const match = html.match(/src=["'](.*?)["']/i) || html.match(/url\(['"]?(.*?)['"]?\)/i);
+          if (match && match[1]) {
+            rawSrc = match[1];
+          }
+        }
+
+        if (rawSrc) {
+          let src = rawSrc.replace(/&amp;/g, '&');
+          if (src.startsWith('//')) {
+            src = 'https:' + src;
+          } else if (src.startsWith('/')) {
+            if (sourceUrl) {
+              try {
+                const url = new URL(sourceUrl);
+                src = url.origin + src;
+              } catch (e) {}
+            } else {
+              src = 'https://www.iamzub.in' + src; 
+            }
+          }
+
+          if (src.startsWith('data:image/')) {
+            const b64match = src.match(/^data:image\/([a-zA-Z]*);base64,(.*)$/);
+            if (b64match && b64match[2]) {
+              invoke<string>('save_pasted_data_base64', {
+                dataBase64: b64match[2],
+                extension: b64match[1] || 'png'
+              }).then(path => {
+                invoke('add_files', { files: [path] });
+                droppedFiles();
+              }).catch(err => {
+                console.error('Failed to save data URI', err);
+                toast.error('Failed to save data image');
+              });
+              return;
+            }
+          } else if (src.match(/^https?:\/\//i)) {
+            toast.info('Downloading image...');
+            invoke<string>('download_image_to_shelf', { url: src })
+              .then(path => {
+                invoke('add_files', { files: [path] });
+                droppedFiles();
+              }).catch(err => {
+                console.error('Failed to download image from HTML', err);
+                toast.error('Could not download image: ' + err);
+                // Fallback to text link
+                invoke<string>('save_pasted_text', { text: src, extension: 'txt' }).then(p => { invoke('add_files', {files:[p]}); droppedFiles(); });
+              });
+            return;
+          }
+        }
+        
+        // Fallback if no image found in HTML
+        invoke<string>('save_pasted_text', {
+          text: html,
+          extension: 'html'
+        }).then(path => {
+          invoke('add_files', { files: [path] });
+          droppedFiles();
+        }).catch(err => console.error('Failed to save dropped HTML', err));
+      } else if (payload.type === 'Text') {
+        const text = payload.data.trim();
+        if (text.startsWith('data:image/')) {
+          const match = text.match(/^data:image\/([a-zA-Z]*);base64,(.*)$/);
+          if (match && match[2]) {
+            invoke<string>('save_pasted_data_base64', {
+              dataBase64: match[2],
+              extension: match[1] || 'png'
+            }).then(path => {
+              invoke('add_files', { files: [path] });
+              droppedFiles();
+            }).catch(err => console.error('Failed to save data URI', err));
+            return;
+          }
+        } else if (text.match(/^https?:\/\//i)) {
+          // It's a URL. Let's download it.
+          invoke<string>('download_image_to_shelf', { url: text })
+            .then(path => {
+              invoke('add_files', { files: [path] });
+              droppedFiles();
+            }).catch(err => {
+              console.error('Failed to download image', err);
+              // Fallback to text
+              invoke<string>('save_pasted_text', {
+                text: text,
+                extension: 'txt'
+              }).then(path => {
+                invoke('add_files', { files: [path] });
+                droppedFiles();
+              });
+            });
+          return;
+        }
+
+        invoke<string>('save_pasted_text', {
+          text: text,
+          extension: 'txt'
+        }).then(path => {
+          invoke('add_files', { files: [path] });
+          droppedFiles();
+        }).catch(err => console.error('Failed to save dropped text', err));
+      }
+    });
+
     // Set up navigation event listener
     const unlisten = listen<string>("navigate_to", (event) => {
       if (event.payload) {
@@ -72,9 +200,10 @@ function App() {
     });
 
     return () => {
+      unlistenNativeDrop.then(fn => fn());
       // unlisten.then(fn => fn());
     };
-  }, [addFiles, getFileIcon, navigate]);
+  }, [addFiles, getFileIcon, navigate, droppedFiles]);
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -143,13 +272,66 @@ function App() {
     e.stopPropagation();
     toast.info('Drop received in webview!');
 
-    const droppedFiles = Array.from(e.dataTransfer.files);
+    const nativeFiles = Array.from(e.dataTransfer.files);
 
-    if (droppedFiles.length === 0) {
+    const filesWithPath: FilePreview[] = [];
+    const virtualFiles: File[] = [];
+
+    nativeFiles.forEach((file, index) => {
+      const path = (file as FileWithPath).path;
+      if (path) {
+        filesWithPath.push({
+          id: Date.now() + index,
+          name: file.name,
+          size: file.size,
+          path: path,
+          icon: getFileExtension(file.name),
+          preview: '',
+          type: 'file'
+        });
+      } else {
+        virtualFiles.push(file);
+      }
+    });
+
+    if (filesWithPath.length > 0) {
+      addFiles(filesWithPath);
+    }
+
+    if (virtualFiles.length > 0) {
+      toast.info('Processing virtual files from browser...');
+      for (const file of virtualFiles) {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const base64Data = (reader.result as string).split(',')[1];
+          let extension = 'png';
+          if (file.name && file.name.includes('.')) {
+            extension = file.name.split('.').pop()?.toLowerCase() || 'png';
+          } else if (file.type) {
+            extension = file.type.split('/')[1] || 'png';
+          }
+          try {
+            const path = await invoke<string>('save_pasted_data_base64', {
+              dataBase64: base64Data,
+              extension
+            });
+            await invoke('add_files', { files: [path] });
+            droppedFiles();
+          } catch (err) {
+            console.error('Failed to save dropped virtual file', err);
+            toast.error('Failed to save dropped image');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+      return; // We handled the virtual files, skip HTML fallback
+    }
+
+    if (nativeFiles.length === 0) {
       toast.info('No files dropped, checking for text/html...');
       const html = e.dataTransfer.getData("text/html");
       if (html) {
-        const match = html.match(/<img.*?src="(.*?)"/);
+        const match = html.match(/<img.*?src=["'](.*?)["']/i);
         if (match && match[1]) {
           const src = match[1];
           if (src.startsWith('data:image/')) {
@@ -200,17 +382,6 @@ function App() {
       return;
     }
 
-    const newFiles: FilePreview[] = droppedFiles.map((file, index) => ({
-      id: Date.now() + index,
-      name: file.name,
-      preview: URL.createObjectURL(file),
-      type: 'file',
-      size: file.size,
-      path: (file as FileWithPath).path,
-      icon: getFileExtension(file.name)
-    }));
-
-    addFiles(newFiles);
   }, [addFiles]);
 
   const openPopup = () => {

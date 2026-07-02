@@ -80,7 +80,7 @@ const PopupWindow: React.FC = () => {
             if (isMouseDownRef.current) {
               triggerNativeDrag();
             }
-          }, 10);
+          }, 150);
         }
       });
     } else {
@@ -88,7 +88,7 @@ const PopupWindow: React.FC = () => {
         if (isMouseDownRef.current) {
           triggerNativeDrag();
         }
-      }, 10);
+      }, 150);
     }
   }, [files, selectedFiles]);
 
@@ -188,7 +188,7 @@ const PopupWindow: React.FC = () => {
             {files.map(file => (
               <div
                 key={file.id}
-                ref={el => fileRefs.current[file.id] = el}
+                ref={el => { fileRefs.current[file.id] = el; }}
                 className={`
                   ${viewMode === 'list'
                     ? 'flex items-center space-x-2 p-1 rounded'

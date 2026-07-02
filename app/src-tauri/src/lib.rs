@@ -34,6 +34,9 @@ mod thumbnail;
 mod tray;
 mod utils;
 
+#[cfg(target_os = "windows")]
+mod custom_drop;
+
 use analytics::AnalyticsService;
 use commands::{config_ops::*, drag_ops::*, file_ops::*, window_ops::*};
 use config::AppConfig;
@@ -256,12 +259,32 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             }
 
             let is_autostart = std::env::args().any(|arg| arg == "--autostart");
-            if is_autostart {
-                if let Some(window) = app.get_webview_window("main") {
+            if let Some(window) = app.get_webview_window("main") {
+                if is_autostart {
                     let _ = window.hide();
                 }
-            } else {
-                // Normal launch, show the main window
+
+                #[cfg(target_os = "windows")]
+                {
+                    use windows::Win32::Foundation::HWND;
+                    use windows::Win32::System::Ole::{RegisterDragDrop, RevokeDragDrop, OleInitialize};
+                    
+                    unsafe {
+                        let _ = OleInitialize(None);
+                        if let Ok(hwnd_ptr) = window.hwnd() {
+                            let hwnd = HWND(hwnd_ptr.0 as _);
+                            let _ = RevokeDragDrop(hwnd); // Remove Tauri's default
+                            
+                            let target = custom_drop::CustomDropTarget::new(app.handle().clone());
+                            let target_interface: windows::Win32::System::Ole::IDropTarget = target.into();
+                            if let Err(e) = RegisterDragDrop(hwnd, &target_interface) {
+                                warn!("Failed to register custom drag drop: {}", e);
+                            } else {
+                                info!("Registered custom drag drop target");
+                            }
+                        }
+                    }
+                }
             }
 
             Ok(())

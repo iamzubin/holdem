@@ -65,7 +65,7 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
             if (isMouseDownRef.current) {
               triggerNativeDrag();
             }
-          }, 10);
+          }, 150);
         }
       });
     } else {
@@ -74,7 +74,7 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
         if (isMouseDownRef.current) {
           triggerNativeDrag();
         }
-      }, 10);
+      }, 150);
     }
   }, [files]);
 

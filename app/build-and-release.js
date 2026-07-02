@@ -8,9 +8,20 @@ import axios from 'axios';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Parameters
-const version = "0.2.3";
-// const token = "token";  // GitHub token should be set as an environment variable
+// Read version from package.json
+const packageJsonPath = path.join(__dirname, 'package.json');
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+const version = packageJson.version;
+
+// Set the private key for Tauri updater
+process.env.TAURI_SIGNING_PRIVATE_KEY = "dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5Y3ZTYUFMUUU1ZWJVdjN3S2p0clI1WUpENzFydkpnYVJiNUk5Sjd0cGFEY0FBQkFBQUFBQUFBQUFBQUlBQUFBQS9tWkRFODIzQWxJS0M3elFUcS9pdmZIT2ZJSUFnWWR3a1U3aDZEWDBicEY2SHZRdzVNUVQ2dHA0SlBjNzhkUit2ZE82OTUzNnhiSE0xZ3pOWjhJQk9kUHlnZUZTN3hSbnYyRTVSK0VKNENYVTFrRFA0WVBFbXB0RVk0QVNLQ0hFQ3UwZlYvYzM1Rk09Cg==";
+
+const token = process.env.GITHUB_TOKEN;
+if (!token) {
+    console.error("Error: GITHUB_TOKEN environment variable is not set.");
+    process.exit(1);
+}
+
 const owner = "iamzubin";  // Your GitHub username
 const repo = "holdem";      // Repository name
 
@@ -39,11 +50,11 @@ async function main() {
     try {
         // Install dependencies
         console.log("Installing dependencies...");
-        execCommand("pnpm install");
+        execCommand("npm install");
 
         // Build the application
         console.log("Building application...");
-        execCommand("pnpm tauri build");
+        execCommand("npm run tauri build");
 
         // Get the installer and signature files
         const nsisDir = path.join("src-tauri", "target", "release", "bundle", "nsis");

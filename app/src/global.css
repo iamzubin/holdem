@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+@config "../tailwind.config.js";
 
 * {
   -webkit-user-select: none; /* Safari */
