@@ -13,9 +13,35 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://holdem.iamzub.in'),
   title: 'Holdem - A simpler way to manage your files',
   description:
     "Holdem is a lightweight, open-source tool for effortlessly dragging and organizing files on your desktop.",
+  openGraph: {
+    title: 'Holdem - A simpler way to manage your files',
+    description:
+      'Holdem is a lightweight, open-source tool for effortlessly dragging and organizing files on your desktop.',
+    url: 'https://holdem.iamzub.in',
+    siteName: 'Holdem',
+    images: [
+      {
+        url: '/og.png',
+        width: 1200,
+        height: 600,
+        alt: 'Holdem — A simpler way to manage your files',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@iamzub_in',
+    creator: '@iamzub_in',
+    title: 'Holdem - A simpler way to manage your files',
+    description:
+      'Holdem is a lightweight, open-source tool for effortlessly dragging and organizing files on your desktop.',
+    images: ['/og.png'],
+  },
 }
 
 const geist = Geist({
