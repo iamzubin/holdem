@@ -26,8 +26,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: '/og.png',
-        width: 1200,
-        height: 600,
+        width: 1280,
+        height: 640,
         alt: 'Holdem — A simpler way to manage your files',
       },
     ],

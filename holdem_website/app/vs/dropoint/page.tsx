@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: 'Holdem vs DropPoint: The Best Free Dropover Alternative for Windows',
     description: 'Tauri/Rust vs Electron — clean minimal vs dated UI. See Holdem vs DropPoint.',
     url: 'https://holdem.iamzub.in/vs/droppoint',
-    images: [{ url: '/og.png', width: 1200, height: 600, alt: 'Holdem vs DropPoint' }],
+    images: [{ url: '/og.png', width: 1280, height: 640, alt: 'Holdem vs DropPoint' }],
     type: 'article',
   },
   twitter: {

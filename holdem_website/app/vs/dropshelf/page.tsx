@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: 'Holdem vs Dropshelf: The Best Free Dropshelf Alternative for Windows',
     description: '100% free, open-source shelf for Windows — no 3-second wait. See Holdem vs Dropshelf.',
     url: 'https://holdem.iamzub.in/vs/dropshelf',
-    images: [{ url: '/og.png', width: 1200, height: 600, alt: 'Holdem vs Dropshelf' }],
+    images: [{ url: '/og.png', width: 1280, height: 640, alt: 'Holdem vs Dropshelf' }],
     type: 'article',
   },
   twitter: {

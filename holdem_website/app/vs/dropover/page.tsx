@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'Holdem vs Dropover: Free Dropover Alternative for Windows',
     description: 'Free, open-source shelf for Windows — Holdem vs Dropover.',
     url: 'https://holdem.iamzub.in/vs/dropover',
-    images: [{ url: '/og.png', width: 1200, height: 600, alt: 'Holdem vs Dropover' }],
+    images: [{ url: '/og.png', width: 1280, height: 640, alt: 'Holdem vs Dropover' }],
     type: 'article',
   },
   twitter: {
