@@ -1,0 +1,132 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "clear": "Borrar",
+    "add": "Añadir",
+    "set": "Establecer",
+    "stop": "Detener",
+    "noneSet": "Sin configurar",
+    "loading": "Cargando...",
+    "copyLink": "Copiar enlace"
+  },
+  "app": {
+    "dropHere": "Suelta aquí",
+    "files": "{{count}} archivo",
+    "files_one": "{{count}} archivo",
+    "files_other": "{{count}} archivos",
+    "files_plural": "{{count}} archivos",
+    "clear": "Borrar",
+    "paste": "Pegar",
+    "contextMenuTitle": "Menú contextual",
+    "toast": {
+      "dropReceived": "¡Recibido arrastre en la vista web!",
+      "processingVirtual": "Procesando archivos virtuales del navegador...",
+      "checkingTextHtml": "Sin archivos, comprobando texto/html...",
+      "downloadingImage": "Descargando imagen...",
+      "failedSaveDataImage": "No se pudo guardar la imagen de datos",
+      "failedSaveDroppedImage": "No se pudo guardar la imagen arrastrada",
+      "couldNotDownloadImage": "No se pudo descargar la imagen: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} elementos seleccionados",
+    "list": "Lista",
+    "grid": "Cuadrícula",
+    "removeSelected": "Eliminar archivos seleccionados"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Gestiona tus preferencias de la aplicación",
+    "loading": "Cargando ajustes...",
+    "inputMonitoring": {
+      "title": "Se requiere permiso de monitoreo de entrada",
+      "description": "Para usar atajos globales como Option+Space o Ctrl+Space, esta app necesita permiso de monitoreo de entrada. Es un requisito del sistema macOS.",
+      "openSettings": "Abrir Ajustes del Sistema",
+      "restartHint": "Después de conceder el permiso, reinicia la app para que los cambios surtan efecto."
+    },
+    "general": {
+      "title": "Ajustes generales",
+      "description": "Configura el inicio y el comportamiento de privacidad",
+      "startup": "Iniciar con el sistema",
+      "startupDesc": "Iniciar la app automáticamente al iniciar sesión",
+      "analytics": "Habilitar analíticas",
+      "analyticsDesc": "Ayuda a mejorar Holdem compartiendo datos de uso anónimos"
+    },
+    "language": {
+      "title": "Idioma",
+      "description": "Elige tu idioma preferido",
+      "label": "Idioma de la interfaz",
+      "hint": "Los cambios se aplican inmediatamente y se guardan en este dispositivo."
+    },
+    "shortcuts": {
+      "title": "Atajos",
+      "description": "Personaliza cómo interactúas con la app",
+      "showHotkey": "Atajo para mostrar la ventana",
+      "pressKeys": "Pulsa las teclas...",
+      "listeningHint": "Pulsa la combinación deseada... Pulsa Detener cuando termines",
+      "idleHint": "Atajo global para traer la app al frente",
+      "set": "Establecer",
+      "stop": "Detener",
+      "clear": "Borrar",
+      "noneSet": "Sin configurar"
+    },
+    "dragDrop": {
+      "title": "Comportamiento de arrastrar y soltar",
+      "description": "Cómo se transfieren los archivos al arrastrar fuera de Holdem",
+      "dragToCopy": "Copiar archivos al destino",
+      "shiftToMove": "Mantén Shift al soltar para mover archivos",
+      "move": "mover",
+      "macHint": "macOS muestra una insignia verde + al copiar. Sin insignia = operación de movimiento.",
+      "winHint": "El Explorador de Windows muestra una superposición punteada al copiar. Una flecha de movimiento indica mover."
+    },
+    "mouse": {
+      "title": "Monitor del ratón",
+      "description": "Ajusta la sensibilidad de detección de agitación",
+      "sensitivity": "Sensibilidad",
+      "timing": "Tiempos",
+      "requiredShakes": "Agitaciones requeridas",
+      "shakeThreshold": "Umbral de agitación",
+      "timeLimit": "Límite de tiempo (ms)",
+      "closeDelay": "Retraso de cierre (ms)",
+      "whitelistTitle": "Apps permitidas",
+      "whitelistDesc": "La detección de agitación solo estará activa cuando una de estas apps tenga el foco. Acepta nombres de proceso (p. ej. brave, brave.exe). Insensible a mayúsculas.",
+      "addPlaceholder": "Añadir nombre de proceso...",
+      "add": "Añadir",
+      "emptyTitle": "Sin apps permitidas",
+      "emptyDesc": "La agitación del cursor se ignorará globalmente"
+    },
+    "footer": {
+      "save": "Guardar ajustes",
+      "saving": "Guardando..."
+    }
+  },
+  "consent": {
+    "title": "Ayúdanos a mejorar Holdem",
+    "description": "Nos gustaría recopilar datos de uso anónimos para mejorar tu experiencia",
+    "collectTitle": "Recopilamos:",
+    "collectItems": ["Eventos de inicio de la app", "Uso de arrastrar y soltar archivos", "Métricas básicas de rendimiento"],
+    "notCollectTitle": "NO recopilamos:",
+    "notCollectItems": ["Información personal", "Contenido o nombres de archivos", "Tu historial de navegación"],
+    "decline": "Rechazar",
+    "accept": "Aceptar"
+  },
+  "updater": {
+    "title": "Actualizaciones de software",
+    "close": "Cerrar",
+    "checking": "Buscando actualizaciones...",
+    "downloading": "Descargando actualización...",
+    "downloadedTitle": "¡Descarga completada!",
+    "downloadedDesc": "Preparando la instalación...",
+    "installing": "Instalando actualización y reiniciando la aplicación...",
+    "availableTitle": "¡Actualización disponible!",
+    "version": "Versión {{version}}",
+    "noNotes": "Sin notas de la versión",
+    "releaseNotes": "Notas de la versión",
+    "autoDownload": "La descarga comenzará automáticamente...",
+    "latest": "¡Estás usando la última versión!",
+    "errorTitle": "Error al buscar actualizaciones",
+    "waiting": "Esperando para buscar actualizaciones..."
+  }
+}

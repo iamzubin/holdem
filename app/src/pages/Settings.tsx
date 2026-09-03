@@ -1,6 +1,8 @@
 import { invoke } from '@tauri-apps/api/core';
-import { X, Plus, Trash2, Keyboard, Monitor, Settings, Info, AlertTriangle } from 'lucide-react';
+import { X, Plus, Trash2, Keyboard, Monitor, Settings, Info, AlertTriangle, Languages } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { supportedLanguages } from '@/i18n';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -32,6 +34,7 @@ interface AppConfig {
 }
 
 export default function SettingsPage() {
+    const { t, i18n } = useTranslation();
     const [config, setConfig] = useState<AppConfig | null>(null);
     const [saving, setSaving] = useState(false);
     const [isListening, setIsListening] = useState(false);
@@ -175,7 +178,7 @@ export default function SettingsPage() {
 
     const startKeyListener = () => {
         setIsListening(true);
-        setCurrentHotkey('Press keys...');
+        setCurrentHotkey(t("settings.shortcuts.pressKeys"));
         window.addEventListener('keydown', handleKeyDown, true);
         window.addEventListener('keyup', handleKeyUp, true);
     };
@@ -274,7 +277,7 @@ export default function SettingsPage() {
 
         // Update the current hotkey display
         const hotkeyString = buildHotkeyString(e);
-        setCurrentHotkey(hotkeyString || 'Press keys...');
+        setCurrentHotkey(hotkeyString || t("settings.shortcuts.pressKeys"));
 
         // Skip if we're only detecting a modifier key press
         if (['ControlLeft', 'ControlRight', 'ShiftLeft', 'ShiftRight',
@@ -296,7 +299,7 @@ export default function SettingsPage() {
         // Update current hotkey display on key up as well
         // (especially important for showing modifier state changes)
         const hotkeyString = buildHotkeyString(e);
-        setCurrentHotkey(hotkeyString || 'Press keys...');
+        setCurrentHotkey(hotkeyString || t("settings.shortcuts.pressKeys"));
     };
 
     if (!config) {
@@ -304,7 +307,7 @@ export default function SettingsPage() {
             <div className="flex h-full items-center justify-center bg-background text-foreground">
                 <div className="flex flex-col items-center space-y-4">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                    <p className="text-muted-foreground">Loading settings...</p>
+                    <p className="text-muted-foreground">{t("settings.loading")}</p>
                 </div>
             </div>
         );
@@ -357,8 +360,8 @@ export default function SettingsPage() {
                         <Settings className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-lg font-semibold tracking-tight" data-tauri-drag-region>Settings</h1>
-                        <p className="text-xs text-muted-foreground" data-tauri-drag-region>Manage your application preferences</p>
+                        <h1 className="text-lg font-semibold tracking-tight" data-tauri-drag-region>{t("settings.title")}</h1>
+                        <p className="text-xs text-muted-foreground" data-tauri-drag-region>{t("settings.subtitle")}</p>
                     </div>
                 </div>
                 <Button
@@ -381,11 +384,10 @@ export default function SettingsPage() {
                             <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
                             <div className="flex-1">
                                 <h3 className="font-medium text-amber-800 dark:text-amber-200">
-                                    Input Monitoring Permission Required
+                                    {t("settings.inputMonitoring.title")}
                                 </h3>
                                 <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                                    To use global shortcuts like Option+Space or Ctrl+Space, 
-                                    this app needs Input Monitoring permission. This is a macOS system requirement.
+                                    {t("settings.inputMonitoring.description")}
                                 </p>
                                 <Button
                                     onClick={openInputMonitoringSettingsHandler}
@@ -393,10 +395,10 @@ export default function SettingsPage() {
                                     className="mt-3 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/50"
                                     size="sm"
                                 >
-                                    Open System Settings
+                                    {t("settings.inputMonitoring.openSettings")}
                                 </Button>
                                 <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
-                                    After granting permission, restart the app for changes to take effect.
+                                    {t("settings.inputMonitoring.restartHint")}
                                 </p>
                             </div>
                         </div>
@@ -409,15 +411,15 @@ export default function SettingsPage() {
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
                                 <Monitor className="w-4 h-4 text-primary" />
-                                General Settings
+                                {t("settings.general.title")}
                             </CardTitle>
-                            <CardDescription>Configure startup and privacy behavior</CardDescription>
+                            <CardDescription>{t("settings.general.description")}</CardDescription>
                         </CardHeader>
                         <CardContent className="grid gap-6">
                             <div className="flex items-center justify-between space-x-2">
                                 <Label htmlFor="startup" className="flex flex-col space-y-1">
-                                    <span>Start on System Startup</span>
-                                    <span className="font-normal text-xs text-muted-foreground">Automatically launch the app when you sign in</span>
+                                    <span>{t("settings.general.startup")}</span>
+                                    <span className="font-normal text-xs text-muted-foreground">{t("settings.general.startupDesc")}</span>
                                 </Label>
                                 <Switch
                                     id="startup"
@@ -428,8 +430,8 @@ export default function SettingsPage() {
 
                             <div className="flex items-center justify-between space-x-2">
                                 <Label htmlFor="analytics" className="flex flex-col space-y-1">
-                                    <span>Enable Analytics</span>
-                                    <span className="font-normal text-xs text-muted-foreground">Help improve Holdem by sharing anonymous usage data</span>
+                                    <span>{t("settings.general.analytics")}</span>
+                                    <span className="font-normal text-xs text-muted-foreground">{t("settings.general.analyticsDesc")}</span>
                                 </Label>
                                 <Switch
                                     id="analytics"
@@ -443,14 +445,43 @@ export default function SettingsPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
-                                <Keyboard className="w-4 h-4 text-primary" />
-                                Shortcuts
+                                <Languages className="w-4 h-4 text-primary" />
+                                {t("settings.language.title")}
                             </CardTitle>
-                            <CardDescription>Customize how you interact with the app</CardDescription>
+                            <CardDescription>{t("settings.language.description")}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <Label>{t("settings.language.label")}</Label>
+                            <div className="flex gap-2">
+                                {supportedLanguages.map((lang) => (
+                                    <Button
+                                        key={lang.code}
+                                        variant={i18n.language?.startsWith(lang.code) ? "default" : "outline"}
+                                        size="sm"
+                                        onClick={() => i18n.changeLanguage(lang.code)}
+                                        className="shrink-0"
+                                    >
+                                        {lang.nativeLabel}
+                                    </Button>
+                                ))}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {t("settings.language.hint")}
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <Keyboard className="w-4 h-4 text-primary" />
+                                {t("settings.shortcuts.title")}
+                            </CardTitle>
+                            <CardDescription>{t("settings.shortcuts.description")}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Show Window Hotkey</Label>
+                                <Label>{t("settings.shortcuts.showHotkey")}</Label>
                                 <div className="flex gap-2">
                                     <div className={`
                                         flex-1 h-10 px-3 rounded-md border flex items-center justify-center font-mono text-sm shadow-sm transition-colors
@@ -459,14 +490,14 @@ export default function SettingsPage() {
                                             : 'border-input bg-background text-foreground'
                                         }
                                     `}>
-                                        {isListening ? currentHotkey : (config.hotkey || <span className="text-muted-foreground italic">None set</span>)}
+                                        {isListening ? currentHotkey : (config.hotkey || <span className="text-muted-foreground italic">{t("settings.shortcuts.noneSet")}</span>)}
                                     </div>
                                     <Button
                                         onClick={isListening ? stopKeyListener : startKeyListener}
                                         variant={isListening ? "destructive" : "default"}
                                         className="w-24 shrink-0 shadow-sm"
                                     >
-                                        {isListening ? 'Stop' : 'Set'}
+                                        {isListening ? t("settings.shortcuts.stop") : t("settings.shortcuts.set")}
                                     </Button>
                                     <Button
                                         onClick={clearHotkey}
@@ -474,14 +505,14 @@ export default function SettingsPage() {
                                         className="w-20 shrink-0 shadow-sm"
                                         disabled={!config.hotkey}
                                     >
-                                        Clear
+                                        {t("settings.shortcuts.clear")}
                                     </Button>
                                 </div>
                                 <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                                     <Info className="w-3 h-3" />
                                     {isListening
-                                        ? 'Press desired key combination... Press Stop when done'
-                                        : 'Global shortcut to bring the app to foreground'}
+                                        ? t("settings.shortcuts.listeningHint")
+                                        : t("settings.shortcuts.idleHint")}
                                 </p>
                             </div>
                         </CardContent>
@@ -491,26 +522,26 @@ export default function SettingsPage() {
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
                                 <Info className="w-4 h-4 text-primary" />
-                                Drag &amp; Drop Behavior
+                                {t("settings.dragDrop.title")}
                             </CardTitle>
-                            <CardDescription>How files are transferred when dragging out of Holdem</CardDescription>
+                            <CardDescription>{t("settings.dragDrop.description")}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <div className="rounded-md bg-muted/40 border p-3 space-y-2">
                                 <div className="flex items-start gap-2">
                                     <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">drag</kbd>
-                                    <span className="text-sm text-foreground">Copy files to destination</span>
+                                    <span className="text-sm text-foreground">{t("settings.dragDrop.dragToCopy")}</span>
                                 </div>
                                 <div className="flex items-start gap-2">
                                     <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">shift</kbd>
-                                    <span className="text-sm text-foreground">Hold <strong>Shift</strong> while dropping to <strong>move</strong> files</span>
+                                    <span className="text-sm text-foreground">{t("settings.dragDrop.shiftToMove")}</span>
                                 </div>
                             </div>
                             <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                                 <Info className="w-3 h-3 shrink-0" />
                                 {platform === 'mac' 
-                                    ? 'macOS shows a green + badge when copying. No badge = move operation.'
-                                    : 'Windows Explorer shows a dotted overlay when copying. A move arrow shows for move operation.'}
+                                    ? t("settings.dragDrop.macHint")
+                                    : t("settings.dragDrop.winHint")}
                             </p>
                         </CardContent>
                     </Card>
@@ -519,16 +550,16 @@ export default function SettingsPage() {
                         <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
                                 <Monitor className="w-4 h-4 text-primary" />
-                                Mouse Monitor
+                                {t("settings.mouse.title")}
                             </CardTitle>
-                            <CardDescription>Fine-tune shake detection sensitivity</CardDescription>
+                            <CardDescription>{t("settings.mouse.description")}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Sensitivity</Label>
+                                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("settings.mouse.sensitivity")}</Label>
                                     <div className="space-y-1">
-                                        <Label htmlFor="shakes">Required Shakes</Label>
+                                        <Label htmlFor="shakes">{t("settings.mouse.requiredShakes")}</Label>
                                         <Input
                                             id="shakes"
                                             type="number"
@@ -538,7 +569,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label htmlFor="threshold">Shake Threshold</Label>
+                                        <Label htmlFor="threshold">{t("settings.mouse.shakeThreshold")}</Label>
                                         <Input
                                             id="threshold"
                                             type="number"
@@ -549,9 +580,9 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Timing</Label>
+                                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("settings.mouse.timing")}</Label>
                                     <div className="space-y-1">
-                                        <Label htmlFor="limit">Time Limit (ms)</Label>
+                                        <Label htmlFor="limit">{t("settings.mouse.timeLimit")}</Label>
                                         <Input
                                             id="limit"
                                             type="number"
@@ -561,7 +592,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Label htmlFor="delay">Close Delay (ms)</Label>
+                                        <Label htmlFor="delay">{t("settings.mouse.closeDelay")}</Label>
                                         <Input
                                             id="delay"
                                             type="number"
@@ -575,10 +606,9 @@ export default function SettingsPage() {
 
                             <div className="space-y-3 pt-4 border-t">
                                 <div className="space-y-1">
-                                    <Label>Whitelisted Apps</Label>
+                                    <Label>{t("settings.mouse.whitelistTitle")}</Label>
                                     <p className="text-xs text-muted-foreground">
-                                        Shake detection will only be active when one of these apps is focused.
-                                        Accepts process names (e.g. <code className="bg-muted px-1 py-0.5 rounded text-foreground">brave</code>, <code className="bg-muted px-1 py-0.5 rounded text-foreground">brave.exe</code>). Case-insensitive.
+                                        {t("settings.mouse.whitelistDesc")}
                                     </p>
                                 </div>
 
@@ -587,7 +617,7 @@ export default function SettingsPage() {
                                         type="text"
                                         value={newWhitelistItem}
                                         onChange={(e) => setNewWhitelistItem(e.target.value)}
-                                        placeholder="Add process name..."
+                                        placeholder={t("settings.mouse.addPlaceholder")}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') {
                                                 addWhitelistItem();
@@ -602,7 +632,7 @@ export default function SettingsPage() {
                                         className="shrink-0"
                                     >
                                         <Plus className="h-4 w-4 mr-2" />
-                                        Add
+                                        {t("settings.mouse.add")}
                                     </Button>
                                 </div>
 
@@ -636,8 +666,8 @@ export default function SettingsPage() {
                                             <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center mb-2">
                                                 <Monitor className="h-4 w-4 text-muted-foreground" />
                                             </div>
-                                            <p className="text-sm font-medium text-foreground">No apps whitelisted</p>
-                                            <p className="text-xs text-muted-foreground mt-1">Cursor shaking will be ignored globally</p>
+                                            <p className="text-sm font-medium text-foreground">{t("settings.mouse.emptyTitle")}</p>
+                                            <p className="text-xs text-muted-foreground mt-1">{t("settings.mouse.emptyDesc")}</p>
                                         </div>
                                     )}
                                 </div>
@@ -657,10 +687,10 @@ export default function SettingsPage() {
                     {saving ? (
                         <>
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"></div>
-                            <span>Saving...</span>
+                            <span>{t("settings.footer.saving")}</span>
                         </>
                     ) : (
-                        'Save Settings'
+                        t("settings.footer.save")
                     )}
                 </Button>
             </div>

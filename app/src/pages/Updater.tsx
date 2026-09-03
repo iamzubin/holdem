@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useTranslation } from "react-i18next";
 
 interface UpdateInfo {
   version: string;
@@ -15,6 +16,7 @@ interface UpdateInfo {
 type UpdateStatus = "idle" | "checking" | "available" | "no_update" | "error" | "downloading" | "downloaded" | "installing";
 
 const Updater: React.FC = () => {
+  const { t } = useTranslation();
   const [progress, setProgress] = useState<number>(0);
   const [status, setStatus] = useState<UpdateStatus>("idle");
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
@@ -33,7 +35,7 @@ const Updater: React.FC = () => {
       if (update) {
         setUpdateInfo({
           version: update.version,
-          notes: update.body || "No release notes available"
+          notes: update.body || t("updater.noNotes")
         });
         setStatus("available");
 
@@ -91,7 +93,7 @@ const Updater: React.FC = () => {
           <Card>
             <CardContent className="flex flex-col items-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-4 border-t-primary border-muted mb-4" />
-              <span className="text-muted-foreground">Checking for updates...</span>
+              <span className="text-muted-foreground">{t("updater.checking")}</span>
             </CardContent>
           </Card>
         );
@@ -101,7 +103,7 @@ const Updater: React.FC = () => {
             <CardContent className="py-8">
               <Progress value={progress} className="mb-4" />
               <div className="text-center text-sm mb-2">{progress}%</div>
-              <span className="text-muted-foreground">Downloading update...</span>
+              <span className="text-muted-foreground">{t("updater.downloading")}</span>
             </CardContent>
           </Card>
         );
@@ -110,8 +112,8 @@ const Updater: React.FC = () => {
           <Card>
             <CardContent className="flex flex-col items-center py-8">
               <div className="text-green-600 text-4xl mb-3">✓</div>
-              <span className="font-medium">Download completed!</span>
-              <span className="text-muted-foreground mt-2">Preparing to install...</span>
+              <span className="font-medium">{t("updater.downloadedTitle")}</span>
+              <span className="text-muted-foreground mt-2">{t("updater.downloadedDesc")}</span>
             </CardContent>
           </Card>
         );
@@ -120,7 +122,7 @@ const Updater: React.FC = () => {
           <Card>
             <CardContent className="flex flex-col items-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-4 border-t-primary border-muted mb-4" />
-              <span className="text-muted-foreground">Installing update and restarting application...</span>
+              <span className="text-muted-foreground">{t("updater.installing")}</span>
             </CardContent>
           </Card>
         );
@@ -128,21 +130,21 @@ const Updater: React.FC = () => {
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Update Available!</CardTitle>
+              <CardTitle>{t("updater.availableTitle")}</CardTitle>
             </CardHeader>
             <CardContent>
               {updateInfo && (
                 <>
                   <div className="text-primary font-semibold mb-2">
-                    Version {updateInfo.version}
+                    {t("updater.version", { version: updateInfo.version })}
                   </div>
                   <Alert className="mb-4">
-                    <AlertTitle>Release Notes</AlertTitle>
+                    <AlertTitle>{t("updater.releaseNotes")}</AlertTitle>
                     <AlertDescription className="whitespace-pre-line">
                       {updateInfo.notes}
                     </AlertDescription>
                   </Alert>
-                  <span className="text-muted-foreground">Download will start automatically...</span>
+                  <span className="text-muted-foreground">{t("updater.autoDownload")}</span>
                 </>
               )}
             </CardContent>
@@ -153,7 +155,7 @@ const Updater: React.FC = () => {
           <Card>
             <CardContent className="flex flex-col items-center py-8">
               <div className="text-green-600 text-4xl mb-3">✓</div>
-              <span className="font-medium">You're running the latest version!</span>
+              <span className="font-medium">{t("updater.latest")}</span>
             </CardContent>
           </Card>
         );
@@ -162,7 +164,7 @@ const Updater: React.FC = () => {
           <Card>
             <CardContent className="flex flex-col items-center py-8">
               <div className="text-destructive text-4xl mb-3">✗</div>
-              <span className="font-medium">Error checking for updates</span>
+              <span className="font-medium">{t("updater.errorTitle")}</span>
               <span className="text-destructive mt-2">{errorMessage}</span>
             </CardContent>
           </Card>
@@ -171,7 +173,7 @@ const Updater: React.FC = () => {
         return (
           <Card>
             <CardContent className="py-8">
-              <span className="text-muted-foreground">Waiting to check for updates...</span>
+              <span className="text-muted-foreground">{t("updater.waiting")}</span>
             </CardContent>
           </Card>
         );
@@ -186,14 +188,14 @@ const Updater: React.FC = () => {
         size="icon"
         className="absolute top-2 right-2"
         onClick={() => getCurrentWindow().close()}
-        aria-label="Close"
+        aria-label={t("updater.close")}
       >
         <svg className="w-6 h-6" fill="none" stroke="#ff0000" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </Button>
       <CardHeader data-tauri-drag-region>
-        <CardTitle data-tauri-drag-region className="text-center">Software Updates</CardTitle>
+        <CardTitle data-tauri-drag-region className="text-center">{t("updater.title")}</CardTitle>
       </CardHeader>
       <CardContent>{renderContent()}</CardContent>
     </Card>

@@ -10,8 +10,10 @@ import * as ContextMenu from '@radix-ui/react-context-menu';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
+import { useTranslation } from 'react-i18next';
 
 const PopupWindow: React.FC = () => {
+  const { t } = useTranslation();
   const { files } = useFileManagement();
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -158,7 +160,7 @@ const PopupWindow: React.FC = () => {
         <div className="flex items-center space-x-2">
           {files.length > 0 && (
             <>
-              <span className="text-xs text-primary">{files.length} items selected</span>
+              <span className="text-xs text-primary">{t("popup.itemsSelected", { count: files.length })}</span>
               <span className="text-xs text-primary">{getTotalSize(files)}</span>
             </>
           )}
@@ -170,11 +172,11 @@ const PopupWindow: React.FC = () => {
             onValueChange={toggleViewMode}
             >
             <ToggleGroupItem value="list" className="text-primary">
-              <span className="sr-only">List</span>
+              <span className="sr-only">{t("popup.list")}</span>
               <ListIcon className="h-4 w-4" />
             </ToggleGroupItem>
             <ToggleGroupItem value="grid" className="text-primary">
-              <span className="sr-only">Grid</span>
+              <span className="sr-only">{t("popup.grid")}</span>
               <GridIcon className="h-4 w-4" />
             </ToggleGroupItem>
           </ToggleGroup>
@@ -235,7 +237,7 @@ const PopupWindow: React.FC = () => {
               disabled={selectedFiles.size === 0}
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Remove Selected Files
+              {t("popup.removeSelected")}
             </ContextMenu.Item>
           </ContextMenu.Content>
         </ContextMenu.Portal>

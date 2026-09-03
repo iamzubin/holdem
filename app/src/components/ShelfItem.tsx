@@ -1,6 +1,7 @@
 import { Copy, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { FilePreview } from "@/types";
+import { useTranslation } from "react-i18next";
 
 interface ShelfItemProps {
   file: FilePreview;
@@ -9,6 +10,7 @@ interface ShelfItemProps {
 }
 
 export function ShelfItem({ file, onClear, onCopyLink }: ShelfItemProps) {
+  const { t } = useTranslation();
   return (
     <div className="group relative flex items-center justify-between p-2 rounded-md hover:bg-secondary/50 transition-colors w-full border border-transparent hover:border-border">
       <div className="flex items-center space-x-3 overflow-hidden">
@@ -29,7 +31,7 @@ export function ShelfItem({ file, onClear, onCopyLink }: ShelfItemProps) {
           size="icon" 
           className="h-7 w-7 rounded-sm" 
           onClick={(e) => { e.stopPropagation(); onCopyLink(file); }} 
-          title="Copy Link"
+          title={t("common.copyLink", { defaultValue: "Copy Link" })}
         >
           <Copy className="h-3.5 w-3.5" />
         </Button>
@@ -38,7 +40,7 @@ export function ShelfItem({ file, onClear, onCopyLink }: ShelfItemProps) {
           size="icon" 
           className="h-7 w-7 rounded-sm text-destructive hover:bg-destructive/10" 
           onClick={(e) => { e.stopPropagation(); onClear(file.id); }} 
-          title="Clear"
+          title={t("common.clear")}
         >
           <X className="h-3.5 w-3.5" />
         </Button>
