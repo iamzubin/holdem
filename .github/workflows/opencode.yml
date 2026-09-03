@@ -6,6 +6,11 @@ name: opencode
 #   /oc fix the failing check
 # This is also the "approve a review" path: commenting `/oc review`
 # runs a review on that PR on demand.
+#
+# Trigger is restricted to OWNER/MEMBER/COLLABORATOR comments starting
+# with the command, and ignores the bot's own replies (loop guard).
+
+permissions: {}
 
 on:
   issue_comment:
@@ -16,9 +21,25 @@ on:
 jobs:
   opencode:
     if: |
-      contains(github.event.comment.body, '/oc') ||
-      contains(github.event.comment.body, '/opencode')
+      github.actor != 'github-actions[bot]' &&
+      (
+        startsWith(github.event.comment.body, '/oc ') ||
+        github.event.comment.body == '/oc' ||
+        startsWith(github.event.comment.body, '/oc\n') ||
+        startsWith(github.event.comment.body, '/opencode ') ||
+        github.event.comment.body == '/opencode' ||
+        startsWith(github.event.comment.body, '/opencode\n')
+      ) &&
+      (
+        github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'
+      )
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: opencode-task-${{ github.event.issue.number }}-${{ github.event.comment.id }}
+      cancel-in-progress: false
     permissions:
       contents: write
       pull-requests: write
@@ -27,8 +48,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 1
+          fetch-depth: 0
           persist-credentials: false
+          submodules: recursive
 
       - name: Run OpenCode
         uses: anomalyco/opencode/github@latest

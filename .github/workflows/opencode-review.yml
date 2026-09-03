@@ -1,9 +1,12 @@
 name: opencode-review
 
 # Automatic PR reviews via OpenCode.
-# Triggers on every PR (opened, updated, reopened, or marked ready for review).
+# Triggers on every non-draft PR (opened, updated, reopened, or marked
+# ready for review). Skips drafts to avoid reviewing WIPs.
 # To re-run / request a review manually, comment `/oc review` on the PR
 # (handled by opencode.yml).
+
+permissions: {}
 
 on:
   pull_request:
@@ -11,7 +14,12 @@ on:
 
 jobs:
   review:
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: opencode-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     permissions:
       contents: read
       pull-requests: write
@@ -20,6 +28,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
+          submodules: recursive
 
       - uses: anomalyco/opencode/github@latest
         env:
