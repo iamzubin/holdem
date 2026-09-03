@@ -1,0 +1,6 @@
+# CodeRabbit is not used in this repo — OpenCode handles PR reviews
+# (.github/workflows/opencode-review.yml). Keep auto-review off so the two
+# bots don't duplicate reviews or push to each other's branches.
+reviews:
+  auto_review:
+    enabled: false

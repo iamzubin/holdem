@@ -14,7 +14,9 @@ on:
 
 jobs:
   review:
-    if: github.event.pull_request.draft == false
+    # Bots (dependabot, coderabbit, ...) lack the write permission the action
+    # requires, so skip their pushes instead of failing the run.
+    if: github.event.pull_request.draft == false && !endsWith(github.actor, '[bot]')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
@@ -73,16 +75,18 @@ jobs:
             Posting (CodeRabbit-style inline comments):
             - Submit ALL findings as ONE GitHub review so they appear inline on the
               code, using the gh CLI (GITHUB_TOKEN is in your environment):
-              1. Get context: PR_NUMBER and HEAD_SHA via
-                 `gh pr view $PR --json number,headRefOid` (PR number is also in
-                 $GITHUB_EVENT_PATH), repo slug from $GITHUB_REPOSITORY.
-              2. POST the review:
-                 gh api repos/<owner>/<repo>/pulls/<pr>/reviews --method POST \
-                   -f commit_id=<HEAD_SHA> -f event=COMMENT \
-                   -f body="<summary + walkthrough table + verdict>" \
-                   -f comments='<JSON array of {"path","line","side":"RIGHT","body"}>'
-                 One array entry per finding; body = severity + title + explanation + fix.
-                 Only comment on lines that are part of the PR diff.
+              1. Get context: repo slug from $GITHUB_REPOSITORY; PR number and head SHA
+                 via `gh pr view <number> --json number,headRefOid`
+                 (the number is also in $GITHUB_EVENT_PATH).
+              2. Write the review payload to /tmp/review.json using a heredoc —
+                 do NOT inline JSON in shell arguments:
+                 {"commit_id":"<HEAD_SHA>","event":"COMMENT",
+                  "body":"<summary + walkthrough table + verdict>",
+                  "comments":[{"path":"...","line":N,"side":"RIGHT",
+                               "body":"<severity + title + explanation + fix>"}, ...]}
+                 One entry per finding. Only comment on lines in the PR diff.
+              3. Post it:
+                 gh api repos/<owner>/<repo>/pulls/<pr>/reviews --method POST --input /tmp/review.json
               3. Keep your final chat message to ONE line ("Inline review posted."),
                  because the harness posts it as a separate top-level PR comment.
             - If the API call fails (e.g. 403 on fork PRs where the token is
