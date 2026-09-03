@@ -69,3 +69,22 @@ jobs:
             misuse, error handling and edge cases.
 
             End with one line: **Verdict:** APPROVE | REQUEST CHANGES | COMMENT
+
+            Posting (CodeRabbit-style inline comments):
+            - Submit ALL findings as ONE GitHub review so they appear inline on the
+              code, using the gh CLI (GITHUB_TOKEN is in your environment):
+              1. Get context: PR_NUMBER and HEAD_SHA via
+                 `gh pr view $PR --json number,headRefOid` (PR number is also in
+                 $GITHUB_EVENT_PATH), repo slug from $GITHUB_REPOSITORY.
+              2. POST the review:
+                 gh api repos/<owner>/<repo>/pulls/<pr>/reviews --method POST \
+                   -f commit_id=<HEAD_SHA> -f event=COMMENT \
+                   -f body="<summary + walkthrough table + verdict>" \
+                   -f comments='<JSON array of {"path","line","side":"RIGHT","body"}>'
+                 One array entry per finding; body = severity + title + explanation + fix.
+                 Only comment on lines that are part of the PR diff.
+              3. Keep your final chat message to ONE line ("Inline review posted."),
+                 because the harness posts it as a separate top-level PR comment.
+            - If the API call fails (e.g. 403 on fork PRs where the token is
+              read-only), fall back to putting the full CodeRabbit-formatted review
+              in your final message instead.
