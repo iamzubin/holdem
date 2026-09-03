@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
-      group: opencode-task-${{ github.event.issue.number }}-${{ github.event.comment.id }}
+      group: opencode-task-${{ github.event.issue.number || github.event.pull_request.number }}
       cancel-in-progress: false
     permissions:
       contents: write
