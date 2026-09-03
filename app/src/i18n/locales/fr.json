@@ -1,0 +1,140 @@
+{
+  "common": {
+    "cancel": "Abandonner",
+    "save": "Enregistrer",
+    "close": "Fermer",
+    "clear": "Nettoyer",
+    "add": "Ajouter",
+    "set": "Régler",
+    "stop": "Arrêter",
+    "noneSet": "Aucun défini",
+    "loading": "Chargement en cours...",
+    "copyLink": "Copier le lien"
+  },
+  "app": {
+    "dropHere": "Déposer ici",
+    "files": "Fichier {{count}}",
+    "files_one": "Fichier {{count}}",
+    "files_other": "Fichiers {{count}}",
+    "files_plural": "Fichiers {{count}}",
+    "clear": "Nettoyer",
+    "paste": "Coller",
+    "contextMenuTitle": "Menu contextuel",
+    "toast": {
+      "dropReceived": "Drop reçu dans la vue web!",
+      "processingVirtual": "Traitement des fichiers virtuels depuis le navigateur...",
+      "checkingTextHtml": "Aucun fichier déposé, recherche de texte/html...",
+      "downloadingImage": "Téléchargement de l'image...",
+      "failedSaveDataImage": "Échec de l'enregistrement de l'image de données",
+      "failedSaveDroppedImage": "Échec de l'enregistrement de l'image abandonnée",
+      "couldNotDownloadImage": "Impossible de télécharger l'image: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} éléments sélectionnés",
+    "list": "Liste",
+    "grid": "Grille",
+    "removeSelected": "Supprimer les fichiers sélectionnés"
+  },
+  "settings": {
+    "title": "Réglages",
+    "subtitle": "Gérer vos préférences d'application",
+    "loading": "Chargement des paramètres...",
+    "inputMonitoring": {
+      "title": "Autorisation de surveillance d'entrée requise",
+      "description": "Pour utiliser des raccourcis globaux tels que Option+Espace ou Ctrl+Espace, cette application a besoin des autorisations de Surveillance de l'entrée. Ceci est une exigence du système macOS.",
+      "openSettings": "Ouvrir les paramètres de la console",
+      "restartHint": "Après avoir accordé l'autorisation, redémarrez l'application pour que les modifications prennent effet."
+    },
+    "general": {
+      "title": "Paramètres généraux",
+      "description": "Configurer le comportement de démarrage et de confidentialité",
+      "startup": "Démarrer au démarrage du système",
+      "startupDesc": "Lancer automatiquement l'application lorsque vous vous connectez",
+      "analytics": "Activer Analytics",
+      "analyticsDesc": "Aider à améliorer Holdem en partageant des données d'utilisation anonymes"
+    },
+    "language": {
+      "title": "Langue",
+      "description": "Choisissez votre langue préférée",
+      "label": "Langue d'affichage",
+      "hint": "Les modifications s’appliquent immédiatement et sont enregistrées sur cet appareil."
+    },
+    "shortcuts": {
+      "title": "Raccourcis",
+      "description": "Personnalisez la façon dont vous interagissez avec l'application",
+      "showHotkey": "Afficher le raccourci clavier de la fenêtre",
+      "pressKeys": "Appuyer sur les touches...",
+      "listeningHint": "Appuyez sur la combinaison de touches désirées... Appuyez sur Arrêt lorsque vous avez terminé",
+      "idleHint": "Raccourci global pour mettre l'application au premier plan",
+      "set": "Régler",
+      "stop": "Arrêter",
+      "clear": "Nettoyer",
+      "noneSet": "Aucun défini"
+    },
+    "dragDrop": {
+      "title": "Comportement de glisser-déposer",
+      "description": "Comment les fichiers sont transférés en faisant glisser hors de Holdem",
+      "dragToCopy": "Copier les fichiers vers la destination",
+      "shiftToMove": "Maintenez la touche Maj enfoncée pour déplacer les fichiers",
+      "move": "déplacer",
+      "macHint": "macOS affiche un badge vert + lors de la copie. Aucun badge = opération de déplacement.",
+      "winHint": "L'Explorateur Windows affiche une superposition en pointillés lors de la copie. Une flèche de déplacement indique pour une opération de déplacement."
+    },
+    "mouse": {
+      "title": "Moniteur de souris",
+      "description": "Sensibilité à la détection des secousses",
+      "sensitivity": "Sensibilité",
+      "timing": "Timing",
+      "requiredShakes": "Secouements requis",
+      "shakeThreshold": "Seuil de secousse",
+      "timeLimit": "Limite de temps (ms)",
+      "closeDelay": "Fermer le délai (ms)",
+      "whitelistTitle": "Applications en liste blanche",
+      "whitelistDesc": "La détection de secousses ne sera active que lorsque l'une de ces applications sera ciblée. Accepte les noms de processus (par exemple, brave, brave.exe). Insensible à la casse.",
+      "addPlaceholder": "Ajouter un nom de processus...",
+      "add": "Ajouter",
+      "emptyTitle": "Aucune application en liste blanche",
+      "emptyDesc": "Le tremblement de curseur sera ignoré globalement"
+    },
+    "footer": {
+      "save": "Enregistrer les paramètres",
+      "saving": "Sauvegarde en cours..."
+    }
+  },
+  "consent": {
+    "title": "Aidez-nous à améliorer Holdem",
+    "description": "Nous aimerions collecter des données d'utilisation anonymes pour améliorer votre expérience",
+    "collectTitle": "Nous collectons:",
+    "collectItems": [
+      "Événements de lancement de l'application",
+      "Utilisation du glisser-déposer de fichier",
+      "Métriques de performance des applications de base"
+    ],
+    "notCollectTitle": "Nous ne collectons PAS :",
+    "notCollectItems": [
+      "Informations personnelles",
+      "Contenu du fichier ou noms",
+      "Votre historique de navigation"
+    ],
+    "decline": "Refuser",
+    "accept": "Accepter"
+  },
+  "updater": {
+    "title": "Mises à jour du logiciel",
+    "close": "Fermer",
+    "checking": "Vérification des mises à jour...",
+    "downloading": "Téléchargement de la mise à jour...",
+    "downloadedTitle": "Téléchargement terminé !",
+    "downloadedDesc": "Préparation de l'installation...",
+    "installing": "Installation de la mise à jour et du redémarrage de l'application...",
+    "availableTitle": "Mise à jour disponible !",
+    "version": "Version {{version}}",
+    "noNotes": "Aucune note de version disponible",
+    "releaseNotes": "Notes de version",
+    "autoDownload": "Le téléchargement va démarrer automatiquement...",
+    "latest": "Vous utilisez la dernière version !",
+    "errorTitle": "Erreur lors de la vérification des mises à jour",
+    "waiting": "En attente de vérification des mises à jour..."
+  }
+}

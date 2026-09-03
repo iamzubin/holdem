@@ -452,11 +452,11 @@ export default function SettingsPage() {
                         </CardHeader>
                         <CardContent className="space-y-2">
                             <Label>{t("settings.language.label")}</Label>
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 {supportedLanguages.map((lang) => (
                                     <Button
                                         key={lang.code}
-                                        variant={i18n.language?.startsWith(lang.code) ? "default" : "outline"}
+                                        variant={i18n.language === lang.code ? "default" : "outline"}
                                         size="sm"
                                         onClick={() => i18n.changeLanguage(lang.code)}
                                         className="shrink-0"

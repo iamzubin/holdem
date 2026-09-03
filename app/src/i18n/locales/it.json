@@ -1,0 +1,140 @@
+{
+  "common": {
+    "cancel": "Annulla",
+    "save": "Salva",
+    "close": "Chiudi",
+    "clear": "Pulisci",
+    "add": "Aggiungi",
+    "set": "Imposta",
+    "stop": "Ferma",
+    "noneSet": "Nessuno impostato",
+    "loading": "Caricamento...",
+    "copyLink": "Copia Collegamento"
+  },
+  "app": {
+    "dropHere": "Rilascia qui",
+    "files": "{{count}} file",
+    "files_one": "{{count}} file",
+    "files_other": "{{count}} files",
+    "files_plural": "{{count}} files",
+    "clear": "Pulisci",
+    "paste": "Incolla",
+    "contextMenuTitle": "Menu Contestuale",
+    "toast": {
+      "dropReceived": "Rilascia ricevuta nella vista web!",
+      "processingVirtual": "Elaborazione di file virtuali dal browser...",
+      "checkingTextHtml": "Nessun file è stato eliminato, controllando testo/html...",
+      "downloadingImage": "Scaricamento immagine...",
+      "failedSaveDataImage": "Impossibile salvare l'immagine dei dati",
+      "failedSaveDroppedImage": "Impossibile salvare l'immagine abbandonata",
+      "couldNotDownloadImage": "Impossibile scaricare l'immagine: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} elementi selezionati",
+    "list": "Elenco",
+    "grid": "Griglia",
+    "removeSelected": "Rimuovi File Selezionati"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Gestisci le preferenze dell'applicazione",
+    "loading": "Caricamento impostazioni...",
+    "inputMonitoring": {
+      "title": "Permesso Di Monitoraggio Input Richiesto",
+      "description": "Per utilizzare scorciatoie globali come Option+Space o Ctrl+Space, questa app ha bisogno del permesso di monitoraggio degli input. Questo è un requisito di sistema macOS.",
+      "openSettings": "Apri Impostazioni Di Sistema",
+      "restartHint": "Dopo aver concesso il permesso, riavvia l'app per rendere effettive le modifiche."
+    },
+    "general": {
+      "title": "Impostazioni Generali",
+      "description": "Configura il comportamento di avvio e privacy",
+      "startup": "Avvia all'avvio del sistema",
+      "startupDesc": "Avvia automaticamente l'applicazione quando accedi",
+      "analytics": "Abilita Analytics",
+      "analyticsDesc": "Aiuta a migliorare Holdem condividendo i dati di utilizzo anonimi"
+    },
+    "language": {
+      "title": "Lingua",
+      "description": "Scegli la tua lingua preferita",
+      "label": "Visualizza Lingua",
+      "hint": "Le modifiche si applicano immediatamente e vengono salvate su questo dispositivo."
+    },
+    "shortcuts": {
+      "title": "Scorciatoie",
+      "description": "Personalizza come interagisci con l'app",
+      "showHotkey": "Mostra Scorciatoia Finestra",
+      "pressKeys": "Premi tasti...",
+      "listeningHint": "Premere la combinazione di tasti desiderata... Premere Stop al termine",
+      "idleHint": "Scorciatoia globale per portare l'app in primo piano",
+      "set": "Imposta",
+      "stop": "Ferma",
+      "clear": "Pulisci",
+      "noneSet": "Nessuno impostato"
+    },
+    "dragDrop": {
+      "title": "Comportamento Trascina E Rilascia",
+      "description": "Come vengono trasferiti i file quando si trascina da Holdem",
+      "dragToCopy": "Copia i file nella destinazione",
+      "shiftToMove": "Tieni premuto Maiusc mentre rilascia per spostare i file",
+      "move": "sposta",
+      "macHint": "macOS mostra un verde + distintivo durante la copia. Nessun distintivo = operazione di spostamento.",
+      "winHint": "Windows Explorer mostra una sovrapposizione tratteggiata durante la copia. Una freccia di spostamento mostra per l'operazione di spostamento."
+    },
+    "mouse": {
+      "title": "Monitor Del Mouse",
+      "description": "Ottimizza la sensibilità al rilevamento dello scuotimento",
+      "sensitivity": "Sensibilità",
+      "timing": "Tempistica",
+      "requiredShakes": "Agitazioni Richiesti",
+      "shakeThreshold": "Soglia Shake",
+      "timeLimit": "Limite Di Tempo (Ms)",
+      "closeDelay": "Chiudi Ritardo (ms)",
+      "whitelistTitle": "Applicazioni Whitelisted",
+      "whitelistDesc": "Il rilevamento dello scuotimento sarà attivo solo quando una di queste applicazioni è focalizzata. Accetta nomi di processo (ad esempio coraggiosi, brave.exe). Case-insensitive.",
+      "addPlaceholder": "Aggiungi nome processo...",
+      "add": "Aggiungi",
+      "emptyTitle": "Nessuna app nella whitelist",
+      "emptyDesc": "Lo scuotimento del cursore verrà ignorato globalmente"
+    },
+    "footer": {
+      "save": "Salva Impostazioni",
+      "saving": "Salvataggio..."
+    }
+  },
+  "consent": {
+    "title": "Aiutaci a migliorare Holdem",
+    "description": "Vorremmo raccogliere dati anonimi di utilizzo per migliorare la tua esperienza",
+    "collectTitle": "Raccogliamo:",
+    "collectItems": [
+      "Eventi di lancio app",
+      "Utilizzo di file drag and drop",
+      "Metriche delle prestazioni delle app di base"
+    ],
+    "notCollectTitle": "NON raccogliamo:",
+    "notCollectItems": [
+      "Informazioni personali",
+      "Contenuto del file o nomi",
+      "La tua cronologia di navigazione"
+    ],
+    "decline": "Rifiuta",
+    "accept": "Accetta"
+  },
+  "updater": {
+    "title": "Aggiornamenti Software",
+    "close": "Chiudi",
+    "checking": "Controllo aggiornamenti...",
+    "downloading": "Scaricamento aggiornamento...",
+    "downloadedTitle": "Download completato!",
+    "downloadedDesc": "Preparazione all'installazione...",
+    "installing": "Installazione dell'aggiornamento e riavvio dell'applicazione...",
+    "availableTitle": "Aggiornamento Disponibile!",
+    "version": "Versione {{version}}",
+    "noNotes": "Nessuna nota di rilascio disponibile",
+    "releaseNotes": "Note Di Rilascio",
+    "autoDownload": "Il download inizierà automaticamente...",
+    "latest": "Stai eseguendo l'ultima versione!",
+    "errorTitle": "Errore nel controllo degli aggiornamenti",
+    "waiting": "In attesa di controllare gli aggiornamenti..."
+  }
+}

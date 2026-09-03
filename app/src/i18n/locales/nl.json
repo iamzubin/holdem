@@ -1,0 +1,140 @@
+{
+  "common": {
+    "cancel": "annuleren",
+    "save": "Opslaan",
+    "close": "Afsluiten",
+    "clear": "Verwijderen",
+    "add": "Toevoegen",
+    "set": "Instellen",
+    "stop": "Stoppen",
+    "noneSet": "Geen ingesteld",
+    "loading": "Laden...",
+    "copyLink": "Koppeling kopiëren"
+  },
+  "app": {
+    "dropHere": "Hier neerzetten",
+    "files": "{{count}} bestand",
+    "files_one": "{{count}} bestand",
+    "files_other": "{{count}} bestanden",
+    "files_plural": "{{count}} bestanden",
+    "clear": "Verwijderen",
+    "paste": "Plakken",
+    "contextMenuTitle": "Context Menu",
+    "toast": {
+      "dropReceived": "Drop ontvangen in webview!",
+      "processingVirtual": "Verwerken van virtuele bestanden van browser...",
+      "checkingTextHtml": "Geen bestanden verwijderd, controleren op text/html...",
+      "downloadingImage": "Afbeelding downloaden...",
+      "failedSaveDataImage": "Dataafbeelding opslaan mislukt",
+      "failedSaveDroppedImage": "Opslaan van achtergelaten afbeelding is mislukt",
+      "couldNotDownloadImage": "Kan afbeelding niet downloaden: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} items geselecteerd",
+    "list": "Klantenlijst",
+    "grid": "Rooster",
+    "removeSelected": "Geselecteerde bestanden verwijderen"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "subtitle": "Beheer uw applicatievoorkeuren",
+    "loading": "Instellingen laden...",
+    "inputMonitoring": {
+      "title": "Toediening Invoer Toestemming Vereist",
+      "description": "Om globale snelkoppelingen zoals Option+Space of Ctrl+Space, heeft deze app invoercontrole nodig. Dit is een macOS-systeemvereiste.",
+      "openSettings": "Open systeeminstellingen",
+      "restartHint": "Na het verlenen van de toestemming, start de app opnieuw op om wijzigingen toe te passen."
+    },
+    "general": {
+      "title": "Algemene instellingen",
+      "description": "Configureren van start en privacy gedrag",
+      "startup": "Start bij opstarten van het systeem",
+      "startupDesc": "Open de app automatisch wanneer u inlogt",
+      "analytics": "Analytics inschakelen",
+      "analyticsDesc": "Help Holdem te verbeteren door anonieme gebruiksgegevens te delen"
+    },
+    "language": {
+      "title": "Taal",
+      "description": "Kies uw voorkeurstaal",
+      "label": "Taal weergeven",
+      "hint": "Wijzigingen gelden onmiddellijk en worden opgeslagen op dit apparaat."
+    },
+    "shortcuts": {
+      "title": "Snelkoppelingen",
+      "description": "Aanpassen hoe je omgaat met de app",
+      "showHotkey": "Toon venster sneltoets",
+      "pressKeys": "Druk op de toetsen...",
+      "listeningHint": "Druk op de gewenste toetscombinatie... Druk op Stop als u klaar bent",
+      "idleHint": "Globale snelkoppeling om de app op de voorgrond te brengen",
+      "set": "Instellen",
+      "stop": "Stoppen",
+      "clear": "Verwijderen",
+      "noneSet": "Geen ingesteld"
+    },
+    "dragDrop": {
+      "title": "Sleep & Drop Gedrag",
+      "description": "Hoe bestanden worden overgebracht bij het uit Holdem slepen",
+      "dragToCopy": "Bestanden kopiëren naar bestemming",
+      "shiftToMove": "Houd Shift ingedrukt tijdens dropping om bestanden te verplaatsen",
+      "move": "verplaats",
+      "macHint": "macOS toont een groene + badge bij het kopiëren. Geen badge = Bezetbewerking.",
+      "winHint": "Windows Explorer toont een zwevende overlay tijdens het kopiëren. Een bewegende pijl toont voor de verplaatsing."
+    },
+    "mouse": {
+      "title": "Muis Monitor",
+      "description": "Afstemmen van shakedetectie gevoeligheid",
+      "sensitivity": "Gevoeligheid",
+      "timing": "timing",
+      "requiredShakes": "Vereiste Schudden",
+      "shakeThreshold": "Schud drempelwaarde",
+      "timeLimit": "Tijdslimiet (ms)",
+      "closeDelay": "Sluiten vertraging (ms)",
+      "whitelistTitle": "Toegestane Apps",
+      "whitelistDesc": "Schud detectie zal alleen actief zijn als een van deze apps is gefocust. Accepteert procesnamen (bijv. brave, brave.exe). Niet gevoelig.",
+      "addPlaceholder": "Voeg procesnaam toe...",
+      "add": "Toevoegen",
+      "emptyTitle": "Geen apps op de whitelist",
+      "emptyDesc": "Cursor schudden zal wereldwijd worden genegeerd"
+    },
+    "footer": {
+      "save": "Instellingen opslaan",
+      "saving": "Opslaan..."
+    }
+  },
+  "consent": {
+    "title": "Help ons Holdem te verbeteren",
+    "description": "We willen graag anonieme gebruiksgegevens verzamelen om uw ervaring te verbeteren",
+    "collectTitle": "Wij verzamelen:",
+    "collectItems": [
+      "App start evenementen",
+      "Bestanden slepen en neerzetten gebruik",
+      "Prestatiestatistieken van de basisapp"
+    ],
+    "notCollectTitle": "We verzamelen NIET:",
+    "notCollectItems": [
+      "Persoonlijke informatie",
+      "Bestandsinhoud of namen",
+      "Uw surfgeschiedenis"
+    ],
+    "decline": "Afwijzen",
+    "accept": "Accepteren"
+  },
+  "updater": {
+    "title": "Software Updates",
+    "close": "Afsluiten",
+    "checking": "Controleren op updates...",
+    "downloading": "Update downloaden...",
+    "downloadedTitle": "Download voltooid!",
+    "downloadedDesc": "Installatie voorbereiden...",
+    "installing": "Update en herstart applicatie...",
+    "availableTitle": "Update beschikbaar!",
+    "version": "Versie {{version}}",
+    "noNotes": "Geen release notities beschikbaar",
+    "releaseNotes": "Release opmerkingen",
+    "autoDownload": "Download zal automatisch starten...",
+    "latest": "Je gebruikt de nieuwste versie!",
+    "errorTitle": "Fout bij het controleren op updates",
+    "waiting": "Wachten om te controleren op updates..."
+  }
+}

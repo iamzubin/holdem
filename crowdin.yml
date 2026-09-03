@@ -6,6 +6,8 @@ api_token_env: CROWDIN_PERSONAL_TOKEN
 preserve_hierarchy: true
 
 files:
+  # %locale% matches the BCP-47 filenames used in src/i18n/locales
+  # (e.g. es-ES.json, pt-BR.json, zh-CN.json, zh-TW.json)
   - source: /app/src/i18n/locales/en.json
-    translation: /app/src/i18n/locales/%two_letters_code%.json
+    translation: /app/src/i18n/locales/%locale%.json
     multilingual: false

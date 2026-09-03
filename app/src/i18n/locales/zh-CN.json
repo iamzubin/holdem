@@ -1,0 +1,140 @@
+{
+  "common": {
+    "cancel": "取消",
+    "save": "保存",
+    "close": "关闭",
+    "clear": "清空",
+    "add": "添加",
+    "set": "设置",
+    "stop": "停止",
+    "noneSet": "未设置",
+    "loading": "加载中...",
+    "copyLink": "复制链接"
+  },
+  "app": {
+    "dropHere": "拖放到这里",
+    "files": "{{count}} file",
+    "files_one": "{{count}} file",
+    "files_other": "{{count}} files",
+    "files_plural": "{{count}} files",
+    "clear": "清空",
+    "paste": "粘贴",
+    "contextMenuTitle": "上下文菜单",
+    "toast": {
+      "dropReceived": "拖放在网络视图中接收！",
+      "processingVirtual": "正在从浏览器处理虚拟文件...",
+      "checkingTextHtml": "没有文件丢弃，请检查文本/html...",
+      "downloadingImage": "正在下载图像...",
+      "failedSaveDataImage": "保存数据图像失败",
+      "failedSaveDroppedImage": "保存拖放图像失败",
+      "couldNotDownloadImage": "Could not download image: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} items selected",
+    "list": "列表",
+    "grid": "网格",
+    "removeSelected": "删除选中的文件"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "管理您的应用程序首选项",
+    "loading": "正在加载设置...",
+    "inputMonitoring": {
+      "title": "需要输入监控权限",
+      "description": "要使用全局快捷键，如选项+Space 或 Ctrl+Space，此应用需要输入监控权限。这是macOS 系统要求。",
+      "openSettings": "打开系统设置",
+      "restartHint": "授予权限后，重启应用程序使更改生效。"
+    },
+    "general": {
+      "title": "常规设置",
+      "description": "配置启动和隐私行为",
+      "startup": "系统启动时启动",
+      "startupDesc": "登录时自动启动应用程序",
+      "analytics": "启用分析",
+      "analyticsDesc": "通过分享匿名使用数据帮助改进 Holdem"
+    },
+    "language": {
+      "title": "语言",
+      "description": "选择您喜欢的语言",
+      "label": "显示语言",
+      "hint": "更改立即应用并保存在此设备上。"
+    },
+    "shortcuts": {
+      "title": "快捷键",
+      "description": "自定义您与应用程序的交互方式",
+      "showHotkey": "显示窗口热键",
+      "pressKeys": "按键...",
+      "listeningHint": "按需要的密钥组合... 完成后按停止",
+      "idleHint": "将应用带到前台的全局快捷方式",
+      "set": "设置",
+      "stop": "停止",
+      "clear": "清空",
+      "noneSet": "未设置"
+    },
+    "dragDrop": {
+      "title": "拖放行为",
+      "description": "拖出Holdem 时如何传输文件",
+      "dragToCopy": "复制文件到目标",
+      "shiftToMove": "丢弃时按住 Shift 键移动文件",
+      "move": "移动",
+      "macHint": "macOS 复制时显示绿色+徽章。没有徽章 = 移动操作。",
+      "winHint": "Windows Explorer 在复制时显示虚线叠加层。移动箭头显示移动操作。"
+    },
+    "mouse": {
+      "title": "鼠标监视器",
+      "description": "微调晃动检测灵敏度",
+      "sensitivity": "灵敏度",
+      "timing": "D. 时间安排",
+      "requiredShakes": "所需的晃动",
+      "shakeThreshold": "摇动阈值",
+      "timeLimit": "时间限制 (ms)",
+      "closeDelay": "关闭延迟 (ms)",
+      "whitelistTitle": "白名单应用",
+      "whitelistDesc": "只有当其中一个应用被聚焦时，晃动检测才会激活。接受进程名称(例如，勇士、勇敢.exe)。不区分大小写。",
+      "addPlaceholder": "添加流程名称...",
+      "add": "添加",
+      "emptyTitle": "没有应用程序白名单",
+      "emptyDesc": "光标摇晃将被全局忽略"
+    },
+    "footer": {
+      "save": "保存设置",
+      "saving": "保存中..."
+    }
+  },
+  "consent": {
+    "title": "帮助我们改进 Holdem",
+    "description": "我们想收集匿名使用数据以改善您的体验",
+    "collectTitle": "我们收集：",
+    "collectItems": [
+      "应用启动事件",
+      "文件拖放使用",
+      "基本应用性能指标"
+    ],
+    "notCollectTitle": "我们不收集：",
+    "notCollectItems": [
+      "个人信息",
+      "文件内容或名称",
+      "您的浏览历史"
+    ],
+    "decline": "拒绝",
+    "accept": "接受"
+  },
+  "updater": {
+    "title": "软件更新",
+    "close": "关闭",
+    "checking": "正在检查更新...",
+    "downloading": "正在下载更新...",
+    "downloadedTitle": "下载完成！",
+    "downloadedDesc": "正在准备安装...",
+    "installing": "正在安装更新并重新启动应用程序...",
+    "availableTitle": "更新可用！",
+    "version": "Version {{version}}",
+    "noNotes": "没有可用的发行备注",
+    "releaseNotes": "发布说明",
+    "autoDownload": "下载将自动开始...",
+    "latest": "您正在运行最新版本！",
+    "errorTitle": "检查更新时出错",
+    "waiting": "正在等待检查更新..."
+  }
+}
