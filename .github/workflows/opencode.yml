@@ -48,6 +48,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          # issue_comment defaults to the default branch; resolve the PR head
+          # so /oc commands on a PR run against PR code (falls back to github.sha
+          # for plain issues, where the agent creates a branch from HEAD).
+          ref: ${{ github.event_name == 'pull_request_review_comment' && format('refs/pull/{0}/head', github.event.pull_request.number) || github.event.issue.pull_request && format('refs/pull/{0}/head', github.event.issue.number) || github.sha }}
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
