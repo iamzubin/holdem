@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { ButtonLink } from '../components/ui/button'
 import { DOWNLOAD_URL_FALLBACK, GITHUB_REPO } from '@/lib/constants'
 
 export const metadata: Metadata = {
@@ -48,13 +49,9 @@ export default function DownloadPage() {
       </p>
 
       <div className="mt-8 rounded-2xl border border-zinc-200 p-6 text-center dark:border-zinc-800">
-        <a
-          href={DOWNLOAD_URL_FALLBACK}
-          download
-          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-6 py-3 font-medium text-white shadow hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
-        >
+        <ButtonLink variant="primary" size="lg" href={DOWNLOAD_URL_FALLBACK} download>
           ⬇️ Download Holdem for Windows (x64)
-        </a>
+        </ButtonLink>
         <p className="mt-3 text-xs text-zinc-500">
           Current release: v3.0.0 · Windows 10/11 x64 · .exe installer ·{' '}
           <a

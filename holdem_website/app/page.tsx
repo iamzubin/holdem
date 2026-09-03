@@ -2,6 +2,7 @@
 import { motion } from 'motion/react'
 import Link from 'next/link'
 import { HoldemDemo } from './components/holdem-demo'
+import { Button, ButtonLink } from './components/ui/button'
 import { useEffect, useState } from 'react'
 import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
 
@@ -78,47 +79,6 @@ const ComingSoonFeature = ({
     <p className="pl-7 text-zinc-600 dark:text-zinc-400">{description}</p>
   </div>
 )
-
-function GitHubStarButton() {
-  const [stars, setStars] = useState<number | null>(null)
-
-  useEffect(() => {
-    fetch('https://api.github.com/repos/iamzubin/holdem')
-      .then((res) => res.json())
-      .then((data) => setStars(data.stargazers_count))
-      .catch(() => setStars(null))
-  }, [])
-
-  return (
-    <a
-      href="https://github.com/iamzubin/holdem"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-2 rounded-lg border border-transparent bg-zinc-100 px-5 py-2 font-medium text-zinc-900 shadow transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
-    >
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <path
-          d="M12 2L14.7553 8.51147L21.9021 9.23607L16.4511 13.9885L18.1803 21.0139L12 17.5L5.81966 21.0139L7.54894 13.9885L2.09789 9.23607L9.24472 8.51147L12 2Z"
-          fill="#FFD600"
-          stroke="#FFD600"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <span className="font-bold">Star on Github</span>
-      <span className="ml-1 text-base font-semibold">
-        {stars !== null ? stars : '—'}
-      </span>
-    </a>
-  )
-}
 
 function DemoSwitcher() {
   // PC (fine pointer): interactive demo. Phone/tab (coarse pointer): video.
@@ -262,16 +222,17 @@ function ShareModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             aria-label="Share URL"
             className="flex-1 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-800"
           />
-          <button
+          <Button
+            variant="primary"
+            size="sm"
             onClick={async () => {
               await navigator.clipboard.writeText(url)
               setCopied(true)
               setTimeout(() => setCopied(false), 1500)
             }}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900"
           >
             {copied ? 'Copied!' : 'Copy'}
-          </button>
+          </Button>
         </div>
 
         <div className="my-5 h-px bg-zinc-100 dark:bg-zinc-800" />
@@ -350,10 +311,11 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col items-center justify-center gap-3">
-          <a
+          <ButtonLink
+            variant="primary"
+            size="md"
             href={downloadUrl}
             download
-            className="flex items-center gap-2 rounded-lg border border-transparent bg-zinc-900 px-5 py-2 font-medium text-white shadow transition-colors hover:bg-zinc-800 dark:border-zinc-200 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -363,7 +325,7 @@ export default function Home() {
                 ({downloads.toLocaleString()} downloads)
               </span>
             )}
-          </a>
+          </ButtonLink>
           <p className="text-xs text-zinc-500">
             Windows 10/11 x64 · v3.0.0 · Free &amp; open-source ·{' '}
             <a
@@ -375,12 +337,13 @@ export default function Home() {
               All releases
             </a>
           </p>
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => setShareOpen(true)}
-            className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-1.5 text-sm font-medium text-zinc-900 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
           >
             <span className="text-base">↗</span> Share with friends
-          </button>
+          </Button>
         </div>
         <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
 

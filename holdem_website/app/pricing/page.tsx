@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { ButtonLink } from '../components/ui/button'
 import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
 
 export const metadata: Metadata = {
@@ -150,13 +151,9 @@ export default function PricingPage() {
       </div>
 
       <div className="mt-8 rounded-2xl border border-zinc-200 p-6 text-center dark:border-zinc-800">
-        <a
-          href={DOWNLOAD_URL_FALLBACK}
-          download
-          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-6 py-3 font-medium text-white shadow hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
-        >
+        <ButtonLink variant="primary" size="lg" href={DOWNLOAD_URL_FALLBACK} download>
           ⬇️ Download Holdem — $0 forever
-        </a>
+        </ButtonLink>
       </div>
 
       <hr className="my-10" />

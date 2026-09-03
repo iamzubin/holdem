@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { ButtonLink } from '../../components/ui/button'
 import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
 
 export const metadata: Metadata = {
@@ -236,21 +237,25 @@ export default function VsDropoverPage() {
         </p>
 
         <div className="not-prose mt-6 flex flex-wrap gap-3">
-          <a
+          <ButtonLink
+            variant="primary"
+            size="md"
+            className="text-sm"
             href={DOWNLOAD_URL_FALLBACK}
             download
-            className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900"
           >
             Download Holdem for Windows — Free
-          </a>
-          <a
+          </ButtonLink>
+          <ButtonLink
+            variant="secondary"
+            size="md"
+            className="text-sm"
             href="https://github.com/iamzubin/holdem"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg border border-zinc-200 px-5 py-2.5 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
           >
             View on GitHub
-          </a>
+          </ButtonLink>
         </div>
 
         <h2>FAQ: Dropover on Windows</h2>
