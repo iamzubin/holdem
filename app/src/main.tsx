@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import PopupWindow from "./PopupWindow";
 import "./global.css";
-import "./i18n";
+import { i18nInitialization } from "./i18n";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
 import SettingsWindow from "./pages/Settings";
@@ -29,10 +29,16 @@ const Main =  () => {
   )
 }
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <div className="border-2 border-zinc-800 h-screen w-screen">
-      <Main />
-    </div>
-  </React.StrictMode>
-)
+i18nInitialization
+  .then(() => {
+    ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+      <React.StrictMode>
+        <div className="border-2 border-zinc-800 h-screen w-screen">
+          <Main />
+        </div>
+      </React.StrictMode>
+    )
+  })
+  .catch((initializationError) => {
+    console.error("Failed to initialize i18n:", initializationError);
+  });
