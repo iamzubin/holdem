@@ -127,6 +127,7 @@
     "autoDownload": "Quá trình tải xuống sẽ tự động bắt đầu...",
     "latest": "Bạn đang dùng phiên bản mới nhất!",
     "errorTitle": "Lỗi khi kiểm tra cập nhật",
+    "downloadError": "Không tải xuống và cài đặt được bản cập nhật: {{error}}",
     "waiting": "Đang chờ kiểm tra cập nhật..."
   }
 }

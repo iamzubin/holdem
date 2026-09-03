@@ -135,6 +135,7 @@
     "autoDownload": "Download wird automatisch gestartet...",
     "latest": "Sie verwenden die neueste Version!",
     "errorTitle": "Fehler bei der Suche nach Updates",
+    "downloadError": "Update konnte nicht heruntergeladen und installiert werden: {{error}}",
     "waiting": "Warte auf Updates..."
   }
 }

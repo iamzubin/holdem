@@ -135,6 +135,7 @@
     "autoDownload": "Descărcarea va începe automat...",
     "latest": "Executați cea mai recentă versiune!",
     "errorTitle": "Eroare la verificarea actualizărilor",
+    "downloadError": "Descărcarea și instalarea actualizării a eșuat: {{error}}",
     "waiting": "Se așteaptă să se verifice actualizările..."
   }
 }

@@ -135,6 +135,7 @@
     "autoDownload": "Le téléchargement va démarrer automatiquement...",
     "latest": "Vous utilisez la dernière version !",
     "errorTitle": "Erreur lors de la vérification des mises à jour",
+    "downloadError": "Échec du téléchargement et de l'installation de la mise à jour : {{error}}",
     "waiting": "En attente de vérification des mises à jour..."
   }
 }

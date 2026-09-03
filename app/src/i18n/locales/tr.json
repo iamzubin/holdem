@@ -127,6 +127,7 @@
     "autoDownload": "İndirme otomatik olarak başlayacak...",
     "latest": "En son sürümü kullanıyorsunuz!",
     "errorTitle": "Güncellemeler denetlenirken hata",
+    "downloadError": "Güncelleme indirilemedi ve kurulamadı: {{error}}",
     "waiting": "Güncellemelerin denetlenmesi bekleniyor..."
   }
 }

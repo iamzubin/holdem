@@ -127,6 +127,7 @@
     "autoDownload": "下載將自動開始...",
     "latest": "您正在使用最新版本！",
     "errorTitle": "檢查更新時發生錯誤",
+    "downloadError": "下載並安裝更新失敗：{{error}}",
     "waiting": "等待檢查更新..."
   }
 }

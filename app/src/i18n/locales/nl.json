@@ -135,6 +135,7 @@
     "autoDownload": "Download zal automatisch starten...",
     "latest": "Je gebruikt de nieuwste versie!",
     "errorTitle": "Fout bij het controleren op updates",
+    "downloadError": "Downloaden en installeren van de update is mislukt: {{error}}",
     "waiting": "Wachten om te controleren op updates..."
   }
 }

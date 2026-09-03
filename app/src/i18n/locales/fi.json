@@ -135,6 +135,7 @@
     "autoDownload": "Lataus alkaa automaattisesti...",
     "latest": "Käytössäsi on uusin versio!",
     "errorTitle": "Virhe päivitysten tarkistuksessa",
+    "downloadError": "Päivityksen lataaminen ja asentaminen epäonnistui: {{error}}",
     "waiting": "Odotetaan päivitysten tarkistamista..."
   }
 }

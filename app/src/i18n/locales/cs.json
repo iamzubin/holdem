@@ -135,6 +135,7 @@
     "autoDownload": "Stahování bude spuštěno automaticky...",
     "latest": "Používáte nejnovější verzi!",
     "errorTitle": "Chyba při kontrole aktualizací",
+    "downloadError": "Aktualizaci se nepodařilo stáhnout a nainstalovat: {{error}}",
     "waiting": "Čeká se na kontrolu aktualizací..."
   }
 }

@@ -127,6 +127,7 @@
     "autoDownload": "Download will start automatically...",
     "latest": "You're running the latest version!",
     "errorTitle": "Error checking for updates",
+    "downloadError": "Failed to download and install update: {{error}}",
     "waiting": "Waiting to check for updates..."
   }
 }

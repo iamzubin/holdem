@@ -135,6 +135,7 @@
     "autoDownload": "Download vil starte automatisk...",
     "latest": "Du kører den seneste version!",
     "errorTitle": "Fejl under søgning efter opdateringer",
+    "downloadError": "Kunne ikke downloade og installere opdateringen: {{error}}",
     "waiting": "Venter på at søge efter opdateringer..."
   }
 }

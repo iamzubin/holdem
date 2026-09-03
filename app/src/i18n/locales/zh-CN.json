@@ -135,6 +135,7 @@
     "autoDownload": "下载将自动开始...",
     "latest": "您正在运行最新版本！",
     "errorTitle": "检查更新时出错",
+    "downloadError": "下载并安装更新失败：{{error}}",
     "waiting": "正在等待检查更新..."
   }
 }

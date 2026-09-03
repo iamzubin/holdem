@@ -82,7 +82,7 @@ const Updater: React.FC = () => {
       }, 1000);
     } catch (error) {
       setStatus("error");
-      setErrorMessage(`Failed to download and install update: ${error instanceof Error ? error.message : String(error)}`);
+      setErrorMessage(t("updater.downloadError", { error: error instanceof Error ? error.message : String(error) }));
     }
   };
 

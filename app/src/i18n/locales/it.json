@@ -135,6 +135,7 @@
     "autoDownload": "Il download inizierà automaticamente...",
     "latest": "Stai eseguendo l'ultima versione!",
     "errorTitle": "Errore nel controllo degli aggiornamenti",
+    "downloadError": "Download e installazione dell'aggiornamento non riusciti: {{error}}",
     "waiting": "In attesa di controllare gli aggiornamenti..."
   }
 }

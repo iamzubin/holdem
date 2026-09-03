@@ -135,6 +135,7 @@
     "autoDownload": "Pobieranie rozpocznie się automatycznie...",
     "latest": "Używasz najnowszej wersji!",
     "errorTitle": "Błąd sprawdzania aktualizacji",
+    "downloadError": "Nie udało się pobrać i zainstalować aktualizacji: {{error}}",
     "waiting": "Oczekiwanie na sprawdzenie aktualizacji..."
   }
 }

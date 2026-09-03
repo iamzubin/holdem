@@ -135,6 +135,7 @@
     "autoDownload": "La descarga comenzará automáticamente...",
     "latest": "¡Estás ejecutando la última versión!",
     "errorTitle": "Error comprobando actualizaciones",
+    "downloadError": "No se pudo descargar e instalar la actualización: {{error}}",
     "waiting": "Esperando para buscar actualizaciones..."
   }
 }
