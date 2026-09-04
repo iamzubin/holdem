@@ -16,8 +16,8 @@ use thiserror::Error;
 use windows::core::HSTRING;
 use windows::Win32::Foundation::SIZE;
 use windows::Win32::Graphics::Gdi::{
-    CreateCompatibleDC, DeleteDC, DeleteObject, GetDIBits, GetObjectW, SelectObject, BITMAP,
-    BITMAPINFO, BITMAPINFOHEADER, BI_RGB, DIB_RGB_COLORS, HBITMAP, HDC, HGDIOBJ,
+    CreateCompatibleDC, DeleteDC, DeleteObject, GetDIBits, GetObjectW, BITMAP, BITMAPINFO,
+    BITMAPINFOHEADER, BI_RGB, DIB_RGB_COLORS, HBITMAP, HDC, HGDIOBJ,
 };
 use windows::Win32::System::Com::{CoInitializeEx, CoUninitialize, COINIT_APARTMENTTHREADED};
 use windows::Win32::UI::Shell::{IShellItemImageFactory, SHCreateItemFromParsingName, SIIGBF};
@@ -42,10 +42,9 @@ pub enum ThumbnailError {
 /// Generate a base64-encoded PNG thumbnail for any file type the OS can
 /// preview. Returns the file-type icon (as Explorer shows) when no thumbnail
 /// provider is registered.
-pub fn get_thumbnail_base64(file_path: &str) -> Result<String, String> {
-    let path: &Path = Path::new(file_path);
+pub fn get_thumbnail_base64(path: &Path) -> Result<String, String> {
     if !path.exists() {
-        return Err(ThumbnailError::FileNotFound(file_path.to_string()).to_string());
+        return Err(ThumbnailError::FileNotFound(path.display().to_string()).to_string());
     }
     let (rgba, width, height): (Vec<u8>, u32, u32) =
         generate_thumbnail(path).map_err(|e: ThumbnailError| e.to_string())?;
@@ -137,8 +136,22 @@ fn hbitmap_to_rgba(hbitmap: HBITMAP) -> Result<(Vec<u8>, u32, u32), ThumbnailErr
         );
     }
 
+    // BITMAP dims come from the shell provider — validate before the
+    // w*h*4 allocation so corrupt data can't OOM/abort the app.
+    // Note: negative bmWidth/bmHeight must be rejected before `as u32`
+    // (a direct cast wraps to ~4B).
+    if bitmap.bmWidth <= 0 || bitmap.bmHeight <= 0 {
+        return Err(ThumbnailError::GenerationFailed(
+            "Invalid bitmap dimensions".to_string(),
+        ));
+    }
     let width: u32 = bitmap.bmWidth as u32;
     let height: u32 = bitmap.bmHeight as u32;
+    if width == 0 || height == 0 || width > 2048 || height > 2048 {
+        return Err(ThumbnailError::GenerationFailed(
+            "Suspicious bitmap dimensions".to_string(),
+        ));
+    }
 
     let dc: HDC = unsafe { CreateCompatibleDC(None) };
     if dc == HDC::default() {
@@ -147,8 +160,9 @@ fn hbitmap_to_rgba(hbitmap: HBITMAP) -> Result<(Vec<u8>, u32, u32), ThumbnailErr
         ));
     }
 
-    let old_obj = unsafe { SelectObject(dc, hbitmap.into()) };
-
+    // NOTE: the bitmap must NOT be selected into the DC for GetDIBits —
+    // MS docs say the call may fail (return 0) otherwise. The screen-compatible
+    // DC is only needed for color conversion of non-DIB sources.
     let mut bmi: BITMAPINFO = BITMAPINFO {
         bmiHeader: BITMAPINFOHEADER {
             biSize: std::mem::size_of::<BITMAPINFOHEADER>() as u32,
@@ -162,8 +176,13 @@ fn hbitmap_to_rgba(hbitmap: HBITMAP) -> Result<(Vec<u8>, u32, u32), ThumbnailErr
         ..Default::default()
     };
 
-    let pixel_count: usize = (width as usize) * (height as usize);
-    let mut buffer: Vec<u8> = vec![0u8; pixel_count * 4];
+    let pixel_count: usize = (width as usize)
+        .checked_mul(height as usize)
+        .ok_or_else(|| ThumbnailError::GenerationFailed("Bitmap too large".to_string()))?;
+    let buf_len = pixel_count
+        .checked_mul(4)
+        .ok_or_else(|| ThumbnailError::GenerationFailed("Bitmap too large".to_string()))?;
+    let mut buffer: Vec<u8> = vec![0u8; buf_len];
 
     let lines: i32 = unsafe {
         GetDIBits(
@@ -178,7 +197,6 @@ fn hbitmap_to_rgba(hbitmap: HBITMAP) -> Result<(Vec<u8>, u32, u32), ThumbnailErr
     };
 
     unsafe {
-        SelectObject(dc, old_obj);
         let _ = DeleteDC(dc);
     }
 

@@ -51,7 +51,13 @@ pub fn handle_file_drop_from_paths(
         }
 
         // Now lock and add to list
-        let mut list = file_list.lock().unwrap();
+        let Ok(mut list) = file_list.lock() else {
+            error!(
+                "file_drop: FileList mutex poisoned, dropping {} path(s)",
+                paths.len()
+            );
+            return;
+        };
         let starting_id = list.len() as u64;
 
         for (i, mut file) in new_files.into_iter().enumerate() {

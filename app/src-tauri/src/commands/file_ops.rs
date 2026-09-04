@@ -24,6 +24,7 @@ pub fn add_files(
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
 
+    let mut changed = false;
     for path_str in files.iter() {
         let path = PathBuf::from(path_str);
         if path.exists() {
@@ -53,11 +54,17 @@ pub fn add_files(
             // Avoid duplicates
             if !list.iter().any(|f| f.path == file.path) {
                 list.push(file);
+                changed = true;
             }
-            app_handle
-                .emit("files_updated", ())
-                .map_err(|e| e.to_string())?;
         }
+    }
+    drop(list);
+
+    // Single emit per batch — N emits for N files thrashed the frontend.
+    if changed {
+        app_handle
+            .emit("files_updated", ())
+            .map_err(|e| e.to_string())?;
     }
 
     Ok(())
@@ -251,7 +258,7 @@ pub async fn download_image_to_shelf(
         return save_url_placeholder(&url);
     }
 
-    let (suggested, ext_guess) = if let Ok(parsed_url) = url::Url::parse(&url) {
+    let suggested = if let Ok(parsed_url) = url::Url::parse(&url) {
         let path_segment = parsed_url
             .path_segments()
             .and_then(|mut segs| segs.next_back())
@@ -266,14 +273,13 @@ pub async fn download_image_to_shelf(
             && !extracted_ext.is_empty()
             && extracted_ext.len() <= 5
         {
-            (sanitize_filename(path_segment), extracted_ext.to_string())
+            sanitize_filename(path_segment)
         } else {
-            ("download".to_string(), "png".to_string())
+            "download".to_string()
         }
     } else {
-        ("download".to_string(), "png".to_string())
+        "download".to_string()
     };
-    let _ = ext_guess;
 
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(15))
@@ -286,11 +292,20 @@ pub async fn download_image_to_shelf(
     if let Some(r) = referer.as_deref().filter(|s| !s.is_empty()) {
         req = req.header(reqwest::header::REFERER, r.to_string());
     }
-    let response = req.send().await.map_err(|e| e.to_string())?;
+    let mut response = req.send().await.map_err(|e| e.to_string())?;
     let status = response.status();
     if !status.is_success() {
         // Auth-walled / hotlink-protected (401/403) — keep URL, not HTML error page.
         return save_url_placeholder(&url);
+    }
+    // 25 MB cap — don't buffer huge videos disguised as images.
+    // Check declared length up front, then stream with a running cap so a
+    // lying/missing content-length can't OOM us in `bytes()`.
+    const MAX_BYTES: usize = 25 * 1024 * 1024;
+    if let Some(len) = response.content_length() {
+        if len > MAX_BYTES as u64 {
+            return Err("Downloaded file exceeds 25 MB limit".to_string());
+        }
     }
     let content_type = response
         .headers()
@@ -298,11 +313,12 @@ pub async fn download_image_to_shelf(
         .and_then(|v| v.to_str().ok())
         .unwrap_or("")
         .to_string();
-    // 25 MB cap — don't buffer huge videos disguised as images.
-    const MAX_BYTES: usize = 25 * 1024 * 1024;
-    let bytes = response.bytes().await.map_err(|e| e.to_string())?;
-    if bytes.len() > MAX_BYTES {
-        return Err("Downloaded file exceeds 25 MB limit".to_string());
+    let mut bytes = Vec::new();
+    while let Some(chunk) = response.chunk().await.map_err(|e| e.to_string())? {
+        bytes.extend_from_slice(&chunk);
+        if bytes.len() > MAX_BYTES {
+            return Err("Downloaded file exceeds 25 MB limit".to_string());
+        }
     }
     let ext = if content_type.starts_with("image/png") {
         "png"
@@ -462,6 +478,5 @@ pub fn get_file_icon_base64(
     _file_list: State<'_, FileList>,
     file_path: &str,
 ) -> Result<String, String> {
-    let file_path = file_path.to_string();
-    get_thumbnail_base64(&file_path).map_err(|e| e.to_string())
+    get_thumbnail_base64(std::path::Path::new(file_path)).map_err(|e| e.to_string())
 }

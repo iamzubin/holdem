@@ -19,7 +19,7 @@ use windows::Win32::System::Ole::{
     CF_UNICODETEXT, DROPEFFECT, DROPEFFECT_COPY,
 };
 use windows::Win32::System::SystemServices::MODIFIERKEYS_FLAGS;
-use windows::Win32::UI::Shell::{DragFinish, DragQueryFileW, HDROP};
+use windows::Win32::UI::Shell::{DragQueryFileW, HDROP};
 use windows::Win32::UI::WindowsAndMessaging::EnumChildWindows;
 
 #[implement(IDropTarget)]
@@ -56,7 +56,9 @@ impl HoldemDropTarget {
                 paths.push(PathBuf::from(OsString::from_wide(&path_buf)));
             }
 
-            DragFinish(hdrop);
+            // NOTE: no DragFinish here — that is only for WM_DROPFILES HDROPs.
+            // This HGLOBAL comes from IDataObject::GetData and is owned by the
+            // STGMEDIUM; ReleaseStgMedium frees it. Calling both double-frees.
             ReleaseStgMedium(&mut medium);
 
             if !paths.is_empty() {
@@ -100,16 +102,16 @@ impl HoldemDropTarget {
                 Some(&mut read as *mut u32),
             );
             if hr.is_err() {
-                break;
+                warn!("Virtual file stream read failed, rejecting partial data");
+                return None;
             }
             if read == 0 {
                 break;
             }
             out.extend_from_slice(&buf[..read as usize]);
-            // 64 MB cap for a single virtual file — protects against runaway streams.
             if out.len() > 64 * 1024 * 1024 {
-                warn!("Virtual file stream exceeds 64 MB cap, truncating");
-                break;
+                warn!("Virtual file stream exceeds 64 MB cap, rejecting");
+                return None;
             }
         }
         if out.is_empty() {
@@ -187,9 +189,12 @@ impl HoldemDropTarget {
         if bytes.len() < 2 {
             return None;
         }
-        let count = bytes.len() / 2;
-        let wide: &[u16] =
-            std::slice::from_raw_parts(bytes.as_ptr() as *const u16, count);
+        // NOTE: no raw `*const u16` cast — `Vec<u8>` is align-1 and the
+        // allocation can be odd-aligned (UB even on x86-64). Decode LE pairs.
+        let wide: Vec<u16> = bytes
+            .chunks_exact(2)
+            .map(|c| u16::from_le_bytes([c[0], c[1]]))
+            .collect();
         let end = wide.iter().position(|&c| c == 0).unwrap_or(wide.len());
         let s = String::from_utf16_lossy(&wide[..end]);
         if s.is_empty() {
@@ -278,9 +283,10 @@ impl HoldemDropTarget {
             desc_bytes[2],
             desc_bytes[3],
         ]) as usize;
-        if count == 0 || count > 64 {
+        if count == 0 || count > 512 {
             return None;
         }
+        let count = count.min(64);
         // FILEGROUPDESCRIPTORW is packed(1): never take field references
         // (E0793 unaligned). Parse by byte offsets instead:
         //   dwFlags(4) + clsid(16) + sizel(8) + pointl(8) + dwFileAttributes(4)
@@ -560,6 +566,18 @@ pub fn register_main_drop_target(app_handle: &AppHandle, hwnd: HWND) {
 
 // --- HTML parsing -----------------------------------------------------------
 
+/// Clamp a byte index to the nearest preceding char boundary.
+/// `StartFragment`/`EndFragment` are byte offsets into the original
+/// `HTML Format` bytes; after `from_utf8_lossy` the length can shift and the
+/// offsets can split UTF-8. Slicing there panics (web-controlled input).
+fn floor_char_boundary(s: &str, mut idx: usize) -> usize {
+    idx = idx.min(s.len());
+    while idx > 0 && !s.is_char_boundary(idx) {
+        idx -= 1;
+    }
+    idx
+}
+
 /// Returns (all image srcs in order, optional SourceURL referer).
 /// Honors StartFragment/EndFragment offsets, decodes entities, handles
 /// //host URLs and srcset. blob: URLs are kept — the caller saves a
@@ -567,7 +585,9 @@ pub fn register_main_drop_target(app_handle: &AppHandle, hwnd: HWND) {
 fn parse_html_images(html: &str) -> (Vec<String>, Option<String>) {
     let referer = parse_html_source_url(html);
     let (frag_start, frag_end) = parse_fragment_offsets(html);
-    let frag = &html[frag_start.min(html.len())..frag_end.min(html.len())];
+    let s = floor_char_boundary(html, frag_start.min(html.len()));
+    let e = floor_char_boundary(html, frag_end.min(html.len()));
+    let frag = if s <= e { &html[s..e] } else { html };
 
     let mut srcs = Vec::new();
     let mut rest = frag;
@@ -866,7 +886,7 @@ fn dib_bytes_to_png(dib: &[u8]) -> Option<Vec<u8>> {
     let bit_count = read_u16(14);
     let compression = read_u32(16);
 
-    if width <= 0 || width > 16384 || height_raw == 0 || height_raw.abs() > 16384 {
+    if width <= 0 || width > 16384 || height_raw == 0 || height_raw.unsigned_abs() > 16384 {
         return None;
     }
     if planes != 1 {
@@ -906,6 +926,10 @@ fn dib_bytes_to_png(dib: &[u8]) -> Option<Vec<u8>> {
     let mut rgba = Vec::with_capacity((width_u * height_u * 4) as usize);
     match bit_count {
         32 => {
+            // For 32bpp BI_RGB the 4th byte is undefined — most sources leave
+            // it 0, which would make the PNG fully transparent. If every
+            // alpha byte is 0, treat the image as opaque instead.
+            let mut any_alpha = false;
             for row in 0..height_u as usize {
                 let src_row = if top_down {
                     row
@@ -919,7 +943,15 @@ fn dib_bytes_to_png(dib: &[u8]) -> Option<Vec<u8>> {
                     let g = dib[o + 1];
                     let r = dib[o + 2];
                     let a = dib[o + 3];
+                    if a != 0 {
+                        any_alpha = true;
+                    }
                     rgba.extend_from_slice(&[r, g, b, a]);
+                }
+            }
+            if !any_alpha {
+                for px in rgba.chunks_mut(4) {
+                    px[3] = 255;
                 }
             }
         }
@@ -986,5 +1018,41 @@ mod tests {
             normalize_img_src("//cdn.com/x.png"),
             "https://cdn.com/x.png"
         );
+    }
+
+    #[test]
+    fn fragment_slice_never_panics_on_split_utf8() {
+        // `é` is 2 bytes in UTF-8; offsets splitting it must clamp, not panic.
+        let html = "aaé<img src=\"https://a.com/1.png\">";
+        let mid = html.find('é').unwrap() + 1; // middle of `é`
+        let s = floor_char_boundary(html, mid);
+        let e = floor_char_boundary(html, mid);
+        assert!(html.is_char_boundary(s));
+        assert!(html.is_char_boundary(e));
+        let _ = &html[s..e];
+
+        // End-to-end: bogus fragment offsets from drag source can't crash us.
+        let evil = format!(
+            "Version:0.9\r\nStartFragment:{:08}\r\nEndFragment:{:08}\r\n{}",
+            mid, mid, html
+        );
+        let (srcs, _) = parse_html_images(&evil);
+        assert!(srcs.len() <= 1);
+    }
+
+    #[test]
+    fn dib_rejects_extreme_dimensions_without_panic() {
+        // i32::MIN must not panic via abs(); unsigned_abs path rejects it.
+        let h: i32 = i32::MIN;
+        assert!(h.unsigned_abs() > 16384);
+        // Minimal DIB with hostile dims returns None instead of allocating.
+        let mut dib = vec![0u8; 40];
+        dib[0] = 40; // header_size
+        dib[4..8].copy_from_slice(&20000i32.to_le_bytes()); // width too big
+        dib[8..12].copy_from_slice(&1i32.to_le_bytes());
+        assert!(dib_bytes_to_png(&dib).is_none());
+        dib[4..8].copy_from_slice(&1i32.to_le_bytes());
+        dib[8..12].copy_from_slice(&i32::MIN.to_le_bytes());
+        assert!(dib_bytes_to_png(&dib).is_none());
     }
 }
