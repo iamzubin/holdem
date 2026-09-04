@@ -54,7 +54,7 @@ windows = { version = "0.61.3", features = [
     "Win32_Security",
     "Win32_System_SystemServices",
 ] }
-active-win-pos-rs = "0.8"
+active-win-pos-rs = "0.11"
 
 [profile.release]
 lto = true
