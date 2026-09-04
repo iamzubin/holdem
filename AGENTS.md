@@ -3,7 +3,7 @@
 This repository contains three main projects:
 1. **app/** - Tauri desktop app (React + TypeScript + Vite + Tailwind)
 2. **holdem_website/** - Next.js marketing website (Next.js 15 + React 19 + Tailwind CSS)
-3. **thumb-rs** - External Rust library for thumbnail extraction (consumed via git dependency)
+3. **thumb-rs** - Git submodule with the original thumbnail-extraction source (reference only; `app/` uses its own in-house port in `src-tauri/src/thumbnail.rs`)
 
 ---
 
@@ -104,7 +104,7 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 }
 ```
 
-### Rust (thumb-rs & src-tauri)
+### Rust (src-tauri)
 
 - Use explicit types in function signatures
 - Use `thiserror` for error handling with `Result<T, Error>`

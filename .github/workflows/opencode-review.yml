@@ -35,10 +35,12 @@ jobs:
 
       - uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          # No OPENCODE_API_KEY: with no Zen key configured opencode exposes
+          # only free models, and muse-spark-1.3-contributor-free is free.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           model: opencode/muse-spark-1.3-contributor-free
+          variant: xhigh
           use_github_token: true
           prompt: |
             Review this pull request. Format your final response EXACTLY like CodeRabbit with collapsible sections:
