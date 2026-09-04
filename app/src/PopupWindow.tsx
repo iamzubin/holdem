@@ -10,8 +10,10 @@ import * as ContextMenu from '@radix-ui/react-context-menu';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
+import { useTranslation } from 'react-i18next';
 
 const PopupWindow: React.FC = () => {
+  const { t } = useTranslation();
   const { files } = useFileManagement();
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -155,26 +157,26 @@ const PopupWindow: React.FC = () => {
   return (
     <div className="fixed inset-0 bg-background  p-2 rounded border border-border">
       <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           {files.length > 0 && (
             <>
-              <span className="text-xs text-primary">{files.length} items selected</span>
+              <span className="text-xs text-primary">{t("popup.itemsSelected", { count: files.length })}</span>
               <span className="text-xs text-primary">{getTotalSize(files)}</span>
             </>
           )}
         </div>
-        <div className="flex space-x-2">
+        <div className="flex gap-2">
           <ToggleGroup
             type="single"
             value={viewMode}
             onValueChange={toggleViewMode}
             >
             <ToggleGroupItem value="list" className="text-primary">
-              <span className="sr-only">List</span>
+              <span className="sr-only">{t("popup.list")}</span>
               <ListIcon className="h-4 w-4" />
             </ToggleGroupItem>
             <ToggleGroupItem value="grid" className="text-primary">
-              <span className="sr-only">Grid</span>
+              <span className="sr-only">{t("popup.grid")}</span>
               <GridIcon className="h-4 w-4" />
             </ToggleGroupItem>
           </ToggleGroup>
@@ -191,7 +193,7 @@ const PopupWindow: React.FC = () => {
                 ref={el => { fileRefs.current[file.id] = el; }}
                 className={`
                   ${viewMode === 'list'
-                    ? 'flex items-center space-x-2 p-1 rounded'
+                    ? 'flex items-center gap-2 p-1 rounded'
                     : 'flex flex-col items-center p-1 rounded'
                   }
                   ${selectedFiles.has(file.id.toString()) ? 'bg-accent bg-opacity-50' : ''}
@@ -234,8 +236,8 @@ const PopupWindow: React.FC = () => {
               onClick={handleRemoveSelectedFiles}
               disabled={selectedFiles.size === 0}
             >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Remove Selected Files
+              <Trash2 className="w-4 h-4 me-2" />
+              {t("popup.removeSelected")}
             </ContextMenu.Item>
           </ContextMenu.Content>
         </ContextMenu.Portal>

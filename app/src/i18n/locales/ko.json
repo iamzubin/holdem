@@ -1,0 +1,143 @@
+{
+  "common": {
+    "cancel": "취소",
+    "save": "저장",
+    "close": "닫기",
+    "clear": "지우기",
+    "add": "추가",
+    "set": "설정",
+    "stop": "중지",
+    "noneSet": "설정되지 않음",
+    "loading": "로딩 중...",
+    "copyLink": "링크 복사"
+  },
+  "app": {
+    "dropHere": "여기에 놓기",
+    "files": "{{count}}개의 파일",
+    "files_one": "{{count}}개의 파일",
+    "files_other": "{{count}}개의 파일",
+    "files_plural": "{{count}}개의 파일",
+    "clear": "지우기",
+    "paste": "붙여넣기",
+    "contextMenuTitle": "컨텍스트 메뉴",
+    "toast": {
+      "dropReceived": "웹뷰에서 드롭을 받았습니다!",
+      "processingVirtual": "브라우저에서 가상 파일을 처리하는 중...",
+      "checkingTextHtml": "드롭된 파일이 없어 text/html을 확인하는 중...",
+      "downloadingImage": "이미지를 다운로드하는 중...",
+      "failedSaveDataImage": "데이터 이미지를 저장하지 못했습니다",
+      "failedSaveDroppedImage": "드롭된 이미지를 저장하지 못했습니다",
+      "couldNotDownloadImage": "이미지를 다운로드할 수 없습니다: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}}개 항목 선택됨",
+    "list": "목록",
+    "grid": "그리드",
+    "removeSelected": "선택한 파일 삭제",
+    "itemsSelected_one": "{{count}}개 항목 선택됨",
+    "itemsSelected_other": "{{count}}개 항목 선택됨"
+  },
+  "settings": {
+    "title": "설정",
+    "subtitle": "애플리케이션 환경설정을 관리합니다",
+    "loading": "설정을 불러오는 중...",
+    "inputMonitoring": {
+      "title": "입력 모니터링 권한 필요",
+      "description": "Option+Space 또는 Ctrl+Space 같은 전역 단축키를 사용하려면 이 앱에 입력 모니터링 권한이 필요합니다. macOS 시스템 요구 사항입니다.",
+      "openSettings": "시스템 설정 열기",
+      "restartHint": "권한을 부여한 후 변경 사항을 적용하려면 앱을 다시 시작하세요."
+    },
+    "general": {
+      "title": "일반 설정",
+      "description": "시작 및 개인정보 보호 동작을 설정합니다",
+      "startup": "시스템 시작 시 실행",
+      "startupDesc": "로그인할 때 앱을 자동으로 실행합니다",
+      "analytics": "분석 사용",
+      "analyticsDesc": "익명의 사용 데이터를 공유하여 Holdem 개선에 도움을 주세요"
+    },
+    "language": {
+      "title": "언어",
+      "description": "원하는 언어를 선택하세요",
+      "label": "표시 언어",
+      "hint": "변경 사항이 즉시 적용되며 이 기기에 저장됩니다."
+    },
+    "shortcuts": {
+      "title": "단축키",
+      "description": "앱과 상호작용하는 방식을 맞춤 설정합니다",
+      "showHotkey": "창 표시 단축키",
+      "pressKeys": "키를 누르세요...",
+      "listeningHint": "원하는 키 조합을 누르세요... 끝나면 중지를 누르세요",
+      "idleHint": "앱을 앞으로 가져오는 전역 단축키",
+      "set": "설정",
+      "stop": "중지",
+      "clear": "지우기",
+      "noneSet": "설정되지 않음"
+    },
+    "dragDrop": {
+      "title": "끌어서 놓기 동작",
+      "description": "Holdem에서 파일을 끌어낼 때의 전송 방식",
+      "dragToCopy": "파일을 대상에 복사",
+      "shiftToMove": "놓을 때 Shift를 누른 채로 있으면 파일을 이동합니다",
+      "move": "이동",
+      "macHint": "macOS에서는 복사할 때 녹색 + 배지가 표시됩니다. 배지가 없으면 이동 작업입니다.",
+      "winHint": "Windows 탐색기에서는 복사할 때 점선 오버레이가 표시됩니다. 이동 작업에는 이동 화살표가 표시됩니다."
+    },
+    "mouse": {
+      "title": "마우스 모니터",
+      "description": "흔들기 감지 민감도를 조정합니다",
+      "sensitivity": "민감도",
+      "timing": "시간",
+      "requiredShakes": "필요한 흔들기 횟수",
+      "shakeThreshold": "흔들기 임계값",
+      "timeLimit": "제한 시간(밀리초)",
+      "closeDelay": "닫기 지연(밀리초)",
+      "whitelistTitle": "허용된 앱",
+      "whitelistDesc": "이러한 앱 중 하나에 포커스가 있을 때만 흔들기 감지가 활성화됩니다. 프로세스 이름(예: brave, brave.exe)을 입력하세요. 대소문자를 구분하지 않습니다.",
+      "addPlaceholder": "프로세스 이름 추가...",
+      "add": "추가",
+      "emptyTitle": "허용된 앱이 없습니다",
+      "emptyDesc": "커서 흔들기가 전역적으로 무시됩니다"
+    },
+    "footer": {
+      "save": "설정 저장",
+      "saving": "저장 중..."
+    }
+  },
+  "consent": {
+    "title": "Holdem 개선에 도움을 주세요",
+    "description": "더 나은 경험을 위해 익명 사용 데이터를 수집하고자 합니다",
+    "collectTitle": "수집하는 정보:",
+    "collectItems": [
+      "앱 실행 이벤트",
+      "파일 끌어서 놓기 사용 현황",
+      "기본 앱 성능 지표"
+    ],
+    "notCollectTitle": "수집하지 않는 정보:",
+    "notCollectItems": [
+      "개인 정보",
+      "파일 내용 또는 이름",
+      "검색 기록"
+    ],
+    "decline": "거부",
+    "accept": "수락"
+  },
+  "updater": {
+    "title": "소프트웨어 업데이트",
+    "close": "닫기",
+    "checking": "업데이트를 확인하는 중...",
+    "downloading": "업데이트를 다운로드하는 중...",
+    "downloadedTitle": "다운로드 완료!",
+    "downloadedDesc": "설치를 준비하는 중...",
+    "installing": "업데이트를 설치하고 애플리케이션을 다시 시작하는 중...",
+    "availableTitle": "업데이트 사용 가능!",
+    "version": "버전 {{version}}",
+    "noNotes": "릴리스 노트가 없습니다",
+    "releaseNotes": "릴리스 노트",
+    "autoDownload": "다운로드가 자동으로 시작됩니다...",
+    "latest": "최신 버전을 실행 중입니다!",
+    "errorTitle": "업데이트 확인 중 오류",
+    "downloadError": "업데이트를 다운로드하고 설치하지 못했습니다: {{error}}",
+    "waiting": "업데이트 확인을 기다리는 중..."
+  }
+}

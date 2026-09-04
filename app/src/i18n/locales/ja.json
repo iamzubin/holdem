@@ -1,0 +1,143 @@
+{
+  "common": {
+    "cancel": "キャンセル",
+    "save": "保存",
+    "close": "閉じる",
+    "clear": "クリア",
+    "add": "追加",
+    "set": "設定",
+    "stop": "停止",
+    "noneSet": "未設定",
+    "loading": "読み込み中...",
+    "copyLink": "リンクをコピー"
+  },
+  "app": {
+    "dropHere": "ここにドロップ",
+    "files": "{{count}} ファイル",
+    "files_one": "{{count}} ファイル",
+    "files_other": "{{count}} ファイル",
+    "files_plural": "{{count}} ファイル",
+    "clear": "クリア",
+    "paste": "貼り付け",
+    "contextMenuTitle": "コンテキストメニュー",
+    "toast": {
+      "dropReceived": "Webビューで受信したドロップ!",
+      "processingVirtual": "ブラウザから仮想ファイルを処理しています...",
+      "checkingTextHtml": "ドロップされたファイルはありません。text/html を確認中...",
+      "downloadingImage": "画像をダウンロードしています...",
+      "failedSaveDataImage": "データ画像の保存に失敗しました",
+      "failedSaveDroppedImage": "ドロップされた画像の保存に失敗しました",
+      "couldNotDownloadImage": "画像をダウンロードできませんでした: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} 個の項目を選択中",
+    "list": "リスト",
+    "grid": "グリッド",
+    "removeSelected": "選択したファイルを削除",
+    "itemsSelected_one": "{{count}} 個の項目を選択中",
+    "itemsSelected_other": "{{count}} 個の項目を選択中"
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "アプリケーション設定の管理",
+    "loading": "設定を読み込んでいます...",
+    "inputMonitoring": {
+      "title": "入力モニタリング権限が必要です",
+      "description": "Option+SpaceやCtrl+Spaceなどのグローバルショートカットを使用するには、このアプリにはInput Monitoring権限が必要です。これはmacOSシステム要件です。",
+      "openSettings": "システム設定を開く",
+      "restartHint": "権限を付与した後、変更を反映するにはアプリを再起動してください。"
+    },
+    "general": {
+      "title": "全般設定",
+      "description": "スタートアップとプライバシーの動作を設定する",
+      "startup": "システム起動時に開始",
+      "startupDesc": "サインイン時にアプリを自動的に起動します",
+      "analytics": "分析を有効にする",
+      "analyticsDesc": "匿名の使用状況データを共有することでHoldemの改善にご協力ください"
+    },
+    "language": {
+      "title": "言語",
+      "description": "お好みの言語を選択してください",
+      "label": "言語の表示",
+      "hint": "変更はすぐに適用され、このデバイスに保存されます。"
+    },
+    "shortcuts": {
+      "title": "ショートカット",
+      "description": "アプリの操作方法をカスタマイズします",
+      "showHotkey": "ウィンドウのホットキーを表示",
+      "pressKeys": "キーを押してください...",
+      "listeningHint": "目的のキーの組み合わせを押してください... 完了したら停止を押してください",
+      "idleHint": "アプリをフォアグラウンドにするためのグローバルショートカット",
+      "set": "設定",
+      "stop": "停止",
+      "clear": "クリア",
+      "noneSet": "未設定"
+    },
+    "dragDrop": {
+      "title": "ドラッグ＆ドロップの動作",
+      "description": "Holdemからのドラッグ時のファイル転送方法",
+      "dragToCopy": "コピー先にファイルをコピー",
+      "shiftToMove": "ファイルを移動するにはShiftキーを押しながらドロップします",
+      "move": "移動",
+      "macHint": "macOSはコピー時に緑色+バッジを表示します。バッジなし = 移動操作。",
+      "winHint": "Windowsエクスプローラは、コピー時に点線オーバーレイを表示します。移動矢印は移動操作のために表示されます。"
+    },
+    "mouse": {
+      "title": "マウスモニター",
+      "description": "シェイク検出感度を微調整する",
+      "sensitivity": "感度",
+      "timing": "タイミング",
+      "requiredShakes": "必要なシェイク数",
+      "shakeThreshold": "振動閾値",
+      "timeLimit": "時間制限 (ms)",
+      "closeDelay": "終了遅延 (ms)",
+      "whitelistTitle": "ホワイトリストに登録されたアプリ",
+      "whitelistDesc": "シェイク検出は、これらのアプリのいずれかにフォーカスがある場合にのみ有効になります。プロセス名（例: brave、brave.exe）を入力できます。大文字と小文字は区別されません。",
+      "addPlaceholder": "プロセス名を追加...",
+      "add": "追加",
+      "emptyTitle": "ホワイトリストに登録されたアプリはありません",
+      "emptyDesc": "カーソル揺れはグローバルに無視されます"
+    },
+    "footer": {
+      "save": "設定を保存",
+      "saving": "保存中..."
+    }
+  },
+  "consent": {
+    "title": "Holdemの改善にご協力ください",
+    "description": "ユーザーエクスペリエンスを向上させるために匿名の使用データを収集します。",
+    "collectTitle": "収集するデータ:",
+    "collectItems": [
+      "アプリ起動イベント",
+      "ファイルのドラッグ＆ドロップの使用法",
+      "基本的なアプリのパフォーマンスメトリック"
+    ],
+    "notCollectTitle": "私たちは収集しません:",
+    "notCollectItems": [
+      "個人情報",
+      "ファイルの内容または名前",
+      "閲覧履歴"
+    ],
+    "decline": "同意しない",
+    "accept": "同意する"
+  },
+  "updater": {
+    "title": "ソフトウェアの更新",
+    "close": "閉じる",
+    "checking": "アップデートを確認しています...",
+    "downloading": "アップデートをダウンロードしています...",
+    "downloadedTitle": "ダウンロード完了！",
+    "downloadedDesc": "インストールを準備しています...",
+    "installing": "更新プログラムをインストールしてアプリケーションを再起動...",
+    "availableTitle": "アップデートが利用可能です！",
+    "version": "バージョン {{version}}",
+    "noNotes": "リリースノートがありません",
+    "releaseNotes": "リリースノート",
+    "autoDownload": "ダウンロードが自動的に開始されます...",
+    "latest": "最新バージョンを実行しています！",
+    "errorTitle": "アップデートの確認エラー",
+    "downloadError": "アップデートのダウンロードとインストールに失敗しました: {{error}}",
+    "waiting": "更新の確認を待っています..."
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "common": {
+    "cancel": "cancelar",
+    "save": "Guardar",
+    "close": "FECHAR",
+    "clear": "Limpar",
+    "add": "Adicionar",
+    "set": "Definir",
+    "stop": "Interromper",
+    "noneSet": "Nenhum definido",
+    "loading": "Carregando...",
+    "copyLink": "Copiar link"
+  },
+  "app": {
+    "dropHere": "Solte aqui",
+    "files": "{{count}} arquivo",
+    "files_one": "{{count}} arquivo",
+    "files_other": "{{count}} arquivos",
+    "files_plural": "{{count}} arquivos",
+    "clear": "Limpar",
+    "paste": "Colar",
+    "contextMenuTitle": "Menu de contexto",
+    "toast": {
+      "dropReceived": "Arquivos recebidos na webview!",
+      "processingVirtual": "Processando arquivos virtuais do navegador...",
+      "checkingTextHtml": "Nenhum arquivo solto, verificando texto/html...",
+      "downloadingImage": "Baixando imagem...",
+      "failedSaveDataImage": "Falha ao salvar a imagem de dados",
+      "failedSaveDroppedImage": "Falha ao salvar imagem solta",
+      "couldNotDownloadImage": "Não foi possível baixar a imagem: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} itens selecionados",
+    "list": "Lista",
+    "grid": "Grade",
+    "removeSelected": "Remover Arquivos Selecionados",
+    "itemsSelected_one": "{{count}} item selecionado",
+    "itemsSelected_other": "{{count}} itens selecionados"
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Gerenciar suas preferências de aplicação",
+    "loading": "Carregando configurações...",
+    "inputMonitoring": {
+      "title": "Permissão de Monitoramento de Entrada Necessária",
+      "description": "Para usar atalhos globais como Option+Space ou Ctrl+Space, este aplicativo precisa da permissão de Monitoramento de entrada. Este é um requisito de sistema macOS.",
+      "openSettings": "Abrir Configurações do Sistema",
+      "restartHint": "Após a concessão de permissão, reinicie o aplicativo para que as alterações tenham efeito."
+    },
+    "general": {
+      "title": "Configurações Gerais",
+      "description": "Configurar a inicialização e comportamento de privacidade",
+      "startup": "Iniciar na inicialização do sistema",
+      "startupDesc": "Abrir automaticamente o aplicativo quando você entrar",
+      "analytics": "Habilitar Analytics",
+      "analyticsDesc": "Ajude a melhorar Holdem compartilhando dados de uso anônimos"
+    },
+    "language": {
+      "title": "IDIOMA",
+      "description": "Escolha o idioma de sua preferência",
+      "label": "Exibir idioma",
+      "hint": "As alterações se aplicam imediatamente e são salvas neste dispositivo."
+    },
+    "shortcuts": {
+      "title": "Atalhos",
+      "description": "Personalize como interage com o app",
+      "showHotkey": "Mostrar Tecla de Atalho",
+      "pressKeys": "Pressione as teclas...",
+      "listeningHint": "Pressione a combinação de teclas desejada... Pressione Parar quando terminar",
+      "idleHint": "Atalho global para trazer o aplicativo para o primeiro plano",
+      "set": "Definir",
+      "stop": "Interromper",
+      "clear": "Limpar",
+      "noneSet": "Nenhum definido"
+    },
+    "dragDrop": {
+      "title": "Comportamento Arrastar e Soltar",
+      "description": "Como os arquivos são transferidos quando arrastando para fora de Holdem",
+      "dragToCopy": "Copiar arquivos para o destino",
+      "shiftToMove": "Segure Shift enquanto solta para mover arquivos",
+      "move": "mover",
+      "macHint": "macOS mostra um distintivo verde + durante a cópia. Nenhum distintivo = operação de movimento.",
+      "winHint": "A seta para mover mostra uma sobreposição pontilhada ao copiar. Uma seta mostra para operação de movimento."
+    },
+    "mouse": {
+      "title": "Monitor de Mouse",
+      "description": "Ajustar sensibilidade de detecção de agitação",
+      "sensitivity": "Sensibilidade",
+      "timing": "Sincronismo",
+      "requiredShakes": "Agitações necessárias",
+      "shakeThreshold": "Limite de Agitação",
+      "timeLimit": "Limite de Tempo (ms)",
+      "closeDelay": "Atraso de encerramento (ms)",
+      "whitelistTitle": "Aplicativos permitidos",
+      "whitelistDesc": "A detecção de agitação só estará ativa quando um desses aplicativos estiver em primeiro plano. Aceita nomes de processos (ex.: brave, brave.exe). Não diferencia maiúsculas de minúsculas.",
+      "addPlaceholder": "Adicionar nome do processo...",
+      "add": "Adicionar",
+      "emptyTitle": "Nenhum app com permissão",
+      "emptyDesc": "A vibração do cursor será ignorada globalmente"
+    },
+    "footer": {
+      "save": "Salvar Configurações",
+      "saving": "Salvando..."
+    }
+  },
+  "consent": {
+    "title": "Ajude-nos a melhorar Holdem",
+    "description": "Gostaríamos de coletar dados de uso anônimos para melhorar sua experiência",
+    "collectTitle": "Nós coletamos:",
+    "collectItems": [
+      "Eventos de lançamento do aplicativo",
+      "Uso de arquivos para arrastar e soltar",
+      "Métricas de desempenho básicas de aplicativos"
+    ],
+    "notCollectTitle": "Nós NÃO coletamos:",
+    "notCollectItems": [
+      "Informação Pessoal",
+      "Conteúdo ou nomes de arquivo",
+      "Seu histórico de navegação"
+    ],
+    "decline": "Recusar",
+    "accept": "Aceitar"
+  },
+  "updater": {
+    "title": "Atualizações do Software",
+    "close": "FECHAR",
+    "checking": "Verificando atualizações...",
+    "downloading": "Baixando atualização...",
+    "downloadedTitle": "Download concluído!",
+    "downloadedDesc": "Preparando para instalar...",
+    "installing": "Instalando atualização e reiniciando aplicativo...",
+    "availableTitle": "Atualização Disponível!",
+    "version": "Versão {{version}}",
+    "noNotes": "Não há notas de lançamento disponíveis",
+    "releaseNotes": "Notas de Versão",
+    "autoDownload": "O download iniciará automaticamente...",
+    "latest": "Você está executando a versão mais recente!",
+    "errorTitle": "Erro ao verificar se há atualizações",
+    "downloadError": "Falha ao baixar e instalar a atualização: {{error}}",
+    "waiting": "Esperando por atualizações..."
+  }
+}

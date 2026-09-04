@@ -1,0 +1,145 @@
+{
+  "common": {
+    "cancel": "Anulează",
+    "save": "Salvează",
+    "close": "Inchide",
+    "clear": "Curăță",
+    "add": "Adăugare",
+    "set": "Setează",
+    "stop": "Oprește",
+    "noneSet": "Niciuna setată",
+    "loading": "Încărcare...",
+    "copyLink": "Copiază link-ul"
+  },
+  "app": {
+    "dropHere": "Plasează aici",
+    "files": "{{count}} fișier",
+    "files_one": "{{count}} fișier",
+    "files_other": "{{count}} de fișiere",
+    "files_plural": "{{count}} de fișiere",
+    "clear": "Curăță",
+    "paste": "Lipește",
+    "contextMenuTitle": "Meniu contextual",
+    "toast": {
+      "dropReceived": "Fișiere plasate primite în webview!",
+      "processingVirtual": "Procesare fișiere virtuale din browser...",
+      "checkingTextHtml": "Niciun fișier plasat, se verifică text/html...",
+      "downloadingImage": "Se descarcă imaginea...",
+      "failedSaveDataImage": "Salvarea imaginii datelor a eșuat",
+      "failedSaveDroppedImage": "Nu s-a putut salva imaginea plasată",
+      "couldNotDownloadImage": "Imaginea nu a putut fi descărcată: {{error}}"
+    },
+    "files_few": "{{count}} fișiere"
+  },
+  "popup": {
+    "itemsSelected": "{{count}} elemente selectate",
+    "list": "Listă",
+    "grid": "Grilă",
+    "removeSelected": "Elimină fişierele selectate",
+    "itemsSelected_one": "{{count}} element selectat",
+    "itemsSelected_few": "{{count}} elemente selectate",
+    "itemsSelected_other": "{{count}} de elemente selectate"
+  },
+  "settings": {
+    "title": "Setări",
+    "subtitle": "Gestionează preferințele aplicației",
+    "loading": "Se încarcă setările...",
+    "inputMonitoring": {
+      "title": "Permisiunea de monitorizare necesară",
+      "description": "Pentru a utiliza comenzi rapide globale, cum ar fi Option+Space sau Ctrl+Space, această aplicație are nevoie de permisiunea de monitorizare intrare. Aceasta este o cerință de sistem macOS.",
+      "openSettings": "Deschide setările de sistem",
+      "restartHint": "După acordarea permisiunii, reporniți aplicația pentru ca modificările să aibă efect."
+    },
+    "general": {
+      "title": "Setări generale",
+      "description": "Configurați comportamentul de pornire și confidențialitate",
+      "startup": "Pornește la pornirea sistemului",
+      "startupDesc": "Lansare automată a aplicației când vă conectați",
+      "analytics": "Activare Analize",
+      "analyticsDesc": "Ajută la îmbunătățirea Holdem prin schimbul de date anonime de utilizare"
+    },
+    "language": {
+      "title": "Limba",
+      "description": "Alegeți limba preferată",
+      "label": "Afişare limbă",
+      "hint": "Modificările se aplică imediat și sunt salvate pe acest dispozitiv."
+    },
+    "shortcuts": {
+      "title": "Scurtături",
+      "description": "Personalizați modul în care interacționați cu aplicația",
+      "showHotkey": "Comandă rapidă pentru afișarea ferestrei",
+      "pressKeys": "Apăsați tastele...",
+      "listeningHint": "Apăsați combinația de taste dorită... Apăsați Oprire când ați terminat",
+      "idleHint": "Comanda rapidă globală pentru a aduce aplicația în prim-plan",
+      "set": "Setează",
+      "stop": "Oprește",
+      "clear": "Curăță",
+      "noneSet": "Niciuna setată"
+    },
+    "dragDrop": {
+      "title": "Comportament Drag & Drop",
+      "description": "Cum sunt transferate fișierele când trageți afară din Holdem",
+      "dragToCopy": "Copiază fișierele la destinație",
+      "shiftToMove": "Țineți apăsat Shift în timp ce plasați pentru a muta fișiere",
+      "move": "mută",
+      "macHint": "macOS afișează o insignă verde + în copiere. Fără insignă = mișcă operațiunea.",
+      "winHint": "Windows Explorer afișează o suprapunere punctată când se copiază. O săgeată mutată arată pentru operațiunea de mutare."
+    },
+    "mouse": {
+      "title": "Monitorizare Mouse",
+      "description": "Sensibilitatea de detectare a agitării finit",
+      "sensitivity": "Sensibilitate",
+      "timing": "Sincronizare",
+      "requiredShakes": "Scuturări necesare",
+      "shakeThreshold": "Pragul de agitare",
+      "timeLimit": "Limita de timp (ms)",
+      "closeDelay": "Întârziere închidere (ms)",
+      "whitelistTitle": "Aplicații permise",
+      "whitelistDesc": "Detectarea mișcării va fi activă doar atunci când una dintre aceste aplicații este în prim-plan. Acceptă nume de procese (de ex. brave, brave.exe). Insensibil la majuscule și minuscule.",
+      "addPlaceholder": "Adaugă numele procesului...",
+      "add": "Adăugare",
+      "emptyTitle": "Nicio aplicație exclusă",
+      "emptyDesc": "Agitarea cursorului va fi ignorată la nivel global"
+    },
+    "footer": {
+      "save": "Salvează setările",
+      "saving": "Salvare..."
+    }
+  },
+  "consent": {
+    "title": "Ajutați-ne să îmbunătățim Holdem",
+    "description": "Am dori să colectăm date anonime de utilizare pentru a vă îmbunătăți experiența",
+    "collectTitle": "Colectăm:",
+    "collectItems": [
+      "Evenimente lansare aplicații",
+      "Utilizare fișier drag și drop",
+      "Valorile de bază ale performanțelor aplicației"
+    ],
+    "notCollectTitle": "NU colectăm:",
+    "notCollectItems": [
+      "Informaţii personale",
+      "Conținutul fișierului sau numele",
+      "Istoricul de navigare"
+    ],
+    "decline": "Refuzați",
+    "accept": "Acceptă"
+  },
+  "updater": {
+    "title": "Actualizări software",
+    "close": "Inchide",
+    "checking": "Se caută actualizări...",
+    "downloading": "Se descarcă actualizarea...",
+    "downloadedTitle": "Descărcare finalizată!",
+    "downloadedDesc": "Se pregătește instalarea...",
+    "installing": "Se instalează actualizarea și repornirea aplicației...",
+    "availableTitle": "Actualizare disponibilă!",
+    "version": "{{version}} versiune",
+    "noNotes": "Nici o notă de lansare disponibilă",
+    "releaseNotes": "Note de lansare",
+    "autoDownload": "Descărcarea va începe automat...",
+    "latest": "Executați cea mai recentă versiune!",
+    "errorTitle": "Eroare la verificarea actualizărilor",
+    "downloadError": "Descărcarea și instalarea actualizării a eșuat: {{error}}",
+    "waiting": "Se așteaptă să se verifice actualizările..."
+  }
+}

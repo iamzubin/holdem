@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import PopupWindow from "./PopupWindow";
 import "./global.css";
+import "./i18n";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./components/theme-provider";
 import SettingsWindow from "./pages/Settings";

@@ -1,0 +1,143 @@
+{
+  "common": {
+    "cancel": "Avbryt",
+    "save": "Spara",
+    "close": "Stäng",
+    "clear": "Rensa",
+    "add": "Lägg till",
+    "set": "Ange",
+    "stop": "Stoppa",
+    "noneSet": "Inte inställd",
+    "loading": "Laddar...",
+    "copyLink": "Kopiera länk"
+  },
+  "app": {
+    "dropHere": "Släpp här",
+    "files": "{{count}} fil",
+    "files_one": "{{count}} fil",
+    "files_other": "{{count}} filer",
+    "files_plural": "{{count}} filer",
+    "clear": "Rensa",
+    "paste": "Klistra in",
+    "contextMenuTitle": "Kontextmeny",
+    "toast": {
+      "dropReceived": "Släpp mottagen i webbvyn!",
+      "processingVirtual": "Bearbetar virtuella filer från webbläsare...",
+      "checkingTextHtml": "Inga filer släppta, söker efter text/html...",
+      "downloadingImage": "Laddar ner bild...",
+      "failedSaveDataImage": "Det gick inte att spara databilden",
+      "failedSaveDroppedImage": "Kunde inte spara den släppta bilden",
+      "couldNotDownloadImage": "Kunde inte ladda ner bilden: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} markerade objekt",
+    "list": "Lista",
+    "grid": "Rutnät",
+    "removeSelected": "Ta bort markerade filer",
+    "itemsSelected_one": "{{count}} markerat objekt",
+    "itemsSelected_other": "{{count}} markerade objekt"
+  },
+  "settings": {
+    "title": "Inställningar",
+    "subtitle": "Hantera dina programinställningar",
+    "loading": "Laddar inställningar...",
+    "inputMonitoring": {
+      "title": "Behörigheter för inmatning krävs",
+      "description": "För att använda globala genvägar som Option+Space eller Ctrl+Space behöver appen behörigheten Input Monitoring . Detta är ett macOS-systemkrav.",
+      "openSettings": "Öppna systeminställningar",
+      "restartHint": "Efter att ha beviljat tillstånd, starta om appen för att ändringarna ska träda i kraft."
+    },
+    "general": {
+      "title": "Allmänna inställningar",
+      "description": "Konfigurera uppstarts- och sekretessbeteende",
+      "startup": "Starta vid systemstart",
+      "startupDesc": "Starta appen automatiskt när du loggar in",
+      "analytics": "Aktivera Analytics",
+      "analyticsDesc": "Hjälp till att förbättra Holdem genom att dela anonym användningsdata"
+    },
+    "language": {
+      "title": "Språk",
+      "description": "Välj önskat språk",
+      "label": "Visa språk",
+      "hint": "Ändringar gäller omedelbart och sparas på den här enheten."
+    },
+    "shortcuts": {
+      "title": "Genvägar",
+      "description": "Anpassa hur du interagerar med appen",
+      "showHotkey": "Visa snabbtangent för fönster",
+      "pressKeys": "Tryck på tangenter...",
+      "listeningHint": "Tryck på önskad tangentkombination... Tryck på Stoppa när du är klar",
+      "idleHint": "Global genväg för att få appen att gå i förgrunden",
+      "set": "Ange",
+      "stop": "Stoppa",
+      "clear": "Rensa",
+      "noneSet": "Inte inställd"
+    },
+    "dragDrop": {
+      "title": "Dra & släpp beteende",
+      "description": "Hur filer överförs när du drar ut från Holdem",
+      "dragToCopy": "Kopiera filer till destination",
+      "shiftToMove": "Håll ned Shift medan du släpper för att flytta filer",
+      "move": "flytta",
+      "macHint": "macOS visar ett grönt + märke vid kopiering. Inget märke = flytta åtgärden.",
+      "winHint": "Windows Explorer visar en prickad överlappning vid kopiering. En flytta pil visar för flytta drift."
+    },
+    "mouse": {
+      "title": "Mus Monitor",
+      "description": "Fin-tune shake detektionskänslighet",
+      "sensitivity": "Känslighet",
+      "timing": "Tidpunkt",
+      "requiredShakes": "Krävs skakningar",
+      "shakeThreshold": "Skaka tröskel",
+      "timeLimit": "Tidsgräns (ms)",
+      "closeDelay": "Stäng fördröjning (ms)",
+      "whitelistTitle": "Vitlistade appar",
+      "whitelistDesc": "Skakningsdetektering är endast aktiv när en av dessa appar är i fokus. Accepterar processnamn (t.ex. brave, brave.exe). Skiftlägesokänslig.",
+      "addPlaceholder": "Lägg till processnamn...",
+      "add": "Lägg till",
+      "emptyTitle": "Inga appar vitlistade",
+      "emptyDesc": "Markören skakar kommer att ignoreras globalt"
+    },
+    "footer": {
+      "save": "Spara inställningar",
+      "saving": "Sparar..."
+    }
+  },
+  "consent": {
+    "title": "Hjälp oss att förbättra Holdem",
+    "description": "Vi vill samla in anonym användningsdata för att förbättra din upplevelse",
+    "collectTitle": "Vi samlar in:",
+    "collectItems": [
+      "Appen startar händelser",
+      "Dra och släpp filer",
+      "Grundläggande mätvärden för appprestanda"
+    ],
+    "notCollectTitle": "Vi samlar INTE in:",
+    "notCollectItems": [
+      "Personlig information",
+      "Filens innehåll eller namn",
+      "Din webbhistorik"
+    ],
+    "decline": "Avböj",
+    "accept": "Acceptera"
+  },
+  "updater": {
+    "title": "Programuppdateringar",
+    "close": "Stäng",
+    "checking": "Söker efter uppdateringar...",
+    "downloading": "Hämtar uppdatering...",
+    "downloadedTitle": "Nedladdning slutförd!",
+    "downloadedDesc": "Förbereder att installera...",
+    "installing": "Installera uppdateringen och starta om applikationen...",
+    "availableTitle": "Uppdatera tillgänglig!",
+    "version": "Version {{version}}",
+    "noNotes": "Inga versionsfakta tillgängliga",
+    "releaseNotes": "Kommentarer till utgåvan",
+    "autoDownload": "Nedladdningen startar automatiskt...",
+    "latest": "Du kör den senaste versionen!",
+    "errorTitle": "Fel vid sökning efter uppdateringar",
+    "downloadError": "Det gick inte att ladda ner och installera uppdateringen: {{error}}",
+    "waiting": "Väntar på att söka efter uppdateringar..."
+  }
+}
