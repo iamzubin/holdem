@@ -40,14 +40,11 @@ const COMPARISONS = [
 export default function VsIndex() {
   return (
     <main className="mx-auto max-w-3xl py-8">
-      <Link
-        href="/"
-        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-      >
+      <Link href="/" className="text-ink-subtle hover:text-ink text-sm">
         ← Back to Holdem
       </Link>
       <h1 className="mt-6 text-2xl font-bold">Compare Holdem</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+      <p className="text-ink-muted mt-2">
         See how Holdem stacks up against popular alternatives.
       </p>
       <div className="mt-6 grid gap-3">
@@ -55,10 +52,10 @@ export default function VsIndex() {
           <Link
             key={c.href}
             href={c.href}
-            className="rounded-xl border border-zinc-200 p-4 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+            className="border-hairline hover:bg-surface-1 rounded-xl border p-4"
           >
             <div className="font-medium">{c.title}</div>
-            <div className="text-sm text-zinc-500">{c.blurb}</div>
+            <div className="text-ink-subtle text-sm">{c.blurb}</div>
           </Link>
         ))}
       </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Download } from 'lucide-react'
 import { ButtonLink } from '../components/ui/button'
 import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
 
@@ -56,35 +57,32 @@ export default function PricingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Link
-        href="/"
-        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-      >
+      <Link href="/" className="text-ink-subtle hover:text-ink text-sm">
         ← Back to Holdem
       </Link>
-      <p className="mt-6 text-sm font-medium tracking-widest text-zinc-500 uppercase">
+      <p className="text-ink-subtle mt-6 text-sm font-medium tracking-widest uppercase">
         Pricing
       </p>
       <h1 className="mb-3 text-3xl font-bold md:text-4xl">
         Holdem is free. Forever.
       </h1>
-      <p className="text-zinc-600 dark:text-zinc-400">
+      <p className="text-ink-muted">
         Holdem is MIT-licensed open source: free to download, free to use, no
         wait timers, no “Pro” unlock. If you are comparing shelves, here is what
         the alternatives cost — checked September 2026, always confirm on the
         official listing before buying.
       </p>
 
-      <div className="mt-8 overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
+      <div className="border-hairline mt-8 overflow-x-auto rounded-xl border">
         <table className="w-full text-left text-sm">
-          <thead className="bg-zinc-50 text-zinc-500 dark:bg-zinc-900">
+          <thead className="bg-surface-1 text-ink-subtle">
             <tr>
               <th className="px-4 py-3 font-medium">App</th>
               <th className="px-4 py-3 font-medium">Price</th>
               <th className="px-4 py-3 font-medium">Platform</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+          <tbody className="divide-hairline divide-y">
             <tr>
               <td className="px-4 py-3 font-medium">Holdem</td>
               <td className="px-4 py-3">
@@ -161,19 +159,19 @@ export default function PricingPage() {
         </table>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-zinc-200 p-6 text-center dark:border-zinc-800">
+      <div className="border-hairline bg-surface-1 mt-8 rounded-2xl border p-6 text-center">
         <ButtonLink
           variant="primary"
           size="lg"
           href={DOWNLOAD_URL_FALLBACK}
           download
         >
-          ⬇️ Download Holdem — $0 forever
+          <Download className="h-5 w-5" /> Download Holdem — $0 forever
         </ButtonLink>
       </div>
 
       <hr className="my-10" />
-      <p className="text-sm text-zinc-500">
+      <p className="text-ink-subtle text-sm">
         <Link href="/download">Download</Link> •{' '}
         <Link href="/changelog">Changelog</Link> •{' '}
         <Link href="/">Homepage →</Link>

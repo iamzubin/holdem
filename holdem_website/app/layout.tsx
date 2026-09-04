@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
 import { Footer } from './footer'
-import { ThemeProvider } from 'next-themes'
 import { Analytics } from '@vercel/analytics/react'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { buttonClass } from './components/ui/button'
@@ -14,7 +13,7 @@ const GA_MEASUREMENT_ID =
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#ffffff',
+  themeColor: '#010102',
 }
 
 export const metadata: Metadata = {
@@ -73,8 +72,8 @@ export const metadata: Metadata = {
   },
 }
 
-const geist = Geist({
-  variable: '--font-geist',
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin'],
 })
 
@@ -123,7 +122,7 @@ export default async function RootLayout({
     },
   }
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         <script
           type="application/ld+json"
@@ -131,7 +130,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`${geist.variable} ${geistMono.variable} bg-white tracking-tight antialiased dark:bg-zinc-950`}
+        className={`${inter.variable} ${geistMono.variable} bg-canvas text-ink tracking-tight antialiased`}
       >
         <Analytics />
         <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
@@ -174,19 +173,12 @@ export default async function RootLayout({
             <span className="ml-1 text-base font-semibold">{stars}</span>
           </span>
         </a>
-        <ThemeProvider
-          enableSystem={true}
-          attribute="class"
-          storageKey="theme"
-          defaultTheme="system"
-        >
-          <div className="flex min-h-screen w-full flex-col font-[family-name:var(--font-inter-tight)]">
-            <div className="relative mx-auto w-full max-w-[90vw] flex-1 px-4 pt-20">
-              {children}
-              <Footer />
-            </div>
+        <div className="flex min-h-screen w-full flex-col">
+          <div className="relative mx-auto w-full max-w-7xl flex-1 px-4 pt-20">
+            {children}
+            <Footer />
           </div>
-        </ThemeProvider>
+        </div>
       </body>
     </html>
   )

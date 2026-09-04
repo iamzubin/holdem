@@ -4,22 +4,21 @@ import { cn } from '@/lib/utils'
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
+// Linear button spec: 8px corners, 14px/500 labels, no shadows.
+// Primary is lavender; secondary is a charcoal hairline button.
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 disabled:pointer-events-none disabled:opacity-50'
+  'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition duration-150 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-focus/50 disabled:pointer-events-none disabled:opacity-50'
 
 const variants: Record<ButtonVariant, string> = {
-  primary:
-    'bg-zinc-900 text-white shadow hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100',
-  secondary:
-    'border border-zinc-200 bg-white text-zinc-900 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800',
-  ghost:
-    'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
+  primary: 'bg-primary text-white hover:bg-primary-hover',
+  secondary: 'border border-hairline bg-surface-1 text-ink hover:bg-surface-2',
+  ghost: 'text-ink hover:bg-surface-1',
 }
 
 const sizes: Record<ButtonSize, string> = {
-  sm: 'px-4 py-1.5 text-sm',
-  md: 'px-5 py-2',
-  lg: 'px-6 py-3',
+  sm: 'px-3 py-1.5 text-sm',
+  md: 'px-3.5 py-2 text-sm',
+  lg: 'px-4 py-2.5 text-sm',
 }
 
 export function buttonClass({

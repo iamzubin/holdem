@@ -86,20 +86,17 @@ export default function VsDropoverPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Link
-        href="/"
-        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-      >
+      <Link href="/" className="text-ink-subtle hover:text-ink text-sm">
         ← Back to Holdem
       </Link>
-      <article className="prose prose-zinc dark:prose-invert prose-headings:tracking-tight prose-a:text-zinc-900 dark:prose-a:text-zinc-100 mt-6 max-w-none">
-        <p className="text-sm font-medium tracking-widest text-zinc-500 uppercase">
+      <article className="prose prose-invert prose-headings:tracking-tight prose-a:text-primary-hover mt-6 max-w-none">
+        <p className="text-ink-subtle text-sm font-medium tracking-widest uppercase">
           Compare • Holdem vs Dropover
         </p>
         <h1 className="!mb-3 text-3xl font-bold md:text-4xl">
           Holdem vs Dropover: Free Dropover Alternative for Windows
         </h1>
-        <p className="lead text-zinc-600 dark:text-zinc-400">
+        <p className="lead text-ink-muted">
           Dropover pioneered the temporary file-shelf idea on the Mac — but
           there is no Windows version, and there likely never will be: its FAQ
           states it is exclusively available through the Mac App Store. If you
@@ -108,7 +105,7 @@ export default function VsDropoverPage() {
           Windows 10 and 11.
         </p>
 
-        <div className="not-prose rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="not-prose border-hairline bg-surface-1 rounded-xl border p-4 text-sm">
           <strong>Verdict:</strong> On a Mac, Dropover wins — it is the native,
           full-featured original. On Windows, Dropover is not an option, and
           Holdem is the free, open-source shelf that covers the core workflow:
@@ -117,16 +114,16 @@ export default function VsDropoverPage() {
         </div>
 
         <h2>Holdem vs Dropover: side-by-side</h2>
-        <div className="not-prose overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
+        <div className="not-prose border-hairline overflow-x-auto rounded-xl border">
           <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-50 text-zinc-500 dark:bg-zinc-900">
+            <thead className="bg-surface-1 text-ink-subtle">
               <tr>
                 <th className="px-4 py-3 font-medium">Feature</th>
                 <th className="px-4 py-3 font-medium">Holdem</th>
                 <th className="px-4 py-3 font-medium">Dropover</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <tbody className="divide-hairline divide-y">
               <tr>
                 <td className="px-4 py-3 font-medium">Platform</td>
                 <td className="px-4 py-3">Windows 10/11 x64 (Tauri/Rust)</td>
@@ -359,7 +356,7 @@ export default function VsDropoverPage() {
         </ul>
 
         <hr />
-        <p className="text-sm text-zinc-500">
+        <p className="text-ink-subtle text-sm">
           Also: <Link href="/vs/yoink">Holdem vs Yoink</Link> •{' '}
           <Link href="/vs/dropshelf">Holdem vs Dropshelf</Link> •{' '}
           <Link href="/vs/droppoint">Holdem vs DropPoint</Link> •{' '}

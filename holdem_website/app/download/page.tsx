@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Download } from 'lucide-react'
 import { ButtonLink } from '../components/ui/button'
 import { DOWNLOAD_URL_FALLBACK, GITHUB_REPO } from '@/lib/constants'
 
@@ -29,19 +30,16 @@ export const metadata: Metadata = {
 export default function DownloadPage() {
   return (
     <main className="mx-auto max-w-3xl py-8">
-      <Link
-        href="/"
-        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-      >
+      <Link href="/" className="text-ink-subtle hover:text-ink text-sm">
         ← Back to Holdem
       </Link>
-      <p className="mt-6 text-sm font-medium tracking-widest text-zinc-500 uppercase">
+      <p className="text-ink-subtle mt-6 text-sm font-medium tracking-widest uppercase">
         Download
       </p>
       <h1 className="mb-3 text-3xl font-bold md:text-4xl">
         Download Holdem for Windows — free
       </h1>
-      <p className="text-zinc-600 dark:text-zinc-400">
+      <p className="text-ink-muted">
         Holdem is 100% free and open-source (MIT). No account, no trial
         countdown, no wait timers. Grab the installer below or pick a version
         from{' '}
@@ -56,16 +54,16 @@ export default function DownloadPage() {
         .
       </p>
 
-      <div className="mt-8 rounded-2xl border border-zinc-200 p-6 text-center dark:border-zinc-800">
+      <div className="border-hairline bg-surface-1 mt-8 rounded-2xl border p-6 text-center">
         <ButtonLink
           variant="primary"
           size="lg"
           href={DOWNLOAD_URL_FALLBACK}
           download
         >
-          ⬇️ Download Holdem for Windows (x64)
+          <Download className="h-5 w-5" /> Download Holdem for Windows (x64)
         </ButtonLink>
-        <p className="mt-3 text-xs text-zinc-500">
+        <p className="text-ink-subtle mt-3 text-xs">
           Current release: v3.1.0 · Windows 10/11 x64 · .exe installer ·{' '}
           <a
             href={`${GITHUB_REPO}/releases`}
@@ -79,7 +77,7 @@ export default function DownloadPage() {
       </div>
 
       <h2 className="mt-10 mb-4 text-2xl font-bold">System requirements</h2>
-      <ul className="list-disc space-y-2 pl-6 text-zinc-600 dark:text-zinc-400">
+      <ul className="text-ink-muted list-disc space-y-2 pl-6">
         <li>Windows 10 or Windows 11, 64-bit</li>
         <li>
           Runs quietly in the system tray; optional auto-launch on startup
@@ -87,7 +85,7 @@ export default function DownloadPage() {
       </ul>
 
       <h2 className="mt-10 mb-4 text-2xl font-bold">Install in 3 steps</h2>
-      <ol className="list-decimal space-y-2 pl-6 text-zinc-600 dark:text-zinc-400">
+      <ol className="text-ink-muted list-decimal space-y-2 pl-6">
         <li>Download the .exe installer above.</li>
         <li>Run it and follow the setup prompts.</li>
         <li>
@@ -100,7 +98,7 @@ export default function DownloadPage() {
       </ol>
 
       <hr className="my-10" />
-      <p className="text-sm text-zinc-500">
+      <p className="text-ink-subtle text-sm">
         <Link href="/pricing">Pricing — free forever</Link> •{' '}
         <Link href="/changelog">Changelog</Link> •{' '}
         <Link href="/">Homepage →</Link>
