@@ -1,30 +1,12 @@
 name: opencode-review
 
-# Automatic PR reviews from the opencode bot (Muse Spark 1.3, free tier).
-#
-# Identity: reviews post as `opencode[bot]` (custom avatar) when the
-# OPENCODE_APP_ID / OPENCODE_APP_PRIVATE_KEY secrets are configured (see
-# setup notes below). Otherwise they fall back to `github-actions[bot]`.
-# `github-actions[bot]` itself cannot be renamed — a GitHub App is the only
-# way to get a custom bot name + display picture.
-#
-# Required secrets (repo Settings → Secrets and variables → Actions):
-#   OPENCODE_API_KEY            Zen API key from https://opencode.ai/auth
-#                               (the muse-spark-1.3-contributor-free model is $0)
-# Optional secrets (custom `opencode[bot]` identity):
-#   OPENCODE_APP_ID             GitHub App ID of your `opencode` app
-#   OPENCODE_APP_PRIVATE_KEY    Its private key (PEM contents)
-#
-# Creating the `opencode` GitHub App (one-time, ~3 min):
-#   1. https://github.com/settings/apps → New GitHub App
-#      - Name: `opencode`, Homepage URL: https://opencode.ai
-#      - Uncheck "Active" under Webhook (not needed for token minting)
-#      - Permissions: Contents: Read-only, Pull requests: Read and write,
-#        Issues: Read and write
-#      - "Where can this App be installed?": Only on this account
-#   2. Upload the opencode logo as the app's image (its avatar = bot DP).
-#   3. Install the app on iamzubin/holdem.
-#   4. Copy the App ID + generate a private key into the secrets above.
+# Automatic PR reviews via OpenCode.
+# Triggers on every non-draft PR (opened, updated, reopened, or marked
+# ready for review). Skips drafts to avoid reviewing WIPs.
+# To re-run / request a review manually, comment `/oc review` on the PR
+# (handled by opencode.yml).
+
+permissions: {}
 
 on:
   pull_request:
@@ -32,35 +14,94 @@ on:
 
 jobs:
   review:
+    # Bots (dependabot, coderabbit, ...) lack the write permission the action
+    # requires, so skip their pushes instead of failing the run.
+    if: github.event.pull_request.draft == false && !endsWith(github.actor, '[bot]') && github.actor != 'coderabbitai' && github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: opencode-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     permissions:
       contents: read
       pull-requests: write
       issues: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
+          fetch-depth: 0
           persist-credentials: false
+          submodules: recursive
 
-      - id: app-token
-        uses: actions/create-github-app-token@v2
-        continue-on-error: true
-        with:
-          app-id: ${{ secrets.OPENCODE_APP_ID }}
-          private-key: ${{ secrets.OPENCODE_APP_PRIVATE_KEY }}
-
-      - uses: anomalyco/opencode/github@latest
+      - uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           model: opencode/muse-spark-1.3-contributor-free
-          variant: xhigh
           use_github_token: true
           prompt: |
-            Review this pull request:
-            - Check for code quality issues and potential bugs
-            - Flag unsafe Rust (unwarranted `unsafe`, missing cleanup) in app/src-tauri
-            - Flag React/TS issues (stale closures, missing deps, a11y) in app/src
-            - Suggest concrete improvements with file:line references
-            Keep it concise. Do not approve; just leave review findings.
+            Review this pull request. Format your final response EXACTLY like CodeRabbit with collapsible sections:
+
+            ## 🤖 Review — PR #<number>
+            <one-paragraph executive summary of the changes>
+
+            <details>
+            <summary><b>📖 Changes Walkthrough</b></summary>
+
+            | File(s) | Summary |
+            |---|---|
+            | `path/to/file` | Brief functional summary |
+
+            <if non-trivial runtime interaction, state flow, or architecture changes exist, include a ```mermaid sequence diagram here>
+
+            </details>
+
+            <details open>
+            <summary><b>🎯 Review Findings</b></summary>
+
+            Numbered, most severe first. Each finding uses this format:
+            #### <Severity>: <short title> — `path/to/file:line`
+            <why it matters / root cause explanation>
+            Fix:
+            ```<lang>
+            <concrete code fix>
+            ```
+            Severities: High (bug / security / data loss), Medium (correctness / robustness / perf), Low (nit / readability).
+            Only actionable findings with concrete file/line references. No generic advice or compliments.
+            If no issues are found, state: "No major issues identified."
+
+            </details>
+
+            <details>
+            <summary><b>ℹ️ Review Info & Verdict</b></summary>
+
+            - **Focus areas for this repo**: Rust panics/unwraps, Tauri command misuse, TS type safety, error propagation.
+            - **Verdict:** APPROVE | REQUEST CHANGES | COMMENT
+
+            </details>
+
+            Posting CodeRabbit-style Inline Comments:
+            In addition to your final markdown review above, submit actionable findings directly onto the PR diff using the gh CLI:
+            1. Context:
+               - Repo: $GITHUB_REPOSITORY
+               - PR Number: get from $GITHUB_EVENT_PATH via `jq -r .pull_request.number "$GITHUB_EVENT_PATH"`
+               - Head SHA: `gh pr view <number> --json headRefOid --jq .headRefOid`
+            2. Check the diff hunks: run `gh pr diff <number>` to verify that any line you comment on is strictly part of the PR diff (lines added or modified). GitHub API will reject comments on lines outside the diff with HTTP 422.
+            3. If you have actionable findings on lines within the diff, post them in a single review via stdin (do NOT write files to /tmp or outside the repo workspace):
+               cat << 'EOF' | gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews" --method POST --input -
+               {
+                 "commit_id": "<HEAD_SHA>",
+                 "event": "COMMENT",
+                 "body": "Automated review inline suggestions.",
+                 "comments": [
+                   {
+                     "path": "path/to/file",
+                     "line": <line_number_in_diff>,
+                     "side": "RIGHT",
+                     "body": "_<Severity_Badge>_\n\n**<Short Title>**\n\n<Explanation>\n\n```suggestion\n<replacement_code>\n```"
+                   }
+                 ]
+               }
+               EOF
+            4. If the gh api command succeeds or fails (e.g. 422 due to line number or 403 on forks), do not abort. Always output the full CodeRabbit-formatted markdown review as your final message so it renders completely in the main PR comment.
