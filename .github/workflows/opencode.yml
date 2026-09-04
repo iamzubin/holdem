@@ -67,3 +67,7 @@ jobs:
         with:
           model: opencode/muse-spark-1.3-contributor-free
           use_github_token: true
+          # The action builds `opencode.ai/s/<id>` session links that 404
+          # (upstream anomalyco/opencode#26417: canonical format moved to
+          # opncd.ai/share/<id>). Disable until upstream fixes the footer.
+          share: false
