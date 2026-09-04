@@ -215,6 +215,24 @@ cargo test <test_name>
 3. Use `cn()` utility for className merging
 4. Follow existing component patterns (e.g., Button, Dialog)
 
+### GitHub Review Threads (`/oc` runs)
+
+`/oc` invocations already receive PR/issue thread history as prompt context.
+When asked to fix review feedback and/or resolve threads:
+
+1. Auth: `export GH_TOKEN="$GITHUB_TOKEN"` if `gh` reports auth errors.
+2. List unresolved threads (thread node `id` starts with `PRRT_`):
+```bash
+gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100){nodes{id,isResolved,isOutdated,path,line,comments(first:20){nodes{body,author{login},createdAt}}}}}}}' -f o="$OWNER" -f r="$REPO" -F n="$PR_NUMBER"
+```
+3. Only resolve bot threads (`github-actions[bot]` / `opencode-agent[bot]`) where `isResolved==false`, `isOutdated==false`, and the fix is verified in the working tree. Never resolve human threads, questions, or deferred items.
+4. Reply first, then resolve:
+```bash
+gh api graphql -f query='mutation($id:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$id,body:$body}){comment{id}}}' -f id="PRRT_..." -f body="Fixed in <sha>: <what changed>"
+gh api graphql -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}' -f id="PRRT_..."
+```
+5. General PR comments are unresolvable — reply via normal comment instead.
+
 ---
 
 ## Notes
