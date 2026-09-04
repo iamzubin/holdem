@@ -52,7 +52,7 @@ export default function ChangelogPage() {
         <div className="border-hairline bg-surface-1 rounded-xl border p-5">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="text-xl font-bold">v3.1.0</h2>
-            <span className="bg-success/15 shrink-0 rounded-full px-3 py-1 text-xs font-medium text-green-300">
+            <span className="bg-success/15 text-success shrink-0 rounded-full px-3 py-1 text-xs font-medium">
               Latest
             </span>
           </div>

@@ -7,7 +7,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg'
 // Linear button spec: 8px corners, 14px/500 labels, no shadows.
 // Primary is lavender; secondary is a charcoal hairline button.
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-md font-medium transition duration-150 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-focus/50 disabled:pointer-events-none disabled:opacity-50'
+  'inline-flex items-center justify-center gap-2 rounded-lg font-medium transition duration-150 ease-out active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-focus/50 disabled:pointer-events-none disabled:opacity-50'
 
 const variants: Record<ButtonVariant, string> = {
   primary: 'bg-primary text-white hover:bg-primary-hover',

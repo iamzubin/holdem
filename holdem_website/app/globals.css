@@ -13,29 +13,18 @@
   --color-surface-1: #0d0e13;
   --color-surface-2: #14161d;
   --color-surface-3: #1b1e27;
-  --color-surface-4: #23262f;
 
   --color-hairline: #23252a;
-  --color-hairline-strong: #343842;
-  --color-hairline-tertiary: #2a2d36;
-
-  --color-inverse-canvas: #ffffff;
-  --color-inverse-surface-1: #f7f8f8;
-  --color-inverse-surface-2: #e9ebf1;
-  --color-inverse-ink: #010102;
 
   --color-ink: #f7f8f8;
   --color-ink-muted: #d0d6e0;
   --color-ink-subtle: #8a8f98;
-  --color-ink-tertiary: #62666d;
 
   --color-primary: #5e6ad2;
   --color-primary-hover: #828fff;
   --color-primary-focus: #5e69d1;
-  --color-brand-secure: #7a7fad;
 
   --color-success: #27a644;
-  --color-overlay: #000000;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }

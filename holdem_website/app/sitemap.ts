@@ -17,7 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return routes.map((route) => ({
     url: `${WEBSITE_URL}${route || '/'}`,
-    lastModified: new Date(),
     changeFrequency: route === '' ? 'weekly' : 'monthly',
     priority: route === '' ? 1 : route.startsWith('/vs/') ? 0.8 : 0.7,
   }))

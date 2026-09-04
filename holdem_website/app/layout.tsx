@@ -122,7 +122,7 @@ export default async function RootLayout({
     },
   }
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <script
           type="application/ld+json"
@@ -175,7 +175,6 @@ export default async function RootLayout({
         </a>
         <div className="flex min-h-screen w-full flex-col">
           <div className="relative mx-auto w-full max-w-7xl flex-1 px-4 pt-20">
-            {/* <Header /> */}
             {children}
             <Footer />
           </div>

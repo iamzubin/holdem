@@ -1,10 +1,11 @@
 'use client'
-import { motion, MotionConfig } from 'motion/react'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion, MotionConfig } from 'motion/react'
 import Link from 'next/link'
+import { Coffee, Download, Share2, X } from 'lucide-react'
 import { HoldemDemo } from './components/holdem-demo'
 import { Button, ButtonLink } from './components/ui/button'
-import { useEffect, useState } from 'react'
-import { Coffee, Download, Share2, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
 
 // Below-fold sections animate on scroll into view — hero stays plain HTML
@@ -95,10 +96,16 @@ function DemoSwitcher() {
 
   return (
     <div className="mx-auto mt-12 w-full max-w-full">
-      <div className={showVideo ? 'hidden' : 'block'}>
+      <div className={cn(!showVideo && 'block', showVideo && 'hidden')}>
         <HoldemDemo />
       </div>
-      <figure className={`mx-auto max-w-3xl ${showVideo ? 'block' : 'hidden'}`}>
+      <figure
+        className={cn(
+          'mx-auto max-w-3xl',
+          showVideo && 'block',
+          !showVideo && 'hidden',
+        )}
+      >
         <video
           controls
           preload="none"
@@ -232,9 +239,13 @@ function ShareModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             variant="primary"
             size="sm"
             onClick={async () => {
-              await navigator.clipboard.writeText(url)
-              setCopied(true)
-              setTimeout(() => setCopied(false), 1500)
+              try {
+                await navigator.clipboard.writeText(url)
+                setCopied(true)
+                setTimeout(() => setCopied(false), 1500)
+              } catch (error) {
+                console.error('Failed to copy Holdem share URL:', error)
+              }
             }}
           >
             {copied ? 'Copied!' : 'Copy'}
@@ -354,7 +365,14 @@ export default function Home() {
               <Share2 className="h-4 w-4" /> Share with friends
             </Button>
           </div>
-          <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} />
+          <AnimatePresence>
+            {shareOpen && (
+              <ShareModal
+                open={shareOpen}
+                onClose={() => setShareOpen(false)}
+              />
+            )}
+          </AnimatePresence>
 
           <DemoSwitcher />
         </section>

@@ -6,7 +6,7 @@ import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
 export const metadata: Metadata = {
   title: 'Holdem vs DropPoint: The Best Free DropPoint Alternative for Windows',
   description:
-    'Holdem vs DropPoint — Tauri/Rust vs Electron, mouse-shake vs Shift+CapsLock, maintained vs unreleased since 2022. Full free, open-source shelf comparison.',
+    'Holdem vs DropPoint — Tauri/Rust vs Electron, mouse-shake vs Shift+CapsLock, actively developed vs no release since 2022. Full free, open-source shelf comparison.',
   keywords: [
     'Holdem vs DropPoint',
     'DropPoint alternative',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     title:
       'Holdem vs DropPoint: The Best Free DropPoint Alternative for Windows',
     description:
-      'Tauri/Rust vs Electron, shake vs Shift+CapsLock, maintained vs stalled. Full Holdem vs DropPoint comparison.',
+      'Tauri/Rust vs Electron, shake vs Shift+CapsLock, actively developed vs sporadically updated. Full Holdem vs DropPoint comparison.',
     url: 'https://holdem.iamzub.in/vs/droppoint',
     images: [
       {
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: 'Is DropPoint still maintained?',
-    a: 'Not actively, as far as its public repo shows: the latest release is v1.2.1 (September 2022) with no newer release since, and the last code push was in 2023. It still works, but bugs and OS changes since then are unaddressed. Holdem is under active development (v3.1.0).',
+    a: 'Sporadically: no new release since v1.2.1 (September 2022), though the default branch saw an August 2026 modernization (Electron 21→43, Node 22, CI). Day to day it still works, but the release cadence is slow. Holdem is under active development (v3.1.0).',
   },
   {
     q: 'How do Holdem and DropPoint differ technically?',
@@ -100,18 +100,19 @@ export default function VsDroppointPage() {
         <p className="lead text-ink-muted">
           DropPoint deserves respect: a free, open-source shelf that brought the
           Dropover idea to Windows, macOS, and Linux years ago, earning ~1,000
-          GitHub stars. But its last release was v1.2.1 in September 2022, it
-          runs on heavyweight Electron, and summoning it means an awkward
-          Shift+CapsLock chord. Holdem is the modern, actively maintained answer
-          for Windows.
+          GitHub stars. But its last release was v1.2.1 in September 2022 (an
+          August 2026 commit modernized Electron 21→43 without cutting a
+          release), it runs on heavyweight Electron, and summoning it means an
+          awkward Shift+CapsLock chord. Holdem is the modern, actively
+          maintained answer for Windows.
         </p>
 
         <div className="not-prose border-hairline bg-surface-1 rounded-xl border p-4 text-sm">
           <strong>Verdict:</strong> Need one free shelf across Windows, Mac, and
           Linux right now? DropPoint still does the job. On Windows alone,
           Holdem wins on weight (Tauri/Rust vs Electron), trigger (shake vs
-          Shift+CapsLock), maintenance (v3.1.0 vs a 2022 release), and extras
-          like browser-image drops.
+          Shift+CapsLock), maintenance (v3.1.0 vs no release since 2022), and
+          extras like browser-image drops.
         </div>
 
         <h2>Holdem vs DropPoint: side-by-side</h2>
@@ -185,7 +186,8 @@ export default function VsDroppointPage() {
                 <td className="px-4 py-3 font-medium">Maintenance</td>
                 <td className="px-4 py-3">Active — current release v3.1.0</td>
                 <td className="px-4 py-3">
-                  Stalled — last release v1.2.1 (Sep 2022), last push 2023
+                  Slow — no release since v1.2.1 (Sep 2022); Aug 2026 branch
+                  update
                 </td>
               </tr>
               <tr>
@@ -224,17 +226,18 @@ export default function VsDroppointPage() {
           per-desktop setup, nothing between intention and shelf.
         </p>
 
-        <h2>Maintenance: 2022 vs today</h2>
+        <h2>Maintenance: releases vs branch activity</h2>
         <p>
           Software rots when operating systems move on. DropPoint&apos;s public
-          record — v1.2.1 released September 2022, no release since, last commit
-          activity in 2023, 28 open issues — means Windows 11 changes, new
-          browsers, and HiDPI quirks land in an app nobody is patching. That is
-          not an attack: open-source maintainers move on, and the GPL code
-          remains available for anyone to fork. But if you are choosing a shelf
-          to rely on daily, an actively developed app (Holdem v3.1.0, Tauri
-          auto-updates via <code>update.json</code>) is the safer bet — which is
-          exactly why Holdem exists rather than as a DropPoint fork.
+          record — v1.2.1 released September 2022, no release since, one August
+          2026 modernization commit (Electron 21→43, Node 22, CI), 26 open
+          issues — means Windows 11 changes, new browsers, and HiDPI quirks land
+          in an app patched sporadically. That is not an attack: open-source
+          maintainers move on, and the GPL code remains available for anyone to
+          fork. But if you are choosing a shelf to rely on daily, an actively
+          developed app (Holdem v3.1.0, Tauri auto-updates via{' '}
+          <code>update.json</code>) is the safer bet — which is exactly why
+          Holdem exists rather than as a DropPoint fork.
         </p>
 
         <h2>Where DropPoint honestly wins</h2>
