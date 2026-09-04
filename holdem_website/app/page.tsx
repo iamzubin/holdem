@@ -103,7 +103,7 @@ function DemoSwitcher() {
           controls
           preload="none"
           poster="/og.png"
-          className="border-hairline bg-surface-1 w-full rounded-2xl border p-6 shadow-lg"
+          className="border-hairline bg-surface-1 w-full rounded-2xl border shadow-lg"
           aria-label="Holdem demo video: shake mouse while dragging to summon the floating file shelf on Windows"
         >
           <source src="/assets/herovideo.mp4" type="video/mp4" />
