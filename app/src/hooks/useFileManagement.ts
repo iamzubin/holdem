@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { FilePreview } from '../types.ts';
-import { emit, listen } from '@tauri-apps/api/event';
+import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 
 export const useFileManagement = () => {
@@ -31,30 +31,11 @@ export const useFileManagement = () => {
 
     // Initialize listeners
     const setupListeners = async () => {
-      const unlistenAdded = await listen<FilePreview>('file_added', (event) => {
-        if (event.payload) {
-          setFiles(prevFiles => [...prevFiles, event.payload]);
-        }
-      });
-
-      const unlistenRemoved = await listen<number>('file_removed', (event) => {
-        setFiles(prevFiles => prevFiles.filter(file => file.id !== event.payload));
-      });
-
-      const unlistenRenamed = await listen<{ id: number, newName: string }>('file_renamed', (event) => {
-        setFiles(prevFiles => prevFiles.map(file =>
-          file.id === event.payload.id ? { ...file, name: event.payload.newName } : file
-        ));
-      });
-
       const unlistenUpdated = await listen('files_updated', () => {
         fetchFiles();
       });
 
       return () => {
-        unlistenAdded();
-        unlistenRemoved();
-        unlistenRenamed();
         unlistenUpdated();
       };
     };

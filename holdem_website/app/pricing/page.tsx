@@ -56,11 +56,18 @@ export default function PricingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100">
+      <Link
+        href="/"
+        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+      >
         ← Back to Holdem
       </Link>
-      <p className="mt-6 text-sm font-medium uppercase tracking-widest text-zinc-500">Pricing</p>
-      <h1 className="mb-3 text-3xl font-bold md:text-4xl">Holdem is free. Forever.</h1>
+      <p className="mt-6 text-sm font-medium tracking-widest text-zinc-500 uppercase">
+        Pricing
+      </p>
+      <h1 className="mb-3 text-3xl font-bold md:text-4xl">
+        Holdem is free. Forever.
+      </h1>
       <p className="text-zinc-600 dark:text-zinc-400">
         Holdem is MIT-licensed open source: free to download, free to use, no
         wait timers, no “Pro” unlock. If you are comparing shelves, here is what
@@ -80,13 +87,16 @@ export default function PricingPage() {
           <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
             <tr>
               <td className="px-4 py-3 font-medium">Holdem</td>
-              <td className="px-4 py-3">Free, open-source (MIT) — no paywall</td>
+              <td className="px-4 py-3">
+                Free, open-source (MIT) — no paywall
+              </td>
               <td className="px-4 py-3">Windows 10/11</td>
             </tr>
             <tr>
               <td className="px-4 py-3 font-medium">Dropover</td>
               <td className="px-4 py-3">
-                Free download, 14-day full trial, then 3-second wait unless you buy{' '}
+                Free download, 14-day full trial, then 3-second wait unless you
+                buy{' '}
                 <a
                   href="https://apps.apple.com/us/app/dropover-easier-drag-drop/id1355679052"
                   target="_blank"
@@ -109,7 +119,8 @@ export default function PricingPage() {
                 >
                   $8.99 one-time
                 </a>{' '}
-                (Mac App Store / direct / Setapp), free trial on the developer site
+                (Mac App Store / direct / Setapp), free trial on the developer
+                site
               </td>
               <td className="px-4 py-3">macOS only</td>
             </tr>
@@ -125,8 +136,8 @@ export default function PricingPage() {
                 >
                   Dropshelf Pro
                 </a>{' '}
-                is a one-time in-app purchase — check the Microsoft Store listing for
-                the current price
+                is a one-time in-app purchase — check the Microsoft Store
+                listing for the current price
               </td>
               <td className="px-4 py-3">Windows</td>
             </tr>
@@ -151,14 +162,20 @@ export default function PricingPage() {
       </div>
 
       <div className="mt-8 rounded-2xl border border-zinc-200 p-6 text-center dark:border-zinc-800">
-        <ButtonLink variant="primary" size="lg" href={DOWNLOAD_URL_FALLBACK} download>
+        <ButtonLink
+          variant="primary"
+          size="lg"
+          href={DOWNLOAD_URL_FALLBACK}
+          download
+        >
           ⬇️ Download Holdem — $0 forever
         </ButtonLink>
       </div>
 
       <hr className="my-10" />
       <p className="text-sm text-zinc-500">
-        <Link href="/download">Download</Link> • <Link href="/changelog">Changelog</Link> •{' '}
+        <Link href="/download">Download</Link> •{' '}
+        <Link href="/changelog">Changelog</Link> •{' '}
         <Link href="/">Homepage →</Link>
       </p>
     </main>

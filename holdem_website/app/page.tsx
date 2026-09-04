@@ -59,7 +59,10 @@ const Feature = ({
 }) => (
   <div className="mb-4">
     <p className="flex items-center gap-2 text-lg font-medium">
-      <span className="text-green-500" aria-hidden="true">✅</span> {title}
+      <span className="text-green-500" aria-hidden="true">
+        ✅
+      </span>{' '}
+      {title}
     </p>
     <p className="pl-7 text-zinc-600 dark:text-zinc-400">{description}</p>
   </div>
@@ -74,7 +77,10 @@ const ComingSoonFeature = ({
 }) => (
   <div className="mb-4">
     <p className="flex items-center gap-2 text-lg font-medium">
-      <span className="text-yellow-500" aria-hidden="true">🚧</span> {title}
+      <span className="text-yellow-500" aria-hidden="true">
+        🚧
+      </span>{' '}
+      {title}
     </p>
     <p className="pl-7 text-zinc-600 dark:text-zinc-400">{description}</p>
   </div>
@@ -125,7 +131,8 @@ function DemoSwitcher() {
   )
 }
 
-function ShareModal({ open, onClose }: { open: boolean; onClose: () => void }) {  const [copied, setCopied] = useState(false)
+function ShareModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [copied, setCopied] = useState(false)
   const url = 'https://holdem.iamzub.in/'
   const text = 'Holdem — Free drag-and-drop file shelf for Windows'
   const encodedUrl = encodeURIComponent(url)
@@ -179,7 +186,10 @@ function ShareModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <motion.div
         initial={{ opacity: 0, y: 10, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -245,7 +255,9 @@ function ShareModal({ open, onClose }: { open: boolean; onClose: () => void }) {
         >
           <span>🍟</span> Buy me some fries
         </a>
-        <p className="mt-2 text-center text-xs text-zinc-500">Support the solo dev behind Holdem</p>
+        <p className="mt-2 text-center text-xs text-zinc-500">
+          Support the solo dev behind Holdem
+        </p>
       </motion.div>
     </div>
   )
@@ -305,9 +317,9 @@ export default function Home() {
           Holdem is a lightweight, free and open-source shelf for Windows that
           makes moving files effortless. Shake your mouse while dragging to
           summon a floating holding area, collect files, images, and folders
-          from anywhere — then drop them exactly where you need them. Built
-          with Tauri for speed and privacy, it runs quietly in your system
-          tray and keeps your desktop clutter-free.
+          from anywhere — then drop them exactly where you need them. Built with
+          Tauri for speed and privacy, it runs quietly in your system tray and
+          keeps your desktop clutter-free.
         </p>
 
         <div className="flex flex-col items-center justify-center gap-3">
@@ -327,7 +339,7 @@ export default function Home() {
             )}
           </ButtonLink>
           <p className="text-xs text-zinc-500">
-            Windows 10/11 x64 · v3.0.0 · Free &amp; open-source ·{' '}
+            Windows 10/11 x64 · v3.1.0 · Free &amp; open-source ·{' '}
             <a
               href="https://github.com/iamzubin/holdem/releases"
               target="_blank"
@@ -364,8 +376,12 @@ export default function Home() {
         <p className="mb-8 text-zinc-600 dark:text-zinc-400">
           Holdem runs quietly in your system tray. When you need to move files,
           simply shake your mouse while dragging — a floating shelf appears,
-          ready to hold your files temporarily. Drag them out when you&apos;re ready.
-          See the <Link href="/docs" className="underline">docs</Link> for hotkeys and tips.
+          ready to hold your files temporarily. Drag them out when you&apos;re
+          ready. See the{' '}
+          <Link href="/docs" className="underline">
+            docs
+          </Link>{' '}
+          for hotkeys and tips.
         </p>
 
         <h3 className="mb-4 text-xl font-medium">
@@ -460,21 +476,35 @@ export default function Home() {
               className="rounded-xl border border-zinc-200 p-4 dark:border-zinc-800"
             >
               <h3 className="font-medium">{f.q}</h3>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{f.a}</p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                {f.a}
+              </p>
             </div>
           ))}
         </div>
         <div className="mt-6 flex flex-wrap gap-3 text-sm">
-          <Link href="/pricing" className="underline text-zinc-600 dark:text-zinc-400 hover:text-zinc-900">
+          <Link
+            href="/pricing"
+            className="text-zinc-600 underline hover:text-zinc-900 dark:text-zinc-400"
+          >
             Pricing — free forever
           </Link>
-          <Link href="/changelog" className="underline text-zinc-600 dark:text-zinc-400 hover:text-zinc-900">
+          <Link
+            href="/changelog"
+            className="text-zinc-600 underline hover:text-zinc-900 dark:text-zinc-400"
+          >
             Changelog
           </Link>
-          <Link href="/docs" className="underline text-zinc-600 dark:text-zinc-400 hover:text-zinc-900">
+          <Link
+            href="/docs"
+            className="text-zinc-600 underline hover:text-zinc-900 dark:text-zinc-400"
+          >
             Docs
           </Link>
-          <Link href="/vs/dropover" className="underline text-zinc-600 dark:text-zinc-400 hover:text-zinc-900">
+          <Link
+            href="/vs/dropover"
+            className="text-zinc-600 underline hover:text-zinc-900 dark:text-zinc-400"
+          >
             Holdem vs Dropover
           </Link>
         </div>

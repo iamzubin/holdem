@@ -1,20 +1,23 @@
 use crate::analytics;
 use crate::file::{get_dir_size, FileMetadata};
 use crate::thumbnail::get_thumbnail_base64;
-use crate::FileList;
+use crate::{DragState, FileList};
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::Ordering;
 use tauri::{AppHandle, Emitter, State};
 
 #[tauri::command]
 pub fn add_files(
     app_handle: AppHandle,
     file_list: State<'_, FileList>,
+    drag_state: State<'_, Arc<DragState>>,
     files: Vec<String>,
 ) -> Result<(), String> {
     if !files.is_empty() {
-        // Immediately notify monitor that files were dropped to prevent auto-close!
-        // Do this FIRST before doing any heavy disk I/O like get_dir_size which might take >300ms
-        let _ = app_handle.emit("file_added", ());
+        // Mark the drop before metadata work so shake-to-show does not close the window.
+        drag_state.successful_drop.store(true, Ordering::Relaxed);
+        drag_state.drag_started.store(false, Ordering::Relaxed);
     }
 
     let mut list = file_list
@@ -64,8 +67,27 @@ pub fn add_files(
     Ok(())
 }
 
+fn sanitize_filename(name: &str) -> String {
+    let sanitized: String = name
+        .chars()
+        .map(|c| match c {
+            '/' | '\\' | ':' | '*' | '?' | '"' | '<' | '>' | '|' => '_',
+            other => other,
+        })
+        .collect();
+    if sanitized.trim().is_empty() {
+        "unnamed".to_string()
+    } else {
+        sanitized
+    }
+}
+
 #[tauri::command]
-pub fn save_pasted_text(text: String, extension: String) -> Result<String, String> {
+pub fn save_pasted_text(
+    text: String,
+    extension: String,
+    original_name: Option<String>,
+) -> Result<String, String> {
     use std::io::Write;
     let timestamp = chrono::Local::now();
     let folder_name = timestamp.format("%Y%m%d").to_string();
@@ -74,7 +96,11 @@ pub fn save_pasted_text(text: String, extension: String) -> Result<String, Strin
         return Err(format!("Failed to create drop folder: {}", e));
     }
 
-    let file_name = format!("pasted_{}.{}", timestamp.format("%H%M%S"), extension);
+    let file_name = if let Some(name) = original_name.as_deref().filter(|n| !n.trim().is_empty()) {
+        sanitize_filename(name)
+    } else {
+        format!("note_{}.{}", timestamp.format("%H%M%S"), extension)
+    };
     let new_path = drop_folder.join(&file_name);
 
     let mut file = std::fs::File::create(&new_path).map_err(|e| e.to_string())?;
@@ -84,7 +110,11 @@ pub fn save_pasted_text(text: String, extension: String) -> Result<String, Strin
 }
 
 #[tauri::command]
-pub fn save_pasted_data_base64(data_base64: String, extension: String) -> Result<String, String> {
+pub fn save_pasted_data_base64(
+    data_base64: String,
+    extension: String,
+    original_name: Option<String>,
+) -> Result<String, String> {
     use base64::{engine::general_purpose, Engine as _};
     use std::io::Write;
 
@@ -99,7 +129,11 @@ pub fn save_pasted_data_base64(data_base64: String, extension: String) -> Result
         return Err(format!("Failed to create drop folder: {}", e));
     }
 
-    let file_name = format!("pasted_{}.{}", timestamp.format("%H%M%S"), extension);
+    let file_name = if let Some(name) = original_name.as_deref().filter(|n| !n.trim().is_empty()) {
+        sanitize_filename(name)
+    } else {
+        format!("drop_{}.{}", timestamp.format("%H%M%S"), extension)
+    };
     let new_path = drop_folder.join(&file_name);
 
     let mut file = std::fs::File::create(&new_path).map_err(|e| e.to_string())?;
@@ -118,14 +152,36 @@ pub async fn download_image_to_shelf(url: String) -> Result<String, String> {
         return Err(format!("Failed to create drop folder: {}", e));
     }
 
-    let url_path = std::path::Path::new(&url);
-    let ext = url_path
-        .extension()
-        .and_then(|e| e.to_str())
-        .unwrap_or("png");
+    let (file_name, ext) = if let Ok(parsed_url) = url::Url::parse(&url) {
+        let path_segment = parsed_url
+            .path_segments()
+            .and_then(|mut segs| segs.next_back())
+            .unwrap_or("");
+        
+        let path_obj = std::path::Path::new(path_segment);
+        let extracted_ext = path_obj
+            .extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("");
 
-    let file_name = format!("downloaded_{}.{}", timestamp.format("%H%M%S"), ext);
-    let new_path = drop_folder.join(&file_name);
+        if !path_segment.is_empty() && !extracted_ext.is_empty() {
+            (sanitize_filename(path_segment), extracted_ext.to_string())
+        } else {
+            let ext = if !extracted_ext.is_empty() { extracted_ext } else { "png" };
+            (format!("download_{}.{}", timestamp.format("%H%M%S"), ext), ext.to_string())
+        }
+    } else {
+        ("download_image.png".to_string(), "png".to_string())
+    };
+
+    let mut new_path = drop_folder.join(&file_name);
+    if new_path.exists() {
+        let stem = std::path::Path::new(&file_name)
+            .file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("download");
+        new_path = drop_folder.join(format!("{}_{}.{}", stem, timestamp.format("%H%M%S"), ext));
+    }
 
     let response = reqwest::get(&url).await.map_err(|e| e.to_string())?;
     let bytes = response.bytes().await.map_err(|e| e.to_string())?;
@@ -162,8 +218,8 @@ pub fn remove_files(
     // Send analytics events for removed files (fire and forget)
     let app_handle_clone = app_handle.clone();
     tauri::async_runtime::spawn(async move {
-        for file_name in removed_files {
-            let _ = analytics::send_file_removed_event(&app_handle_clone, &file_name).await;
+        for _ in removed_files {
+            let _ = analytics::send_file_removed_event(&app_handle_clone).await;
         }
     });
 
@@ -189,20 +245,12 @@ pub fn rename_file(
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
     if let Some(file) = list.iter_mut().find(|f| f.id == file_id) {
-        let old_name = file.name.clone();
         file.name = new_name.clone();
 
         // Send analytics event for file rename (fire and forget)
         let app_handle_clone = app_handle.clone();
-        let old_name_clone = old_name.clone();
-        let new_name_clone = new_name.clone();
         tauri::async_runtime::spawn(async move {
-            let _ = analytics::send_file_renamed_event(
-                &app_handle_clone,
-                &old_name_clone,
-                &new_name_clone,
-            )
-            .await;
+            let _ = analytics::send_file_renamed_event(&app_handle_clone).await;
         });
 
         app_handle

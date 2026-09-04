@@ -5,7 +5,7 @@ import { GITHUB_REPO } from '@/lib/constants'
 export const metadata: Metadata = {
   title: 'Changelog — Holdem Release Notes',
   description:
-    'Holdem changelog and release notes. Current release v3.0.0. Full version history on GitHub Releases.',
+    'Holdem changelog and release notes. Current release v3.1.0. Full version history on GitHub Releases.',
   alternates: {
     canonical: 'https://holdem.iamzub.in/changelog',
   },
@@ -28,10 +28,15 @@ export const metadata: Metadata = {
 export default function ChangelogPage() {
   return (
     <main className="mx-auto max-w-3xl py-8">
-      <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100">
+      <Link
+        href="/"
+        className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+      >
         ← Back to Holdem
       </Link>
-      <p className="mt-6 text-sm font-medium uppercase tracking-widest text-zinc-500">Changelog</p>
+      <p className="mt-6 text-sm font-medium tracking-widest text-zinc-500 uppercase">
+        Changelog
+      </p>
       <h1 className="mb-3 text-3xl font-bold md:text-4xl">Release notes</h1>
       <p className="text-zinc-600 dark:text-zinc-400">
         The source of truth for every Holdem release is{' '}
@@ -49,15 +54,41 @@ export default function ChangelogPage() {
       <div className="mt-8 space-y-4">
         <div className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-xl font-bold">v3.0.0</h2>
+            <h2 className="text-xl font-bold">v3.1.0</h2>
             <span className="shrink-0 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-100">
               Latest
             </span>
           </div>
-          <p className="mt-1 text-sm text-zinc-500">See GitHub Releases for the full notes.</p>
+          <p className="mt-1 text-sm text-zinc-500">
+            See GitHub Releases for the full notes.
+          </p>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Latest stable Windows release with the floating file shelf,
-            mouse-shake summon, global hotkey, browser-image drops, system-tray
+            Added comprehensive internationalization (i18n) support across 25
+            languages with automatic browser locale detection and RTL layout.
+            Upgraded native Windows OLE drag-and-drop target to support URL
+            drops, text snippets, and browser-dragged images directly onto the
+            shelf, with improved unlistener lifecycle handling.
+          </p>
+          <a
+            href={`${GITHUB_REPO}/releases`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-block text-sm underline"
+          >
+            View v3.1.0 on GitHub →
+          </a>
+        </div>
+
+        <div className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-xl font-bold">v3.0.0</h2>
+          </div>
+          <p className="mt-1 text-sm text-zinc-500">
+            See GitHub Releases for the full notes.
+          </p>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+            Major Windows release featuring the floating file shelf, mouse-shake
+            summon gesture, global hotkey, browser-image drops, system-tray
             integration, and auto-launch on startup.
           </p>
           <a
@@ -71,16 +102,16 @@ export default function ChangelogPage() {
         </div>
       </div>
 
-      <h2 className="mb-4 mt-10 text-2xl font-bold">On the roadmap</h2>
+      <h2 className="mt-10 mb-4 text-2xl font-bold">On the roadmap</h2>
       <ul className="list-disc space-y-2 pl-6 text-zinc-600 dark:text-zinc-400">
-        <li>URL and text-snippet drops (files, folders, and web images work today)</li>
         <li>Multiple shelves for different tasks</li>
+        <li>Custom theme and opacity controls</li>
       </ul>
 
       <hr className="my-10" />
       <p className="text-sm text-zinc-500">
-        <Link href="/download">Download</Link> • <Link href="/pricing">Pricing</Link> •{' '}
-        <Link href="/">Homepage →</Link>
+        <Link href="/download">Download</Link> •{' '}
+        <Link href="/pricing">Pricing</Link> • <Link href="/">Homepage →</Link>
       </p>
     </main>
   )

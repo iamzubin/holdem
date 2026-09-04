@@ -72,39 +72,67 @@ export function Footer() {
   return (
     <footer className="mt-24 border-t border-zinc-100 px-0 py-4 dark:border-zinc-800">
       <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-3">
-        <a href="https://github.com/iamzubin/holdem" target="_blank" className="inline-flex w-[170px] shrink-0 justify-start">
+        <a
+          href="https://github.com/iamzubin/holdem"
+          target="_blank"
+          className="inline-flex w-[170px] shrink-0 justify-start"
+        >
           <TextLoop className="text-xs text-zinc-500">
             <span>© {year} Holdem.</span>
             <span>Built with Tauri and ❤️.</span>
           </TextLoop>
         </a>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs sm:justify-center">
-          <Link href="/download" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline">
+          <Link
+            href="/download"
+            className="text-zinc-500 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             Download
           </Link>
-          <Link href="/pricing" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline">
+          <Link
+            href="/pricing"
+            className="text-zinc-500 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             Pricing
           </Link>
-          <Link href="/changelog" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline">
+          <Link
+            href="/changelog"
+            className="text-zinc-500 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             Changelog
           </Link>
-          <Link href="/docs" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline">
+          <Link
+            href="/docs"
+            className="text-zinc-500 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             Docs
           </Link>
-          <Link href="/vs/dropshelf" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline">
+          <Link
+            href="/vs/dropshelf"
+            className="text-zinc-500 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             Holdem vs Dropshelf
           </Link>
-          <Link href="/vs/droppoint" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline">
+          <Link
+            href="/vs/droppoint"
+            className="text-zinc-500 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             Holdem vs DropPoint
           </Link>
-          <Link href="/vs/dropover" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline">
+          <Link
+            href="/vs/dropover"
+            className="text-zinc-500 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             Holdem vs Dropover
           </Link>
-          <Link href="/vs/yoink" className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline">
+          <Link
+            href="/vs/yoink"
+            className="text-zinc-500 hover:text-zinc-900 hover:underline dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             Holdem vs Yoink
           </Link>
         </div>
-        <div className="flex justify-start sm:justify-end text-xs text-zinc-400">
+        <div className="flex justify-start text-xs text-zinc-400 sm:justify-end">
           <ThemeSwitch />
         </div>
       </div>

@@ -11,26 +11,22 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends(
-    "next/core-web-vitals",
-    "next/typescript",
-    "plugin:prettier/recommended",
-    "plugin:mdx/recommended"
+    'next/core-web-vitals',
+    'next/typescript',
+    'plugin:prettier/recommended',
   ),
   {
-    files: ["**/*.mdx"],
     rules: {
-      "react/jsx-no-undef": "off"
-    }
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'off',
+      'react/no-unescaped-entities': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@next/next/no-img-element': 'off',
+    },
   },
-  {
-    rules: {
-      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
-      "@typescript-eslint/no-explicit-any": "off",
-      "react/no-unescaped-entities": "off",
-      "@typescript-eslint/no-empty-object-type": "off",
-      "@next/next/no-img-element": "off"
-    }
-  }
 ]
 
 export default eslintConfig
