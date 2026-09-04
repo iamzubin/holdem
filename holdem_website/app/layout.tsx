@@ -5,6 +5,12 @@ import { Header } from './header'
 import { Footer } from './footer'
 import { ThemeProvider } from 'next-themes'
 import { Analytics } from "@vercel/analytics/react"
+import { GoogleAnalytics } from '@next/third-parties/google'
+import { buttonClass } from './components/ui/button'
+
+// GA4 Measurement ID — override with NEXT_PUBLIC_GA_MEASUREMENT_ID env var.
+const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-9T07RLQTXG'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -14,13 +20,37 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://holdem.iamzub.in'),
-  title: 'Holdem - A simpler way to manage your files',
+  title: {
+    default: 'Holdem - Free Dropover for Windows',
+    template: '%s | Holdem',
+  },
   description:
-    "Holdem is a lightweight, open-source tool for effortlessly dragging and organizing files on your desktop.",
+    'Holdem is the free Dropover for Windows: a free, open-source drag-and-drop file shelf. Shake your mouse while dragging to summon a floating holding area for files, folders & web images. No wait timers, no paywall.',
+  // Google Search Console: set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION in Vercel
+  // env vars to emit the google-site-verification meta tag.
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
+  keywords: [
+    'Holdem',
+    'drag and drop shelf Windows',
+    'free Dropover alternative Windows',
+    'Dropshelf alternative',
+    'DropPoint alternative',
+    'file shelf Windows',
+    'drag drop utility',
+  ],
+  alternates: {
+    canonical: 'https://holdem.iamzub.in',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
-    title: 'Holdem - A simpler way to manage your files',
+    title: 'Holdem - Free Dropover for Windows',
     description:
-      'Holdem is a lightweight, open-source tool for effortlessly dragging and organizing files on your desktop.',
+      'Free, open-source shelf for Windows: shake to summon, stash files, drop anywhere. No wait timers, no paywall.',
     url: 'https://holdem.iamzub.in',
     siteName: 'Holdem',
     images: [
@@ -28,7 +58,7 @@ export const metadata: Metadata = {
         url: '/og.png',
         width: 1280,
         height: 640,
-        alt: 'Holdem — A simpler way to manage your files',
+        alt: 'Holdem — free drag-and-drop file shelf for Windows, showing floating shelf holding 6 files',
       },
     ],
     type: 'website',
@@ -37,9 +67,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@iamzub_in',
     creator: '@iamzub_in',
-    title: 'Holdem - A simpler way to manage your files',
+    title: 'Holdem - Free Dropover for Windows',
     description:
-      'Holdem is a lightweight, open-source tool for effortlessly dragging and organizing files on your desktop.',
+      'Free, open-source shelf for Windows: shake to summon, stash files, drop anywhere.',
     images: ['/og.png'],
   },
 }
@@ -70,12 +100,36 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const stars = await getGitHubStars()
+  const softwareSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Holdem',
+    applicationCategory: 'UtilitiesApplication',
+    operatingSystem: 'Windows 10, Windows 11',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    isAccessibleForFree: true,
+    softwareVersion: '3.0.0',
+    url: 'https://holdem.iamzub.in',
+    downloadUrl:
+      'https://github.com/iamzubin/holdem/releases/download/3.0.0/holdem_3.0.0_x64-setup.exe',
+    sameAs: ['https://github.com/iamzubin/holdem'],
+    description:
+      'Free, open-source drag-and-drop file shelf for Windows. Shake your mouse while dragging to summon a floating holding area.',
+    author: { '@type': 'Person', name: 'Zubin Choudhary', url: 'https://iamzub.in' },
+  }
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
+        />
+      </head>
       <body
         className={`${geist.variable} ${geistMono.variable} bg-white tracking-tight antialiased dark:bg-zinc-950`}
       >
         <Analytics />
+        <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />
         {/* GitHub Star Floating Button */}
         <a
           href="https://github.com/iamzubin/holdem"
@@ -89,7 +143,7 @@ export default async function RootLayout({
             display: 'block',
           }}
         >
-          <span className="px-5 py-2 rounded-lg font-medium flex items-center gap-2 shadow transition-colors bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700 border border-transparent" style={{ height: '48px' }}>
+          <span className={buttonClass({ variant: 'secondary', size: 'md', className: 'h-12' })}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2L14.7553 8.51147L21.9021 9.23607L16.4511 13.9885L18.1803 21.0139L12 17.5L5.81966 21.0139L7.54894 13.9885L2.09789 9.23607L9.24472 8.51147L12 2Z" fill="#FFD600" stroke="#FFD600" strokeWidth="1.5" strokeLinejoin="round"/>
             </svg>

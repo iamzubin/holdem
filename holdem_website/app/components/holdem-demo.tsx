@@ -112,7 +112,8 @@ function Ic({ t, s = 20, id }: { t: string; s?: number; id?: string }) {
         src={`https://placekeanu.com/${dim}/${dim}`}
         style={{ width: s, height: s, borderRadius: 4, objectFit: 'cover' }}
         draggable={false}
-        alt="Keanu"
+        alt={`Demo image file thumbnail ${id} in Holdem floating shelf demo`}
+        loading="lazy"
       />
     )
   }
