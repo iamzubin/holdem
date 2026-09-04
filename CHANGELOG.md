@@ -6,40 +6,14 @@ current version lives in `holdem_website/`; the updater manifest
 (`holdem_website/public/update.json`) is synced automatically by CI after each
 release — do not hand-edit it.
 
-## [3.2.0] - 2026-09-05
-
-### Added
-
-- Universal native Windows drop target (`IDropTarget`, Tauri `dragDropEnabled`
-  off): virtual files (`FileGroupDescriptor`), bitmaps (`CF_DIB`/`PNG`), web
-  images, HTML, URLs, and text snippets land in a dated drop folder with unique
-  timestamp+rand names.
-- Instant folder drops: folders store size 0 instead of recursive size walks,
-  so huge trees no longer stall the shelf.
-- Single batched `files_updated` emit per `add_files` batch.
-- In-house thumbnail engine: thumb-rs Windows `IShellItemImageFactory` backend
-  vendored into `app/src-tauri/src/thumbnail.rs` (fixed 256px, `thiserror`
-  `ThumbnailError`, regression tests).
-- OpenCode automation: auto PR reviews (`opencode-review.yml`, free
-  `muse-spark-1.3` model at `xhigh`) and on-demand `/oc` tasks
-  (`opencode.yml`), plus a `/resolve-threads` playbook.
-- Website Linear-style redesign: dark-only canvas (`#010102`), surface ladder
-  + hairline borders, lavender CTA (`#5e6ad2`), Inter type, 1280px container,
-  emoji-free Lucide feature icons, touch-aware demo.
-- README refresh with hero, features, download CTA, and FAQ.
+## [3.1.1] - 2026-09-05
 
 ### Fixed
 
-- OLE/HDROP double-free, `CF_HTML` fragment UTF-8 boundary panics, unaligned
-  UTF-16 decoding UB, hostile DIB dimensions (`i32::MIN` height, unchecked
-  `w*h*4`), invisible 32bpp BI_RGB PNGs, `GetDIBits` misuse, unbounded image
-  downloads (25MB streamed cap), poisoned `FileList` mutex handling.
-
-### Removed
-
-- Unpinned `thumb-rs` git dependency and `thumb-rs` submodule (fully in-house
-  now); unused `active-win-pos-rs` dependency and macOS-only transitive deps
-  from Windows builds.
+- Fixed file drops crashing or freezing the shelf: dropping large folders is
+  now instant, and files, images, links, and text dropped from browsers and
+  other apps land reliably every time.
+- Fixed blank thumbnails showing for some images.
 
 ## [3.1.0] - 2026-09-04
 

@@ -64,7 +64,7 @@ export default function DownloadPage() {
           <Download className="h-5 w-5" /> Download Holdem for Windows (x64)
         </ButtonLink>
         <p className="text-ink-subtle mt-3 text-xs">
-          Current release: v3.2.0 · Windows 10/11 x64 · .exe installer ·{' '}
+          Current release: v3.1.1 · Windows 10/11 x64 · .exe installer ·{' '}
           <a
             href={`${GITHUB_REPO}/releases`}
             target="_blank"

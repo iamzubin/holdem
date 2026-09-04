@@ -1,7 +1,7 @@
 {
   "name": "holdem",
   "private": true,
-  "version": "3.2.0",
+  "version": "3.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

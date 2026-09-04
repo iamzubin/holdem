@@ -108,10 +108,10 @@ export default async function RootLayout({
     operatingSystem: 'Windows 10, Windows 11',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     isAccessibleForFree: true,
-    softwareVersion: '3.2.0',
+    softwareVersion: '3.1.1',
     url: 'https://holdem.iamzub.in',
     downloadUrl:
-      'https://github.com/iamzubin/holdem/releases/download/3.2.0/holdem_3.2.0_x64-setup.exe',
+      'https://github.com/iamzubin/holdem/releases/download/3.1.1/holdem_3.1.1_x64-setup.exe',
     sameAs: ['https://github.com/iamzubin/holdem'],
     description:
       'Free, open-source drag-and-drop file shelf for Windows. Shake your mouse while dragging to summon a floating holding area.',
