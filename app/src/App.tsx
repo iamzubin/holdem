@@ -1,33 +1,25 @@
 "use client"
 
-import { DynamicFileIcon } from "@/components/FileIcon";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { closeWindow } from "@/lib/windowUtils";
-import { FilePreview, FileWithPath } from "@/types";
+import { FileWithPath } from "@/types";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import { ChevronDown, Clipboard, Copy, Download, Settings, X } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { toast } from 'sonner';
+import { ChevronDown, Download, Settings, X } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getFileExtension } from "./lib/utils";
 import { StackedIcons } from "./components/StackedIcons";
 import { useNavigate } from "react-router-dom";
 import { listen } from "@tauri-apps/api/event";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 function App() {
   const { t } = useTranslation();
   const listenerSetup = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const { files, addFiles, getFileIcon, clearFiles, droppedFiles } = useFileManagement();
+  const { files, clearFiles, droppedFiles } = useFileManagement();
   const navigate = useNavigate();
 
   // Check analytics consent on mount
@@ -54,145 +46,26 @@ function App() {
   useEffect(() => {
     if (listenerSetup.current) return;
     listenerSetup.current = true;
+    let cancelled = false;
+    let unlistenWebview: (() => void) | undefined;
+    let unlistenNavigate: (() => void) | undefined;
 
     const setupFileListener = async () => {
       const webview = await getCurrentWebview();
-      await webview.onDragDropEvent(async (event) => {
+      const fn = await webview.onDragDropEvent(async (event) => {
         if (event.payload.type === 'drop') {
+          invoke('mark_drop_received').catch(() => {});
           droppedFiles();
         }
       });
+      if (cancelled) {
+        fn();
+      } else {
+        unlistenWebview = fn;
+      }
     };
 
     setupFileListener();
-
-    // Listen to native Windows drag drops
-    const unlistenNativeDrop = listen<{ type: 'Files', data: string[] } | { type: 'Text', data: string } | { type: 'Html', data: string }>('native_drop', (event) => {
-      const payload = event.payload;
-      if (payload.type === 'Files') {
-        invoke('add_files', { files: payload.data });
-        droppedFiles();
-      } else if (payload.type === 'Html') {
-        const html = payload.data;
-        
-        let sourceUrl = '';
-        const sourceMatch = html.match(/SourceURL:(.*?)[\r\n]/i);
-        if (sourceMatch && sourceMatch[1]) {
-          sourceUrl = sourceMatch[1].trim();
-        }
-
-        // Try to parse using DOM parser for robustness
-        const doc = new DOMParser().parseFromString(html, "text/html");
-        const img = doc.querySelector("img");
-        
-        let rawSrc = '';
-        if (img && img.getAttribute("src")) {
-          rawSrc = img.getAttribute("src") || '';
-        } else {
-          // Fallback to regex for background images or malformed tags
-          const match = html.match(/src=["'](.*?)["']/i) || html.match(/url\(['"]?(.*?)['"]?\)/i);
-          if (match && match[1]) {
-            rawSrc = match[1];
-          }
-        }
-
-        if (rawSrc) {
-          let src = rawSrc.replace(/&amp;/g, '&');
-          if (src.startsWith('//')) {
-            src = 'https:' + src;
-          } else if (src.startsWith('/')) {
-            if (sourceUrl) {
-              try {
-                const url = new URL(sourceUrl);
-                src = url.origin + src;
-              } catch (e) {}
-            } else {
-              src = 'https://www.iamzub.in' + src; 
-            }
-          }
-
-          if (src.startsWith('data:image/')) {
-            const b64match = src.match(/^data:image\/([a-zA-Z]*);base64,(.*)$/);
-            if (b64match && b64match[2]) {
-              invoke<string>('save_pasted_data_base64', {
-                dataBase64: b64match[2],
-                extension: b64match[1] || 'png'
-              }).then(path => {
-                invoke('add_files', { files: [path] });
-                droppedFiles();
-              }).catch(err => {
-                console.error('Failed to save data URI', err);
-                toast.error(t("app.toast.failedSaveDataImage"));
-              });
-              return;
-            }
-          } else if (src.match(/^https?:\/\//i)) {
-            toast.info(t("app.toast.downloadingImage"));
-            invoke<string>('download_image_to_shelf', { url: src })
-              .then(path => {
-                invoke('add_files', { files: [path] });
-                droppedFiles();
-              }).catch(err => {
-                console.error('Failed to download image from HTML', err);
-                toast.error(t("app.toast.couldNotDownloadImage", { error: err }));
-                // Fallback to text link
-                invoke<string>('save_pasted_text', { text: src, extension: 'txt' }).then(p => { invoke('add_files', {files:[p]}); droppedFiles(); });
-              });
-            return;
-          }
-        }
-        
-        // Fallback if no image found in HTML
-        invoke<string>('save_pasted_text', {
-          text: html,
-          extension: 'html'
-        }).then(path => {
-          invoke('add_files', { files: [path] });
-          droppedFiles();
-        }).catch(err => console.error('Failed to save dropped HTML', err));
-      } else if (payload.type === 'Text') {
-        const text = payload.data.trim();
-        if (text.startsWith('data:image/')) {
-          const match = text.match(/^data:image\/([a-zA-Z]*);base64,(.*)$/);
-          if (match && match[2]) {
-            invoke<string>('save_pasted_data_base64', {
-              dataBase64: match[2],
-              extension: match[1] || 'png'
-            }).then(path => {
-              invoke('add_files', { files: [path] });
-              droppedFiles();
-            }).catch(err => console.error('Failed to save data URI', err));
-            return;
-          }
-        } else if (text.match(/^https?:\/\//i)) {
-          // It's a URL. Let's download it.
-          invoke<string>('download_image_to_shelf', { url: text })
-            .then(path => {
-              invoke('add_files', { files: [path] });
-              droppedFiles();
-            }).catch(err => {
-              console.error('Failed to download image', err);
-              // Fallback to text
-              invoke<string>('save_pasted_text', {
-                text: text,
-                extension: 'txt'
-              }).then(path => {
-                invoke('add_files', { files: [path] });
-                droppedFiles();
-              });
-            });
-          return;
-        }
-
-        invoke<string>('save_pasted_text', {
-          text: text,
-          extension: 'txt'
-        }).then(path => {
-          invoke('add_files', { files: [path] });
-          droppedFiles();
-        }).catch(err => console.error('Failed to save dropped text', err));
-      }
-    });
 
     // Set up navigation event listener
     const unlisten = listen<string>("navigate_to", (event) => {
@@ -200,16 +73,24 @@ function App() {
         navigate(event.payload);
       }
     });
+    unlisten.then(fn => {
+      if (cancelled) {
+        fn();
+      } else {
+        unlistenNavigate = fn;
+      }
+    });
 
     return () => {
-      unlistenNativeDrop.then(fn => fn());
-      // unlisten.then(fn => fn());
-      // Reset the guard so a re-run (e.g. after a language change, which
-      // also runs this cleanup) re-registers the listener instead of
-      // exiting early while the listener stays removed.
+      cancelled = true;
+      unlisten.then(fn => fn());
+      if (unlistenWebview) unlistenWebview();
+      if (unlistenNavigate) unlistenNavigate();
+      // Reset the guard so a re-run (e.g. StrictMode remount) re-registers
+      // listeners instead of exiting early while they stay removed.
       listenerSetup.current = false;
     };
-  }, [addFiles, getFileIcon, navigate, droppedFiles, t]);
+  }, [navigate, droppedFiles]);
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -227,85 +108,32 @@ function App() {
     e.dataTransfer.dropEffect = 'copy';
   }, []);
 
-  useEffect(() => {
-    const handleGlobalPaste = (e: ClipboardEvent) => {
-      const items = Array.from(e.clipboardData?.items || []);
-      for (const item of items) {
-        if (item.type.startsWith('image/')) {
-          const file = item.getAsFile();
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = async () => {
-              const base64Data = (reader.result as string).split(',')[1];
-              let extension = 'png';
-              if (file.name && file.name.includes('.')) {
-                extension = file.name.split('.').pop()?.toLowerCase() || 'png';
-              } else if (item.type) {
-                extension = item.type.split('/')[1] || 'png';
-              }
-              try {
-                const path = await invoke<string>('save_pasted_data_base64', { 
-                  dataBase64: base64Data,
-                  extension
-                });
-                await invoke('add_files', { files: [path] });
-              } catch (err) {
-                console.error('Failed to paste image', err);
-              }
-            };
-            reader.readAsDataURL(file);
-          }
-        } else if (item.type === 'text/plain') {
-          item.getAsString((text) => {
-            if (!text) return;
-            invoke<string>('save_pasted_text', {
-              text: text,
-              extension: 'txt'
-            }).then(path => {
-              invoke('add_files', { files: [path] });
-            }).catch(err => console.error('Failed to paste text', err));
-          });
-        }
-      }
-    };
-
-    window.addEventListener('paste', handleGlobalPaste);
-    return () => window.removeEventListener('paste', handleGlobalPaste);
-  }, []);
-
   const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    toast.info(t("app.toast.dropReceived"));
+    invoke('mark_drop_received').catch(() => {});
 
     const nativeFiles = Array.from(e.dataTransfer.files);
-
-    const filesWithPath: FilePreview[] = [];
+    const validPaths: string[] = [];
     const virtualFiles: File[] = [];
 
-    nativeFiles.forEach((file, index) => {
+    nativeFiles.forEach((file) => {
       const path = (file as FileWithPath).path;
       if (path) {
-        filesWithPath.push({
-          id: Date.now() + index,
-          name: file.name,
-          size: file.size,
-          path: path,
-          icon: getFileExtension(file.name),
-          preview: '',
-          type: 'file'
-        });
+        validPaths.push(path);
       } else {
         virtualFiles.push(file);
       }
     });
 
-    if (filesWithPath.length > 0) {
-      addFiles(filesWithPath);
+    if (validPaths.length > 0) {
+      invoke('add_files', { files: validPaths })
+        .then(() => droppedFiles())
+        .catch((err) => console.error('Failed to add dropped files', err));
+      return;
     }
 
     if (virtualFiles.length > 0) {
-      toast.info(t("app.toast.processingVirtual"));
       for (const file of virtualFiles) {
         const reader = new FileReader();
         reader.onload = async () => {
@@ -319,76 +147,68 @@ function App() {
           try {
             const path = await invoke<string>('save_pasted_data_base64', {
               dataBase64: base64Data,
-              extension
+              extension,
+              originalName: file.name || null,
             });
             await invoke('add_files', { files: [path] });
             droppedFiles();
           } catch (err) {
             console.error('Failed to save dropped virtual file', err);
-            toast.error(t("app.toast.failedSaveDroppedImage"));
           }
         };
         reader.readAsDataURL(file);
       }
-      return; // We handled the virtual files, skip HTML fallback
-    }
-
-    if (nativeFiles.length === 0) {
-      toast.info(t("app.toast.checkingTextHtml"));
-      const html = e.dataTransfer.getData("text/html");
-      if (html) {
-        const match = html.match(/<img.*?src=["'](.*?)["']/i);
-        if (match && match[1]) {
-          const src = match[1];
-          if (src.startsWith('data:image/')) {
-            const base64Data = src.split(',')[1];
-            const byteCharacters = atob(base64Data);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-              byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            try {
-              const path = await invoke<string>('save_pasted_data_base64', {
-                dataBase64: base64Data,
-                extension: 'png'
-              });
-              await invoke('add_files', { files: [path] });
-            } catch (err) {
-              console.error('Failed to save dropped base64 image', err);
-            }
-            return;
-          } else {
-             try {
-                const path = await invoke<string>('download_image_to_shelf', { url: src });
-                await invoke('add_files', { files: [path] });
-                return;
-             } catch(err) {
-                console.error('Failed to fetch and save dropped image URL', err);
-             }
-          }
-        }
-      }
-
-      let text = e.dataTransfer.getData("text/plain");
-      if (!text) {
-          text = e.dataTransfer.getData("text");
-      }
-      if (text) {
-        try {
-          const path = await invoke<string>('save_pasted_text', {
-            text: text,
-            extension: 'txt'
-          });
-          await invoke('add_files', { files: [path] });
-        } catch (err) {
-          console.error('Failed to drop text', err);
-        }
-      }
       return;
     }
 
-  }, [addFiles, t]);
+    // In-webview HTML / text drops fallback
+    const html = e.dataTransfer.getData("text/html");
+    if (html) {
+      const match = html.match(/<img.*?src=["'](.*?)["']/i);
+      if (match && match[1]) {
+        const src = match[1];
+        if (src.startsWith('data:image/')) {
+          const base64Data = src.split(',')[1];
+          try {
+            const path = await invoke<string>('save_pasted_data_base64', {
+              dataBase64: base64Data,
+              extension: 'png',
+              originalName: null,
+            });
+            await invoke('add_files', { files: [path] });
+            droppedFiles();
+          } catch (err) {
+            console.error('Failed to save dropped base64 image', err);
+          }
+          return;
+        } else {
+          try {
+            const path = await invoke<string>('download_image_to_shelf', { url: src });
+            await invoke('add_files', { files: [path] });
+            droppedFiles();
+            return;
+          } catch (err) {
+            console.error('Failed to fetch and save dropped image URL', err);
+          }
+        }
+      }
+    }
+
+    const textData = e.dataTransfer.getData("text/plain") || e.dataTransfer.getData("text");
+    if (textData) {
+      try {
+        const path = await invoke<string>('save_pasted_text', {
+          text: textData,
+          extension: 'txt',
+          originalName: null,
+        });
+        await invoke('add_files', { files: [path] });
+        droppedFiles();
+      } catch (err) {
+        console.error('Failed to drop text', err);
+      }
+    }
+  }, [droppedFiles]);
 
   const openPopup = () => {
     invoke('open_popup_window').catch((err) => console.error(err));
@@ -438,7 +258,7 @@ function App() {
 
       <>
         {/* Main Content */}
-        <div className="flex-grow flex flex-col items-center justify-center space-y-1"
+        <div className="grow flex flex-col items-center justify-center space-y-1"
           onDragEnter={handleDragEnter}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -462,7 +282,7 @@ function App() {
             variant="secondary"
           >
             <span>{t("app.files", { count: files.length })}</span>
-            <ChevronDown className="h-2 w-2 ml-1" />
+            <ChevronDown className="h-2 w-2 ms-1" />
           </Button>
         </div>
       </>
@@ -474,41 +294,17 @@ function App() {
         >
           <DialogTitle className="sr-only">{t("app.contextMenuTitle")}</DialogTitle>
           <div className="flex flex-col items-start text-foreground">
-            {files.length > 0 ? (
-              <>
-                {/* <Button 
-                  className="w-full text-left justify-start"
-                  variant="ghost"
-                >
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy
-                </Button>
-                <Button 
-                  className="w-full text-left justify-start"
-                  variant="ghost"
-                >
-                  <Clipboard className="h-4 w-4 mr-2 " />
-                  Paste
-                </Button>
-                <div className="w-[90%] h-[1px] bg-foreground mx-[5%]"></div> */}
-                <Button
-                  className="w-full text-left justify-start hover:bg-secondary transition-colors"
-                  variant="ghost"
-                  onClick={() => {
-                    clearFiles(files.map(file => file.id));
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                  {t("app.clear")}
-                </Button>
-              </>
-            ) : (
+            {files.length > 0 && (
               <Button
-                className="w-full text-left justify-start  hover:bg-secondary transition-colors"
+                className="w-full text-left justify-start hover:bg-secondary transition-colors"
                 variant="ghost"
+                onClick={() => {
+                  clearFiles(files.map(file => file.id));
+                  setIsModalOpen(false);
+                }}
               >
-                <Clipboard className="h-4 w-4 mr-2" />
-                {t("app.paste")}
+                <X className="h-4 w-4 me-2" />
+                {t("app.clear")}
               </Button>
             )}
           </div>

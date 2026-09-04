@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import { Header } from './header'
 import { Footer } from './footer'
 import { ThemeProvider } from 'next-themes'
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from '@vercel/analytics/react'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { buttonClass } from './components/ui/button'
 
@@ -86,7 +85,9 @@ const geistMono = Geist_Mono({
 
 async function getGitHubStars() {
   try {
-    const res = await fetch('https://api.github.com/repos/iamzubin/holdem', { next: { revalidate: 3600 } })
+    const res = await fetch('https://api.github.com/repos/iamzubin/holdem', {
+      next: { revalidate: 3600 },
+    })
     const data = await res.json()
     return data.stargazers_count || 0
   } catch {
@@ -108,14 +109,18 @@ export default async function RootLayout({
     operatingSystem: 'Windows 10, Windows 11',
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     isAccessibleForFree: true,
-    softwareVersion: '3.0.0',
+    softwareVersion: '3.1.0',
     url: 'https://holdem.iamzub.in',
     downloadUrl:
-      'https://github.com/iamzubin/holdem/releases/download/3.0.0/holdem_3.0.0_x64-setup.exe',
+      'https://github.com/iamzubin/holdem/releases/download/3.1.0/holdem_3.1.0_x64-setup.exe',
     sameAs: ['https://github.com/iamzubin/holdem'],
     description:
       'Free, open-source drag-and-drop file shelf for Windows. Shake your mouse while dragging to summon a floating holding area.',
-    author: { '@type': 'Person', name: 'Zubin Choudhary', url: 'https://iamzub.in' },
+    author: {
+      '@type': 'Person',
+      name: 'Zubin Choudhary',
+      url: 'https://iamzub.in',
+    },
   }
   return (
     <html lang="en" suppressHydrationWarning>
@@ -143,12 +148,30 @@ export default async function RootLayout({
             display: 'block',
           }}
         >
-          <span className={buttonClass({ variant: 'secondary', size: 'md', className: 'h-12' })}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L14.7553 8.51147L21.9021 9.23607L16.4511 13.9885L18.1803 21.0139L12 17.5L5.81966 21.0139L7.54894 13.9885L2.09789 9.23607L9.24472 8.51147L12 2Z" fill="#FFD600" stroke="#FFD600" strokeWidth="1.5" strokeLinejoin="round"/>
+          <span
+            className={buttonClass({
+              variant: 'secondary',
+              size: 'md',
+              className: 'h-12',
+            })}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2L14.7553 8.51147L21.9021 9.23607L16.4511 13.9885L18.1803 21.0139L12 17.5L5.81966 21.0139L7.54894 13.9885L2.09789 9.23607L9.24472 8.51147L12 2Z"
+                fill="#FFD600"
+                stroke="#FFD600"
+                strokeWidth="1.5"
+                strokeLinejoin="round"
+              />
             </svg>
             <span className="font-bold">Star on Github</span>
-            <span className="ml-1 font-semibold text-base">{stars}</span>
+            <span className="ml-1 text-base font-semibold">{stars}</span>
           </span>
         </a>
         <ThemeProvider
@@ -159,7 +182,6 @@ export default async function RootLayout({
         >
           <div className="flex min-h-screen w-full flex-col font-[family-name:var(--font-inter-tight)]">
             <div className="relative mx-auto w-full max-w-[90vw] flex-1 px-4 pt-20">
-              {/* <Header /> */}
               {children}
               <Footer />
             </div>

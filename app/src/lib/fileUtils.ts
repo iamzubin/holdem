@@ -124,7 +124,7 @@ export const triggerNativeDrag = (): void => {
   pendingFiles = [];
   pendingDragImage = null;
 
-  // Focus window first on macOS to enable drag from unfocused window
+  // Focus window first to enable drag from unfocused window
   const window = getCurrentWindow();
   window.setFocus().catch((error) => {
     console.error('Failed to focus window before starting drag:', error);
@@ -132,80 +132,29 @@ export const triggerNativeDrag = (): void => {
 
   // Start native drag after a small delay to ensure window is focused
   setTimeout(async () => {
-    if (filesToDrag.length === 1 && filesToDrag[0].name.startsWith('pasted_') && filesToDrag[0].name.endsWith('.txt')) {
-        try {
-            const { readTextFile } = await import('@tauri-apps/plugin-fs');
-            const text = await readTextFile(filesToDrag[0].path);
-            await invoke('start_text_drag', {
-                text,
-                dragImage
-            });
-            return;
-        } catch (error) {
-            console.error('Failed to read and drag text snippet:', error);
-        }
+    if (
+      filesToDrag.length === 1 &&
+      (filesToDrag[0].name.startsWith('pasted_') || filesToDrag[0].name.startsWith('note_')) &&
+      filesToDrag[0].name.endsWith('.txt')
+    ) {
+      try {
+        const { readTextFile } = await import('@tauri-apps/plugin-fs');
+        const text = await readTextFile(filesToDrag[0].path);
+        await invoke('start_text_drag', {
+          text,
+          dragImage,
+        });
+        return;
+      } catch (error) {
+        console.error('Failed to read and drag text snippet:', error);
+      }
     }
 
     invoke('start_multi_drag', {
-      filePaths: filesToDrag.map(file => file.path),
+      filePaths: filesToDrag.map((file) => file.path),
       dragImage,
     }).catch((error) => {
       console.error('Failed to start native drag:', error);
     });
   }, 50);
-};
-
-/**
- * Legacy drag handlers - kept for compatibility but should not be used with draggable attribute
- */
-export const handleDragStart = (e: React.DragEvent<HTMLDivElement>, file: FilePreview) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  try {
-    const win = getCurrentWindow();
-    win.setFocus().catch((error) => {
-      console.error('Failed to focus window before starting drag:', error);
-    });
-    setTimeout(() => {
-      invoke('start_multi_drag', { 
-        filePaths: [file.path], 
-        dragImage: null 
-      }).catch((error) => {
-        console.error('Failed to start native drag:', error);
-      });
-    }, 50);
-  } catch (error) {
-    console.error('Failed to invoke native drag:', error);
-  }
-};
-
-export const handleMultiFileDragStart = (
-  e: React.DragEvent<HTMLDivElement>,
-  files: FilePreview[],
-  dragSourceElement?: HTMLElement
-) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  // Use pre-captured drag image if available
-  const dragImage = pendingDragImage;
-  pendingDragImage = null; // Clear after use
-
-  try {
-    const win = getCurrentWindow();
-    win.setFocus().catch((error) => {
-      console.error('Failed to focus window before starting drag:', error);
-    });
-    setTimeout(() => {
-      invoke('start_multi_drag', {
-        filePaths: files.map(file => file.path),
-        dragImage,
-      }).catch((error) => {
-        console.error('Failed to start native multi-file drag:', error);
-      });
-    }, 50);
-  } catch (error) {
-    console.error('Failed to invoke native multi-file drag:', error);
-  }
 };

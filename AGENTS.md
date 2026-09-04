@@ -3,7 +3,7 @@
 This repository contains three main projects:
 1. **app/** - Tauri desktop app (React + TypeScript + Vite + Tailwind)
 2. **holdem_website/** - Next.js marketing website (Next.js 15 + React 19 + Tailwind CSS)
-3. **thumb-rs/** - Rust library for cross-platform thumbnail extraction (see thumb-rs/AGENTS.md)
+3. **thumb-rs** - External Rust library for thumbnail extraction (consumed via git dependency)
 
 ---
 
@@ -47,17 +47,6 @@ npm run lint          # Run ESLint
 npx prettier --write .
 ```
 
-### thumb-rs/ (Rust Library)
-
-```bash
-cd thumb-rs
-
-# Build & Test
-cargo build           # Compile
-cargo test            # Run tests
-cargo check           # Type check
-cargo clippy -- -D warnings  # Lint with warnings as errors
-```
 
 ### app/src-tauri/ (Rust Backend)
 
@@ -179,7 +168,6 @@ npx prettier --write .
 - React 19
 - Motion (framer-motion)
 - Tailwind CSS 4.x
-- MDX support
 
 ---
 
@@ -187,7 +175,7 @@ npx prettier --write .
 
 ```
 /                           # Root
-├── app/                    # Tauri desktop app
+├── app/                    # Tauri desktop app (Windows)
 │   ├── src/               # React frontend
 │   │   ├── components/   # UI components
 │   │   ├── hooks/        # Custom React hooks
@@ -197,14 +185,10 @@ npx prettier --write .
 │   └── src-tauri/        # Rust backend
 │       └── src/
 │           └── lib.rs    # Tauri commands
-├── holdem_website/        # Next.js marketing site
-│   ├── app/              # App router pages
-│   ├── components/       # React components
-│   └── hooks/            # Custom hooks
-└── thumb-rs/             # Rust thumbnail library
-    ├── src/
-    │   └── platform/     # Platform-specific implementations
-    └── examples/         # CLI example
+└── holdem_website/        # Next.js marketing site
+    ├── app/              # App router pages
+    ├── components/       # React components
+    └── hooks/            # Custom hooks
 ```
 
 ---
@@ -214,9 +198,8 @@ npx prettier --write .
 ### Running a Single Test (Rust)
 
 ```bash
-# In thumb-rs or app/src-tauri
+# In app/src-tauri
 cargo test <test_name>
-# Example: cargo test test_get_thumbnail
 ```
 
 ### Adding a New Tauri Command
@@ -236,7 +219,7 @@ cargo test <test_name>
 
 ## Notes
 
+- Holdem desktop app is Windows-only
 - The `app/` project uses Tauri 2.x with staticlib, cdylib, and rlib crate types
-- The `thumb-rs` library has its own AGENTS.md with specific Rust guidelines
 - Both TypeScript projects use Tailwind but different versions (3.x vs 4.x)
 - The holdem_website uses the new Tailwind 4 configuration (CSS-based)

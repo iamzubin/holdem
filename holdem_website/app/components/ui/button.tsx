@@ -34,14 +34,16 @@ export function buttonClass({
   return cn(base, variants[variant], sizes[size], className)
 }
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', type = 'button', ...props }, ref) => {
+  (
+    { className, variant = 'primary', size = 'md', type = 'button', ...props },
+    ref,
+  ) => {
     return (
       <button
         type={type}
@@ -50,12 +52,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     )
-  }
+  },
 )
 Button.displayName = 'Button'
 
-export interface ButtonLinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface ButtonLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   variant?: ButtonVariant
   size?: ButtonSize
 }
@@ -69,7 +70,7 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
         {...props}
       />
     )
-  }
+  },
 )
 ButtonLink.displayName = 'ButtonLink'
 

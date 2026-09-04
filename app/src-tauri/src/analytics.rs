@@ -100,6 +100,7 @@ impl AnalyticsService {
         self.send_event("files_dropped", Some(properties)).await
     }
 
+    #[allow(dead_code)]
     pub async fn send_window_opened(&self, window_type: &str) -> Result<(), String> {
         let properties = vec![(
             "window_type",
@@ -122,6 +123,7 @@ impl AnalyticsService {
         self.send_event("settings_opened", None).await
     }
 
+    #[allow(dead_code)]
     pub async fn send_mouse_shake_detected(&self, shake_count: u32) -> Result<(), String> {
         let properties = vec![(
             "shake_count",
@@ -131,20 +133,12 @@ impl AnalyticsService {
             .await
     }
 
-    pub async fn send_file_renamed(&self, old_name: &str, new_name: &str) -> Result<(), String> {
-        let properties = vec![
-            ("old_name", serde_json::Value::String(old_name.to_string())),
-            ("new_name", serde_json::Value::String(new_name.to_string())),
-        ];
-        self.send_event("file_renamed", Some(properties)).await
+    pub async fn send_file_renamed(&self) -> Result<(), String> {
+        self.send_event("file_renamed", None).await
     }
 
-    pub async fn send_file_removed(&self, file_name: &str) -> Result<(), String> {
-        let properties = vec![(
-            "file_name",
-            serde_json::Value::String(file_name.to_string()),
-        )];
-        self.send_event("file_removed", Some(properties)).await
+    pub async fn send_file_removed(&self) -> Result<(), String> {
+        self.send_event("file_removed", None).await
     }
 
     pub async fn send_files_cleared(&self, num_files: usize) -> Result<(), String> {
@@ -201,6 +195,7 @@ pub async fn send_analytics_event(
 }
 
 // Convenience functions for common analytics events
+#[allow(dead_code)]
 pub async fn send_window_opened_event(
     app_handle: &AppHandle,
     window_type: &str,
@@ -255,6 +250,7 @@ pub async fn send_settings_opened_event(app_handle: &AppHandle) -> Result<(), St
     service.send_settings_opened().await
 }
 
+#[allow(dead_code)]
 pub async fn send_mouse_shake_detected_event(
     app_handle: &AppHandle,
     shake_count: u32,
@@ -267,29 +263,22 @@ pub async fn send_mouse_shake_detected_event(
     service.send_mouse_shake_detected(shake_count).await
 }
 
-pub async fn send_file_renamed_event(
-    app_handle: &AppHandle,
-    old_name: &str,
-    new_name: &str,
-) -> Result<(), String> {
+pub async fn send_file_renamed_event(app_handle: &AppHandle) -> Result<(), String> {
     let analytics_service = get_analytics_service(app_handle)?;
     let service = analytics_service
         .lock()
         .map_err(|e| format!("Failed to lock analytics service: {}", e))?
         .clone();
-    service.send_file_renamed(old_name, new_name).await
+    service.send_file_renamed().await
 }
 
-pub async fn send_file_removed_event(
-    app_handle: &AppHandle,
-    file_name: &str,
-) -> Result<(), String> {
+pub async fn send_file_removed_event(app_handle: &AppHandle) -> Result<(), String> {
     let analytics_service = get_analytics_service(app_handle)?;
     let service = analytics_service
         .lock()
         .map_err(|e| format!("Failed to lock analytics service: {}", e))?
         .clone();
-    service.send_file_removed(file_name).await
+    service.send_file_removed().await
 }
 
 pub async fn send_files_cleared_event(

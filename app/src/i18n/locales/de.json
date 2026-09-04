@@ -4,10 +4,10 @@
     "save": "Speichern",
     "close": "Schließen",
     "clear": "Leeren",
-    "add": "Hinzufügen",
+    "add": "Neu",
     "set": "Setzen",
     "stop": "Stoppen",
-    "noneSet": "Kein Set",
+    "noneSet": "Nicht festgelegt",
     "loading": "Wird geladen...",
     "copyLink": "Link kopieren"
   },
@@ -21,9 +21,9 @@
     "paste": "Einfügen",
     "contextMenuTitle": "Kontextmenü",
     "toast": {
-      "dropReceived": "Drop in der Webansicht erhalten!",
+      "dropReceived": "Dateien in Webansicht empfangen!",
       "processingVirtual": "Bearbeite virtuelle Dateien aus dem Browser...",
-      "checkingTextHtml": "Keine Dateien abgelegt, suche nach text/html...",
+      "checkingTextHtml": "Keine Dateien abgelegt, suche nach Text/HTML...",
       "downloadingImage": "Bild wird heruntergeladen...",
       "failedSaveDataImage": "Fehler beim Speichern des Datenbildes",
       "failedSaveDroppedImage": "Fehler beim Speichern des abgelegten Bildes",
@@ -34,7 +34,9 @@
     "itemsSelected": "{{count}} Elemente ausgewählt",
     "list": "Liste",
     "grid": "Raster",
-    "removeSelected": "Ausgewählte Dateien entfernen"
+    "removeSelected": "Ausgewählte Dateien entfernen",
+    "itemsSelected_one": "{{count}} Element ausgewählt",
+    "itemsSelected_other": "{{count}} Elemente ausgewählt"
   },
   "settings": {
     "title": "Einstellungen",
@@ -64,13 +66,13 @@
       "title": "Verknüpfungen",
       "description": "Anpassen, wie Sie mit der App interagieren",
       "showHotkey": "Fenster-Hotkey anzeigen",
-      "pressKeys": "Drücke Tasten...",
-      "listeningHint": "Drücke die gewünschte Tastenkombination... Drücke Stopp wenn fertig",
+      "pressKeys": "Tasten drücken...",
+      "listeningHint": "Gewünschte Tastenkombination drücken... Nach Abschluss auf Stopp drücken",
       "idleHint": "Globale Verknüpfung, um die App in den Vordergrund zu rücken",
       "set": "Setzen",
       "stop": "Stoppen",
       "clear": "Leeren",
-      "noneSet": "Kein Set"
+      "noneSet": "Nicht festgelegt"
     },
     "dragDrop": {
       "title": "Drag & Drop Verhalten",
@@ -86,14 +88,14 @@
       "description": "Feinabstimmung Schüttelerkennung Empfindlichkeit",
       "sensitivity": "Empfindlichkeit",
       "timing": "Timing",
-      "requiredShakes": "Benötigte Schütteln",
+      "requiredShakes": "Erforderliche Schüttelbewegungen",
       "shakeThreshold": "Schüttelschwelle",
       "timeLimit": "Zeitlimit (ms)",
       "closeDelay": "Schließverzögerung (ms)",
       "whitelistTitle": "Apps auf der Whitelist",
-      "whitelistDesc": "Schüttelerkennung ist nur aktiv, wenn eine dieser Apps fokussiert ist. Akzeptiert Prozessnamen (z.B. brave, brave.exe). Groß-/Kleinschreibung.",
+      "whitelistDesc": "Die Schüttelerkennung ist nur aktiv, wenn eine dieser Apps im Fokus ist. Akzeptiert Prozessnamen (z. B. brave, brave.exe). Groß-/Kleinschreibung ignorieren.",
       "addPlaceholder": "Prozessname hinzufügen...",
-      "add": "Hinzufügen",
+      "add": "Neu",
       "emptyTitle": "Keine Apps auf der Whitelist",
       "emptyDesc": "Cursorschütteln wird global ignoriert"
     },

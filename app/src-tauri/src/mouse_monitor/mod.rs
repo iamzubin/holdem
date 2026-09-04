@@ -1,10 +1,4 @@
-mod common;
-
-#[cfg(target_os = "windows")]
 mod win;
-
-#[cfg(target_os = "macos")]
-mod mac;
 
 use crate::config::MouseMonitorConfig;
 use crate::DragState;
@@ -16,13 +10,5 @@ pub fn start_mouse_monitor(
     app_handle: AppHandle,
     drag_state: Arc<DragState>,
 ) {
-    #[cfg(target_os = "windows")]
-    {
-        win::start_mouse_monitor(config, app_handle, drag_state);
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        mac::start_mouse_monitor(config, app_handle, drag_state);
-    }
+    win::start_mouse_monitor(config, app_handle, drag_state);
 }

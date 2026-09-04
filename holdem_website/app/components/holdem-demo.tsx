@@ -7,7 +7,7 @@ import {
   ImageIcon,
   Music,
   X,
-  Settings,
+  // Settings,
   Download,
   Folder,
   MousePointer2,
@@ -332,34 +332,34 @@ export function HoldemDemo() {
   }, [])
 
   useEffect(() => {
-    if (!mounted || !containerRef.current) return;
+    if (!mounted || !containerRef.current) return
 
-    let initDone = false;
+    let initDone = false
     const observer = new ResizeObserver((entries) => {
-      if (initDone) return;
-      for (let entry of entries) {
-        const cw = entry.contentRect.width;
-        const ch = entry.contentRect.height;
+      if (initDone) return
+      for (const entry of entries) {
+        const cw = entry.contentRect.width
+        const ch = entry.contentRect.height
         if (cw > 50 && ch > 50) {
-          initDone = true;
+          initDone = true
           // spawn shelf near bottom-right center initially
           const sInit = { x: Math.max(16, cw - 120), y: Math.max(16, ch - 120) }
           setShelfPos(sInit)
-          shelfPosRef.current = sInit;
-          
+          shelfPosRef.current = sInit
+
           // spawn explorer at bottom right, dynamically relative to actual rendered container dimensions
-          const ex = Math.max(16, cw - 340 - 16);
-          const ey = Math.max(16, ch - 420 - 16);
+          const ex = Math.max(16, cw - 340 - 16)
+          const ey = Math.max(16, ch - 420 - 16)
           const eInit = { x: ex, y: ey }
           setExplorerPos(eInit)
-          explorerPosRef.current = eInit;
-          setIsReady(true);
+          explorerPosRef.current = eInit
+          setIsReady(true)
           observer.disconnect()
         }
       }
     })
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
+    observer.observe(containerRef.current)
+    return () => observer.disconnect()
   }, [mounted])
 
   useEffect(() => {
@@ -856,7 +856,7 @@ export function HoldemDemo() {
             overflow: 'hidden',
             opacity: isReady ? 1 : 0,
             pointerEvents: isReady ? 'auto' : 'none',
-            transition: 'opacity 0.2s'
+            transition: 'opacity 0.2s',
           }}
         >
           <div

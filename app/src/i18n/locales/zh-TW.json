@@ -7,7 +7,7 @@
     "add": "新增",
     "set": "設定",
     "stop": "停止",
-    "noneSet": "尚未設定",
+    "noneSet": "未設定",
     "loading": "載入中...",
     "copyLink": "複製連結"
   },
@@ -34,7 +34,9 @@
     "itemsSelected": "已選取 {{count}} 個項目",
     "list": "列表",
     "grid": "網格",
-    "removeSelected": "刪除所選檔案"
+    "removeSelected": "刪除所選檔案",
+    "itemsSelected_one": "已選取 {{count}} 個項目",
+    "itemsSelected_other": "已選取 {{count}} 個項目"
   },
   "settings": {
     "title": "設定",
@@ -70,7 +72,7 @@
       "set": "設定",
       "stop": "停止",
       "clear": "清除",
-      "noneSet": "尚未設定"
+      "noneSet": "未設定"
     },
     "dragDrop": {
       "title": "拖放行為",
@@ -106,9 +108,17 @@
     "title": "協助我們改進 Holdem",
     "description": "我們希望收集匿名使用數據，以改善您的體驗",
     "collectTitle": "我們會收集：",
-    "collectItems": ["應用程式啟動事件", "檔案拖放使用情形", "基本應用程式效能指標"],
+    "collectItems": [
+      "應用程式啟動事件",
+      "檔案拖放使用情形",
+      "基本應用程式效能指標"
+    ],
     "notCollectTitle": "我們不會收集：",
-    "notCollectItems": ["個人資訊", "檔案內容或名稱", "您的瀏覽記錄"],
+    "notCollectItems": [
+      "個人資訊",
+      "檔案內容或名稱",
+      "您的瀏覽記錄"
+    ],
     "decline": "拒絕",
     "accept": "接受"
   },

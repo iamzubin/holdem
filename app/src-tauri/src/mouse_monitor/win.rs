@@ -27,7 +27,7 @@ fn get_mouse_pos() -> POINT {
 fn get_active_process_name() -> Option<String> {
     unsafe {
         let hwnd = GetForegroundWindow();
-        if hwnd.0 == std::ptr::null_mut() {
+        if hwnd.0.is_null() {
             return None;
         }
         let mut process_id = 0;
@@ -73,12 +73,21 @@ fn hide_main_window(app: &AppHandle) {
     }
 }
 
+pub(crate) fn has_shelf_files(app: &AppHandle) -> bool {
+    if let Some(file_list_state) = app.try_state::<crate::FileList>() {
+        if let Ok(files) = file_list_state.lock() {
+            return !files.is_empty();
+        }
+    }
+    false
+}
+
 fn hide_main_window_after_delay(app_handle: AppHandle, drag_state: Arc<DragState>, delay_ms: u64) {
     thread::spawn(move || {
         thread::sleep(Duration::from_millis(delay_ms));
         let successful_drop = drag_state.successful_drop.load(Ordering::Relaxed);
         let mouse_down = is_mouse_button_down();
-        if !successful_drop && !mouse_down {
+        if !successful_drop && !mouse_down && !has_shelf_files(&app_handle) {
             hide_main_window(&app_handle);
         }
     });
@@ -148,7 +157,7 @@ pub fn start_mouse_monitor(
                 if window_opened_by_shake {
                     let successful_drop = drag_state.successful_drop.load(Ordering::Relaxed);
 
-                    if !successful_drop {
+                    if !successful_drop && !has_shelf_files(&app_handle) {
                         hide_main_window_after_delay(
                             app_handle.clone(),
                             Arc::clone(&drag_state),

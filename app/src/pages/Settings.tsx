@@ -1,729 +1,160 @@
-import { invoke } from '@tauri-apps/api/core';
-import { X, Plus, Trash2, Keyboard, Monitor, Settings, Info, AlertTriangle, Languages } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { supportedLanguages } from '@/i18n';
-
-const isMac = navigator.platform.toLowerCase().includes('mac');
-
+import { invoke } from '@tauri-apps/api/core'
+import { Keyboard, Monitor, Moon, Palette, Settings, Sun, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
+import { supportedLanguages } from '@/i18n'
+import { useTheme } from '@/components/theme-provider'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface MouseMonitorConfig {
-    required_shakes: number;
-    shake_time_limit: number;
-    shake_threshold: number;
-    window_close_delay: number;
-    whitelist: string[];
+  required_shakes: number
+  shake_time_limit: number
+  shake_threshold: number
+  window_close_delay: number
+  whitelist: string[]
 }
 
 interface AppConfig {
-    mouse_monitor: MouseMonitorConfig;
-    autostart: boolean;
-    hotkey: string;
-    analytics_enabled: boolean;
-    analytics_uuid: string;
+  mouse_monitor: MouseMonitorConfig
+  autostart: boolean
+  hotkey: string
+  analytics_enabled: boolean
+  analytics_uuid: string
+}
+
+const defaults: AppConfig = {
+  mouse_monitor: { required_shakes: 5, shake_time_limit: 1500, shake_threshold: 100, window_close_delay: 3000, whitelist: ['explorer.exe'] },
+  autostart: false,
+  hotkey: '',
+  analytics_enabled: false,
+  analytics_uuid: '',
+}
+
+function Switch({ id, checked, onChange }: { id: string; checked: boolean; onChange: () => void }) {
+  return <button id={id} type="button" role="switch" aria-checked={checked} onClick={onChange}
+    className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors active:scale-[.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${checked ? 'bg-primary' : 'bg-input'}`}>
+    <span className={`pointer-events-none block h-5 w-5 rounded-full bg-background shadow transition-transform duration-150 ease-out ${checked ? 'translate-x-5 rtl:-translate-x-5' : ''}`} />
+  </button>
 }
 
 export default function SettingsPage() {
-    const { t, i18n } = useTranslation();
-    const [config, setConfig] = useState<AppConfig | null>(null);
-    const [saving, setSaving] = useState(false);
-    const [isListening, setIsListening] = useState(false);
-    const [currentHotkey, setCurrentHotkey] = useState<string>('');
-    const [newWhitelistItem, setNewWhitelistItem] = useState('');
-    const [platform] = useState(isMac ? 'mac' : 'win');
-    const [inputMonitoringGranted, setInputMonitoringGranted] = useState<boolean | null>(null);
+  const { t, i18n } = useTranslation()
+  const { theme, setTheme } = useTheme()
+  const [config, setConfig] = useState<AppConfig | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [listening, setListening] = useState(false)
+  const [currentHotkey, setCurrentHotkey] = useState('')
+  const [newApp, setNewApp] = useState('')
 
-    useEffect(() => {
-        loadConfig();
-        checkInputMonitoringPermission();
+  useEffect(() => {
+    invoke<AppConfig>('get_config').then(setConfig).catch((error) => {
+      console.error('Failed to load config:', error)
+      setConfig(defaults)
+    })
+  }, [])
 
-        return () => {
-            if (isListening) {
-                window.removeEventListener('keydown', handleKeyDown);
-                window.removeEventListener('keyup', handleKeyUp);
-            }
-        };
-    }, []);
+  const updateMouse = (key: keyof MouseMonitorConfig, value: number | string[]) => {
+    setConfig((current) => current ? { ...current, mouse_monitor: { ...current.mouse_monitor, [key]: value } } : current)
+  }
 
-    const checkInputMonitoringPermission = async () => {
-        if (isMac) {
-            try {
-                const hasPermission = await invoke<boolean>('plugin:key-intercept|check_permission');
-                setInputMonitoringGranted(hasPermission);
-            } catch (error) {
-                console.error('Failed to check input monitoring permission:', error);
-                setInputMonitoringGranted(false);
-            }
-        } else {
-            setInputMonitoringGranted(true);
-        }
-    };
-
-    const openInputMonitoringSettingsHandler = async () => {
-        if (isMac) {
-            try {
-                await invoke('plugin:key-intercept|open_input_monitoring_settings');
-            } catch (error) {
-                console.error('Failed to open input monitoring settings:', error);
-            }
-        }
-    };
-
-    const loadConfig = async () => {
-        try {
-            const config = await invoke<AppConfig>('get_config');
-            setConfig(config);
-        } catch (error) {
-            console.error('Failed to load config:', error);
-            // Set a default config if loading fails
-            setConfig({
-                mouse_monitor: {
-                    required_shakes: 5,
-                    shake_time_limit: 1500,
-                    shake_threshold: 100,
-                    window_close_delay: 3000,
-                    whitelist: ['explorer.exe'],
-                },
-                autostart: false,
-                hotkey: '',
-                analytics_enabled: false,
-                analytics_uuid: '',
-            });
-        }
-    };
-
-    const saveConfig = async () => {
-        if (!config) return;
-
-        setSaving(true);
-        try {
-            await invoke('save_config', { newConfig: config });
-
-            try {
-                await invoke('set_autostart', { enabled: config.autostart });
-            } catch (error) {
-                console.error('Failed to update autostart:', error);
-            }
-
-            try {
-                await invoke('register_hotkey', { shortcutStr: config.hotkey });
-            } catch (error) {
-                console.error('Failed to register hotkey:', error);
-            }
-
-            await invoke('restart_app');
-        } catch (error) {
-            console.error('Failed to save config:', error);
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const handleClose = async () => {
-        await invoke('close_settings_window');
-    };
-
-    const updateConfig = (updates: Partial<MouseMonitorConfig>) => {
-        if (!config) return;
-
-        setConfig({
-            ...config,
-            mouse_monitor: {
-                ...config.mouse_monitor,
-                ...updates,
-            },
-        });
-    };
-
-    const toggleAutostart = () => {
-        if (!config) return;
-
-        setConfig({
-            ...config,
-            autostart: !config.autostart,
-        });
-    };
-
-    const toggleAnalytics = async () => {
-        if (!config) return;
-
-        const newAnalyticsState = !config.analytics_enabled;
-
-        try {
-            if (newAnalyticsState) {
-                await invoke('accept_analytics_consent');
-            } else {
-                await invoke('decline_analytics_consent');
-            }
-
-            // Update local state
-            setConfig({
-                ...config,
-                analytics_enabled: newAnalyticsState,
-            });
-        } catch (error) {
-            console.error('Failed to update analytics consent:', error);
-        }
-    };
-
-    const startKeyListener = () => {
-        setIsListening(true);
-        setCurrentHotkey(t("settings.shortcuts.pressKeys"));
-        window.addEventListener('keydown', handleKeyDown, true);
-        window.addEventListener('keyup', handleKeyUp, true);
-    };
-
-    const stopKeyListener = () => {
-        setIsListening(false);
-        setCurrentHotkey('');
-        window.removeEventListener('keydown', handleKeyDown, true);
-        window.removeEventListener('keyup', handleKeyUp, true);
-    };
-
-    const clearHotkey = () => {
-        if (!config) return;
-        setConfig({
-            ...config,
-            hotkey: '',
-        });
-    };
-
-    const addWhitelistItem = () => {
-        if (!config || !newWhitelistItem.trim()) return;
-
-        const currentWhitelist = config.mouse_monitor.whitelist || [];
-        if (!currentWhitelist.includes(newWhitelistItem.trim())) {
-            updateConfig({
-                whitelist: [...currentWhitelist, newWhitelistItem.trim()]
-            });
-        }
-        setNewWhitelistItem('');
-    };
-
-    const removeWhitelistItem = (itemToRemove: string) => {
-        if (!config) return;
-
-        const currentWhitelist = config.mouse_monitor.whitelist || [];
-        updateConfig({
-            whitelist: currentWhitelist.filter(item => item !== itemToRemove)
-        });
-    };
-
-    const buildHotkeyString = (e: KeyboardEvent): string => {
-        const parts: string[] = [];
-        const altKeyName = platform === 'mac' ? 'Opt' : 'Alt';
-
-        // Add modifier keys in the correct order
-        if (e.ctrlKey) parts.push('Ctrl');
-        if (e.altKey) parts.push(altKeyName);
-        if (e.shiftKey) parts.push('Shift');
-        if (e.metaKey) parts.push('Meta');
-
-        // Get friendly key name for the current key
-        let keyName = '';
-        const code = e.code;
-
-        // Handle special cases
-        if (code.startsWith('Key')) {
-            keyName = code.replace('Key', '');
-        } else if (code.startsWith('Digit')) {
-            keyName = code.replace('Digit', '');
-        } else if (code === 'Space') {
-            keyName = 'Space';
-        } else if (code.startsWith('Arrow')) {
-            keyName = code.replace('Arrow', ''); // Up, Down, Left, Right
-        } else if (code === 'Escape') {
-            keyName = 'Esc';
-        } else if (code === 'Backspace') {
-            keyName = 'Backspace';
-        } else if (code === 'Tab') {
-            keyName = 'Tab';
-        } else if (code === 'Enter') {
-            keyName = 'Enter';
-        } else if (code === 'ControlLeft' || code === 'ControlRight') {
-            return parts.join('+'); // Only return modifiers for Control key
-        } else if (code === 'AltLeft' || code === 'AltRight') {
-            return parts.join('+'); // Only return modifiers for Alt key
-        } else if (code === 'ShiftLeft' || code === 'ShiftRight') {
-            return parts.join('+'); // Only return modifiers for Shift key
-        } else if (code === 'MetaLeft' || code === 'MetaRight') {
-            return parts.join('+'); // Only return modifiers for Meta key
-        } else {
-            keyName = code;
-        }
-
-        // Add the key name if it's not a modifier key
-        if (keyName) {
-            parts.push(keyName);
-        }
-
-        return parts.join('+');
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-        // Always prevent default behavior to stop special character input
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Update the current hotkey display
-        const hotkeyString = buildHotkeyString(e);
-        setCurrentHotkey(hotkeyString || t("settings.shortcuts.pressKeys"));
-
-        // Skip if we're only detecting a modifier key press
-        if (['ControlLeft', 'ControlRight', 'ShiftLeft', 'ShiftRight',
-            'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight'].includes(e.code)) {
-            return;
-        }
-
-        // If it's a non-modifier key, finalize the hotkey
-        if (!['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) {
-            // Update config with the new shortcut
-            setConfig(prev => prev ? { ...prev, hotkey: hotkeyString } : null);
-
-            // Stop listening for keys
-            stopKeyListener();
-        }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-        // Update current hotkey display on key up as well
-        // (especially important for showing modifier state changes)
-        const hotkeyString = buildHotkeyString(e);
-        setCurrentHotkey(hotkeyString || t("settings.shortcuts.pressKeys"));
-    };
-
-    if (!config) {
-        return (
-            <div className="flex h-full items-center justify-center bg-background text-foreground">
-                <div className="flex flex-col items-center space-y-4">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                    <p className="text-muted-foreground">{t("settings.loading")}</p>
-                </div>
-            </div>
-        );
+  const saveConfig = async () => {
+    if (!config) return
+    setSaving(true)
+    try {
+      await invoke('save_config', { newConfig: config })
+      await invoke('set_autostart', { enabled: config.autostart })
+      await invoke('register_hotkey', { shortcutStr: config.hotkey })
+      await invoke(config.analytics_enabled ? 'accept_analytics_consent' : 'decline_analytics_consent')
+      await invoke('close_settings_window')
+    } catch (error) {
+      console.error('Failed to save settings:', error)
+    } finally {
+      setSaving(false)
     }
+  }
 
-    return (
-        <div className="flex flex-col h-full bg-background text-foreground select-none">
-            <style>{`
-                /* Remove number input spinners */
-                input[type=number]::-webkit-inner-spin-button, 
-                input[type=number]::-webkit-outer-spin-button {
-                    -webkit-appearance: none;
-                    margin: 0;
-                }
-                input[type=number] {
-                    -moz-appearance: textfield;
-                }
+  const buildHotkey = (event: KeyboardEvent) => {
+    const parts = [event.ctrlKey && 'Ctrl', event.altKey && 'Alt', event.shiftKey && 'Shift', event.metaKey && 'Meta'].filter(Boolean)
+    const modifier = ['Control', 'Alt', 'Shift', 'Meta'].includes(event.key)
+    if (!modifier) parts.push(event.code.startsWith('Key') ? event.code.slice(3) : event.code.startsWith('Digit') ? event.code.slice(5) : event.key)
+    return parts.join('+')
+  }
 
-                /* Custom scrollbar styling */
-                ::-webkit-scrollbar {
-                    width: 8px;
-                    height: 8px;
-                }
-                
-                ::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                
-                ::-webkit-scrollbar-thumb {
-                    background: hsl(var(--border));
-                    border-radius: 4px;
-                    transition: background 0.2s;
-                }
-                
-                ::-webkit-scrollbar-thumb:hover {
-                    background: hsl(var(--primary) / 0.5);
-                }
-                
-                /* Firefox scrollbar styling */
-                * {
-                    scrollbar-width: thin;
-                    scrollbar-color: hsl(var(--border)) transparent;
-                }
-            `}</style>
+  const startHotkey = () => {
+    setListening(true)
+    const handler = (event: KeyboardEvent) => {
+      event.preventDefault()
+      const value = buildHotkey(event)
+      setCurrentHotkey(value)
+      if (!['Control', 'Alt', 'Shift', 'Meta'].includes(event.key)) {
+        setConfig((current) => current ? { ...current, hotkey: value } : current)
+        setListening(false)
+        window.removeEventListener('keydown', handler, true)
+      }
+    }
+    window.addEventListener('keydown', handler, true)
+  }
 
-            {/* Title Bar */}
-            <div className="flex justify-between items-center p-4 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 min-h-[60px]" data-tauri-drag-region>
-                <div className="flex items-center gap-2" data-tauri-drag-region>
-                    <div className="bg-primary/10 p-2 rounded-lg" data-tauri-drag-region>
-                        <Settings className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                        <h1 className="text-lg font-semibold tracking-tight" data-tauri-drag-region>{t("settings.title")}</h1>
-                        <p className="text-xs text-muted-foreground" data-tauri-drag-region>{t("settings.subtitle")}</p>
-                    </div>
-                </div>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleClose}
-                    className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive rounded-full transition-colors"
-                >
-                    <X className="h-4 w-4" />
-                </Button>
-            </div>
+  if (!config) return <div className="flex h-full items-center justify-center text-sm text-muted-foreground">{t('settings.loading')}</div>
 
-            {/* Settings Content */}
-            <div className="flex-grow p-6 overflow-auto space-y-6 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+  const field = (id: string, label: string, value: number, min: number, max: number) => (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} type="number" min={min} max={max} value={value}
+        onChange={(event) => updateMouse(id as keyof MouseMonitorConfig, Math.min(max, Math.max(min, Number(event.target.value) || min)))} />
+    </div>
+  )
 
-                {/* macOS Input Monitoring Permission Warning */}
-                {isMac && inputMonitoringGranted === false && (
-                    <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 p-4">
-                        <div className="flex items-start gap-3">
-                            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                                <h3 className="font-medium text-amber-800 dark:text-amber-200">
-                                    {t("settings.inputMonitoring.title")}
-                                </h3>
-                                <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                                    {t("settings.inputMonitoring.description")}
-                                </p>
-                                <Button
-                                    onClick={openInputMonitoringSettingsHandler}
-                                    variant="outline"
-                                    className="mt-3 border-amber-300 text-amber-700 hover:bg-amber-100 dark:border-amber-700 dark:text-amber-300 dark:hover:bg-amber-900/50"
-                                    size="sm"
-                                >
-                                    {t("settings.inputMonitoring.openSettings")}
-                                </Button>
-                                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
-                                    {t("settings.inputMonitoring.restartHint")}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
+  return <div className="flex h-full flex-col bg-background text-foreground">
+    <header className="flex min-h-14 items-center justify-between border-b border-border/60 px-4" data-tauri-drag-region>
+      <div className="flex items-center gap-3" data-tauri-drag-region>
+        <div className="rounded-lg bg-primary/10 p-2"><Settings className="h-4 w-4 text-primary" /></div>
+        <div><h1 className="text-sm font-semibold">{t('settings.title')}</h1><p className="text-xs text-muted-foreground">{t('settings.subtitle')}</p></div>
+      </div>
+      <Button variant="ghost" size="icon" aria-label={t('common.close')} onClick={() => invoke('close_settings_window')}><X className="h-4 w-4" /></Button>
+    </header>
 
-                {/* General Settings */}
-                <div className="grid gap-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <Monitor className="w-4 h-4 text-primary" />
-                                {t("settings.general.title")}
-                            </CardTitle>
-                            <CardDescription>{t("settings.general.description")}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="grid gap-6">
-                            <div className="flex items-center justify-between space-x-2">
-                                <Label htmlFor="startup" className="flex flex-col space-y-1">
-                                    <span>{t("settings.general.startup")}</span>
-                                    <span className="font-normal text-xs text-muted-foreground">{t("settings.general.startupDesc")}</span>
-                                </Label>
-                                <Switch
-                                    id="startup"
-                                    checked={config.autostart}
-                                    onCheckedChange={toggleAutostart}
-                                />
-                            </div>
+    <main className="flex-1 overflow-y-auto px-5 py-5">
+      <div className="mx-auto max-w-xl space-y-6">
+        <section className="space-y-3"><SectionTitle icon={<Monitor />} title={t('settings.general.title')} description={t('settings.general.description')} />
+          <div className="divide-y rounded-lg border bg-card">
+            <SettingRow label={t('settings.general.startup')} description={t('settings.general.startupDesc')}><Switch id="startup" checked={config.autostart} onChange={() => setConfig({ ...config, autostart: !config.autostart })} /></SettingRow>
+            <SettingRow label={t('settings.general.analytics')} description={t('settings.general.analyticsDesc')}><Switch id="analytics" checked={config.analytics_enabled} onChange={() => setConfig({ ...config, analytics_enabled: !config.analytics_enabled })} /></SettingRow>
+          </div>
+        </section>
 
-                            <div className="flex items-center justify-between space-x-2">
-                                <Label htmlFor="analytics" className="flex flex-col space-y-1">
-                                    <span>{t("settings.general.analytics")}</span>
-                                    <span className="font-normal text-xs text-muted-foreground">{t("settings.general.analyticsDesc")}</span>
-                                </Label>
-                                <Switch
-                                    id="analytics"
-                                    checked={config.analytics_enabled}
-                                    onCheckedChange={toggleAnalytics}
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
+        <section className="space-y-3"><SectionTitle icon={<Palette />} title={t('settings.language.title')} description={t('settings.language.description')} />
+          <div className="rounded-lg border bg-card p-4"><Label htmlFor="language">{t('settings.language.label')}</Label><select id="language" className="mt-2 h-9 w-full rounded-md border border-input bg-background px-3 text-sm" value={i18n.language} onChange={(event) => i18n.changeLanguage(event.target.value)}>{supportedLanguages.map((language) => <option key={language.code} value={language.code}>{language.nativeLabel}</option>)}</select></div>
+        </section>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <Languages className="w-4 h-4 text-primary" />
-                                {t("settings.language.title")}
-                            </CardTitle>
-                            <CardDescription>{t("settings.language.description")}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Label>{t("settings.language.label")}</Label>
-                            <div className="flex flex-wrap gap-2">
-                                {supportedLanguages.map((lang) => (
-                                    <Button
-                                        key={lang.code}
-                                        variant={i18n.language === lang.code ? "default" : "outline"}
-                                        size="sm"
-                                        aria-pressed={i18n.language === lang.code}
-                                        onClick={async () => {
-                                            try {
-                                                await i18n.changeLanguage(lang.code);
-                                            } catch (err) {
-                                                console.error('Failed to change language:', err);
-                                            }
-                                        }}
-                                        className="shrink-0"
-                                    >
-                                        {lang.nativeLabel}
-                                    </Button>
-                                ))}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                {t("settings.language.hint")}
-                            </p>
-                        </CardContent>
-                    </Card>
+        <section className="space-y-3"><SectionTitle icon={<Keyboard />} title={t('settings.shortcuts.title')} description={t('settings.shortcuts.description')} />
+          <div className="rounded-lg border bg-card p-4"><Label>{t('settings.shortcuts.showHotkey')}</Label><div className="mt-2 flex gap-2"><div className="flex h-9 min-w-0 flex-1 items-center rounded-md border bg-background px-3 font-mono text-sm">{listening ? currentHotkey || t('settings.shortcuts.pressKeys') : config.hotkey || t('settings.shortcuts.noneSet')}</div><Button size="sm" variant={listening ? 'destructive' : 'default'} onClick={() => listening ? setListening(false) : startHotkey()}>{listening ? t('settings.shortcuts.stop') : t('settings.shortcuts.set')}</Button><Button size="sm" variant="outline" onClick={() => setConfig({ ...config, hotkey: '' })}>{t('settings.shortcuts.clear')}</Button></div></div>
+        </section>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <Keyboard className="w-4 h-4 text-primary" />
-                                {t("settings.shortcuts.title")}
-                            </CardTitle>
-                            <CardDescription>{t("settings.shortcuts.description")}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label>{t("settings.shortcuts.showHotkey")}</Label>
-                                <div className="flex gap-2">
-                                    <div className={`
-                                        flex-1 h-10 px-3 rounded-md border flex items-center justify-center font-mono text-sm shadow-sm transition-colors
-                                        ${isListening
-                                            ? 'border-primary ring-1 ring-primary bg-primary/5 text-primary'
-                                            : 'border-input bg-background text-foreground'
-                                        }
-                                    `}>
-                                        {isListening ? currentHotkey : (config.hotkey || <span className="text-muted-foreground italic">{t("settings.shortcuts.noneSet")}</span>)}
-                                    </div>
-                                    <Button
-                                        onClick={isListening ? stopKeyListener : startKeyListener}
-                                        variant={isListening ? "destructive" : "default"}
-                                        className="w-24 shrink-0 shadow-sm"
-                                    >
-                                        {isListening ? t("settings.shortcuts.stop") : t("settings.shortcuts.set")}
-                                    </Button>
-                                    <Button
-                                        onClick={clearHotkey}
-                                        variant="outline"
-                                        className="w-20 shrink-0 shadow-sm"
-                                        disabled={!config.hotkey}
-                                    >
-                                        {t("settings.shortcuts.clear")}
-                                    </Button>
-                                </div>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                    <Info className="w-3 h-3" />
-                                    {isListening
-                                        ? t("settings.shortcuts.listeningHint")
-                                        : t("settings.shortcuts.idleHint")}
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
+        <section className="space-y-3"><SectionTitle icon={<Monitor />} title={t('settings.mouse.title')} description={t('settings.mouse.description')} />
+          <div className="rounded-lg border bg-card p-4"><div className="grid gap-4 sm:grid-cols-2">
+            {field('required_shakes', t('settings.mouse.requiredShakes'), config.mouse_monitor.required_shakes, 1, 20)}
+            {field('shake_threshold', t('settings.mouse.shakeThreshold'), config.mouse_monitor.shake_threshold, 1, 1000)}
+            {field('shake_time_limit', t('settings.mouse.timeLimit'), config.mouse_monitor.shake_time_limit, 100, 10000)}
+            {field('window_close_delay', t('settings.mouse.closeDelay'), config.mouse_monitor.window_close_delay, 0, 30000)}
+          </div><div className="mt-5 space-y-2 border-t pt-4"><Label htmlFor="new-app">{t('settings.mouse.whitelistTitle')}</Label><p className="text-xs text-muted-foreground">{t('settings.mouse.whitelistDesc')}</p><div className="flex gap-2"><Input id="new-app" value={newApp} placeholder={t('settings.mouse.addPlaceholder')} onChange={(event) => setNewApp(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { const item = newApp.trim(); if (item && !config.mouse_monitor.whitelist.includes(item)) updateMouse('whitelist', [...config.mouse_monitor.whitelist, item]); setNewApp('') } }} /><Button size="sm" onClick={() => { const item = newApp.trim(); if (item && !config.mouse_monitor.whitelist.includes(item)) updateMouse('whitelist', [...config.mouse_monitor.whitelist, item]); setNewApp('') }}>{t('settings.mouse.add')}</Button></div><div className="flex flex-wrap gap-2">{config.mouse_monitor.whitelist.map((app) => <button key={app} type="button" className="rounded-md bg-muted px-2 py-1 font-mono text-xs hover:bg-destructive/10" onClick={() => updateMouse('whitelist', config.mouse_monitor.whitelist.filter((item) => item !== app))}>{app} <span aria-hidden>×</span></button>)}</div></div></div>
+        </section>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <Info className="w-4 h-4 text-primary" />
-                                {t("settings.dragDrop.title")}
-                            </CardTitle>
-                            <CardDescription>{t("settings.dragDrop.description")}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="rounded-md bg-muted/40 border p-3 space-y-2">
-                                <div className="flex items-start gap-2">
-                                    <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">drag</kbd>
-                                    <span className="text-sm text-foreground">{t("settings.dragDrop.dragToCopy")}</span>
-                                </div>
-                                <div className="flex items-start gap-2">
-                                    <kbd className="shrink-0 mt-0.5 inline-flex items-center justify-center rounded border bg-background px-1.5 py-0.5 text-xs font-mono shadow-sm">shift</kbd>
-                                    <span className="text-sm text-foreground">{t("settings.dragDrop.shiftToMove")}</span>
-                                </div>
-                            </div>
-                            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                <Info className="w-3 h-3 shrink-0" />
-                                {platform === 'mac' 
-                                    ? t("settings.dragDrop.macHint")
-                                    : t("settings.dragDrop.winHint")}
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <Monitor className="w-4 h-4 text-primary" />
-                                {t("settings.mouse.title")}
-                            </CardTitle>
-                            <CardDescription>{t("settings.mouse.description")}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("settings.mouse.sensitivity")}</Label>
-                                    <div className="space-y-1">
-                                        <Label htmlFor="shakes">{t("settings.mouse.requiredShakes")}</Label>
-                                        <Input
-                                            id="shakes"
-                                            type="number"
-                                            value={config.mouse_monitor.required_shakes}
-                                            onChange={(e) => updateConfig({ required_shakes: parseInt(e.target.value) })}
-                                            className="font-mono"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label htmlFor="threshold">{t("settings.mouse.shakeThreshold")}</Label>
-                                        <Input
-                                            id="threshold"
-                                            type="number"
-                                            value={config.mouse_monitor.shake_threshold}
-                                            onChange={(e) => updateConfig({ shake_threshold: parseInt(e.target.value) })}
-                                            className="font-mono"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t("settings.mouse.timing")}</Label>
-                                    <div className="space-y-1">
-                                        <Label htmlFor="limit">{t("settings.mouse.timeLimit")}</Label>
-                                        <Input
-                                            id="limit"
-                                            type="number"
-                                            value={config.mouse_monitor.shake_time_limit}
-                                            onChange={(e) => updateConfig({ shake_time_limit: parseInt(e.target.value) })}
-                                            className="font-mono"
-                                        />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label htmlFor="delay">{t("settings.mouse.closeDelay")}</Label>
-                                        <Input
-                                            id="delay"
-                                            type="number"
-                                            value={config.mouse_monitor.window_close_delay}
-                                            onChange={(e) => updateConfig({ window_close_delay: parseInt(e.target.value) })}
-                                            className="font-mono"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3 pt-4 border-t">
-                                <div className="space-y-1">
-                                    <Label>{t("settings.mouse.whitelistTitle")}</Label>
-                                    <p className="text-xs text-muted-foreground">
-                                        {t("settings.mouse.whitelistDesc")}
-                                    </p>
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <Input
-                                        type="text"
-                                        value={newWhitelistItem}
-                                        onChange={(e) => setNewWhitelistItem(e.target.value)}
-                                        placeholder={t("settings.mouse.addPlaceholder")}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                addWhitelistItem();
-                                            }
-                                        }}
-                                        className="font-mono text-sm"
-                                    />
-                                    <Button
-                                        onClick={addWhitelistItem}
-                                        variant="secondary"
-                                        disabled={!newWhitelistItem.trim()}
-                                        className="shrink-0"
-                                    >
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        {t("settings.mouse.add")}
-                                    </Button>
-                                </div>
-
-                                <div className="bg-muted/30 rounded-lg border min-h-[100px] max-h-[200px] overflow-y-auto p-1">
-                                    {(config.mouse_monitor.whitelist || []).length > 0 ? (
-                                        <div className="space-y-1">
-                                            {config.mouse_monitor.whitelist.map((app, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="group flex items-center justify-between p-2 rounded-md hover:bg-background hover:shadow-sm hover:border-border/50 border border-transparent transition-all"
-                                                >
-                                                    <div className="flex items-center gap-2 overflow-hidden">
-                                                        <div className="h-6 w-6 rounded bg-primary/10 flex items-center justify-center shrink-0">
-                                                            <span className="text-xs font-mono font-bold text-primary">{app.charAt(0).toUpperCase()}</span>
-                                                        </div>
-                                                        <span className="text-sm font-mono truncate">{app}</span>
-                                                    </div>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => removeWhitelistItem(app)}
-                                                        className="h-7 w-7 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all rounded-md"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-col items-center justify-center py-8 text-center px-4">
-                                            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center mb-2">
-                                                <Monitor className="h-4 w-4 text-muted-foreground" />
-                                            </div>
-                                            <p className="text-sm font-medium text-foreground">{t("settings.mouse.emptyTitle")}</p>
-                                            <p className="text-xs text-muted-foreground mt-1">{t("settings.mouse.emptyDesc")}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-
-            {/* Footer */}
-            <div className="p-4 border-t border-border bg-background/95 backdrop-blur z-50">
-                <Button
-                    onClick={saveConfig}
-                    disabled={saving}
-                    className="w-full sm:w-auto ml-auto px-8 shadow-sm flex items-center gap-2"
-                >
-                    {saving ? (
-                        <>
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"></div>
-                            <span>{t("settings.footer.saving")}</span>
-                        </>
-                    ) : (
-                        t("settings.footer.save")
-                    )}
-                </Button>
-            </div>
-        </div>
-    );
+        <section className="space-y-3"><SectionTitle icon={theme === 'dark' ? <Moon /> : <Sun />} title="Appearance" description="Choose how Holdem looks." /><div className="flex gap-2 rounded-lg border bg-card p-2">{(['system', 'light', 'dark'] as const).map((option) => <Button key={option} size="sm" variant={theme === option ? 'default' : 'ghost'} className="flex-1 capitalize" onClick={() => setTheme(option)}>{option}</Button>)}</div></section>
+        <p className="text-center text-xs text-muted-foreground">{t('settings.dragDrop.dragToCopy')} · {t('settings.dragDrop.shiftToMove')}</p>
+      </div>
+    </main>
+    <footer className="border-t bg-background/95 p-4"><Button className="w-full" onClick={saveConfig} disabled={saving}>{saving ? t('settings.footer.saving') : t('settings.footer.save')}</Button></footer>
+  </div>
 }
 
-// Simple Switch component helper since it was missing from imports
-function Switch({ id, checked, onCheckedChange }: { id: string, checked: boolean, onCheckedChange: () => void }) {
-    return (
-        <button
-            id={id}
-            onClick={onCheckedChange}
-            className={`
-                relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent 
-                transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
-                focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50
-                ${checked ? 'bg-primary' : 'bg-input'}
-            `}
-        >
-            <span
-                className={`
-                    pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform
-                    ${checked ? 'translate-x-5' : 'translate-x-0'}
-                `}
-            />
-        </button>
-    );
+function SectionTitle({ icon, title, description }: { icon: ReactNode; title: string; description: string }) {
+  return <div className="flex items-start gap-2"><span className="mt-0.5 text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span><div><h2 className="text-sm font-semibold">{title}</h2><p className="text-xs text-muted-foreground">{description}</p></div></div>
+}
+
+function SettingRow({ label, description, children }: { label: string; description: string; children: ReactNode }) {
+  return <div className="flex items-center justify-between gap-4 p-4"><div><p className="text-sm font-medium">{label}</p><p className="text-xs text-muted-foreground">{description}</p></div>{children}</div>
 }

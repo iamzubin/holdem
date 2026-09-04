@@ -7,7 +7,7 @@
     "add": "Přidat",
     "set": "Nastavit",
     "stop": "Zastavit",
-    "noneSet": "Není nastaveno",
+    "noneSet": "Nenastaveno",
     "loading": "Načítám...",
     "copyLink": "Kopírovat odkaz"
   },
@@ -15,28 +15,32 @@
     "dropHere": "Přetáhněte sem",
     "files": "{{count}} soubor",
     "files_one": "{{count}} soubor",
-    "files_few": "{{count}} soubory",
-    "files_many": "{{count}} souborů",
-    "files_other": "{{count}} soubory",
-    "files_plural": "{{count}} soubory",
+    "files_other": "{{count}} souborů",
+    "files_plural": "{{count}} souborů",
     "clear": "Vyčistit",
     "paste": "Vložit",
     "contextMenuTitle": "Kontextové menu",
     "toast": {
-      "dropReceived": "Přetažení přijato v zobrazení webu!",
+      "dropReceived": "Přetažení přijato ve webview!",
       "processingVirtual": "Zpracovávání virtuálních souborů z prohlížeče...",
-      "checkingTextHtml": "Žádné soubory nebyly přetaženy, kontrola textu/html...",
+      "checkingTextHtml": "Nebyly přetaženy žádné soubory, kontrola text/html...",
       "downloadingImage": "Stahování obrázku...",
       "failedSaveDataImage": "Nepodařilo se uložit datový obrázek",
-      "failedSaveDroppedImage": "Nepodařilo se uložit shozený obrázek",
+      "failedSaveDroppedImage": "Nepodařilo se uložit přetažený obrázek",
       "couldNotDownloadImage": "Nelze stáhnout obrázek: {{error}}"
-    }
+    },
+    "files_few": "{{count}} soubory",
+    "files_many": "{{count}} souborů"
   },
   "popup": {
-    "itemsSelected": "{{count}} položek vybráno",
+    "itemsSelected": "Vybráno {{count}} položek",
     "list": "Seznam",
     "grid": "Mřížka",
-    "removeSelected": "Odstranit vybrané soubory"
+    "removeSelected": "Odstranit vybrané soubory",
+    "itemsSelected_one": "Vybrána {{count}} položka",
+    "itemsSelected_few": "Vybrány {{count}} položky",
+    "itemsSelected_many": "Vybráno {{count}} položek",
+    "itemsSelected_other": "Vybráno {{count}} položek"
   },
   "settings": {
     "title": "Nastavení",
@@ -44,7 +48,7 @@
     "loading": "Načítání nastavení...",
     "inputMonitoring": {
       "title": "Vyžadováno oprávnění pro sledování vstupu",
-      "description": "Chcete-li použít globální zkratky jako Option+Space nebo Ctrl+Mezer, potřebuje tato aplikace oprávnění k monitorování. Toto je systémový požadavek macOS.",
+      "description": "Chcete-li používat globální zkratky jako Option+Mezerník nebo Ctrl+Mezerník, tato aplikace potřebuje oprávnění ke sledování vstupu. Toto je systémový požadavek macOS.",
       "openSettings": "Otevřít nastavení systému",
       "restartHint": "Po udělení oprávnění restartujte aplikaci, aby se změny projevily."
     },
@@ -67,12 +71,12 @@
       "description": "Přizpůsobte si, jak komunikujete s aplikací",
       "showHotkey": "Zobrazit klávesovou zkratku okna",
       "pressKeys": "Stiskněte klávesy...",
-      "listeningHint": "Stiskněte požadovanou kombinaci... Stiskněte tlačítko Zastavit po dokončení",
+      "listeningHint": "Stiskněte požadovanou kombinaci kláves... Po dokončení stiskněte Zastavit",
       "idleHint": "Globální zkratka pro posunutí aplikace do popředí",
       "set": "Nastavit",
       "stop": "Zastavit",
       "clear": "Vyčistit",
-      "noneSet": "Není nastaveno"
+      "noneSet": "Nenastaveno"
     },
     "dragDrop": {
       "title": "Chování přetažením",
@@ -88,12 +92,12 @@
       "description": "Citlivost detekce jemného protřepání",
       "sensitivity": "Citlivost",
       "timing": "Časování",
-      "requiredShakes": "Požadované zatřesení",
+      "requiredShakes": "Požadovaná zatřesení",
       "shakeThreshold": "Práh zatřesení",
       "timeLimit": "Časový limit (ms)",
       "closeDelay": "Zpoždění zavření (ms)",
       "whitelistTitle": "Povolené aplikace",
-      "whitelistDesc": "Detekce zatřesení bude aktivní pouze v případě, že je jedna z těchto aplikací zaměřena. Přijmout názvy procesů (např. brave, brave.exe). Kase-incitlivé.",
+      "whitelistDesc": "Detekce zatřesení bude aktivní pouze v případě, že je aktivní jedna z těchto aplikací. Přijímá názvy procesů (např. brave, brave.exe). Nerozlišuje velká a malá písmena.",
       "addPlaceholder": "Přidat název procesu...",
       "add": "Přidat",
       "emptyTitle": "Žádné aplikace na seznamu povolených",

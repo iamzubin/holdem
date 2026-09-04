@@ -27,14 +27,16 @@
       "downloadingImage": "正在下载图像...",
       "failedSaveDataImage": "保存数据图像失败",
       "failedSaveDroppedImage": "保存拖放图像失败",
-      "couldNotDownloadImage": "Could not download image: {{error}}"
+      "couldNotDownloadImage": "无法下载图片: {{error}}"
     }
   },
   "popup": {
-    "itemsSelected": "{{count}} items selected",
+    "itemsSelected": "已选择 {{count}} 项",
     "list": "列表",
     "grid": "网格",
-    "removeSelected": "删除选中的文件"
+    "removeSelected": "删除选中的文件",
+    "itemsSelected_one": "已选择 {{count}} 项",
+    "itemsSelected_other": "已选择 {{count}} 项"
   },
   "settings": {
     "title": "设置",
@@ -64,8 +66,8 @@
       "title": "快捷键",
       "description": "自定义您与应用程序的交互方式",
       "showHotkey": "显示窗口热键",
-      "pressKeys": "按键...",
-      "listeningHint": "按需要的密钥组合... 完成后按停止",
+      "pressKeys": "按下快捷键...",
+      "listeningHint": "按下所需的按键组合... 完成后点击停止",
       "idleHint": "将应用带到前台的全局快捷方式",
       "set": "设置",
       "stop": "停止",
@@ -85,13 +87,13 @@
       "title": "鼠标监视器",
       "description": "微调晃动检测灵敏度",
       "sensitivity": "灵敏度",
-      "timing": "D. 时间安排",
+      "timing": "时间控制",
       "requiredShakes": "所需的晃动",
       "shakeThreshold": "摇动阈值",
       "timeLimit": "时间限制 (ms)",
       "closeDelay": "关闭延迟 (ms)",
       "whitelistTitle": "白名单应用",
-      "whitelistDesc": "只有当其中一个应用被聚焦时，晃动检测才会激活。接受进程名称(例如，勇士、勇敢.exe)。不区分大小写。",
+      "whitelistDesc": "晃动检测仅在这些应用处于焦点状态时激活。接受进程名称（例如 brave、brave.exe）。不区分大小写。",
       "addPlaceholder": "添加流程名称...",
       "add": "添加",
       "emptyTitle": "没有应用程序白名单",
@@ -129,7 +131,7 @@
     "downloadedDesc": "正在准备安装...",
     "installing": "正在安装更新并重新启动应用程序...",
     "availableTitle": "更新可用！",
-    "version": "Version {{version}}",
+    "version": "版本 {{version}}",
     "noNotes": "没有可用的发行备注",
     "releaseNotes": "发布说明",
     "autoDownload": "下载将自动开始...",

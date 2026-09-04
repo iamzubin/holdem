@@ -1,32 +1,32 @@
 {
   "common": {
-    "cancel": "Abandonner",
+    "cancel": "Annuler",
     "save": "Enregistrer",
     "close": "Fermer",
-    "clear": "Nettoyer",
+    "clear": "Effacer",
     "add": "Ajouter",
     "set": "Régler",
     "stop": "Arrêter",
-    "noneSet": "Aucun défini",
+    "noneSet": "Non défini",
     "loading": "Chargement en cours...",
     "copyLink": "Copier le lien"
   },
   "app": {
     "dropHere": "Déposer ici",
-    "files": "Fichier {{count}}",
-    "files_one": "Fichier {{count}}",
-    "files_other": "Fichiers {{count}}",
-    "files_plural": "Fichiers {{count}}",
-    "clear": "Nettoyer",
+    "files": "{{count}} fichier",
+    "files_one": "{{count}} fichier",
+    "files_other": "{{count}} fichiers",
+    "files_plural": "{{count}} fichiers",
+    "clear": "Effacer",
     "paste": "Coller",
     "contextMenuTitle": "Menu contextuel",
     "toast": {
-      "dropReceived": "Drop reçu dans la vue web!",
+      "dropReceived": "Dépôt reçu dans la vue web !",
       "processingVirtual": "Traitement des fichiers virtuels depuis le navigateur...",
-      "checkingTextHtml": "Aucun fichier déposé, recherche de texte/html...",
+      "checkingTextHtml": "Aucun fichier déposé, vérification du texte/HTML...",
       "downloadingImage": "Téléchargement de l'image...",
       "failedSaveDataImage": "Échec de l'enregistrement de l'image de données",
-      "failedSaveDroppedImage": "Échec de l'enregistrement de l'image abandonnée",
+      "failedSaveDroppedImage": "Échec de l'enregistrement de l'image déposée",
       "couldNotDownloadImage": "Impossible de télécharger l'image: {{error}}"
     }
   },
@@ -34,7 +34,9 @@
     "itemsSelected": "{{count}} éléments sélectionnés",
     "list": "Liste",
     "grid": "Grille",
-    "removeSelected": "Supprimer les fichiers sélectionnés"
+    "removeSelected": "Supprimer les fichiers sélectionnés",
+    "itemsSelected_one": "{{count}} élément sélectionné",
+    "itemsSelected_other": "{{count}} éléments sélectionnés"
   },
   "settings": {
     "title": "Réglages",
@@ -43,7 +45,7 @@
     "inputMonitoring": {
       "title": "Autorisation de surveillance d'entrée requise",
       "description": "Pour utiliser des raccourcis globaux tels que Option+Espace ou Ctrl+Espace, cette application a besoin des autorisations de Surveillance de l'entrée. Ceci est une exigence du système macOS.",
-      "openSettings": "Ouvrir les réglages système",
+      "openSettings": "Ouvrir les paramètres système",
       "restartHint": "Après avoir accordé l'autorisation, redémarrez l'application pour que les modifications prennent effet."
     },
     "general": {
@@ -64,13 +66,13 @@
       "title": "Raccourcis",
       "description": "Personnalisez la façon dont vous interagissez avec l'application",
       "showHotkey": "Afficher le raccourci clavier de la fenêtre",
-      "pressKeys": "Appuyer sur les touches...",
-      "listeningHint": "Appuyez sur la combinaison de touches désirées... Appuyez sur Arrêt lorsque vous avez terminé",
+      "pressKeys": "Appuyez sur des touches...",
+      "listeningHint": "Appuyez sur la combinaison de touches souhaitée... Appuyez sur Arrêter une fois terminé",
       "idleHint": "Raccourci global pour mettre l'application au premier plan",
       "set": "Régler",
       "stop": "Arrêter",
-      "clear": "Nettoyer",
-      "noneSet": "Aucun défini"
+      "clear": "Effacer",
+      "noneSet": "Non défini"
     },
     "dragDrop": {
       "title": "Comportement de glisser-déposer",
@@ -89,9 +91,9 @@
       "requiredShakes": "Secouements requis",
       "shakeThreshold": "Seuil de secousse",
       "timeLimit": "Limite de temps (ms)",
-      "closeDelay": "Fermer le délai (ms)",
+      "closeDelay": "Délai de fermeture (ms)",
       "whitelistTitle": "Applications en liste blanche",
-      "whitelistDesc": "La détection de secousses ne sera active que lorsque l'une de ces applications sera ciblée. Accepte les noms de processus (par exemple, brave, brave.exe). Insensible à la casse.",
+      "whitelistDesc": "La détection d'agitation ne sera active que lorsque l'une de ces applications est au premier plan. Accepte les noms de processus (ex. brave, brave.exe). Insensible à la casse.",
       "addPlaceholder": "Ajouter un nom de processus...",
       "add": "Ajouter",
       "emptyTitle": "Aucune application en liste blanche",

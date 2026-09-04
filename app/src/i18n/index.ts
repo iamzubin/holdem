@@ -15,9 +15,12 @@ for (const [path, mod] of Object.entries(localeModules)) {
 }
 
 // Backwards-compat aliases for preferences stored before regional codes
-// existed (Settings used to offer short codes `zh` / `es`).
+// existed (Settings used to offer short codes `zh` / `es`), as well as
+// base-language fallbacks for browser detectors (pt -> pt-BR, sv -> sv-SE).
 if (resources["zh-CN"]) resources["zh"] = resources["zh-CN"];
 if (resources["es-ES"]) resources["es"] = resources["es-ES"];
+if (resources["pt-BR"]) resources["pt"] = resources["pt-BR"];
+if (resources["sv-SE"]) resources["sv"] = resources["sv-SE"];
 
 export const supportedLanguages = [
   { code: "en", label: "English", nativeLabel: "English" },
@@ -85,7 +88,6 @@ export const i18nInitialization = i18n
   .then(() => {
     syncDocumentAttrs(i18n.language);
   });
-
 export const setLanguage = (lng: string) => {
   return i18n.changeLanguage(lng);
 };

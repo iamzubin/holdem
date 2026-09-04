@@ -73,18 +73,7 @@ pub fn start_multi_drag(
         .get_webview_window("main")
         .ok_or("Main window not found")?;
 
-    // Ensure window is shown and activated for drag to work on macOS
-    #[cfg(target_os = "macos")]
-    {
-        if let Err(e) = window.show() {
-            warn!("Failed to show main window before drag: {}", e);
-        }
-        if let Err(e) = window.set_focus() {
-            warn!("Failed to focus main window before drag: {}", e);
-        }
-        // Small delay to ensure window is properly activated
-        std::thread::sleep(std::time::Duration::from_millis(50));
-    }
+
 
     let app_clone = app.clone();
 
@@ -106,11 +95,6 @@ pub fn start_multi_drag(
         }
     };
 
-    // On macOS, the drag crate only supports Copy or Move individually, not combined.
-    // Using Copy as default (standard macOS behavior where Option key changes to Move).
-    #[cfg(target_os = "macos")]
-    let mode = drag::DragMode::CopyOrMove;
-    #[cfg(not(target_os = "macos"))]
     let mode = drag::DragMode::CopyOrMove;
 
     match drag::start_drag(
@@ -285,16 +269,7 @@ pub fn start_text_drag(
         .get_webview_window("main")
         .ok_or("Main window not found")?;
 
-    #[cfg(target_os = "macos")]
-    {
-        if let Err(e) = window.show() {
-            warn!("Failed to show main window before drag: {}", e);
-        }
-        if let Err(e) = window.set_focus() {
-            warn!("Failed to focus main window before drag: {}", e);
-        }
-        std::thread::sleep(std::time::Duration::from_millis(50));
-    }
+
 
     let app_clone = app.clone();
     let on_drop_callback = move |result: drag::DragResult, _: drag::CursorPosition| {
@@ -313,9 +288,6 @@ pub fn start_text_drag(
         }
     };
 
-    #[cfg(target_os = "macos")]
-    let mode = drag::DragMode::CopyOrMove;
-    #[cfg(not(target_os = "macos"))]
     let mode = drag::DragMode::CopyOrMove;
 
     match drag::start_drag(

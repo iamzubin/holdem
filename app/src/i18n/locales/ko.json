@@ -7,7 +7,7 @@
     "add": "추가",
     "set": "설정",
     "stop": "중지",
-    "noneSet": "설정 안 됨",
+    "noneSet": "설정되지 않음",
     "loading": "로딩 중...",
     "copyLink": "링크 복사"
   },
@@ -31,10 +31,12 @@
     }
   },
   "popup": {
-    "itemsSelected": "{{count}}개의 항목이 선택됨",
+    "itemsSelected": "{{count}}개 항목 선택됨",
     "list": "목록",
     "grid": "그리드",
-    "removeSelected": "선택한 파일 삭제"
+    "removeSelected": "선택한 파일 삭제",
+    "itemsSelected_one": "{{count}}개 항목 선택됨",
+    "itemsSelected_other": "{{count}}개 항목 선택됨"
   },
   "settings": {
     "title": "설정",
@@ -70,7 +72,7 @@
       "set": "설정",
       "stop": "중지",
       "clear": "지우기",
-      "noneSet": "설정 안 됨"
+      "noneSet": "설정되지 않음"
     },
     "dragDrop": {
       "title": "끌어서 놓기 동작",
@@ -106,9 +108,17 @@
     "title": "Holdem 개선에 도움을 주세요",
     "description": "더 나은 경험을 위해 익명 사용 데이터를 수집하고자 합니다",
     "collectTitle": "수집하는 정보:",
-    "collectItems": ["앱 실행 이벤트", "파일 끌어서 놓기 사용 현황", "기본 앱 성능 지표"],
+    "collectItems": [
+      "앱 실행 이벤트",
+      "파일 끌어서 놓기 사용 현황",
+      "기본 앱 성능 지표"
+    ],
     "notCollectTitle": "수집하지 않는 정보:",
-    "notCollectItems": ["개인 정보", "파일 내용 또는 이름", "검색 기록"],
+    "notCollectItems": [
+      "개인 정보",
+      "파일 내용 또는 이름",
+      "검색 기록"
+    ],
     "decline": "거부",
     "accept": "수락"
   },

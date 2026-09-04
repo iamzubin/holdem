@@ -9,21 +9,9 @@ use tracing_subscriber::{fmt, prelude::*, EnvFilter};
 static LOG_GUARD: OnceLock<WorkerGuard> = OnceLock::new();
 
 pub fn setup_logging() {
-    let log_dir = if cfg!(target_os = "windows") {
-        std::env::var("LOCALAPPDATA")
-            .map(|p| std::path::PathBuf::from(p).join("holdem").join("logs"))
-            .unwrap_or_else(|_| std::path::PathBuf::from(".").join("logs"))
-    } else if cfg!(target_os = "macos") {
-        dirs::data_local_dir()
-            .unwrap_or_else(|| std::path::PathBuf::from("."))
-            .join("com.holdem.app")
-            .join("logs")
-    } else {
-        dirs::data_local_dir()
-            .unwrap_or_else(|| std::path::PathBuf::from("."))
-            .join("holdem")
-            .join("logs")
-    };
+    let log_dir = std::env::var("LOCALAPPDATA")
+        .map(|p| std::path::PathBuf::from(p).join("holdem").join("logs"))
+        .unwrap_or_else(|_| std::path::PathBuf::from(".").join("logs"));
 
     if let Err(e) = std::fs::create_dir_all(&log_dir) {
         eprintln!("Failed to create log directory: {}", e);

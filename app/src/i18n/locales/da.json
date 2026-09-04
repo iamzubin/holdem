@@ -31,10 +31,12 @@
     }
   },
   "popup": {
-    "itemsSelected": "{{count}} emner valgt",
+    "itemsSelected": "{{count}} elementer valgt",
     "list": "Liste",
     "grid": "Gitter",
-    "removeSelected": "Fjern Valgte Filer"
+    "removeSelected": "Fjern Valgte Filer",
+    "itemsSelected_one": "{{count}} element valgt",
+    "itemsSelected_other": "{{count}} elementer valgt"
   },
   "settings": {
     "title": "Indstillinger",
@@ -91,7 +93,7 @@
       "timeLimit": "Tidsgrænse (ms)",
       "closeDelay": "Luk Forsinkelse (ms)",
       "whitelistTitle": "Hvidlistede Apps",
-      "whitelistDesc": "Rystesøgning vil kun være aktiv, når en af disse apps er fokuseret. Accepterer procesnavne (f.eks. brave, brave.exe). Case-ufølsom.",
+      "whitelistDesc": "Rystedetektering vil kun være aktiv, når en af disse apps har fokus. Accepterer procesnavne (f.eks. brave, brave.exe). Skelner ikke mellem store og små bogstaver.",
       "addPlaceholder": "Tilføj procesnavn...",
       "add": "Tilføj",
       "emptyTitle": "Ingen apps whitelistet",

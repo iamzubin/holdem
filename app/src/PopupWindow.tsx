@@ -157,7 +157,7 @@ const PopupWindow: React.FC = () => {
   return (
     <div className="fixed inset-0 bg-background  p-2 rounded border border-border">
       <div className="flex justify-between items-center mb-2">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           {files.length > 0 && (
             <>
               <span className="text-xs text-primary">{t("popup.itemsSelected", { count: files.length })}</span>
@@ -165,7 +165,7 @@ const PopupWindow: React.FC = () => {
             </>
           )}
         </div>
-        <div className="flex space-x-2">
+        <div className="flex gap-2">
           <ToggleGroup
             type="single"
             value={viewMode}
@@ -193,7 +193,7 @@ const PopupWindow: React.FC = () => {
                 ref={el => { fileRefs.current[file.id] = el; }}
                 className={`
                   ${viewMode === 'list'
-                    ? 'flex items-center space-x-2 p-1 rounded'
+                    ? 'flex items-center gap-2 p-1 rounded'
                     : 'flex flex-col items-center p-1 rounded'
                   }
                   ${selectedFiles.has(file.id.toString()) ? 'bg-accent bg-opacity-50' : ''}
@@ -236,7 +236,7 @@ const PopupWindow: React.FC = () => {
               onClick={handleRemoveSelectedFiles}
               disabled={selectedFiles.size === 0}
             >
-              <Trash2 className="w-4 h-4 mr-2" />
+              <Trash2 className="w-4 h-4 me-2" />
               {t("popup.removeSelected")}
             </ContextMenu.Item>
           </ContextMenu.Content>

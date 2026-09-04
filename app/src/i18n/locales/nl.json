@@ -1,13 +1,13 @@
 {
   "common": {
-    "cancel": "annuleren",
+    "cancel": "Annuleren",
     "save": "Opslaan",
     "close": "Afsluiten",
     "clear": "Verwijderen",
     "add": "Toevoegen",
     "set": "Instellen",
     "stop": "Stoppen",
-    "noneSet": "Geen ingesteld",
+    "noneSet": "Niet ingesteld",
     "loading": "Laden...",
     "copyLink": "Koppeling kopiëren"
   },
@@ -19,29 +19,31 @@
     "files_plural": "{{count}} bestanden",
     "clear": "Verwijderen",
     "paste": "Plakken",
-    "contextMenuTitle": "Context Menu",
+    "contextMenuTitle": "Contextmenu",
     "toast": {
       "dropReceived": "Drop ontvangen in webview!",
       "processingVirtual": "Verwerken van virtuele bestanden van browser...",
-      "checkingTextHtml": "Geen bestanden verwijderd, controleren op text/html...",
+      "checkingTextHtml": "Geen bestanden neergezet, controleren op tekst/html...",
       "downloadingImage": "Afbeelding downloaden...",
       "failedSaveDataImage": "Dataafbeelding opslaan mislukt",
-      "failedSaveDroppedImage": "Opslaan van achtergelaten afbeelding is mislukt",
+      "failedSaveDroppedImage": "Kan neergezette afbeelding niet opslaan",
       "couldNotDownloadImage": "Kan afbeelding niet downloaden: {{error}}"
     }
   },
   "popup": {
     "itemsSelected": "{{count}} items geselecteerd",
     "list": "Lijst",
-    "grid": "Raster",
-    "removeSelected": "Geselecteerde bestanden verwijderen"
+    "grid": "Rooster",
+    "removeSelected": "Geselecteerde bestanden verwijderen",
+    "itemsSelected_one": "{{count}} item geselecteerd",
+    "itemsSelected_other": "{{count}} items geselecteerd"
   },
   "settings": {
     "title": "Instellingen",
     "subtitle": "Beheer uw applicatievoorkeuren",
     "loading": "Instellingen laden...",
     "inputMonitoring": {
-      "title": "Toestemming voor invoermonitoring vereist",
+      "title": "Toegang tot invoermonitoring vereist",
       "description": "Om globale snelkoppelingen zoals Option+Space of Ctrl+Space, heeft deze app invoercontrole nodig. Dit is een macOS-systeemvereiste.",
       "openSettings": "Open systeeminstellingen",
       "restartHint": "Na het verlenen van de toestemming, start de app opnieuw op om wijzigingen toe te passen."
@@ -70,7 +72,7 @@
       "set": "Instellen",
       "stop": "Stoppen",
       "clear": "Verwijderen",
-      "noneSet": "Geen ingesteld"
+      "noneSet": "Niet ingesteld"
     },
     "dragDrop": {
       "title": "Sleep & Drop Gedrag",
@@ -78,20 +80,20 @@
       "dragToCopy": "Bestanden kopiëren naar bestemming",
       "shiftToMove": "Houd Shift ingedrukt tijdens dropping om bestanden te verplaatsen",
       "move": "verplaats",
-      "macHint": "macOS toont een groene + badge bij het kopiëren. Geen badge = Bezetbewerking.",
+      "macHint": "macOS toont een groene + badge bij kopiëren. Geen badge = verplaatsbewerking.",
       "winHint": "Windows Explorer toont een zwevende overlay tijdens het kopiëren. Een bewegende pijl toont voor de verplaatsing."
     },
     "mouse": {
       "title": "Muis Monitor",
       "description": "Afstemmen van shakedetectie gevoeligheid",
       "sensitivity": "Gevoeligheid",
-      "timing": "timing",
+      "timing": "Timing",
       "requiredShakes": "Vereiste Schudden",
       "shakeThreshold": "Schud drempelwaarde",
       "timeLimit": "Tijdslimiet (ms)",
       "closeDelay": "Sluiten vertraging (ms)",
       "whitelistTitle": "Toegestane Apps",
-      "whitelistDesc": "Schud detectie zal alleen actief zijn als een van deze apps is gefocust. Accepteert procesnamen (bijv. brave, brave.exe). Niet gevoelig.",
+      "whitelistDesc": "Schuddetectie is alleen actief wanneer een van deze apps de focus heeft. Accepteert procesnamen (bijv. brave, brave.exe). Niet hoofdlettergevoelig.",
       "addPlaceholder": "Voeg procesnaam toe...",
       "add": "Toevoegen",
       "emptyTitle": "Geen apps op de whitelist",
@@ -121,7 +123,7 @@
     "accept": "Accepteren"
   },
   "updater": {
-    "title": "Software Updates",
+    "title": "Software-updates",
     "close": "Afsluiten",
     "checking": "Controleren op updates...",
     "downloading": "Update downloaden...",
