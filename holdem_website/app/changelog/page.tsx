@@ -5,7 +5,7 @@ import { GITHUB_REPO } from '@/lib/constants'
 export const metadata: Metadata = {
   title: 'Changelog — Holdem Release Notes',
   description:
-    'Holdem changelog and release notes. Current release v3.2.0. Full version history on GitHub Releases.',
+    'Holdem changelog and release notes. Current release v3.1.1. Full version history on GitHub Releases.',
   alternates: {
     canonical: 'https://holdem.iamzub.in/changelog',
   },
@@ -51,7 +51,7 @@ export default function ChangelogPage() {
       <div className="mt-8 space-y-4">
         <div className="border-hairline bg-surface-1 rounded-xl border p-5">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-xl font-bold">v3.2.0</h2>
+            <h2 className="text-xl font-bold">v3.1.1</h2>
             <span className="bg-success/15 text-success shrink-0 rounded-full px-3 py-1 text-xs font-medium">
               Latest
             </span>
@@ -60,12 +60,10 @@ export default function ChangelogPage() {
             See GitHub Releases for the full notes.
           </p>
           <p className="text-ink-muted mt-2">
-            Universal native drop target (virtual files, bitmaps, web images,
-            HTML, URLs, and text snippets land in a dated drop folder — folder
-            drops are now instant), in-house thumbnail engine (thumb-rs backend
-            vendored in, unpinned git dependency removed), crash-hardening
-            across the OLE pipeline, and a Linear-style dark-canvas website
-            redesign with emoji-free features.
+            Bug-fix release for file drops: dropping large folders no longer
+            freezes the shelf, files and images dropped from browsers and other
+            apps land reliably, fixed blank thumbnails for some images, and
+            fixed the popup shelf clipping the last row.
           </p>
           <a
             href={`${GITHUB_REPO}/releases`}
@@ -73,7 +71,7 @@ export default function ChangelogPage() {
             rel="noopener noreferrer"
             className="mt-3 inline-block text-sm underline"
           >
-            View v3.2.0 on GitHub →
+            View v3.1.1 on GitHub →
           </a>
         </div>
 

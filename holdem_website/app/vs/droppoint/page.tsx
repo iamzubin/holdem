@@ -111,8 +111,8 @@ export default function VsDroppointPage() {
           <strong>Verdict:</strong> Need one free shelf across Windows, Mac, and
           Linux right now? DropPoint still does the job. On Windows alone,
           Holdem wins on weight (Tauri/Rust vs Electron), trigger (shake vs
-           Shift+CapsLock), maintenance (actively maintained vs no release since 2022), and
-          extras like browser-image drops.
+          Shift+CapsLock), maintenance (actively maintained vs no release since
+          2022), and extras like browser-image drops.
         </div>
 
         <h2>Holdem vs DropPoint: side-by-side</h2>
@@ -184,7 +184,9 @@ export default function VsDroppointPage() {
               </tr>
               <tr>
                 <td className="px-4 py-3 font-medium">Maintenance</td>
-                <td className="px-4 py-3">Active — frequent releases with auto-update</td>
+                <td className="px-4 py-3">
+                  Active — frequent releases with auto-update
+                </td>
                 <td className="px-4 py-3">
                   Slow — no release since v1.2.1 (Sep 2022); Aug 2026 branch
                   update
@@ -235,7 +237,7 @@ export default function VsDroppointPage() {
           in an app patched sporadically. That is not an attack: open-source
           maintainers move on, and the GPL code remains available for anyone to
           fork. But if you are choosing a shelf to rely on daily, an actively
-           developed app (Holdem, with Tauri auto-updates via{' '}
+          developed app (Holdem, with Tauri auto-updates via{' '}
           <code>update.json</code>) is the safer bet — which is exactly why
           Holdem exists rather than as a DropPoint fork.
         </p>

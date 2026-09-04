@@ -347,7 +347,7 @@ export default function Home() {
               )}
             </ButtonLink>
             <p className="text-ink-subtle text-xs">
-              Windows 10/11 x64 · v3.2.0 · Free &amp; open-source ·{' '}
+              Windows 10/11 x64 · v3.1.1 · Free &amp; open-source ·{' '}
               <a
                 href="https://github.com/iamzubin/holdem/releases"
                 target="_blank"
