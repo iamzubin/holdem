@@ -7,7 +7,7 @@
     "add": "Додати",
     "set": "Сет",
     "stop": "Зупинити",
-    "noneSet": "Нічого не встановлено",
+    "noneSet": "Не встановлено",
     "loading": "Завантажується...",
     "copyLink": "Копіювати посилання"
   },
@@ -15,28 +15,32 @@
     "dropHere": "Перетягніть сюди",
     "files": "{{count}} файл",
     "files_one": "{{count}} файл",
-    "files_few": "{{count}} файли",
-    "files_many": "{{count}} файлів",
-    "files_other": "{{count}} файлу",
+    "files_other": "{{count}} файлів",
     "files_plural": "{{count}} файлів",
     "clear": "Очистити",
     "paste": "Вставити",
     "contextMenuTitle": "Контекстне меню",
     "toast": {
-      "dropReceived": "Падіння отримане на веб-перегляді!",
+      "dropReceived": "Файли отримано у webview!",
       "processingVirtual": "Обробка віртуальних файлів з браузера...",
-      "checkingTextHtml": "Файли не видалено, перевіряти текст/html...",
+      "checkingTextHtml": "Файли не перетягнуто, перевірка text/html...",
       "downloadingImage": "Завантаження зображення...",
       "failedSaveDataImage": "Не вдалося зберегти зображення",
-      "failedSaveDroppedImage": "Не вдалося зберегти вилучене зображення",
-      "couldNotDownloadImage": "Could not download image: {{error}}"
-    }
+      "failedSaveDroppedImage": "Не вдалося зберегти перетягнуте зображення",
+      "couldNotDownloadImage": "Не вдалося завантажити зображення: {{error}}"
+    },
+    "files_few": "{{count}} файли",
+    "files_many": "{{count}} файлів"
   },
   "popup": {
-    "itemsSelected": "{{count}} items selected",
+    "itemsSelected": "Вибрано {{count}} елементів",
     "list": "Список",
     "grid": "Сітка",
-    "removeSelected": "Видалити вибрані файли"
+    "removeSelected": "Видалити вибрані файли",
+    "itemsSelected_one": "Вибрано {{count}} елемент",
+    "itemsSelected_few": "Вибрано {{count}} елементи",
+    "itemsSelected_many": "Вибрано {{count}} елементів",
+    "itemsSelected_other": "Вибрано {{count}} елементів"
   },
   "settings": {
     "title": "Налаштування",
@@ -67,12 +71,12 @@
       "description": "Налаштувати взаємодію з додатком",
       "showHotkey": "Показувати комбінацію клавіш",
       "pressKeys": "Натисніть клавіші...",
-      "listeningHint": "Натисніть бажану комбінацію клавіш... Натисніть Зупинку після завершення",
+      "listeningHint": "Натисніть бажану комбінацію клавіш... Натисніть Зупинити після завершення",
       "idleHint": "Глобальний ярлик, щоб перенести програму на передній план",
       "set": "Сет",
       "stop": "Зупинити",
       "clear": "Очистити",
-      "noneSet": "Нічого не встановлено"
+      "noneSet": "Не встановлено"
     },
     "dragDrop": {
       "title": "Поведінка перетягування",
@@ -87,13 +91,13 @@
       "title": "Монітор миші",
       "description": "Чутливість виявлення струсу програм",
       "sensitivity": "Чутливість",
-      "timing": "Розклад",
-      "requiredShakes": "Потребується струс",
+      "timing": "Часовий інтервал",
+      "requiredShakes": "Необхідні струшування",
       "shakeThreshold": "Поріг струшування",
       "timeLimit": "Обмеження часу (мс)",
       "closeDelay": "Затримка закриття (мс)",
       "whitelistTitle": "Дозволені додатки",
-      "whitelistDesc": "Визначення струсу буде активним лише тоді, коли додаток буде зосереджений. Приймаються назви процесів (наприклад, хоробрі, brave.exe). Нечутливість до регістру.",
+      "whitelistDesc": "Виявлення струшування курсора буде активним, лише коли одна з цих програм у фокусі. Приймає назви процесів (наприклад, brave, brave.exe). Без урахування регістру.",
       "addPlaceholder": "Додати назву процесу...",
       "add": "Додати",
       "emptyTitle": "У білому списку немає додатків",
@@ -107,7 +111,7 @@
   "consent": {
     "title": "Допоможіть нам покращити Holdem",
     "description": "Ми хотіли б збирати анонімні дані про використання, щоб поліпшити ваш досвід",
-    "collectTitle": "Збір нас:",
+    "collectTitle": "Ми збираємо:",
     "collectItems": [
       "Події запуску програми",
       "Використання файлів перетягуванням",

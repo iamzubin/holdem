@@ -7,7 +7,7 @@
     "add": "Adăugare",
     "set": "Setează",
     "stop": "Oprește",
-    "noneSet": "Nici un set",
+    "noneSet": "Niciuna setată",
     "loading": "Încărcare...",
     "copyLink": "Copiază link-ul"
   },
@@ -15,27 +15,30 @@
     "dropHere": "Plasează aici",
     "files": "{{count}} fișier",
     "files_one": "{{count}} fișier",
-    "files_few": "{{count}} fișiere",
-    "files_other": "{{count}} fișiere",
-    "files_plural": "{{count}} fișiere",
+    "files_other": "{{count}} de fișiere",
+    "files_plural": "{{count}} de fișiere",
     "clear": "Curăță",
     "paste": "Lipește",
     "contextMenuTitle": "Meniu contextual",
     "toast": {
-      "dropReceived": "Drop primit în webview!",
+      "dropReceived": "Fișiere plasate primite în webview!",
       "processingVirtual": "Procesare fișiere virtuale din browser...",
-      "checkingTextHtml": "Niciun fișier scăpat, verificarea textului/html...",
+      "checkingTextHtml": "Niciun fișier plasat, se verifică text/html...",
       "downloadingImage": "Se descarcă imaginea...",
       "failedSaveDataImage": "Salvarea imaginii datelor a eșuat",
-      "failedSaveDroppedImage": "Salvarea imaginii abandonate a eșuat",
+      "failedSaveDroppedImage": "Nu s-a putut salva imaginea plasată",
       "couldNotDownloadImage": "Imaginea nu a putut fi descărcată: {{error}}"
-    }
+    },
+    "files_few": "{{count}} fișiere"
   },
   "popup": {
     "itemsSelected": "{{count}} elemente selectate",
     "list": "Listă",
     "grid": "Grilă",
-    "removeSelected": "Elimină fişierele selectate"
+    "removeSelected": "Elimină fişierele selectate",
+    "itemsSelected_one": "{{count}} element selectat",
+    "itemsSelected_few": "{{count}} elemente selectate",
+    "itemsSelected_other": "{{count}} de elemente selectate"
   },
   "settings": {
     "title": "Setări",
@@ -64,14 +67,14 @@
     "shortcuts": {
       "title": "Scurtături",
       "description": "Personalizați modul în care interacționați cu aplicația",
-      "showHotkey": "Arată tasta rapidă pentru fereastră",
-      "pressKeys": "Taste de presă...",
-      "listeningHint": "Apăsați combinația de taste dorită... Apăsați Opriți când ați terminat",
+      "showHotkey": "Comandă rapidă pentru afișarea ferestrei",
+      "pressKeys": "Apăsați tastele...",
+      "listeningHint": "Apăsați combinația de taste dorită... Apăsați Oprire când ați terminat",
       "idleHint": "Comanda rapidă globală pentru a aduce aplicația în prim-plan",
       "set": "Setează",
       "stop": "Oprește",
       "clear": "Curăță",
-      "noneSet": "Nici un set"
+      "noneSet": "Niciuna setată"
     },
     "dragDrop": {
       "title": "Comportament Drag & Drop",
@@ -87,12 +90,12 @@
       "description": "Sensibilitatea de detectare a agitării finit",
       "sensitivity": "Sensibilitate",
       "timing": "Sincronizare",
-      "requiredShakes": "Necesita scuturare",
+      "requiredShakes": "Scuturări necesare",
       "shakeThreshold": "Pragul de agitare",
       "timeLimit": "Limita de timp (ms)",
       "closeDelay": "Întârziere închidere (ms)",
       "whitelistTitle": "Aplicații permise",
-      "whitelistDesc": "Detectarea agitării va fi activă doar atunci când una dintre aceste aplicații este concentrată. Acceptă numele de proces (de ex. brave, brave.exe). Insensibil la majuscule.",
+      "whitelistDesc": "Detectarea mișcării va fi activă doar atunci când una dintre aceste aplicații este în prim-plan. Acceptă nume de procese (de ex. brave, brave.exe). Insensibil la majuscule și minuscule.",
       "addPlaceholder": "Adaugă numele procesului...",
       "add": "Adăugare",
       "emptyTitle": "Nicio aplicație exclusă",

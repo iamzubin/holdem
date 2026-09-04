@@ -1,0 +1,157 @@
+name: opencode-review
+
+# Automatic PR reviews via OpenCode.
+# Triggers on every non-draft PR (opened, updated, reopened, or marked
+# ready for review). Skips drafts to avoid reviewing WIPs.
+# To re-run / request a review manually, comment `/oc review` on the PR
+# (handled by opencode.yml).
+
+permissions: {}
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  review:
+    # Bots (dependabot, coderabbit, ...) lack the write permission the action
+    # requires, so skip their pushes instead of failing the run.
+    if: github.event.pull_request.draft == false && !endsWith(github.actor, '[bot]') && github.actor != 'coderabbitai' && github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: opencode-review-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      # contents:write is required for resolveReviewThread (toggles PR
+      # conversation metadata, but GitHub still gates it behind contents:write).
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          submodules: recursive
+
+      - uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
+        env:
+          # No OPENCODE_API_KEY: with no Zen key configured opencode exposes
+          # only free models, and muse-spark-1.3-contributor-free is free.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # gh CLI prefers GH_TOKEN; keep both in sync so `gh api graphql`
+          # calls for thread history / resolve are authenticated.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: opencode/muse-spark-1.3-contributor-free
+          variant: xhigh
+          use_github_token: true
+          prompt: |
+            Review this pull request. Format your final response EXACTLY like CodeRabbit with collapsible sections:
+
+            ## 🤖 Review — PR #<number>
+            <one-paragraph executive summary of the changes>
+
+            <details>
+            <summary><b>📖 Changes Walkthrough</b></summary>
+
+            | File(s) | Summary |
+            |---|---|
+            | `path/to/file` | Brief functional summary |
+
+            <if non-trivial runtime interaction, state flow, or architecture changes exist, include a ```mermaid sequence diagram here>
+
+            </details>
+
+            <details open>
+            <summary><b>🎯 Review Findings</b></summary>
+
+            Numbered, most severe first. Each finding uses this format:
+            #### <Severity>: <short title> — `path/to/file:line`
+            <why it matters / root cause explanation>
+            Fix:
+            ```<lang>
+            <concrete code fix>
+            ```
+            Severities: High (bug / security / data loss), Medium (correctness / robustness / perf), Low (nit / readability).
+            Only actionable findings with concrete file/line references. No generic advice or compliments.
+            If no issues are found, state: "No major issues identified."
+
+            </details>
+
+            <details>
+            <summary><b>ℹ️ Review Info & Verdict</b></summary>
+
+            - **Focus areas for this repo**: Rust panics/unwraps, Tauri command misuse, TS type safety, error propagation.
+            - **Verdict:** APPROVE | REQUEST CHANGES | COMMENT
+
+            </details>
+
+            Posting CodeRabbit-style Inline Comments:
+            In addition to your final markdown review above, submit actionable findings directly onto the PR diff using the gh CLI:
+            1. Context:
+               - Repo: $GITHUB_REPOSITORY
+               - PR Number: get from $GITHUB_EVENT_PATH via `jq -r .pull_request.number "$GITHUB_EVENT_PATH"`
+               - Head SHA: `gh pr view <number> --json headRefOid --jq .headRefOid`
+            2. Check the diff hunks: run `gh pr diff <number>` to verify that any line you comment on is strictly part of the PR diff (lines added or modified). GitHub API will reject comments on lines outside the diff with HTTP 422.
+            3. If you have actionable findings on lines within the diff, post them in a single review via stdin (do NOT write files to /tmp or outside the repo workspace):
+               cat << 'EOF' | gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews" --method POST --input -
+               {
+                 "commit_id": "<HEAD_SHA>",
+                 "event": "COMMENT",
+                 "body": "Automated review inline suggestions.",
+                 "comments": [
+                   {
+                     "path": "path/to/file",
+                     "line": <line_number_in_diff>,
+                     "side": "RIGHT",
+                     "body": "_<Severity_Badge>_\n\n**<Short Title>**\n\n<Explanation>\n\n```suggestion\n<replacement_code>\n```"
+                   }
+                 ]
+               }
+               EOF
+            4. If the gh api command succeeds or fails (e.g. 422 due to line number or 403 on forks), do not abort. Always output the full CodeRabbit-formatted markdown review as your final message so it renders completely in the main PR comment.
+
+            Thread History Context (avoid duplicates, track fixes):
+            Before posting new inline comments, fetch existing PR conversation so you do not re-post what is already open:
+            1. Derive context once:
+               - `PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")`
+               - `OWNER=$(jq -r .repository.owner.login "$GITHUB_EVENT_PATH")` (fallback: `echo "$GITHUB_REPOSITORY" | cut -d/ -f1`)
+               - `REPO=$(jq -r .repository.name "$GITHUB_EVENT_PATH")` (fallback: `echo "$GITHUB_REPOSITORY" | cut -d/ -f2`)
+               - Ensure auth: `export GH_TOKEN="$GITHUB_TOKEN"` if `gh` reports auth errors.
+            2. Fetch history (read-only, best-effort — continue with the diff if any call fails):
+               - General comments (unresolvable, for context only): `gh pr view "$PR_NUMBER" --json title,body,comments --jq .`
+               - Inline comments: `gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/comments" --paginate --jq '.[] | {id, path, line, user: .user.login, body: .body[0:500]}'`
+               - Review threads with resolution state:
+                 `gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100){nodes{id,isResolved,isOutdated,path,line,comments(first:20){nodes{body,author{login},createdAt}}}}}}}' -f o="$OWNER" -f r="$REPO" -F n="$PR_NUMBER"`
+            3. Use the history to:
+               - Skip posting a new inline finding when an open (`isResolved:false`), non-outdated bot thread already covers the same `path:line` and issue.
+               - In your Verdict section, note carried-over open threads vs. newly introduced findings.
+
+            Resolve Fixed Bot Threads (bot threads only, auto on sync):
+            After completing the review above, close the loop on your own prior feedback:
+            1. From the thread list, consider only threads where `isResolved==false`, `isOutdated==false`, and the thread author / comments are from `github-actions[bot]` or `opencode-agent[bot]`.
+            2. For each such thread, verify the fix is present in the current code (`gh pr diff <number>`, `read`/`grep` the file). Only proceed when the underlying issue is actually fixed. Never resolve human threads, threads asking a question, deferred items, or anything you cannot verify.
+            3. For each verified fix, reply first then resolve (use the thread node `id` starting with `PRRT_`):
+               `gh api graphql -f query='mutation($id:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$id,body:$body}){comment{id}}}' -f id="PRRT_..." -f body="Fixed in $(git rev-parse --short HEAD): <what changed>"`
+               `gh api graphql -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}' -f id="PRRT_..."`
+            4. General PR comments (`gh pr view` comments) are unresolvable — reply via a normal PR comment instead if needed, never attempt GraphQL resolve on them.
+            5. If any fetch/reply/resolve call fails, log it and continue. Never abort the main CodeRabbit review because of thread maintenance.
+
+      # The action posts session links as `opencode.ai/s/<id>` which 404s
+      # (upstream anomalyco/opencode#26417). The same id resolves under the
+      # current `opncd.ai/share/<id>` format, so rewrite bot comments.
+      - name: Fix opencode session link
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NUM="${{ github.event.pull_request.number }}"
+          gh api "repos/$GITHUB_REPOSITORY/issues/$NUM/comments?per_page=100" \
+            --jq '[.[] | select((.user.login == "github-actions[bot]" or .user.login == "opencode-agent[bot]") and (.body | contains("https://opencode.ai/s/"))) | .id] | .[]' |
+          while read -r CID; do
+            BODY=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$CID" --jq .body)
+            FIXED=$(printf '%s' "$BODY" | sed 's#https://opencode\.ai/s/#https://opncd.ai/share/#g')
+            gh api "repos/$GITHUB_REPOSITORY/issues/comments/$CID" -X PATCH -f body="$FIXED" --silent
+          done

@@ -1,4 +1,4 @@
-use crate::file::{get_dir_size, FileMetadata};
+use crate::file::FileMetadata;
 use crate::FileList;
 use std::path::PathBuf;
 use tauri::{AppHandle, Emitter};
@@ -16,28 +16,13 @@ pub fn handle_file_drop_from_paths(
         for path in paths.iter() {
             if path.exists() {
                 if let Ok(metadata) = path.metadata() {
-                    // If file is in temp directory, copy it to a permanent location
-                    let final_path = if path.starts_with(std::env::temp_dir()) {
-                        let timestamp = chrono::Local::now();
-                        let folder_name = timestamp.format("%Y%m%d").to_string();
-                        let drop_folder =
-                            std::env::temp_dir().join("holdem_drops").join(&folder_name);
-                        std::fs::create_dir_all(&drop_folder).ok();
+                    // Keep the original reference. Dropping a file must never copy it.
+                    let final_path = path.clone();
 
-                        let file_name = path.file_name().unwrap_or_default();
-                        let new_path = drop_folder.join(file_name);
-                        if std::fs::copy(path, &new_path).is_ok() {
-                            new_path
-                        } else {
-                            path.clone()
-                        }
-                    } else {
-                        path.clone()
-                    };
-
-                    // Calculate size correctly for directories
+                    // Directories store size 0 (no recursive walk — see file.rs).
+                    // This keeps drops instant for huge folders.
                     let size = if metadata.is_dir() {
-                        get_dir_size(path).unwrap_or(0)
+                        0
                     } else {
                         metadata.len()
                     };
@@ -66,7 +51,13 @@ pub fn handle_file_drop_from_paths(
         }
 
         // Now lock and add to list
-        let mut list = file_list.lock().unwrap();
+        let Ok(mut list) = file_list.lock() else {
+            error!(
+                "file_drop: FileList mutex poisoned, dropping {} path(s)",
+                paths.len()
+            );
+            return;
+        };
         let starting_id = list.len() as u64;
 
         for (i, mut file) in new_files.into_iter().enumerate() {

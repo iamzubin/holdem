@@ -7,36 +7,40 @@
     "add": "Dodaj",
     "set": "Ustaw",
     "stop": "Zatrzymaj",
-    "noneSet": "Nie ustawiono",
+    "noneSet": "Brak",
     "loading": "Ładowanie...",
     "copyLink": "Kopiuj link"
   },
   "app": {
     "dropHere": "Upuść tutaj",
-    "files": "Plik {{count}}",
-    "files_one": "Plik {{count}}",
-    "files_few": "{{count}} pliki",
-    "files_many": "{{count}} plików",
-    "files_other": "{{count}} pliku",
+    "files": "{{count}} plik",
+    "files_one": "{{count}} plik",
+    "files_other": "{{count}} plików",
     "files_plural": "{{count}} plików",
     "clear": "Wyczyść",
     "paste": "Wklej",
     "contextMenuTitle": "Menu kontekstowe",
     "toast": {
-      "dropReceived": "Upuść otrzymane w widoku internetowym!",
+      "dropReceived": "Odebrano pliki w widoku webview!",
       "processingVirtual": "Przetwarzanie plików wirtualnych z przeglądarki...",
-      "checkingTextHtml": "Brak upuszczonych plików, sprawdzanie tekstu/html...",
+      "checkingTextHtml": "Nie upuszczono żadnych plików, sprawdzanie text/html...",
       "downloadingImage": "Pobieranie obrazu...",
       "failedSaveDataImage": "Nie udało się zapisać obrazu danych",
       "failedSaveDroppedImage": "Nie udało się zapisać upuszczonego obrazu",
       "couldNotDownloadImage": "Nie można pobrać obrazu: {{error}}"
-    }
+    },
+    "files_few": "{{count}} pliki",
+    "files_many": "{{count}} plików"
   },
   "popup": {
-    "itemsSelected": "Wybrano elementy {{count}}",
+    "itemsSelected": "Wybrano {{count}} elementów",
     "list": "Lista",
     "grid": "Siatka",
-    "removeSelected": "Usuń wybrane pliki"
+    "removeSelected": "Usuń wybrane pliki",
+    "itemsSelected_one": "Wybrano {{count}} element",
+    "itemsSelected_few": "Wybrano {{count}} elementy",
+    "itemsSelected_many": "Wybrano {{count}} elementów",
+    "itemsSelected_other": "Wybrano {{count}} elementów"
   },
   "settings": {
     "title": "Ustawienia",
@@ -67,12 +71,12 @@
       "description": "Dostosuj sposób interakcji z aplikacją",
       "showHotkey": "Pokaż skrót okna",
       "pressKeys": "Naciśnij klawisze...",
-      "listeningHint": "Wciśnij pożądaną kombinację przycisków... Wciśnij Zatrzymaj po zakończeniu",
+      "listeningHint": "Naciśnij żądaną kombinację klawiszy... Kliknij Zatrzymaj po zakończeniu",
       "idleHint": "Globalny skrót, aby przenieść aplikację na pierwszy plan",
       "set": "Ustaw",
       "stop": "Zatrzymaj",
       "clear": "Wyczyść",
-      "noneSet": "Nie ustawiono"
+      "noneSet": "Brak"
     },
     "dragDrop": {
       "title": "Zachowanie przeciągnij i upuść",
@@ -88,12 +92,12 @@
       "description": "Dokładnie dostosuj czułość wykrywania wstrząsu",
       "sensitivity": "Czułość",
       "timing": "Harmonogram",
-      "requiredShakes": "Wymagane Wstrząsy",
+      "requiredShakes": "Wymagane potrząśnięcia",
       "shakeThreshold": "Próg potrząsania",
       "timeLimit": "Limit czasu (ms)",
       "closeDelay": "Zamknij opóźnienie (ms)",
       "whitelistTitle": "Aplikacje na białej liście",
-      "whitelistDesc": "Wykrywanie potrząsania będzie aktywne tylko wtedy, gdy jedna z tych aplikacji jest ogniskowana. Akceptuje nazwy procesów (np. brave, brave.exe). Niewrażliwa na sprawy.",
+      "whitelistDesc": "Wykrywanie potrząsania będzie aktywne tylko wtedy, gdy jedna z tych aplikacji jest aktywna. Akceptuje nazwy procesów (np. brave, brave.exe). Wielkość liter nie ma znaczenia.",
       "addPlaceholder": "Dodaj nazwę procesu...",
       "add": "Dodaj",
       "emptyTitle": "Brak aplikacji na białej liście",

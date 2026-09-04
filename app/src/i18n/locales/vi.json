@@ -34,7 +34,9 @@
     "itemsSelected": "Đã chọn {{count}} mục",
     "list": "Danh sách",
     "grid": "Lưới",
-    "removeSelected": "Xóa các tệp đã chọn"
+    "removeSelected": "Xóa các tệp đã chọn",
+    "itemsSelected_one": "Đã chọn {{count}} mục",
+    "itemsSelected_other": "Đã chọn {{count}} mục"
   },
   "settings": {
     "title": "Cài đặt",
@@ -106,9 +108,17 @@
     "title": "Giúp chúng tôi cải thiện Holdem",
     "description": "Chúng tôi muốn thu thập dữ liệu sử dụng ẩn danh để cải thiện trải nghiệm của bạn",
     "collectTitle": "Chúng tôi thu thập:",
-    "collectItems": ["Sự kiện khởi chạy ứng dụng", "Việc dùng kéo và thả tệp", "Chỉ số hiệu năng cơ bản của ứng dụng"],
+    "collectItems": [
+      "Sự kiện khởi chạy ứng dụng",
+      "Việc dùng kéo và thả tệp",
+      "Chỉ số hiệu năng cơ bản của ứng dụng"
+    ],
     "notCollectTitle": "Chúng tôi KHÔNG thu thập:",
-    "notCollectItems": ["Thông tin cá nhân", "Nội dung hoặc tên tệp", "Lịch sử duyệt web của bạn"],
+    "notCollectItems": [
+      "Thông tin cá nhân",
+      "Nội dung hoặc tên tệp",
+      "Lịch sử duyệt web của bạn"
+    ],
     "decline": "Từ chối",
     "accept": "Đồng ý"
   },

@@ -7,39 +7,41 @@
     "add": "Adicionar",
     "set": "Definir",
     "stop": "Interromper",
-    "noneSet": "Nenhum conjunto",
+    "noneSet": "Nenhum definido",
     "loading": "A carregar...",
     "copyLink": "Copiar link"
   },
   "app": {
     "dropHere": "Solte aqui",
-    "files": "Arquivo {{count}}",
-    "files_one": "Arquivo {{count}}",
-    "files_other": "Arquivos {{count}}",
-    "files_plural": "Arquivos {{count}}",
+    "files": "{{count}} ficheiro",
+    "files_one": "{{count}} ficheiro",
+    "files_other": "{{count}} ficheiros",
+    "files_plural": "{{count}} ficheiros",
     "clear": "Limpar",
     "paste": "Colar",
     "contextMenuTitle": "Menu de contexto",
     "toast": {
-      "dropReceived": "Drop recebido na webview!",
-      "processingVirtual": "Processando arquivos virtuais do navegador...",
-      "checkingTextHtml": "Nenhum arquivo deixado, verificando por texto/html...",
-      "downloadingImage": "Baixando imagem...",
-      "failedSaveDataImage": "Falha ao salvar a imagem de dados",
-      "failedSaveDroppedImage": "Falha ao salvar a imagem dropada",
-      "couldNotDownloadImage": "Não foi possível baixar a imagem: {{error}}"
+      "dropReceived": "Ficheiros recebidos na webview!",
+      "processingVirtual": "A processar ficheiros virtuais do navegador...",
+      "checkingTextHtml": "Nenhum ficheiro largado, a verificar texto/html...",
+      "downloadingImage": "A transferir imagem...",
+      "failedSaveDataImage": "Falha ao guardar imagem de dados",
+      "failedSaveDroppedImage": "Falha ao guardar imagem largada",
+      "couldNotDownloadImage": "Não foi possível transferir a imagem: {{error}}"
     }
   },
   "popup": {
-    "itemsSelected": "Itens {{count}} selecionados",
+    "itemsSelected": "{{count}} itens selecionados",
     "list": "Lista",
     "grid": "Grade",
-    "removeSelected": "Remover Arquivos Selecionados"
+    "removeSelected": "Remover Ficheiros Selecionados",
+    "itemsSelected_one": "{{count}} item selecionado",
+    "itemsSelected_other": "{{count}} itens selecionados"
   },
   "settings": {
-    "title": "Configurações",
-    "subtitle": "Gerenciar suas preferências de aplicação",
-    "loading": "Carregando configurações...",
+    "title": "Definições",
+    "subtitle": "Gerir as preferências da sua aplicação",
+    "loading": "A carregar definições...",
     "inputMonitoring": {
       "title": "Permissão de Monitoramento de Entrada Necessária",
       "description": "Para usar atalhos globais como Option+Space ou Ctrl+Space, este aplicativo precisa da permissão de Monitoramento de entrada. Este é um requisito de sistema macOS.",
@@ -47,30 +49,30 @@
       "restartHint": "Após a concessão de permissão, reinicie o aplicativo para que as alterações tenham efeito."
     },
     "general": {
-      "title": "Configurações Gerais",
-      "description": "Configurar a inicialização e comportamento de privacidade",
-      "startup": "Iniciar na inicialização do sistema",
-      "startupDesc": "Abrir automaticamente o aplicativo quando você entrar",
+      "title": "Definições Gerais",
+      "description": "Configurar o arranque e o comportamento de privacidade",
+      "startup": "Iniciar no Arranque do Sistema",
+      "startupDesc": "Iniciar automaticamente a aplicação ao iniciar sessão",
       "analytics": "Habilitar Analytics",
-      "analyticsDesc": "Ajude a melhorar Holdem compartilhando dados de uso anônimos"
+      "analyticsDesc": "Ajude a melhorar o Holdem partilhando dados anónimos de utilização"
     },
     "language": {
       "title": "IDIOMA",
       "description": "Escolha o idioma de sua preferência",
       "label": "Exibir idioma",
-      "hint": "As alterações se aplicam imediatamente e são salvas neste dispositivo."
+      "hint": "As alterações são aplicadas imediatamente e guardadas neste dispositivo."
     },
     "shortcuts": {
       "title": "Atalhos",
       "description": "Personalize como interage com o app",
-      "showHotkey": "Mostrar Tecla de Atalho",
-      "pressKeys": "Pressione as chaves...",
-      "listeningHint": "Pressione a combinação de teclas desejada... Pressione Parar quando terminar",
+      "showHotkey": "Tecla de Atalho para Mostrar Janela",
+      "pressKeys": "Prima as teclas...",
+      "listeningHint": "Prima a combinação de teclas pretendida... Prima Parar quando terminar",
       "idleHint": "Atalho global para trazer o aplicativo para o primeiro plano",
       "set": "Definir",
       "stop": "Interromper",
       "clear": "Limpar",
-      "noneSet": "Nenhum conjunto"
+      "noneSet": "Nenhum definido"
     },
     "dragDrop": {
       "title": "Comportamento Arrastar e Soltar",
@@ -78,27 +80,27 @@
       "dragToCopy": "Copiar arquivos para o destino",
       "shiftToMove": "Segure Shift enquanto solta para mover arquivos",
       "move": "mover",
-      "macHint": "macOS mostra um distintivo verde + durante a cópia. Nenhum distintivo = operação de movimento.",
-      "winHint": "A seta para mover mostra uma sobreposição pontilhada ao copiar. Uma seta mostra para operação de movimento."
+      "macHint": "O macOS mostra um emblema verde + ao copiar. Sem emblema = operação de mover.",
+      "winHint": "O Explorador do Windows mostra uma sobreposição pontilhada ao copiar. Uma seta de movimento é apresentada para a operação de mover."
     },
     "mouse": {
       "title": "Monitor de Mouse",
       "description": "Ajustar sensibilidade de detecção de agitação",
       "sensitivity": "Sensibilidade",
       "timing": "Sincronismo",
-      "requiredShakes": "Agitar Requeridas",
+      "requiredShakes": "Agitações necessárias",
       "shakeThreshold": "Limite de Agitação",
       "timeLimit": "Limite de Tempo (ms)",
       "closeDelay": "Atraso de encerramento (ms)",
       "whitelistTitle": "Aplicativos permitidos",
-      "whitelistDesc": "A detecção de agitação só estará ativa quando um desses apps estiver em foco. Aceita nomes de processo (por exemplo, brave, brave.exe). Insensível a maiúsculas e minúsculas.",
+      "whitelistDesc": "A deteção de agitação só estará ativa quando uma destas aplicações estiver em primeiro plano. Aceita nomes de processos (por exemplo, brave, brave.exe). Não sensível a maiúsculas/minúsculas.",
       "addPlaceholder": "Adicionar nome do processo...",
       "add": "Adicionar",
       "emptyTitle": "Nenhum app com permissão",
       "emptyDesc": "A vibração do cursor será ignorada globalmente"
     },
     "footer": {
-      "save": "Guardar definições",
+      "save": "Guardar Definições",
       "saving": "A guardar..."
     }
   },
@@ -124,10 +126,10 @@
     "title": "Atualizações do Software",
     "close": "FECHAR",
     "checking": "Verificando atualizações...",
-    "downloading": "Baixando atualização...",
+    "downloading": "A transferir atualização...",
     "downloadedTitle": "Download concluído!",
-    "downloadedDesc": "Preparando para instalar...",
-    "installing": "Instalando atualização e reiniciando aplicativo...",
+    "downloadedDesc": "A preparar a instalação...",
+    "installing": "A instalar a atualização e a reiniciar a aplicação...",
     "availableTitle": "Atualização Disponível!",
     "version": "Versão {{version}}",
     "noNotes": "Não há notas de lançamento disponíveis",

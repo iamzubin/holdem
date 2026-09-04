@@ -3,30 +3,30 @@
     "cancel": "Cancelar",
     "save": "Guardar",
     "close": "Cerrar",
-    "clear": "Borrar",
+    "clear": "Limpiar",
     "add": "Añadir",
     "set": "Fijar",
     "stop": "Parar",
-    "noneSet": "Ningún conjunto",
+    "noneSet": "Ninguno establecido",
     "loading": "Cargando...",
     "copyLink": "Copiar enlace"
   },
   "app": {
     "dropHere": "Soltar aquí",
-    "files": "Archivo {{count}}",
-    "files_one": "Archivo {{count}}",
-    "files_other": "Archivos {{count}}",
-    "files_plural": "Archivos {{count}}",
-    "clear": "Borrar",
+    "files": "{{count}} archivo",
+    "files_one": "{{count}} archivo",
+    "files_other": "{{count}} archivos",
+    "files_plural": "{{count}} archivos",
+    "clear": "Limpiar",
     "paste": "Pegar",
     "contextMenuTitle": "Menú contextual",
     "toast": {
-      "dropReceived": "¡Soltar recibida en webview!",
+      "dropReceived": "¡Archivos soltados recibidos en la vista web!",
       "processingVirtual": "Procesando archivos virtuales desde el navegador...",
-      "checkingTextHtml": "No se han soltado archivos, comprobando text/html...",
+      "checkingTextHtml": "No se han soltado archivos, comprobando texto/html...",
       "downloadingImage": "Descargando imagen...",
       "failedSaveDataImage": "Error al guardar la imagen de datos",
-      "failedSaveDroppedImage": "Error al guardar la imagen eliminada",
+      "failedSaveDroppedImage": "Error al guardar la imagen soltada",
       "couldNotDownloadImage": "No se pudo descargar la imagen: {{error}}"
     }
   },
@@ -34,7 +34,9 @@
     "itemsSelected": "{{count}} elementos seleccionados",
     "list": "Lista",
     "grid": "Rejilla",
-    "removeSelected": "Eliminar archivos seleccionados"
+    "removeSelected": "Eliminar archivos seleccionados",
+    "itemsSelected_one": "{{count}} elemento seleccionado",
+    "itemsSelected_other": "{{count}} elementos seleccionados"
   },
   "settings": {
     "title": "Ajustes",
@@ -64,13 +66,13 @@
       "title": "Atajos",
       "description": "Personaliza cómo interactúa con la aplicación",
       "showHotkey": "Mostrar Acceso Rápido de Ventana",
-      "pressKeys": "Presione teclas...",
-      "listeningHint": "Pulse la combinación de teclas deseadas... Pulse Parar cuando haya terminado",
+      "pressKeys": "Presione las teclas...",
+      "listeningHint": "Presione la combinación de teclas deseada... Presione Detener al terminar",
       "idleHint": "Acceso directo global para llevar la aplicación a primer plano",
       "set": "Fijar",
       "stop": "Parar",
-      "clear": "Borrar",
-      "noneSet": "Ningún conjunto"
+      "clear": "Limpiar",
+      "noneSet": "Ninguno establecido"
     },
     "dragDrop": {
       "title": "Arrastrar y soltar el comportamiento",
@@ -91,7 +93,7 @@
       "timeLimit": "Límite de tiempo (ms)",
       "closeDelay": "Retraso de cierre (ms)",
       "whitelistTitle": "Aplicaciones en la lista blanca",
-      "whitelistDesc": "La detección de sacudidas sólo estará activa cuando una de estas aplicaciones esté enfocada. Acepta los nombres de procesos (por ejemplo, brave, brave.exe). Insensible a mayúsculas y minúsculas.",
+      "whitelistDesc": "La detección de sacudidas solo se activará cuando una de estas aplicaciones esté en primer plano. Acepta nombres de procesos (p. ej., brave, brave.exe). Insensible a mayúsculas y minúsculas.",
       "addPlaceholder": "Añadir nombre de proceso...",
       "add": "Añadir",
       "emptyTitle": "No hay aplicaciones en la lista blanca",

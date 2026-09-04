@@ -1,15 +1,13 @@
 use crate::analytics;
 use crate::config::AppConfig;
 use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, Listener, Manager, State};
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_autostart::ManagerExt;
 use tracing::{error, info, warn};
 
-#[cfg(target_os = "windows")]
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
 
-#[cfg(target_os = "macos")]
-use tauri_plugin_key_intercept::{Hotkey, KeyInterceptExt, Modifiers as MacModifiers};
+
 
 #[tauri::command]
 pub fn get_config(config: State<Arc<Mutex<AppConfig>>>) -> Result<AppConfig, String> {
@@ -170,18 +168,9 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
         return Ok(());
     }
 
-    #[cfg(target_os = "windows")]
-    {
-        register_hotkey_windows(app_handle, shortcut_str)
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        register_hotkey_mac(app_handle, shortcut_str)
-    }
+    register_hotkey_windows(app_handle, shortcut_str)
 }
 
-#[cfg(target_os = "windows")]
 fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
     let app_handle_clone = app_handle.clone();
     info!("Registering Windows hotkey: {}", shortcut_str);
@@ -233,82 +222,6 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
         .map_err(|e| format!("Failed to set shortcut callback: {}", e))?;
 
     info!("Windows hotkey registered successfully");
-
-    let app_handle_clone = app_handle.clone();
-    let shortcut_str_clone = shortcut_str.clone();
-    tauri::async_runtime::spawn(async move {
-        let _ =
-            analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
-    });
-
-    Ok(())
-}
-
-#[cfg(target_os = "macos")]
-fn register_hotkey_mac(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
-    let app_handle_clone = app_handle.clone();
-    info!("Registering macOS hotkey: {}", shortcut_str);
-
-    let mut mac_modifiers = MacModifiers::empty();
-    let mut keycode: Option<i64> = None;
-
-    for part in shortcut_str.split('+') {
-        let part = part.trim();
-        match part.to_uppercase().as_str() {
-            "CTRL" | "CONTROL" => mac_modifiers.control = true,
-            "SHIFT" => mac_modifiers.shift = true,
-            "ALT" | "OPT" | "OPTION" => mac_modifiers.option = true,
-            "META" | "CMD" | "COMMAND" => mac_modifiers.command = true,
-            key => {
-                if let Some(kc) = parse_keycode(key) {
-                    keycode = Some(kc);
-                } else {
-                    warn!("Failed to parse macOS hotkey key: {}", key);
-                }
-            }
-        }
-    }
-
-    let keycode = keycode.ok_or_else(|| "No valid keycode found".to_string())?;
-
-    let event_name = format!("hotkey-{}", shortcut_str.replace('+', "-").to_lowercase());
-
-    let hotkey = Hotkey {
-        keycodes: vec![keycode],
-        modifiers: mac_modifiers,
-        consume: false,
-        event_name: event_name.clone(),
-    };
-
-    let monitor_state = app_handle.key_intercept();
-    let manager = monitor_state
-        .manager
-        .lock()
-        .map_err(|e| format!("Failed to lock manager: {}", e))?;
-
-    manager
-        .register(hotkey)
-        .map_err(|e| format!("Failed to register hotkey: {}", e))?;
-
-    drop(manager);
-
-    let _listener = app_handle.listen(event_name.clone(), move |_event| {
-        info!("Hotkey triggered: {}", event_name);
-        if let Some(window) = app_handle_clone.get_webview_window("main") {
-            if let Err(e) = window.show() {
-                error!("Failed to show window after hotkey event: {}", e);
-                return;
-            }
-            if let Err(e) = window.unminimize() {
-                error!("Failed to unminimize window after hotkey event: {}", e);
-            }
-            if let Err(e) = window.set_focus() {
-                error!("Failed to focus window after hotkey event: {}", e);
-            }
-        }
-    });
-
-    info!("macOS hotkey registered successfully");
 
     let app_handle_clone = app_handle.clone();
     let shortcut_str_clone = shortcut_str.clone();
@@ -374,25 +287,11 @@ pub fn check_config_exists(app_handle: AppHandle) -> bool {
 }
 
 #[tauri::command]
-#[cfg(target_os = "macos")]
-pub fn check_input_monitoring_permission(_app_handle: AppHandle) -> Result<bool, String> {
-    Ok(false)
-}
-
-#[tauri::command]
-#[cfg(target_os = "macos")]
-pub fn open_input_monitoring_settings(_app_handle: AppHandle) -> Result<(), String> {
-    Ok(())
-}
-
-#[tauri::command]
-#[cfg(target_os = "windows")]
 pub fn check_input_monitoring_permission(_app_handle: AppHandle) -> Result<bool, String> {
     Ok(true)
 }
 
 #[tauri::command]
-#[cfg(target_os = "windows")]
 pub fn open_input_monitoring_settings(_app_handle: AppHandle) -> Result<(), String> {
     Ok(())
 }

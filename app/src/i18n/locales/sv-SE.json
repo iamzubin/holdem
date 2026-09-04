@@ -7,7 +7,7 @@
     "add": "Lägg till",
     "set": "Ange",
     "stop": "Stoppa",
-    "noneSet": "Inget set",
+    "noneSet": "Inte inställd",
     "loading": "Laddar...",
     "copyLink": "Kopiera länk"
   },
@@ -26,15 +26,17 @@
       "checkingTextHtml": "Inga filer släppta, söker efter text/html...",
       "downloadingImage": "Laddar ner bild...",
       "failedSaveDataImage": "Det gick inte att spara databilden",
-      "failedSaveDroppedImage": "Det gick inte att spara den tappade bilden",
+      "failedSaveDroppedImage": "Kunde inte spara den släppta bilden",
       "couldNotDownloadImage": "Kunde inte ladda ner bilden: {{error}}"
     }
   },
   "popup": {
-    "itemsSelected": "{{count}} objekt valda",
+    "itemsSelected": "{{count}} markerade objekt",
     "list": "Lista",
     "grid": "Rutnät",
-    "removeSelected": "Ta bort markerade filer"
+    "removeSelected": "Ta bort markerade filer",
+    "itemsSelected_one": "{{count}} markerat objekt",
+    "itemsSelected_other": "{{count}} markerade objekt"
   },
   "settings": {
     "title": "Inställningar",
@@ -64,13 +66,13 @@
       "title": "Genvägar",
       "description": "Anpassa hur du interagerar med appen",
       "showHotkey": "Visa snabbtangent för fönster",
-      "pressKeys": "Tryck på nycklar...",
+      "pressKeys": "Tryck på tangenter...",
       "listeningHint": "Tryck på önskad tangentkombination... Tryck på Stoppa när du är klar",
       "idleHint": "Global genväg för att få appen att gå i förgrunden",
       "set": "Ange",
       "stop": "Stoppa",
       "clear": "Rensa",
-      "noneSet": "Inget set"
+      "noneSet": "Inte inställd"
     },
     "dragDrop": {
       "title": "Dra & släpp beteende",
@@ -91,7 +93,7 @@
       "timeLimit": "Tidsgräns (ms)",
       "closeDelay": "Stäng fördröjning (ms)",
       "whitelistTitle": "Vitlistade appar",
-      "whitelistDesc": "Skakningsdetektering kommer endast att vara aktiv när en av dessa appar är fokuserad. Accepterar processnamn (t.ex. modig, brave.exe). Fall okänslig.",
+      "whitelistDesc": "Skakningsdetektering är endast aktiv när en av dessa appar är i fokus. Accepterar processnamn (t.ex. brave, brave.exe). Skiftlägesokänslig.",
       "addPlaceholder": "Lägg till processnamn...",
       "add": "Lägg till",
       "emptyTitle": "Inga appar vitlistade",

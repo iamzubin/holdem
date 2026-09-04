@@ -1,0 +1,86 @@
+name: opencode
+
+# On-demand OpenCode tasks. Comment `/oc <instruction>` or
+# `/opencode <instruction>` on any issue, PR, or PR review thread, e.g.:
+#   /oc review
+#   /oc fix the failing check
+#   /oc /resolve-threads  (reply + resolve fixed bot review threads)
+# This is also the "approve a review" path: commenting `/oc review`
+# runs a review on that PR on demand.
+#
+# Trigger is restricted to OWNER/MEMBER/COLLABORATOR comments starting
+# with the command, and ignores the bot's own replies (loop guard).
+
+permissions: {}
+
+on:
+  issue_comment:
+    types: [created, edited]
+  pull_request_review_comment:
+    types: [created, edited]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  opencode:
+    if: |
+      github.actor != 'github-actions[bot]' &&
+      (
+        startsWith(github.event.comment.body, '/oc ') ||
+        github.event.comment.body == '/oc' ||
+        startsWith(github.event.comment.body, fromJSON('"/oc\n"')) ||
+        startsWith(github.event.comment.body, '/opencode ') ||
+        github.event.comment.body == '/opencode' ||
+        startsWith(github.event.comment.body, fromJSON('"/opencode\n"'))
+      ) &&
+      (
+        github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: opencode-task-${{ github.event.issue.number || github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          # issue_comment defaults to the default branch; resolve the PR head
+          # so /oc commands on a PR run against PR code (falls back to github.sha
+          # for plain issues, where the agent creates a branch from HEAD).
+          ref: ${{ github.event_name == 'pull_request_review' && format('refs/pull/{0}/head', github.event.pull_request.number) || github.event_name == 'pull_request_review_comment' && format('refs/pull/{0}/head', github.event.pull_request.number) || github.event.issue.pull_request && format('refs/pull/{0}/head', github.event.issue.number) || github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+          submodules: recursive
+
+      - name: Run OpenCode
+        uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: opencode/muse-spark-1.3-contributor-free
+          use_github_token: true
+
+      # The action posts session links as `opencode.ai/s/<id>` which 404s
+      # (upstream anomalyco/opencode#26417). The same id resolves under the
+      # current `opncd.ai/share/<id>` format, so rewrite bot comments.
+      - name: Fix opencode session link
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NUM="${{ github.event.issue.number || github.event.pull_request.number }}"
+          gh api "repos/$GITHUB_REPOSITORY/issues/$NUM/comments?per_page=100" \
+            --jq '[.[] | select((.user.login == "github-actions[bot]" or .user.login == "opencode-agent[bot]") and (.body | contains("https://opencode.ai/s/"))) | .id] | .[]' |
+          while read -r CID; do
+            BODY=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$CID" --jq .body)
+            FIXED=$(printf '%s' "$BODY" | sed 's#https://opencode\.ai/s/#https://opncd.ai/share/#g')
+            gh api "repos/$GITHUB_REPOSITORY/issues/comments/$CID" -X PATCH -f body="$FIXED" --silent
+          done

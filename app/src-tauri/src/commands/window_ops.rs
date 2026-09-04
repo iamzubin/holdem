@@ -1,5 +1,8 @@
 use crate::analytics;
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+use crate::DragState;
+use std::sync::atomic::Ordering;
+use std::sync::Arc;
+use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder};
 use tracing::info;
 
 #[tauri::command]
@@ -167,5 +170,12 @@ pub fn close_consent_window(app: AppHandle) -> Result<(), String> {
     if let Some(consent_window) = app.get_webview_window("consent") {
         consent_window.close().map_err(|e| e.to_string())?;
     }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn mark_drop_received(drag_state: State<'_, Arc<DragState>>) -> Result<(), String> {
+    drag_state.successful_drop.store(true, Ordering::Relaxed);
+    drag_state.drag_started.store(false, Ordering::Relaxed);
     Ok(())
 }

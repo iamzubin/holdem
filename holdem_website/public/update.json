@@ -1,11 +1,11 @@
 {
-  "version": "3.0.0",
-  "notes": "Release notes for Holdem 3.0.0",
-  "pub_date": "2026-07-02T02:01:57.653Z",
+  "version": "3.1.0",
+  "notes": "Release notes for Holdem 3.1.0",
+  "pub_date": "2026-09-04T16:40:19.000Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUJHcTl1MEc2VSt1WWIxM3YxRGRsSTRaTXZZek40Y2ExZTBXWHdmM3pWZzU0emZ6ZVBDOVFXMW1mVWliQ1BNZlpOMXR0anNrQTNudE1WT3hVTDJTSVE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzgyOTU3NzE0CWZpbGU6aG9sZGVtXzMuMC4wX3g2NC1zZXR1cC5leGUKMWwzdkFENVZ1UVdvNzNhOFdvMmZVSWFRV3V1VFNWUEw0NXk3dTBPU25SckZyRlFkY2FRSEdJcmVuYkJ0dGpqNHphY09EWkhPcXVGR3hHZmEyZmRWQVE9PQo=",
-      "url": "https://github.com/iamzubin/holdem/releases/download/3.0.0/holdem_3.0.0_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVRWUt1Nm91NG90ZUo4dmZlUVdLcU1YTHk2YXdmOTNhY09NRllzK0RiZ1creUExVWJrcEpzQlBFdUlScFRVOHFGSGV4VFN4NStTR3NxWlh1Tkduclp4c0dsdzUyRUYvTHdZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg4NTQwMDEwCWZpbGU6aG9sZGVtXzMuMS4wX3g2NC1zZXR1cC5leGUKNER6VlZQclFiMG9tOWhSeTBRUTNpZkFXZmg4VGhISWQzZEtKUHQrQUNiQ3VjdldDNFFxVC9hS0pTVnRKNHczUlhKMWpXWVNNTzNLMHNlSGdEQnkzREE9PQo=",
+      "url": "https://github.com/iamzubin/holdem/releases/download/3.1.0/holdem_3.1.0_x64-setup.exe"
     }
   }
 }

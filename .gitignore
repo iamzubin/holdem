@@ -1,0 +1,8 @@
+﻿# Keys and secrets
+key.txt
+*.key
+*.sig
+
+# OS files
+.DS_Store
+Thumbs.db

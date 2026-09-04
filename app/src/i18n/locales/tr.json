@@ -7,7 +7,7 @@
     "add": "Ekle",
     "set": "Ayarla",
     "stop": "Durdur",
-    "noneSet": "Ayarlanmadı",
+    "noneSet": "Belirtilmedi",
     "loading": "Yükleniyor...",
     "copyLink": "Bağlantıyı Kopyala"
   },
@@ -34,7 +34,9 @@
     "itemsSelected": "{{count}} öğe seçildi",
     "list": "Liste",
     "grid": "Izgara",
-    "removeSelected": "Seçili Dosyaları Kaldır"
+    "removeSelected": "Seçili Dosyaları Kaldır",
+    "itemsSelected_one": "{{count}} öğe seçildi",
+    "itemsSelected_other": "{{count}} öğe seçildi"
   },
   "settings": {
     "title": "Ayarlar",
@@ -70,7 +72,7 @@
       "set": "Ayarla",
       "stop": "Durdur",
       "clear": "Temizle",
-      "noneSet": "Ayarlanmadı"
+      "noneSet": "Belirtilmedi"
     },
     "dragDrop": {
       "title": "Sürükle ve Bırak Davranışı",
@@ -106,9 +108,17 @@
     "title": "Holdem'i iyileştirmemize yardımcı olun",
     "description": "Deneyiminizi iyileştirmek için anonim kullanım verileri toplamak istiyoruz",
     "collectTitle": "Topladıklarımız:",
-    "collectItems": ["Uygulama başlatma etkinlikleri", "Dosya sürükle ve bırak kullanımı", "Temel uygulama performans ölçümleri"],
+    "collectItems": [
+      "Uygulama başlatma etkinlikleri",
+      "Dosya sürükle ve bırak kullanımı",
+      "Temel uygulama performans ölçümleri"
+    ],
     "notCollectTitle": "Toplamadıklarımız:",
-    "notCollectItems": ["Kişisel bilgiler", "Dosya içerikleri veya adları", "Gezinme geçmişiniz"],
+    "notCollectItems": [
+      "Kişisel bilgiler",
+      "Dosya içerikleri veya adları",
+      "Gezinme geçmişiniz"
+    ],
     "decline": "Reddet",
     "accept": "Kabul Et"
   },

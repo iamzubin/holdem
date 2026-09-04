@@ -7,34 +7,36 @@
     "add": "Adicionar",
     "set": "Definir",
     "stop": "Interromper",
-    "noneSet": "Nenhum conjunto",
+    "noneSet": "Nenhum definido",
     "loading": "Carregando...",
     "copyLink": "Copiar link"
   },
   "app": {
     "dropHere": "Solte aqui",
-    "files": "Arquivo {{count}}",
-    "files_one": "Arquivo {{count}}",
-    "files_other": "Arquivos {{count}}",
-    "files_plural": "Arquivos {{count}}",
+    "files": "{{count}} arquivo",
+    "files_one": "{{count}} arquivo",
+    "files_other": "{{count}} arquivos",
+    "files_plural": "{{count}} arquivos",
     "clear": "Limpar",
     "paste": "Colar",
     "contextMenuTitle": "Menu de contexto",
     "toast": {
-      "dropReceived": "Drop recebido na webview!",
+      "dropReceived": "Arquivos recebidos na webview!",
       "processingVirtual": "Processando arquivos virtuais do navegador...",
-      "checkingTextHtml": "Nenhum arquivo deixado, verificando por texto/html...",
+      "checkingTextHtml": "Nenhum arquivo solto, verificando texto/html...",
       "downloadingImage": "Baixando imagem...",
       "failedSaveDataImage": "Falha ao salvar a imagem de dados",
-      "failedSaveDroppedImage": "Falha ao salvar a imagem dropada",
+      "failedSaveDroppedImage": "Falha ao salvar imagem solta",
       "couldNotDownloadImage": "Não foi possível baixar a imagem: {{error}}"
     }
   },
   "popup": {
-    "itemsSelected": "Itens {{count}} selecionados",
+    "itemsSelected": "{{count}} itens selecionados",
     "list": "Lista",
     "grid": "Grade",
-    "removeSelected": "Remover Arquivos Selecionados"
+    "removeSelected": "Remover Arquivos Selecionados",
+    "itemsSelected_one": "{{count}} item selecionado",
+    "itemsSelected_other": "{{count}} itens selecionados"
   },
   "settings": {
     "title": "Configurações",
@@ -64,13 +66,13 @@
       "title": "Atalhos",
       "description": "Personalize como interage com o app",
       "showHotkey": "Mostrar Tecla de Atalho",
-      "pressKeys": "Pressione as chaves...",
+      "pressKeys": "Pressione as teclas...",
       "listeningHint": "Pressione a combinação de teclas desejada... Pressione Parar quando terminar",
       "idleHint": "Atalho global para trazer o aplicativo para o primeiro plano",
       "set": "Definir",
       "stop": "Interromper",
       "clear": "Limpar",
-      "noneSet": "Nenhum conjunto"
+      "noneSet": "Nenhum definido"
     },
     "dragDrop": {
       "title": "Comportamento Arrastar e Soltar",
@@ -86,12 +88,12 @@
       "description": "Ajustar sensibilidade de detecção de agitação",
       "sensitivity": "Sensibilidade",
       "timing": "Sincronismo",
-      "requiredShakes": "Agitar Requeridas",
+      "requiredShakes": "Agitações necessárias",
       "shakeThreshold": "Limite de Agitação",
       "timeLimit": "Limite de Tempo (ms)",
       "closeDelay": "Atraso de encerramento (ms)",
       "whitelistTitle": "Aplicativos permitidos",
-      "whitelistDesc": "A detecção de agitação só estará ativa quando um desses apps estiver em foco. Aceita nomes de processo (por exemplo, brave, brave.exe). Insensível a maiúsculas e minúsculas.",
+      "whitelistDesc": "A detecção de agitação só estará ativa quando um desses aplicativos estiver em primeiro plano. Aceita nomes de processos (ex.: brave, brave.exe). Não diferencia maiúsculas de minúsculas.",
       "addPlaceholder": "Adicionar nome do processo...",
       "add": "Adicionar",
       "emptyTitle": "Nenhum app com permissão",

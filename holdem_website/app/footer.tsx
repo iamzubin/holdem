@@ -16,14 +16,14 @@ const FOOTER_LINKS = [
 export function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer className="mt-24 border-t border-hairline px-0 py-8">
+    <footer className="border-hairline mt-24 border-t px-0 py-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <a
           href="https://github.com/iamzubin/holdem"
           target="_blank"
           className="inline-flex w-[170px] shrink-0 justify-start"
         >
-          <TextLoop className="text-xs text-ink-subtle">
+          <TextLoop className="text-ink-subtle text-xs">
             <span>© {year} Holdem.</span>
             <span>Built with Tauri.</span>
           </TextLoop>

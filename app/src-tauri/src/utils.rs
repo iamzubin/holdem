@@ -1,7 +1,5 @@
-#[cfg(target_os = "windows")]
-use tauri::{Manager, WebviewWindow};
+use tauri::WebviewWindow;
 
-#[cfg(target_os = "windows")]
 #[derive(Debug, Clone)]
 pub struct ScreenBounds {
     pub x: f64,
@@ -10,7 +8,6 @@ pub struct ScreenBounds {
     pub height: f64,
 }
 
-#[cfg(target_os = "windows")]
 impl ScreenBounds {
     pub fn from_window(window: &WebviewWindow) -> Result<Self, Box<dyn std::error::Error>> {
         if let Some(screen) = window.current_monitor()? {

@@ -3,9 +3,6 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Manager, Runtime, WebviewUrl, WebviewWindowBuilder,
 };
-// use tauri_plugin_dialog::DialogExt;
-// use tauri_plugin_updater::UpdaterExt;
-// use tauri::Emitter;
 
 pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
     let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;

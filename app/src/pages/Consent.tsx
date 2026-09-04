@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { invoke } from '@tauri-apps/api/core';
 import { closeWindow } from '@/lib/windowUtils';
+import { useTranslation } from 'react-i18next';
 
 export default function Consent() {
   const { t } = useTranslation();
@@ -61,7 +61,7 @@ export default function Consent() {
           <div className="text-sm text-muted-foreground space-y-3">
             <div>
               <p className="font-medium mb-2">{t("consent.collectTitle")}</p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
+              <ul className="list-disc list-inside space-y-1 ms-4">
                 {(t("consent.collectItems", { returnObjects: true }) as string[]).map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -69,7 +69,7 @@ export default function Consent() {
             </div>
             <div>
               <p className="font-medium mb-2">{t("consent.notCollectTitle")}</p>
-              <ul className="list-disc list-inside space-y-1 ml-4">
+              <ul className="list-disc list-inside space-y-1 ms-4">
                 {(t("consent.notCollectItems", { returnObjects: true }) as string[]).map((item) => (
                   <li key={item}>{item}</li>
                 ))}

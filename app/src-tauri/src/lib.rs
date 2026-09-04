@@ -1,50 +1,36 @@
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::sync::Mutex;
-use tauri::Manager;
-#[cfg(target_os = "windows")]
-use tauri::PhysicalPosition;
+use tauri::{Manager, PhysicalPosition, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_updater::UpdaterExt;
 use tracing::{error, info, warn};
+use windows::Win32::Foundation::{POINT, WAIT_OBJECT_0};
+use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
+use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
 
 #[derive(Clone)]
-struct DragState {
-    drag_started: Arc<AtomicBool>,
-    successful_drop: Arc<AtomicBool>,
+pub(crate) struct DragState {
+    pub(crate) drag_started: Arc<AtomicBool>,
+    pub(crate) successful_drop: Arc<AtomicBool>,
 }
-use tauri::WebviewUrl;
-use tauri::WebviewWindowBuilder;
-use tauri::{DragDropEvent, WindowEvent};
-use tauri_plugin_updater::UpdaterExt;
-#[cfg(target_os = "windows")]
-use windows::Win32::Foundation::{POINT, WAIT_OBJECT_0};
-#[cfg(target_os = "windows")]
-use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
-#[cfg(target_os = "windows")]
-use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
+
 mod analytics;
 mod commands;
 mod config;
 mod file;
+mod drop_target;
+
 mod file_drop;
 mod logging;
-#[cfg(any(target_os = "windows", target_os = "macos"))]
 mod mouse_monitor;
 mod thumbnail;
 #[cfg(desktop)]
 mod tray;
 mod utils;
 
-#[cfg(target_os = "windows")]
-mod custom_drop;
-
 use analytics::AnalyticsService;
 use commands::{config_ops::*, drag_ops::*, file_ops::*, window_ops::*};
-use config::AppConfig;
-use file::FileMetadata;
-#[cfg(any(target_os = "windows", target_os = "macos"))]
-use mouse_monitor::start_mouse_monitor;
-
-type FileList = Arc<Mutex<Vec<FileMetadata>>>;
+pub(crate) type FileList = Arc<Mutex<Vec<file::FileMetadata>>>;
 
 fn build_app() -> tauri::Builder<tauri::Wry> {
     let mut builder = tauri::Builder::default()
@@ -52,55 +38,45 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_autostart::Builder::new()
                 .args(vec!["--autostart"])
                 .build(),
         );
 
-    #[cfg(target_os = "windows")]
-    {
-        builder = builder.plugin(
-            tauri_plugin_global_shortcut::Builder::new()
-                .with_handler(move |app, shortcut, event| {
-                    info!("Global hotkey event received: {:?}", shortcut);
-                    if let Some(window) = app.get_webview_window("main") {
-                        match event.state() {
-                            tauri_plugin_global_shortcut::ShortcutState::Pressed => {
-                                let mut cursor_pos = POINT { x: 0, y: 0 };
-                                let _ = unsafe { GetCursorPos(&mut cursor_pos) };
-                                let margin = 200.0;
+    builder = builder.plugin(
+        tauri_plugin_global_shortcut::Builder::new()
+            .with_handler(move |app, shortcut, event| {
+                info!("Global hotkey event received: {:?}", shortcut);
+                if let Some(window) = app.get_webview_window("main") {
+                    match event.state() {
+                        tauri_plugin_global_shortcut::ShortcutState::Pressed => {
+                            let mut cursor_pos = POINT { x: 0, y: 0 };
+                            let _ = unsafe { GetCursorPos(&mut cursor_pos) };
+                            let margin = 200.0;
 
-                                if let Ok(bounds) = crate::utils::ScreenBounds::from_window(&window)
-                                {
-                                    let (window_x, window_y) = bounds.constrain_position(
-                                        cursor_pos.x as f64,
-                                        cursor_pos.y as f64,
-                                        margin,
-                                    );
-                                    let _ = window.set_position(PhysicalPosition {
-                                        x: window_x as i32,
-                                        y: window_y as i32,
-                                    });
-                                }
-
-                                let _ = window.show();
-                                let _ = window.unminimize();
-                                let _ = window.set_focus();
+                            if let Ok(bounds) = crate::utils::ScreenBounds::from_window(&window) {
+                                let (window_x, window_y) = bounds.constrain_position(
+                                    cursor_pos.x as f64,
+                                    cursor_pos.y as f64,
+                                    margin,
+                                );
+                                let _ = window.set_position(PhysicalPosition {
+                                    x: window_x as i32,
+                                    y: window_y as i32,
+                                });
                             }
-                            tauri_plugin_global_shortcut::ShortcutState::Released => {}
-                        }
-                    }
-                })
-                .build(),
-        );
-    }
 
-    #[cfg(target_os = "macos")]
-    {
-        builder = builder.plugin(tauri_plugin_key_intercept::init());
-    }
+                            let _ = window.show();
+                            let _ = window.unminimize();
+                            let _ = window.set_focus();
+                        }
+                        tauri_plugin_global_shortcut::ShortcutState::Released => {}
+                    }
+                }
+            })
+            .build(),
+    );
 
     builder
         .invoke_handler(tauri::generate_handler![
@@ -135,6 +111,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             check_config_exists,
             check_input_monitoring_permission,
             open_input_monitoring_settings,
+            mark_drop_received,
         ])
         .setup(|app| {
             // Ensure config directory exists first
@@ -151,7 +128,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             }
 
             // Load configuration once
-            let config = AppConfig::load(app.handle());
+            let config = config::AppConfig::load(app.handle());
             app.manage(Arc::new(Mutex::new(config.clone())));
 
             // Initialize analytics service
@@ -243,20 +220,17 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 tray::create_tray(handle)?;
             }
 
-            // Start the mouse monitor with configuration (Windows and macOS)
-            #[cfg(any(target_os = "windows", target_os = "macos"))]
-            {
-                let app_handle = app.handle().clone();
-                let config_state = app.state::<Arc<Mutex<AppConfig>>>();
-                let config_guard = config_state
-                    .lock()
-                    .map_err(|e| format!("Failed to lock config: {}", e))?;
-                start_mouse_monitor(
-                    config_guard.mouse_monitor.clone(),
-                    app_handle.clone(),
-                    drag_state.clone(),
-                );
-            }
+            // Start the mouse monitor with configuration
+            let app_handle = app.handle().clone();
+            let config_state = app.state::<Arc<Mutex<config::AppConfig>>>();
+            let config_guard = config_state
+                .lock()
+                .map_err(|e| format!("Failed to lock config: {}", e))?;
+            mouse_monitor::start_mouse_monitor(
+                config_guard.mouse_monitor.clone(),
+                app_handle.clone(),
+                drag_state.clone(),
+            );
 
             let is_autostart = std::env::args().any(|arg| arg == "--autostart");
             if let Some(window) = app.get_webview_window("main") {
@@ -265,56 +239,13 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 }
 
                 #[cfg(target_os = "windows")]
-                {
-                    use windows::Win32::Foundation::HWND;
-                    use windows::Win32::System::Ole::{RegisterDragDrop, RevokeDragDrop, OleInitialize};
-                    
-                    unsafe {
-                        let _ = OleInitialize(None);
-                        if let Ok(hwnd_ptr) = window.hwnd() {
-                            let hwnd = HWND(hwnd_ptr.0 as _);
-                            let _ = RevokeDragDrop(hwnd); // Remove Tauri's default
-                            
-                            let target = custom_drop::CustomDropTarget::new(app.handle().clone());
-                            let target_interface: windows::Win32::System::Ole::IDropTarget = target.into();
-                            if let Err(e) = RegisterDragDrop(hwnd, &target_interface) {
-                                warn!("Failed to register custom drag drop: {}", e);
-                            } else {
-                                info!("Registered custom drag drop target");
-                            }
-                        }
-                    }
+                if let Ok(hwnd_ptr) = window.hwnd() {
+                    let hwnd = windows::Win32::Foundation::HWND(hwnd_ptr.0 as _);
+                    drop_target::register_main_drop_target(app.handle(), hwnd);
                 }
             }
 
             Ok(())
-        })
-        .on_window_event(|window, event| {
-            if let WindowEvent::DragDrop(drop_event) = event {
-                let drag_state = window.app_handle().state::<Arc<DragState>>().inner();
-                match drop_event {
-                    DragDropEvent::Enter { .. } => {
-                        drag_state.drag_started.store(true, Ordering::Relaxed);
-                    }
-                    DragDropEvent::Drop { paths, .. } => {
-                        info!("Received {} dropped file(s) in the app window", paths.len());
-                        drag_state.successful_drop.store(true, Ordering::Relaxed);
-                        drag_state.drag_started.store(false, Ordering::Relaxed);
-
-                        // Handle the file drop
-                        let app_handle = window.app_handle();
-                        let file_list_state = app_handle.state::<FileList>();
-                        file_drop::handle_file_drop_from_paths(
-                            paths.clone(),
-                            file_list_state.inner().clone(),
-                            app_handle.clone(),
-                        );
-
-                        // Do not hide the window after processing - let user interact with the files
-                    }
-                    _ => {}
-                }
-            }
         })
 }
 
@@ -323,34 +254,24 @@ pub fn run() {
     logging::setup_logging();
     tracing::info!("Starting holdem application");
 
-    #[cfg(target_os = "windows")]
-    {
-        // Check for existing instance
-        unsafe {
-            let mutex_name = windows::core::w!("Global\\HoldemAppMutex");
-            let mutex = CreateMutexW(None, true, mutex_name);
+    // Check for existing instance
+    unsafe {
+        let mutex_name = windows::core::w!(r"Global\HoldemAppMutex");
+        let mutex = CreateMutexW(None, true, mutex_name);
 
-            if let Ok(mutex) = mutex {
-                if WaitForSingleObject(mutex, 0) == WAIT_OBJECT_0 {
-                    build_app()
-                        .run(tauri::generate_context!())
-                        .expect("error while running tauri application");
+        if let Ok(mutex) = mutex {
+            if WaitForSingleObject(mutex, 0) == WAIT_OBJECT_0 {
+                build_app()
+                    .run(tauri::generate_context!())
+                    .expect("error while running tauri application");
 
-                    // Clean up the mutex
-                    let _ = ReleaseMutex(mutex);
-                } else {
-                    // Another instance is already running
-                    info!("Another instance of the application is already running");
-                    std::process::exit(0);
-                }
+                // Clean up the mutex
+                let _ = ReleaseMutex(mutex);
+            } else {
+                // Another instance is already running
+                info!("Another instance of the application is already running");
+                std::process::exit(0);
             }
         }
-    }
-
-    #[cfg(not(target_os = "windows"))]
-    {
-        build_app()
-            .run(tauri::generate_context!())
-            .expect("error while running tauri application");
     }
 }

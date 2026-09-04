@@ -7,7 +7,7 @@
     "add": "Lisää",
     "set": "Aseta",
     "stop": "Pysäytä",
-    "noneSet": "Ei mitään",
+    "noneSet": "Ei asetettu",
     "loading": "Ladataan...",
     "copyLink": "Kopioi Linkki"
   },
@@ -21,12 +21,12 @@
     "paste": "Liitä",
     "contextMenuTitle": "Kontekstivalikko",
     "toast": {
-      "dropReceived": "Pudota vastaanotettu webview!",
+      "dropReceived": "Pudotus vastaanotettu webview-näkymässä!",
       "processingVirtual": "Käsitellään virtuaalisia tiedostoja selaimesta...",
       "checkingTextHtml": "Yhtään tiedostoa ei pudonnut, tarkistetaan tekstille/html...",
       "downloadingImage": "Ladataan kuvaa...",
       "failedSaveDataImage": "Datakuvan tallennus epäonnistui",
-      "failedSaveDroppedImage": "Poistetun kuvan tallennus epäonnistui",
+      "failedSaveDroppedImage": "Pudotetun kuvan tallentaminen epäonnistui",
       "couldNotDownloadImage": "Ei voitu ladata kuvaa: {{error}}"
     }
   },
@@ -34,7 +34,9 @@
     "itemsSelected": "{{count}} kohdetta valittu",
     "list": "Lista",
     "grid": "Ruudukko",
-    "removeSelected": "Poista Valitut Tiedostot"
+    "removeSelected": "Poista Valitut Tiedostot",
+    "itemsSelected_one": "{{count}} kohde valittu",
+    "itemsSelected_other": "{{count}} kohdetta valittu"
   },
   "settings": {
     "title": "Asetukset",
@@ -64,19 +66,19 @@
       "title": "Pikanäppäimet",
       "description": "Mukauta miten olet vuorovaikutuksessa sovelluksen kanssa",
       "showHotkey": "Näytä Ikkunan Pikanäppäin",
-      "pressKeys": "Paina avaimia...",
+      "pressKeys": "Paina näppäimiä...",
       "listeningHint": "Paina haluttua näppäinyhdistelmää... Paina pysäytä kun valmis",
       "idleHint": "Yleinen pikakuvake sovelluksen tuomiseksi etualalle",
       "set": "Aseta",
       "stop": "Pysäytä",
       "clear": "Tyhjennä",
-      "noneSet": "Ei mitään"
+      "noneSet": "Ei asetettu"
     },
     "dragDrop": {
       "title": "Vedä & Pudota Käyttäytyminen",
       "description": "Miten tiedostoja siirretään vetämällä pois Holdem",
       "dragToCopy": "Kopioi tiedostoja määränpäähän",
-      "shiftToMove": "Pidä Shift-näppäintä pohjassa siirtääksesi tiedostoja",
+      "shiftToMove": "Pidä siirto pohjassa siirtääksesi tiedostoja",
       "move": "siirrä",
       "macHint": "macOS näyttää vihreän + merkin, kun kopioidaan. Ei merkkiä = siirto operaatio.",
       "winHint": "Windows Explorer näyttää pistetyn peittokuvan kopioidessa. Liiku nuoli näyttää liikkua operaatioon."
@@ -86,12 +88,12 @@
       "description": "Hienosäädä ravistuksen havaitsemisherkkyys",
       "sensitivity": "Herkkyys",
       "timing": "Ajoitus",
-      "requiredShakes": "Tarvittavat Ravisteet",
+      "requiredShakes": "Vaaditut ravistukset",
       "shakeThreshold": "Ravistuskynnys",
       "timeLimit": "Aikaraja (ms)",
-      "closeDelay": "Sulje Viive (Ms)",
+      "closeDelay": "Sulkemisviive (ms)",
       "whitelistTitle": "Sallitut Sovellukset",
-      "whitelistDesc": "Ravistuksen tunnistus on aktiivinen vain silloin, kun yksi näistä sovelluksista on kohdistettu. Hyväksyy prosessin nimet (esim. brave, brave.exe). Saasinsensitiivinen.",
+      "whitelistDesc": "Ravistuksen tunnistus on aktiivinen vain, kun jokin näistä sovelluksista on aktiivisena. Hyväksyy prosessien nimet (esim. brave, brave.exe). Ei kirjainkoosta riippuvainen.",
       "addPlaceholder": "Lisää prosessin nimi...",
       "add": "Lisää",
       "emptyTitle": "Ei sallittuja sovelluksia",
@@ -131,7 +133,7 @@
     "availableTitle": "Päivitys Saatavilla!",
     "version": "Versio {{version}}",
     "noNotes": "Julkaisutietoja ei saatavilla",
-    "releaseNotes": "Julkaise Muistiinpanot",
+    "releaseNotes": "Julkaisutiedot",
     "autoDownload": "Lataus alkaa automaattisesti...",
     "latest": "Käytössäsi on uusin versio!",
     "errorTitle": "Virhe päivitysten tarkistuksessa",
