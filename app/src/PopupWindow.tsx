@@ -1,12 +1,14 @@
 import { DynamicFileIcon } from "@/components/FileIcon";
+import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { setPendingFiles, prepareDragImage, triggerNativeDrag } from "@/lib/fileUtils";
+import { POPUP_SELECT_ALL_EVENT } from "./ContextMenuWindow";
 import { invoke } from "@tauri-apps/api/core";
-import { MoreHorizontal, List as ListIcon, Grid as GridIcon, Trash2 } from 'lucide-react';
+import { listen } from "@tauri-apps/api/event";
+import { List as ListIcon, Grid as GridIcon } from 'lucide-react';
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Toaster } from "sonner";
-import * as ContextMenu from '@radix-ui/react-context-menu';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
@@ -14,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 const PopupWindow: React.FC = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const { files } = useFileManagement();
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -144,18 +147,59 @@ const PopupWindow: React.FC = () => {
     setViewMode(prev => prev === 'list' ? 'grid' : 'list');
   };
 
-  const handleRemoveSelectedFiles = useCallback(() => {
-    invoke('remove_files', { fileIds: Array.from(selectedFiles).map(id => parseInt(id)) })
-      .then(() => {
-        setSelectedFiles(new Set());
+  // The context menu lives in its own non-activating window (see
+  // ContextMenuWindow). Any mousedown here dismisses it; a right-click
+  // reopens it at the cursor via the backend.
+  const dismissMenu = useCallback(() => {
+    invoke('close_context_menu_window').catch(() => {});
+  }, []);
+
+  const handleContextMenu = useCallback((event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    invoke('open_context_menu_window', {
+      theme,
+      fileIds: Array.from(selectedFiles).map((id) => parseInt(id)),
+    }).catch((error) => {
+      console.error('Failed to open context menu window:', error);
+    });
+  }, [theme, selectedFiles]);
+
+  // Removal now happens from the context menu window, so prune ids that
+  // no longer exist whenever the file list refreshes.
+  useEffect(() => {
+    setSelectedFiles((prev) => {
+      if (prev.size === 0) return prev;
+      const ids = new Set(files.map((file) => file.id.toString()));
+      const next = new Set([...prev].filter((id) => ids.has(id)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [files]);
+
+  // "Select All" picked in the context menu window.
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    let cancelled = false;
+    listen(POPUP_SELECT_ALL_EVENT, () => {
+      setSelectedFiles(new Set(files.map((file) => file.id.toString())));
+    })
+      .then((fn) => {
+        if (cancelled) fn();
+        else unlisten = fn;
       })
-      .catch((error) => {
-        console.error('Failed to remove selected files:', error);
-      });
-  }, [selectedFiles]);
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  }, [files]);
 
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2 rounded border border-border">
+    <div
+      className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2 rounded border border-border"
+      onContextMenu={handleContextMenu}
+      onMouseDownCapture={dismissMenu}
+    >
       <div className="flex shrink-0 justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           {files.length > 0 && (
@@ -184,8 +228,6 @@ const PopupWindow: React.FC = () => {
       </div>
       <SimpleBar id="RSC-Example" style={{ flex: 1, minHeight: 0, height: 'auto' }} className="min-h-0">
       <div className="flex min-h-0 flex-col pb-1">
-        <ContextMenu.Root>
-          <ContextMenu.Trigger>
           <div className={`${viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'space-y-1'} pb-1`}>
             {files.map(file => (
               <div
@@ -228,20 +270,6 @@ const PopupWindow: React.FC = () => {
               </div>
             ))}
           </div>
-        </ContextMenu.Trigger>
-        <ContextMenu.Portal>
-          <ContextMenu.Content className="min-w-[200px] bg-background rounded-md overflow-hidden p-1">
-            <ContextMenu.Item 
-              className="text-sm  hover:bg-secondary rounded flex items-center px-2 py-1 cursor-pointer text-primary"
-              onClick={handleRemoveSelectedFiles}
-              disabled={selectedFiles.size === 0}
-            >
-              <Trash2 className="w-4 h-4 me-2" />
-              {t("popup.removeSelected")}
-            </ContextMenu.Item>
-          </ContextMenu.Content>
-        </ContextMenu.Portal>
-      </ContextMenu.Root>
       </div>
       </SimpleBar>
 

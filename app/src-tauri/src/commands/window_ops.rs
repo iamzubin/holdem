@@ -4,6 +4,8 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder};
 use tracing::info;
+use windows::Win32::Foundation::POINT;
+use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
 
 fn sanitize_theme(theme: Option<String>) -> Option<String> {
     match theme.as_deref() {
@@ -88,11 +90,99 @@ pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), St
 
 #[tauri::command]
 pub fn close_popup_window(app: AppHandle) -> Result<(), String> {
+    // A context menu belongs to the popup — never leave it dangling.
+    if let Some(menu_window) = app.get_webview_window("contextmenu") {
+        let _ = menu_window.close();
+    }
     let popup_window = app
         .get_webview_window("popup")
         .ok_or("Popup window not found")?;
     popup_window.close().map_err(|e| e.to_string())?;
     Ok(())
+}
+
+#[tauri::command]
+pub fn open_context_menu_window(
+    app: AppHandle,
+    selection: State<'_, crate::ContextMenuSelection>,
+    theme: Option<String>,
+    file_ids: Vec<u64>,
+) -> Result<(), String> {
+    // Remember what the menu should act on; the menu window reads it back
+    // via `get_context_menu_selection` on mount.
+    *selection
+        .lock()
+        .map_err(|_| "Failed to lock context menu selection".to_string())? = file_ids;
+
+    let main_window = app
+        .get_webview_window("main")
+        .ok_or("Main window not found")?;
+    let scale_factor = main_window.scale_factor().map_err(|e| e.to_string())?;
+
+    // Anchor the menu at the cursor (physical px) and keep it fully on-screen.
+    let mut cursor = POINT { x: 0, y: 0 };
+    let _ = unsafe { GetCursorPos(&mut cursor) };
+    let menu_width = 230.0;
+    let menu_height = 128.0;
+    let (menu_x, menu_y) =
+        match crate::utils::ScreenBounds::from_window(&main_window) {
+            Ok(bounds) => {
+                let w = menu_width * scale_factor;
+                let h = menu_height * scale_factor;
+                let x = (cursor.x as f64).min(bounds.x + bounds.width - w).max(bounds.x);
+                let y = (cursor.y as f64).min(bounds.y + bounds.height - h).max(bounds.y);
+                (x / scale_factor, y / scale_factor)
+            }
+            Err(_) => (
+                cursor.x as f64 / scale_factor,
+                cursor.y as f64 / scale_factor,
+            ),
+        };
+
+    // Unlike popup/settings there is no toggle: a right-click elsewhere
+    // repositions the menu instead of just dismissing it.
+    if let Some(existing) = app.get_webview_window("contextmenu") {
+        let _ = existing.close();
+    }
+
+    let menu_url = url_with_theme("contextmenu", theme);
+    WebviewWindowBuilder::new(&app, "contextmenu", WebviewUrl::App(menu_url.into()))
+        .title("Context Menu")
+        .decorations(false)
+        .shadow(true)
+        .resizable(false)
+        .skip_taskbar(true)
+        .focused(false)
+        // Non-activating: clicks land without stealing focus, so the popup
+        // underneath never sees a blur-close while the menu is open.
+        .focusable(false)
+        .accept_first_mouse(true)
+        .always_on_top(true)
+        .visible_on_all_workspaces(true)
+        .inner_size(menu_width, menu_height)
+        .position(menu_x, menu_y)
+        .build()
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+pub fn close_context_menu_window(app: AppHandle) -> Result<(), String> {
+    // Idempotent: popup clicks dismiss the menu fire-and-forget.
+    if let Some(menu_window) = app.get_webview_window("contextmenu") {
+        menu_window.close().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn get_context_menu_selection(
+    selection: State<'_, crate::ContextMenuSelection>,
+) -> Result<Vec<u64>, String> {
+    selection
+        .lock()
+        .map(|ids| ids.clone())
+        .map_err(|_| "Failed to lock context menu selection".to_string())
 }
 
 #[tauri::command]

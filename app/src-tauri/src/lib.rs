@@ -31,6 +31,7 @@ mod utils;
 use analytics::AnalyticsService;
 use commands::{config_ops::*, drag_ops::*, file_ops::*, window_ops::*};
 pub(crate) type FileList = Arc<Mutex<Vec<file::FileMetadata>>>;
+pub(crate) type ContextMenuSelection = Arc<Mutex<Vec<u64>>>;
 
 fn build_app() -> tauri::Builder<tauri::Wry> {
     let mut builder = tauri::Builder::default()
@@ -85,6 +86,9 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             start_text_drag,
             open_popup_window,
             close_popup_window,
+            open_context_menu_window,
+            close_context_menu_window,
+            get_context_menu_selection,
             open_consent_window,
             close_consent_window,
             add_files,
@@ -163,6 +167,9 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             // Create file list here
             let file_list: FileList = Arc::new(Mutex::new(Vec::new()));
             app.manage(file_list.clone());
+
+            // Selection the context menu window acts on (set on open)
+            app.manage(ContextMenuSelection::default());
 
             // Create drag state
             let drag_state = Arc::new(DragState {

@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import PopupWindow from "./PopupWindow";
+import ContextMenuWindow from "./ContextMenuWindow";
 import "./global.css";
 import { i18nInitialization } from "./i18n";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -20,6 +21,7 @@ const Main =  () => {
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/popup" element={<PopupWindow />} />
+          <Route path="/contextmenu" element={<ContextMenuWindow />} />
           <Route path="/settings" element={<SettingsWindow />} />
           <Route path="/updater" element={<Updater />} />
           <Route path="/consent" element={<Consent />} />
