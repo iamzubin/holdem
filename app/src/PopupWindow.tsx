@@ -155,8 +155,8 @@ const PopupWindow: React.FC = () => {
   }, [selectedFiles]);
 
   return (
-    <div className="fixed inset-0 bg-background  p-2 rounded border border-border">
-      <div className="flex justify-between items-center mb-2">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2 rounded border border-border">
+      <div className="flex shrink-0 justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           {files.length > 0 && (
             <>
@@ -182,11 +182,11 @@ const PopupWindow: React.FC = () => {
           </ToggleGroup>
         </div>
       </div>
-      <SimpleBar id="RSC-Example" style={{ height: '100%' }}>
-      <div className="flex flex-col overflow-hidden">
+      <SimpleBar id="RSC-Example" style={{ flex: 1, minHeight: 0, height: 'auto' }} className="min-h-0">
+      <div className="flex min-h-0 flex-col pb-1">
         <ContextMenu.Root>
-          <ContextMenu.Trigger> 
-          <div className={` overflow-auto ${viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'space-y-1'}`}>
+          <ContextMenu.Trigger>
+          <div className={`${viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'space-y-1'} pb-1`}>
             {files.map(file => (
               <div
                 key={file.id}
@@ -242,11 +242,10 @@ const PopupWindow: React.FC = () => {
           </ContextMenu.Content>
         </ContextMenu.Portal>
       </ContextMenu.Root>
-      
-      <Toaster />
       </div>
       </SimpleBar>
 
+      <Toaster />
     </div>
   );
 };
