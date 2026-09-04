@@ -63,7 +63,7 @@ const syncDocumentAttrs = (lng: string) => {
 
 i18n.on("languageChanged", syncDocumentAttrs);
 
-i18n
+export const i18nInitialization = i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -84,10 +84,10 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+  })
+  .then(() => {
+    syncDocumentAttrs(i18n.language);
   });
-
-syncDocumentAttrs(i18n.language);
-
 export const setLanguage = (lng: string) => {
   return i18n.changeLanguage(lng);
 };
