@@ -1,0 +1,13 @@
+# Crowdin configuration for Holdem (https://github.com/iamzubin/holdem/issues/47)
+# Source language: English
+# Docs: https://crowdin.com/documentation/config-file
+project_id_env: CROWDIN_PROJECT_ID
+api_token_env: CROWDIN_PERSONAL_TOKEN
+preserve_hierarchy: true
+
+files:
+  # %locale% matches the BCP-47 filenames used in src/i18n/locales
+  # (e.g. es-ES.json, pt-BR.json, zh-CN.json, zh-TW.json)
+  - source: /app/src/i18n/locales/en.json
+    translation: /app/src/i18n/locales/%locale%.json
+    multilingual: false

@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { invoke } from '@tauri-apps/api/core';
 import { closeWindow } from '@/lib/windowUtils';
 
 export default function Consent() {
+  const { t } = useTranslation();
   // Handle window close events
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -50,27 +52,27 @@ export default function Consent() {
     <div className="h-full bg-background flex items-center justify-center p-4 " data-tauri-drag-region>
       <Card className="w-full max-w-md" data-tauri-drag-region>
         <CardHeader className="text-center" data-tauri-drag-region>
-          <CardTitle className="text-xl">Help us improve Holdem</CardTitle>
+          <CardTitle className="text-xl">{t("consent.title")}</CardTitle>
           <CardDescription data-tauri-drag-region>
-            We'd like to collect anonymous usage data to improve your experience
+            {t("consent.description")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6" data-tauri-drag-region>
           <div className="text-sm text-muted-foreground space-y-3">
             <div>
-              <p className="font-medium mb-2">We collect:</p>
+              <p className="font-medium mb-2">{t("consent.collectTitle")}</p>
               <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>App launch events</li>
-                <li>File drag and drop usage</li>
-                <li>Basic app performance metrics</li>
+                {(t("consent.collectItems", { returnObjects: true }) as string[]).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
             <div>
-              <p className="font-medium mb-2">We do NOT collect:</p>
+              <p className="font-medium mb-2">{t("consent.notCollectTitle")}</p>
               <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>Personal information</li>
-                <li>File contents or names</li>
-                <li>Your browsing history</li>
+                {(t("consent.notCollectItems", { returnObjects: true }) as string[]).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
           </div>
@@ -80,13 +82,13 @@ export default function Consent() {
               onClick={handleDecline}
               className="flex-1"
             >
-              Decline
+              {t("consent.decline")}
             </Button>
             <Button 
               onClick={handleAccept}
               className="flex-1"
             >
-              Accept
+              {t("consent.accept")}
             </Button>
           </div>
         </CardContent>

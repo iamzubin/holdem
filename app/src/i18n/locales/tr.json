@@ -1,0 +1,133 @@
+{
+  "common": {
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "close": "Kapat",
+    "clear": "Temizle",
+    "add": "Ekle",
+    "set": "Ayarla",
+    "stop": "Durdur",
+    "noneSet": "Ayarlanmadı",
+    "loading": "Yükleniyor...",
+    "copyLink": "Bağlantıyı Kopyala"
+  },
+  "app": {
+    "dropHere": "Buraya bırak",
+    "files": "{{count}} dosya",
+    "files_one": "{{count}} dosya",
+    "files_other": "{{count}} dosya",
+    "files_plural": "{{count}} dosya",
+    "clear": "Temizle",
+    "paste": "Yapıştır",
+    "contextMenuTitle": "Bağlam Menüsü",
+    "toast": {
+      "dropReceived": "Web görünümünde bırakma alındı!",
+      "processingVirtual": "Tarayıcıdan sanal dosyalar işleniyor...",
+      "checkingTextHtml": "Bırakılan dosya yok, metin/html denetleniyor...",
+      "downloadingImage": "Görüntü indiriliyor...",
+      "failedSaveDataImage": "Veri görüntüsü kaydedilemedi",
+      "failedSaveDroppedImage": "Bırakılan görüntü kaydedilemedi",
+      "couldNotDownloadImage": "Görüntü indirilemedi: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} öğe seçildi",
+    "list": "Liste",
+    "grid": "Izgara",
+    "removeSelected": "Seçili Dosyaları Kaldır"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "subtitle": "Uygulama tercihlerinizi yönetin",
+    "loading": "Ayarlar yükleniyor...",
+    "inputMonitoring": {
+      "title": "Girdi İzleme İzni Gerekli",
+      "description": "Option+Space veya Ctrl+Space gibi genel kısayolları kullanmak için bu uygulamanın Girdi İzleme iznine ihtiyacı vardır. Bu bir macOS sistem gereksinimidir.",
+      "openSettings": "Sistem Ayarlarını Aç",
+      "restartHint": "İzni verdikten sonra değişikliklerin geçerli olması için uygulamayı yeniden başlatın."
+    },
+    "general": {
+      "title": "Genel Ayarlar",
+      "description": "Başlangıç ve gizlilik davranışını yapılandırın",
+      "startup": "Sistem Başlangıcında Başlat",
+      "startupDesc": "Oturum açtığınızda uygulamayı otomatik olarak başlatın",
+      "analytics": "Analitiği Etkinleştir",
+      "analyticsDesc": "Anonim kullanım verilerini paylaşarak Holdem'i iyileştirmemize yardımcı olun"
+    },
+    "language": {
+      "title": "Dil",
+      "description": "Tercih ettiğiniz dili seçin",
+      "label": "Görüntüleme Dili",
+      "hint": "Değişiklikler hemen uygulanır ve bu cihazda kaydedilir."
+    },
+    "shortcuts": {
+      "title": "Kısayollar",
+      "description": "Uygulamayla etkileşim şeklinizi özelleştirin",
+      "showHotkey": "Pencereyi Gösterme Kısayolu",
+      "pressKeys": "Tuşlara basın...",
+      "listeningHint": "İstediğiniz tuş kombinasyonuna basın... Bitince Durdur'a basın",
+      "idleHint": "Uygulamayı öne getiren genel kısayol",
+      "set": "Ayarla",
+      "stop": "Durdur",
+      "clear": "Temizle",
+      "noneSet": "Ayarlanmadı"
+    },
+    "dragDrop": {
+      "title": "Sürükle ve Bırak Davranışı",
+      "description": "Dosyalar Holdem dışına sürüklenirken nasıl aktarılır",
+      "dragToCopy": "Dosyaları hedefe kopyala",
+      "shiftToMove": "Dosyaları taşımak için bırakırken Shift tuşunu basılı tutun",
+      "move": "taşıma",
+      "macHint": "macOS, kopyalarken yeşil + rozeti gösterir. Rozet yoksa taşıma işlemidir.",
+      "winHint": "Windows Gezgini, kopyalarken noktalı kaplama gösterir. Taşıma işlemi için taşıma oku görünür."
+    },
+    "mouse": {
+      "title": "Fare İzleyici",
+      "description": "Sarsıntı algılama hassasiyetini ayarlayın",
+      "sensitivity": "Hassasiyet",
+      "timing": "Zamanlama",
+      "requiredShakes": "Gerekli Sarsıntı Sayısı",
+      "shakeThreshold": "Sarsıntı Eşiği",
+      "timeLimit": "Süre Sınırı (ms)",
+      "closeDelay": "Kapatma Gecikmesi (ms)",
+      "whitelistTitle": "İzin Verilen Uygulamalar",
+      "whitelistDesc": "Sarsıntı algılama yalnızca bu uygulamalardan birine odaklanıldığında etkin olur. İşlem adlarını kabul eder (örn. brave, brave.exe). Büyük/küçük harf duyarsızdır.",
+      "addPlaceholder": "İşlem adı ekleyin...",
+      "add": "Ekle",
+      "emptyTitle": "İzin verilen uygulama yok",
+      "emptyDesc": "İmleç sarsıntısı genel olarak yoksayılır"
+    },
+    "footer": {
+      "save": "Ayarları Kaydet",
+      "saving": "Kaydediliyor..."
+    }
+  },
+  "consent": {
+    "title": "Holdem'i iyileştirmemize yardımcı olun",
+    "description": "Deneyiminizi iyileştirmek için anonim kullanım verileri toplamak istiyoruz",
+    "collectTitle": "Topladıklarımız:",
+    "collectItems": ["Uygulama başlatma etkinlikleri", "Dosya sürükle ve bırak kullanımı", "Temel uygulama performans ölçümleri"],
+    "notCollectTitle": "Toplamadıklarımız:",
+    "notCollectItems": ["Kişisel bilgiler", "Dosya içerikleri veya adları", "Gezinme geçmişiniz"],
+    "decline": "Reddet",
+    "accept": "Kabul Et"
+  },
+  "updater": {
+    "title": "Yazılım Güncellemeleri",
+    "close": "Kapat",
+    "checking": "Güncellemeler denetleniyor...",
+    "downloading": "Güncelleme indiriliyor...",
+    "downloadedTitle": "İndirme tamamlandı!",
+    "downloadedDesc": "Kuruluma hazırlanıyor...",
+    "installing": "Güncelleme kuruluyor ve uygulama yeniden başlatılıyor...",
+    "availableTitle": "Güncelleme Mevcut!",
+    "version": "Sürüm {{version}}",
+    "noNotes": "Sürüm notu yok",
+    "releaseNotes": "Sürüm Notları",
+    "autoDownload": "İndirme otomatik olarak başlayacak...",
+    "latest": "En son sürümü kullanıyorsunuz!",
+    "errorTitle": "Güncellemeler denetlenirken hata",
+    "downloadError": "Güncelleme indirilemedi ve kurulamadı: {{error}}",
+    "waiting": "Güncellemelerin denetlenmesi bekleniyor..."
+  }
+}

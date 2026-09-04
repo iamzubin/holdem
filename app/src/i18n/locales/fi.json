@@ -1,0 +1,141 @@
+{
+  "common": {
+    "cancel": "Peruuta",
+    "save": "Tallenna",
+    "close": "Sulje",
+    "clear": "Tyhjennä",
+    "add": "Lisää",
+    "set": "Aseta",
+    "stop": "Pysäytä",
+    "noneSet": "Ei mitään",
+    "loading": "Ladataan...",
+    "copyLink": "Kopioi Linkki"
+  },
+  "app": {
+    "dropHere": "Pudota tähän",
+    "files": "{{count}} tiedosto",
+    "files_one": "{{count}} tiedosto",
+    "files_other": "{{count}} tiedostoa",
+    "files_plural": "{{count}} tiedostoa",
+    "clear": "Tyhjennä",
+    "paste": "Liitä",
+    "contextMenuTitle": "Kontekstivalikko",
+    "toast": {
+      "dropReceived": "Pudota vastaanotettu webview!",
+      "processingVirtual": "Käsitellään virtuaalisia tiedostoja selaimesta...",
+      "checkingTextHtml": "Yhtään tiedostoa ei pudonnut, tarkistetaan tekstille/html...",
+      "downloadingImage": "Ladataan kuvaa...",
+      "failedSaveDataImage": "Datakuvan tallennus epäonnistui",
+      "failedSaveDroppedImage": "Poistetun kuvan tallennus epäonnistui",
+      "couldNotDownloadImage": "Ei voitu ladata kuvaa: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} kohdetta valittu",
+    "list": "Lista",
+    "grid": "Ruudukko",
+    "removeSelected": "Poista Valitut Tiedostot"
+  },
+  "settings": {
+    "title": "Asetukset",
+    "subtitle": "Hallinnoi sovelluksen asetuksia",
+    "loading": "Ladataan asetuksia...",
+    "inputMonitoring": {
+      "title": "Pakollinen Syötteiden Tarkkailulupa",
+      "description": "Käyttääksesi yleisiä pikakuvakkeita, kuten Option+Space tai Ctrl+Space, tämä sovellus tarvitsee Input Monitoring -oikeuden. Tämä on macOS-järjestelmän vaatimus.",
+      "openSettings": "Avaa Järjestelmäasetukset",
+      "restartHint": "Luvan myöntämisen jälkeen käynnistä sovellus uudelleen, jotta muutokset tulevat voimaan."
+    },
+    "general": {
+      "title": "Yleiset Asetukset",
+      "description": "Määritä käynnistys- ja yksityisyyskäyttäytyminen",
+      "startup": "Käynnistä järjestelmän käynnistyessä",
+      "startupDesc": "Käynnistä sovellus automaattisesti kun kirjaudut sisään",
+      "analytics": "Ota Analytiikka Käyttöön",
+      "analyticsDesc": "Auta parantamaan Holdemia jakamalla nimettömiä käyttötietoja"
+    },
+    "language": {
+      "title": "Kieli",
+      "description": "Valitse haluamasi kieli",
+      "label": "Näytä Kieli",
+      "hint": "Muutokset tulevat voimaan välittömästi ja ne tallennetaan tälle laitteelle."
+    },
+    "shortcuts": {
+      "title": "Pikanäppäimet",
+      "description": "Mukauta miten olet vuorovaikutuksessa sovelluksen kanssa",
+      "showHotkey": "Näytä Ikkunan Pikanäppäin",
+      "pressKeys": "Paina avaimia...",
+      "listeningHint": "Paina haluttua näppäinyhdistelmää... Paina pysäytä kun valmis",
+      "idleHint": "Yleinen pikakuvake sovelluksen tuomiseksi etualalle",
+      "set": "Aseta",
+      "stop": "Pysäytä",
+      "clear": "Tyhjennä",
+      "noneSet": "Ei mitään"
+    },
+    "dragDrop": {
+      "title": "Vedä & Pudota Käyttäytyminen",
+      "description": "Miten tiedostoja siirretään vetämällä pois Holdem",
+      "dragToCopy": "Kopioi tiedostoja määränpäähän",
+      "shiftToMove": "Pidä Shift-näppäintä pohjassa siirtääksesi tiedostoja",
+      "move": "siirrä",
+      "macHint": "macOS näyttää vihreän + merkin, kun kopioidaan. Ei merkkiä = siirto operaatio.",
+      "winHint": "Windows Explorer näyttää pistetyn peittokuvan kopioidessa. Liiku nuoli näyttää liikkua operaatioon."
+    },
+    "mouse": {
+      "title": "Hiiren Valvonta",
+      "description": "Hienosäädä ravistuksen havaitsemisherkkyys",
+      "sensitivity": "Herkkyys",
+      "timing": "Ajoitus",
+      "requiredShakes": "Tarvittavat Ravisteet",
+      "shakeThreshold": "Ravistuskynnys",
+      "timeLimit": "Aikaraja (ms)",
+      "closeDelay": "Sulje Viive (Ms)",
+      "whitelistTitle": "Sallitut Sovellukset",
+      "whitelistDesc": "Ravistuksen tunnistus on aktiivinen vain silloin, kun yksi näistä sovelluksista on kohdistettu. Hyväksyy prosessin nimet (esim. brave, brave.exe). Saasinsensitiivinen.",
+      "addPlaceholder": "Lisää prosessin nimi...",
+      "add": "Lisää",
+      "emptyTitle": "Ei sallittuja sovelluksia",
+      "emptyDesc": "Kohdistin ravisteleminen jätetään huomiotta globaalisti"
+    },
+    "footer": {
+      "save": "Tallenna Asetukset",
+      "saving": "Tallennetaan..."
+    }
+  },
+  "consent": {
+    "title": "Auta meitä parantamaan Holdem",
+    "description": "Haluaisimme kerätä anonyymiä käyttötietoja parantaaksemme kokemustasi",
+    "collectTitle": "Keräämme:",
+    "collectItems": [
+      "Sovelluksen käynnistystapahtumat",
+      "Tiedoston vedä ja pudota käyttö",
+      "Sovelluksen perussuorituskyvyn mittarit"
+    ],
+    "notCollectTitle": "Emme kerää",
+    "notCollectItems": [
+      "Henkilökohtaiset tiedot",
+      "Tiedoston sisältö tai nimet",
+      "Sinun selaushistoriasi"
+    ],
+    "decline": "Hylkää",
+    "accept": "Hyväksy"
+  },
+  "updater": {
+    "title": "Ohjelmiston Päivitykset",
+    "close": "Sulje",
+    "checking": "Tarkistetaan päivityksiä...",
+    "downloading": "Ladataan päivitystä...",
+    "downloadedTitle": "Lataus suoritettu!",
+    "downloadedDesc": "Valmistellaan asennusta...",
+    "installing": "Asennetaan päivitystä ja käynnistetään sovellus...",
+    "availableTitle": "Päivitys Saatavilla!",
+    "version": "Versio {{version}}",
+    "noNotes": "Julkaisutietoja ei saatavilla",
+    "releaseNotes": "Julkaise Muistiinpanot",
+    "autoDownload": "Lataus alkaa automaattisesti...",
+    "latest": "Käytössäsi on uusin versio!",
+    "errorTitle": "Virhe päivitysten tarkistuksessa",
+    "downloadError": "Päivityksen lataaminen ja asentaminen epäonnistui: {{error}}",
+    "waiting": "Odotetaan päivitysten tarkistamista..."
+  }
+}

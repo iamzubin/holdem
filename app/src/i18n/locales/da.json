@@ -1,0 +1,141 @@
+{
+  "common": {
+    "cancel": "Annuller",
+    "save": "Gem",
+    "close": "Luk",
+    "clear": "Ryd",
+    "add": "Tilføj",
+    "set": "Indstil",
+    "stop": "Stop",
+    "noneSet": "Ingen angivet",
+    "loading": "Indlæser...",
+    "copyLink": "Kopier Link"
+  },
+  "app": {
+    "dropHere": "Slip her",
+    "files": "{{count}} fil",
+    "files_one": "{{count}} fil",
+    "files_other": "{{count}} filer",
+    "files_plural": "{{count}} filer",
+    "clear": "Ryd",
+    "paste": "Indsæt",
+    "contextMenuTitle": "Sammenhængs Menu",
+    "toast": {
+      "dropReceived": "Drop modtaget i webview!",
+      "processingVirtual": "Behandler virtuelle filer fra browser...",
+      "checkingTextHtml": "Ingen filer droppet, tjek for tekst / html...",
+      "downloadingImage": "Downloader billede...",
+      "failedSaveDataImage": "Kunne ikke gemme databillede",
+      "failedSaveDroppedImage": "Mislykkedes at gemme droppet billede",
+      "couldNotDownloadImage": "Kunne ikke downloade billede: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} emner valgt",
+    "list": "Liste",
+    "grid": "Gitter",
+    "removeSelected": "Fjern Valgte Filer"
+  },
+  "settings": {
+    "title": "Indstillinger",
+    "subtitle": "Administrer dine app-præferencer",
+    "loading": "Indlæser indstillinger...",
+    "inputMonitoring": {
+      "title": "Input Overvågningstilladelse Kræves",
+      "description": "Hvis du vil bruge globale genveje såsom Option+Space eller Ctrl+Space, skal denne app bruge Input-overvågningstilladelse. Dette er et macOS-systemkrav.",
+      "openSettings": "Åbn Systemindstillinger",
+      "restartHint": "Efter at have givet tilladelse, genstarte app'en for at ændringerne kan træde i kraft."
+    },
+    "general": {
+      "title": "Generelle Indstillinger",
+      "description": "Indstil opstarts- og privatlivsadfærd",
+      "startup": "Start ved systemstart",
+      "startupDesc": "Start automatisk appen, når du logger ind",
+      "analytics": "Aktiver Analyse",
+      "analyticsDesc": "Hjælp med at forbedre Holdem ved at dele anonyme brugsdata"
+    },
+    "language": {
+      "title": "Sprog",
+      "description": "Vælg dit foretrukne sprog",
+      "label": "Vis Sprog",
+      "hint": "Ændringer gælder straks og gemmes på denne enhed."
+    },
+    "shortcuts": {
+      "title": "Genveje",
+      "description": "Tilpas hvordan du interagerer med appen",
+      "showHotkey": "Vis Vindue Genvejstast",
+      "pressKeys": "Tryk på taster...",
+      "listeningHint": "Tryk på den ønskede tastekombination... Tryk på Stop når du er færdig",
+      "idleHint": "Global genvej for at bringe appen i forgrunden",
+      "set": "Indstil",
+      "stop": "Stop",
+      "clear": "Ryd",
+      "noneSet": "Ingen angivet"
+    },
+    "dragDrop": {
+      "title": "Træk Og Slip Opførsel",
+      "description": "Hvordan filer overføres når du trækker ud af Holdem",
+      "dragToCopy": "Kopier filer til destination",
+      "shiftToMove": "Hold Shift nede mens du slipper for at flytte filer",
+      "move": "flyt",
+      "macHint": "macOS viser et grønt + badge ved kopiering. Intet badge = flytning.",
+      "winHint": "Windows Stifinder viser en stiplet overlejring, når du kopierer. En flytte pil viser for flytning."
+    },
+    "mouse": {
+      "title": "Mus Monitor",
+      "description": "Fin- tune rystedetektionsfølsomhed",
+      "sensitivity": "Følsomhed",
+      "timing": "Tidspunkt",
+      "requiredShakes": "Påkrævede Rystelser",
+      "shakeThreshold": "Ryst Tærskelværdi",
+      "timeLimit": "Tidsgrænse (ms)",
+      "closeDelay": "Luk Forsinkelse (ms)",
+      "whitelistTitle": "Hvidlistede Apps",
+      "whitelistDesc": "Rystesøgning vil kun være aktiv, når en af disse apps er fokuseret. Accepterer procesnavne (f.eks. brave, brave.exe). Case-ufølsom.",
+      "addPlaceholder": "Tilføj procesnavn...",
+      "add": "Tilføj",
+      "emptyTitle": "Ingen apps whitelistet",
+      "emptyDesc": "Markør rystning vil blive ignoreret globalt"
+    },
+    "footer": {
+      "save": "Gem Indstillinger",
+      "saving": "Gemmer..."
+    }
+  },
+  "consent": {
+    "title": "Hjælp os med at forbedre Holdem",
+    "description": "Vi vil gerne indsamle anonyme brugsdata for at forbedre din oplevelse",
+    "collectTitle": "Vi indsamler:",
+    "collectItems": [
+      "App start begivenheder",
+      "Brug af fil træk og slip",
+      "Grundlæggende data for appens ydeevne"
+    ],
+    "notCollectTitle": "Vi indsamler ikke:",
+    "notCollectItems": [
+      "Personlige oplysninger",
+      "Fil indhold eller navne",
+      "Din browserhistorik"
+    ],
+    "decline": "Afvis",
+    "accept": "Accepter"
+  },
+  "updater": {
+    "title": "Softwareopdateringer",
+    "close": "Luk",
+    "checking": "Søger efter opdateringer...",
+    "downloading": "Downloader opdatering...",
+    "downloadedTitle": "Download fuldført!",
+    "downloadedDesc": "Forbereder installation...",
+    "installing": "Installerer opdatering og genstart af applikation...",
+    "availableTitle": "Opdatering Tilgængelig!",
+    "version": "Version {{version}}",
+    "noNotes": "Ingen udgivelsesnoter tilgængelige",
+    "releaseNotes": "Udgivelsesnoter",
+    "autoDownload": "Download vil starte automatisk...",
+    "latest": "Du kører den seneste version!",
+    "errorTitle": "Fejl under søgning efter opdateringer",
+    "downloadError": "Kunne ikke downloade og installere opdateringen: {{error}}",
+    "waiting": "Venter på at søge efter opdateringer..."
+  }
+}

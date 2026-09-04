@@ -1,0 +1,141 @@
+{
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "close": "Schließen",
+    "clear": "Leeren",
+    "add": "Hinzufügen",
+    "set": "Setzen",
+    "stop": "Stoppen",
+    "noneSet": "Kein Set",
+    "loading": "Wird geladen...",
+    "copyLink": "Link kopieren"
+  },
+  "app": {
+    "dropHere": "Hier ablegen",
+    "files": "{{count}} Datei",
+    "files_one": "{{count}} Datei",
+    "files_other": "{{count}} Dateien",
+    "files_plural": "{{count}} Dateien",
+    "clear": "Leeren",
+    "paste": "Einfügen",
+    "contextMenuTitle": "Kontextmenü",
+    "toast": {
+      "dropReceived": "Drop in der Webansicht erhalten!",
+      "processingVirtual": "Bearbeite virtuelle Dateien aus dem Browser...",
+      "checkingTextHtml": "Keine Dateien abgelegt, suche nach text/html...",
+      "downloadingImage": "Bild wird heruntergeladen...",
+      "failedSaveDataImage": "Fehler beim Speichern des Datenbildes",
+      "failedSaveDroppedImage": "Fehler beim Speichern des abgelegten Bildes",
+      "couldNotDownloadImage": "Bild konnte nicht heruntergeladen werden: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} Elemente ausgewählt",
+    "list": "Liste",
+    "grid": "Raster",
+    "removeSelected": "Ausgewählte Dateien entfernen"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalten Sie Ihre Anwendungseinstellungen",
+    "loading": "Lade Einstellungen...",
+    "inputMonitoring": {
+      "title": "Eingangsüberwachungsberechtigung erforderlich",
+      "description": "Um globale Verknüpfungen wie Option+Leerzeichen oder Strg+Leerzeichen zu verwenden, benötigt diese App Eingangsüberwachungsberechtigung. Dies ist eine MacOS-Systemanforderung.",
+      "openSettings": "Systemeinstellungen öffnen",
+      "restartHint": "Nach Erteilung der Berechtigung starten Sie die App neu, damit die Änderungen wirksam werden."
+    },
+    "general": {
+      "title": "Allgemeine Einstellungen",
+      "description": "Start-und Privatsphäre-Verhalten konfigurieren",
+      "startup": "Beim Systemstart starten",
+      "startupDesc": "Beim Anmelden automatisch die App starten",
+      "analytics": "Analytik aktivieren",
+      "analyticsDesc": "Helfen Sie Holdem zu verbessern, indem Sie anonyme Nutzungsdaten teilen"
+    },
+    "language": {
+      "title": "Sprache",
+      "description": "Wählen Sie Ihre bevorzugte Sprache",
+      "label": "Sprache anzeigen",
+      "hint": "Änderungen gelten sofort und werden auf diesem Gerät gespeichert."
+    },
+    "shortcuts": {
+      "title": "Verknüpfungen",
+      "description": "Anpassen, wie Sie mit der App interagieren",
+      "showHotkey": "Fenster-Hotkey anzeigen",
+      "pressKeys": "Drücke Tasten...",
+      "listeningHint": "Drücke die gewünschte Tastenkombination... Drücke Stopp wenn fertig",
+      "idleHint": "Globale Verknüpfung, um die App in den Vordergrund zu rücken",
+      "set": "Setzen",
+      "stop": "Stoppen",
+      "clear": "Leeren",
+      "noneSet": "Kein Set"
+    },
+    "dragDrop": {
+      "title": "Drag & Drop Verhalten",
+      "description": "Wie Dateien beim Ziehen aus Holdem übertragen werden",
+      "dragToCopy": "Dateien in das Ziel kopieren",
+      "shiftToMove": "Shift während des Ablegens halten um Dateien zu verschieben",
+      "move": "verschieben",
+      "macHint": "macOS zeigt beim Kopieren ein grünes + Abzeichen an. Kein Abzeichen = Verschieben Operation.",
+      "winHint": "Beim Kopieren zeigt der Windows Explorer ein gepunktetes Overlay an. Ein Verschiebungspfeil zeigt den Verschiebungsvorgang an."
+    },
+    "mouse": {
+      "title": "Maus-Monitor",
+      "description": "Feinabstimmung Schüttelerkennung Empfindlichkeit",
+      "sensitivity": "Empfindlichkeit",
+      "timing": "Timing",
+      "requiredShakes": "Benötigte Schütteln",
+      "shakeThreshold": "Schüttelschwelle",
+      "timeLimit": "Zeitlimit (ms)",
+      "closeDelay": "Schließverzögerung (ms)",
+      "whitelistTitle": "Apps auf der Whitelist",
+      "whitelistDesc": "Schüttelerkennung ist nur aktiv, wenn eine dieser Apps fokussiert ist. Akzeptiert Prozessnamen (z.B. brave, brave.exe). Groß-/Kleinschreibung.",
+      "addPlaceholder": "Prozessname hinzufügen...",
+      "add": "Hinzufügen",
+      "emptyTitle": "Keine Apps auf der Whitelist",
+      "emptyDesc": "Cursorschütteln wird global ignoriert"
+    },
+    "footer": {
+      "save": "Einstellungen speichern",
+      "saving": "Speichern..."
+    }
+  },
+  "consent": {
+    "title": "Helfen Sie uns Holdem zu verbessern",
+    "description": "Wir möchten anonyme Nutzungsdaten sammeln, um Ihre Erfahrung zu verbessern",
+    "collectTitle": "Wir sammeln:",
+    "collectItems": [
+      "App-Startereignisse",
+      "Drag and Drop Verwendung",
+      "Grundlegende App-Performance-Metriken"
+    ],
+    "notCollectTitle": "Wir sammeln NICHT ein:",
+    "notCollectItems": [
+      "Persönliche Informationen",
+      "Dateiinhalt oder -namen",
+      "Ihr Browserverlauf"
+    ],
+    "decline": "Ablehnen",
+    "accept": "Akzeptieren"
+  },
+  "updater": {
+    "title": "Software-Updates",
+    "close": "Schließen",
+    "checking": "Suche nach Updates...",
+    "downloading": "Update wird heruntergeladen...",
+    "downloadedTitle": "Download abgeschlossen!",
+    "downloadedDesc": "Installation wird vorbereitet...",
+    "installing": "Installiere Update- und Neustart-Anwendung...",
+    "availableTitle": "Update verfügbar!",
+    "version": "Version {{version}}",
+    "noNotes": "Keine Versionshinweise verfügbar",
+    "releaseNotes": "Versionshinweise",
+    "autoDownload": "Download wird automatisch gestartet...",
+    "latest": "Sie verwenden die neueste Version!",
+    "errorTitle": "Fehler bei der Suche nach Updates",
+    "downloadError": "Update konnte nicht heruntergeladen und installiert werden: {{error}}",
+    "waiting": "Warte auf Updates..."
+  }
+}

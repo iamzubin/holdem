@@ -1,0 +1,133 @@
+{
+  "common": {
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "close": "Đóng",
+    "clear": "Xóa",
+    "add": "Thêm",
+    "set": "Đặt",
+    "stop": "Dừng",
+    "noneSet": "Chưa đặt",
+    "loading": "Đang tải...",
+    "copyLink": "Sao chép liên kết"
+  },
+  "app": {
+    "dropHere": "Thả vào đây",
+    "files": "{{count}} tệp",
+    "files_one": "{{count}} tệp",
+    "files_other": "{{count}} tệp",
+    "files_plural": "{{count}} tệp",
+    "clear": "Xóa",
+    "paste": "Dán",
+    "contextMenuTitle": "Menu ngữ cảnh",
+    "toast": {
+      "dropReceived": "Đã nhận thao tác thả trong chế độ xem web!",
+      "processingVirtual": "Đang xử lý tệp ảo từ trình duyệt...",
+      "checkingTextHtml": "Không có tệp được thả, đang kiểm tra văn bản/html...",
+      "downloadingImage": "Đang tải hình ảnh xuống...",
+      "failedSaveDataImage": "Không lưu được hình ảnh dữ liệu",
+      "failedSaveDroppedImage": "Không lưu được hình ảnh được thả",
+      "couldNotDownloadImage": "Không tải được hình ảnh: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "Đã chọn {{count}} mục",
+    "list": "Danh sách",
+    "grid": "Lưới",
+    "removeSelected": "Xóa các tệp đã chọn"
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "subtitle": "Quản lý tùy chọn ứng dụng của bạn",
+    "loading": "Đang tải cài đặt...",
+    "inputMonitoring": {
+      "title": "Yêu cầu quyền Giám sát đầu vào",
+      "description": "Để dùng các phím tắt toàn cục như Option+Space hoặc Ctrl+Space, ứng dụng này cần quyền Giám sát đầu vào. Đây là yêu cầu hệ thống của macOS.",
+      "openSettings": "Mở Cài đặt hệ thống",
+      "restartHint": "Sau khi cấp quyền, hãy khởi động lại ứng dụng để thay đổi có hiệu lực."
+    },
+    "general": {
+      "title": "Cài đặt chung",
+      "description": "Định cấu hình khởi động và hành vi quyền riêng tư",
+      "startup": "Khởi động cùng hệ thống",
+      "startupDesc": "Tự động khởi chạy ứng dụng khi bạn đăng nhập",
+      "analytics": "Bật phân tích",
+      "analyticsDesc": "Giúp cải thiện Holdem bằng cách chia sẻ dữ liệu sử dụng ẩn danh"
+    },
+    "language": {
+      "title": "Ngôn ngữ",
+      "description": "Chọn ngôn ngữ bạn muốn",
+      "label": "Ngôn ngữ hiển thị",
+      "hint": "Thay đổi được áp dụng ngay và lưu trên thiết bị này."
+    },
+    "shortcuts": {
+      "title": "Phím tắt",
+      "description": "Tùy chỉnh cách bạn tương tác với ứng dụng",
+      "showHotkey": "Phím tắt hiện cửa sổ",
+      "pressKeys": "Nhấn các phím...",
+      "listeningHint": "Nhấn tổ hợp phím mong muốn... Nhấn Dừng khi xong",
+      "idleHint": "Phím tắt toàn cục để đưa ứng dụng lên trước",
+      "set": "Đặt",
+      "stop": "Dừng",
+      "clear": "Xóa",
+      "noneSet": "Chưa đặt"
+    },
+    "dragDrop": {
+      "title": "Hành vi kéo và thả",
+      "description": "Cách tệp được chuyển khi kéo ra khỏi Holdem",
+      "dragToCopy": "Sao chép tệp đến đích",
+      "shiftToMove": "Giữ Shift khi thả để di chuyển tệp",
+      "move": "di chuyển",
+      "macHint": "macOS hiển thị huy hiệu + màu xanh lá khi sao chép. Không có huy hiệu = thao tác di chuyển.",
+      "winHint": "Windows Explorer hiển thị lớp phủ chấm khi sao chép. Mũi tên di chuyển hiển thị cho thao tác di chuyển."
+    },
+    "mouse": {
+      "title": "Giám sát chuột",
+      "description": "Tinh chỉnh độ nhạy phát hiện lắc",
+      "sensitivity": "Độ nhạy",
+      "timing": "Thời gian",
+      "requiredShakes": "Số lần lắc yêu cầu",
+      "shakeThreshold": "Ngưỡng lắc",
+      "timeLimit": "Giới hạn thời gian (ms)",
+      "closeDelay": "Độ trễ đóng (ms)",
+      "whitelistTitle": "Ứng dụng được phép",
+      "whitelistDesc": "Tính năng phát hiện lắc chỉ hoạt động khi một trong các ứng dụng này được chọn. Chấp nhận tên tiến trình (ví dụ: brave, brave.exe). Không phân biệt chữ hoa/thường.",
+      "addPlaceholder": "Thêm tên tiến trình...",
+      "add": "Thêm",
+      "emptyTitle": "Không có ứng dụng được phép",
+      "emptyDesc": "Thao tác lắc chuột sẽ bị bỏ qua trên toàn hệ thống"
+    },
+    "footer": {
+      "save": "Lưu cài đặt",
+      "saving": "Đang lưu..."
+    }
+  },
+  "consent": {
+    "title": "Giúp chúng tôi cải thiện Holdem",
+    "description": "Chúng tôi muốn thu thập dữ liệu sử dụng ẩn danh để cải thiện trải nghiệm của bạn",
+    "collectTitle": "Chúng tôi thu thập:",
+    "collectItems": ["Sự kiện khởi chạy ứng dụng", "Việc dùng kéo và thả tệp", "Chỉ số hiệu năng cơ bản của ứng dụng"],
+    "notCollectTitle": "Chúng tôi KHÔNG thu thập:",
+    "notCollectItems": ["Thông tin cá nhân", "Nội dung hoặc tên tệp", "Lịch sử duyệt web của bạn"],
+    "decline": "Từ chối",
+    "accept": "Đồng ý"
+  },
+  "updater": {
+    "title": "Cập nhật phần mềm",
+    "close": "Đóng",
+    "checking": "Đang kiểm tra cập nhật...",
+    "downloading": "Đang tải bản cập nhật...",
+    "downloadedTitle": "Tải xuống hoàn tất!",
+    "downloadedDesc": "Đang chuẩn bị cài đặt...",
+    "installing": "Đang cài đặt bản cập nhật và khởi động lại ứng dụng...",
+    "availableTitle": "Có bản cập nhật!",
+    "version": "Phiên bản {{version}}",
+    "noNotes": "Không có ghi chú phát hành",
+    "releaseNotes": "Ghi chú phát hành",
+    "autoDownload": "Quá trình tải xuống sẽ tự động bắt đầu...",
+    "latest": "Bạn đang dùng phiên bản mới nhất!",
+    "errorTitle": "Lỗi khi kiểm tra cập nhật",
+    "downloadError": "Không tải xuống và cài đặt được bản cập nhật: {{error}}",
+    "waiting": "Đang chờ kiểm tra cập nhật..."
+  }
+}

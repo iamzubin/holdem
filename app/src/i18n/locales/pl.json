@@ -1,0 +1,143 @@
+{
+  "common": {
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "close": "Zamknij",
+    "clear": "Wyczyść",
+    "add": "Dodaj",
+    "set": "Ustaw",
+    "stop": "Zatrzymaj",
+    "noneSet": "Nie ustawiono",
+    "loading": "Ładowanie...",
+    "copyLink": "Kopiuj link"
+  },
+  "app": {
+    "dropHere": "Upuść tutaj",
+    "files": "Plik {{count}}",
+    "files_one": "Plik {{count}}",
+    "files_few": "{{count}} pliki",
+    "files_many": "{{count}} plików",
+    "files_other": "{{count}} pliku",
+    "files_plural": "{{count}} plików",
+    "clear": "Wyczyść",
+    "paste": "Wklej",
+    "contextMenuTitle": "Menu kontekstowe",
+    "toast": {
+      "dropReceived": "Upuść otrzymane w widoku internetowym!",
+      "processingVirtual": "Przetwarzanie plików wirtualnych z przeglądarki...",
+      "checkingTextHtml": "Brak upuszczonych plików, sprawdzanie tekstu/html...",
+      "downloadingImage": "Pobieranie obrazu...",
+      "failedSaveDataImage": "Nie udało się zapisać obrazu danych",
+      "failedSaveDroppedImage": "Nie udało się zapisać upuszczonego obrazu",
+      "couldNotDownloadImage": "Nie można pobrać obrazu: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "Wybrano elementy {{count}}",
+    "list": "Lista",
+    "grid": "Siatka",
+    "removeSelected": "Usuń wybrane pliki"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "subtitle": "Zarządzaj preferencjami aplikacji",
+    "loading": "Ładowanie ustawień...",
+    "inputMonitoring": {
+      "title": "Wymagane uprawnienia do monitorowania wejścia",
+      "description": "Aby używać globalnych skrótów takich jak Option+Space lub Ctrl+Space, ta aplikacja potrzebuje uprawnień do monitorowania wejściowego. Jest to wymóg systemu macOS.",
+      "openSettings": "Otwórz ustawienia systemowe",
+      "restartHint": "Po przyznaniu uprawnień, zrestartuj aplikację, aby zmiany odniosły skutek."
+    },
+    "general": {
+      "title": "Ustawienia ogólne",
+      "description": "Skonfiguruj tryb uruchamiania i zachowanie prywatności",
+      "startup": "Uruchom przy starcie systemu",
+      "startupDesc": "Automatycznie uruchom aplikację po zalogowaniu",
+      "analytics": "Włącz Analytics",
+      "analyticsDesc": "Pomóż ulepszyć Holdem udostępniając anonimowe dane użytkowania"
+    },
+    "language": {
+      "title": "Język",
+      "description": "Wybierz preferowany język",
+      "label": "Wyświetl język",
+      "hint": "Zmiany mają natychmiastowe zastosowanie i są zapisywane na tym urządzeniu."
+    },
+    "shortcuts": {
+      "title": "Skróty",
+      "description": "Dostosuj sposób interakcji z aplikacją",
+      "showHotkey": "Pokaż skrót okna",
+      "pressKeys": "Naciśnij klawisze...",
+      "listeningHint": "Wciśnij pożądaną kombinację przycisków... Wciśnij Zatrzymaj po zakończeniu",
+      "idleHint": "Globalny skrót, aby przenieść aplikację na pierwszy plan",
+      "set": "Ustaw",
+      "stop": "Zatrzymaj",
+      "clear": "Wyczyść",
+      "noneSet": "Nie ustawiono"
+    },
+    "dragDrop": {
+      "title": "Zachowanie przeciągnij i upuść",
+      "description": "Jak pliki są przesyłane podczas przeciągania z Holdem",
+      "dragToCopy": "Skopiuj pliki do miejsca docelowego",
+      "shiftToMove": "Przytrzymaj Shift podczas upuszczania, aby przenieść pliki",
+      "move": "przesuń",
+      "macHint": "macOS pokazuje zieloną + odznakę podczas kopiowania. Nie ma odznaki = operacja przeniesienia.",
+      "winHint": "Podczas kopiowania Windows Explorer pokazuje wykropkowaną nakładkę. Przenieś strzałkę pokazuje operację."
+    },
+    "mouse": {
+      "title": "Monitor myszy",
+      "description": "Dokładnie dostosuj czułość wykrywania wstrząsu",
+      "sensitivity": "Czułość",
+      "timing": "Harmonogram",
+      "requiredShakes": "Wymagane Wstrząsy",
+      "shakeThreshold": "Próg potrząsania",
+      "timeLimit": "Limit czasu (ms)",
+      "closeDelay": "Zamknij opóźnienie (ms)",
+      "whitelistTitle": "Aplikacje na białej liście",
+      "whitelistDesc": "Wykrywanie potrząsania będzie aktywne tylko wtedy, gdy jedna z tych aplikacji jest ogniskowana. Akceptuje nazwy procesów (np. brave, brave.exe). Niewrażliwa na sprawy.",
+      "addPlaceholder": "Dodaj nazwę procesu...",
+      "add": "Dodaj",
+      "emptyTitle": "Brak aplikacji na białej liście",
+      "emptyDesc": "Wstrząśnięcie kursorem będzie ignorowane globalnie"
+    },
+    "footer": {
+      "save": "Zapisz ustawienia",
+      "saving": "Zapisywanie..."
+    }
+  },
+  "consent": {
+    "title": "Pomóż nam ulepszyć Holdem",
+    "description": "Chcielibyśmy zebrać anonimowe dane użytkowania, aby poprawić Twoje doświadczenia",
+    "collectTitle": "Zbieramy:",
+    "collectItems": [
+      "Wydarzenia uruchamiania aplikacji",
+      "Przeciągnij i upuść plik",
+      "Podstawowe wskaźniki wydajności aplikacji"
+    ],
+    "notCollectTitle": "NIE zbieramy:",
+    "notCollectItems": [
+      "Informacje osobiste",
+      "Zawartość lub nazwy pliku",
+      "Twoja historia przeglądania"
+    ],
+    "decline": "Odrzuć",
+    "accept": "Zaakceptuj"
+  },
+  "updater": {
+    "title": "Aktualizacje oprogramowania",
+    "close": "Zamknij",
+    "checking": "Sprawdzanie aktualizacji...",
+    "downloading": "Pobieranie aktualizacji...",
+    "downloadedTitle": "Pobieranie zakończone!",
+    "downloadedDesc": "Przygotowywanie do instalacji...",
+    "installing": "Instalowanie aktualizacji i restartowania aplikacji...",
+    "availableTitle": "Dostępna aktualizacja!",
+    "version": "Wersja {{version}}",
+    "noNotes": "Brak dostępnych informacji o wydaniu",
+    "releaseNotes": "Informacje o wydaniu",
+    "autoDownload": "Pobieranie rozpocznie się automatycznie...",
+    "latest": "Używasz najnowszej wersji!",
+    "errorTitle": "Błąd sprawdzania aktualizacji",
+    "downloadError": "Nie udało się pobrać i zainstalować aktualizacji: {{error}}",
+    "waiting": "Oczekiwanie na sprawdzenie aktualizacji..."
+  }
+}

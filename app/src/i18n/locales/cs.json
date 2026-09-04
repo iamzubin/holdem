@@ -1,0 +1,143 @@
+{
+  "common": {
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "close": "Zavřít",
+    "clear": "Vyčistit",
+    "add": "Přidat",
+    "set": "Nastavit",
+    "stop": "Zastavit",
+    "noneSet": "Není nastaveno",
+    "loading": "Načítám...",
+    "copyLink": "Kopírovat odkaz"
+  },
+  "app": {
+    "dropHere": "Přetáhněte sem",
+    "files": "{{count}} soubor",
+    "files_one": "{{count}} soubor",
+    "files_few": "{{count}} soubory",
+    "files_many": "{{count}} souborů",
+    "files_other": "{{count}} soubory",
+    "files_plural": "{{count}} soubory",
+    "clear": "Vyčistit",
+    "paste": "Vložit",
+    "contextMenuTitle": "Kontextové menu",
+    "toast": {
+      "dropReceived": "Přetažení přijato v zobrazení webu!",
+      "processingVirtual": "Zpracovávání virtuálních souborů z prohlížeče...",
+      "checkingTextHtml": "Žádné soubory nebyly přetaženy, kontrola textu/html...",
+      "downloadingImage": "Stahování obrázku...",
+      "failedSaveDataImage": "Nepodařilo se uložit datový obrázek",
+      "failedSaveDroppedImage": "Nepodařilo se uložit shozený obrázek",
+      "couldNotDownloadImage": "Nelze stáhnout obrázek: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} položek vybráno",
+    "list": "Seznam",
+    "grid": "Mřížka",
+    "removeSelected": "Odstranit vybrané soubory"
+  },
+  "settings": {
+    "title": "Nastavení",
+    "subtitle": "Spravovat nastavení aplikace",
+    "loading": "Načítání nastavení...",
+    "inputMonitoring": {
+      "title": "Vyžadováno oprávnění pro sledování vstupu",
+      "description": "Chcete-li použít globální zkratky jako Option+Space nebo Ctrl+Mezer, potřebuje tato aplikace oprávnění k monitorování. Toto je systémový požadavek macOS.",
+      "openSettings": "Otevřít nastavení systému",
+      "restartHint": "Po udělení oprávnění restartujte aplikaci, aby se změny projevily."
+    },
+    "general": {
+      "title": "Obecná nastavení",
+      "description": "Konfigurovat chování spuštění a soukromí",
+      "startup": "Spustit při spuštění systému",
+      "startupDesc": "Automaticky spustit aplikaci při přihlášení",
+      "analytics": "Povolit analytiku",
+      "analyticsDesc": "Pomozte vylepšit Holdem sdílením anonymních dat o používání"
+    },
+    "language": {
+      "title": "Jazyk",
+      "description": "Vyberte preferovaný jazyk",
+      "label": "Jazyk zobrazení",
+      "hint": "Změny se aplikují okamžitě a jsou uloženy na tomto zařízení."
+    },
+    "shortcuts": {
+      "title": "Zkratky",
+      "description": "Přizpůsobte si, jak komunikujete s aplikací",
+      "showHotkey": "Zobrazit klávesovou zkratku okna",
+      "pressKeys": "Stiskněte klávesy...",
+      "listeningHint": "Stiskněte požadovanou kombinaci... Stiskněte tlačítko Zastavit po dokončení",
+      "idleHint": "Globální zkratka pro posunutí aplikace do popředí",
+      "set": "Nastavit",
+      "stop": "Zastavit",
+      "clear": "Vyčistit",
+      "noneSet": "Není nastaveno"
+    },
+    "dragDrop": {
+      "title": "Chování přetažením",
+      "description": "Jak se přenášejí soubory při přetahování z Holdem",
+      "dragToCopy": "Kopírovat soubory do cíle",
+      "shiftToMove": "Podržením Shift při přetažení přesunout soubory",
+      "move": "přesunout",
+      "macHint": "macOS zobrazuje při kopírování zelený + odznak. Žádný odznak = přesunout operaci.",
+      "winHint": "Průzkumník Windows zobrazuje při kopírování vytečkovaný překryv. Šipka pohybu zobrazuje pohyb."
+    },
+    "mouse": {
+      "title": "Monitor myši",
+      "description": "Citlivost detekce jemného protřepání",
+      "sensitivity": "Citlivost",
+      "timing": "Časování",
+      "requiredShakes": "Požadované zatřesení",
+      "shakeThreshold": "Práh zatřesení",
+      "timeLimit": "Časový limit (ms)",
+      "closeDelay": "Zpoždění zavření (ms)",
+      "whitelistTitle": "Povolené aplikace",
+      "whitelistDesc": "Detekce zatřesení bude aktivní pouze v případě, že je jedna z těchto aplikací zaměřena. Přijmout názvy procesů (např. brave, brave.exe). Kase-incitlivé.",
+      "addPlaceholder": "Přidat název procesu...",
+      "add": "Přidat",
+      "emptyTitle": "Žádné aplikace na seznamu povolených",
+      "emptyDesc": "Zatřesení kurzorem bude ignorováno globálně"
+    },
+    "footer": {
+      "save": "Uložit nastavení",
+      "saving": "Ukládání..."
+    }
+  },
+  "consent": {
+    "title": "Pomozte nám zlepšit Holdem",
+    "description": "Rádi bychom shromažďovali anonymní data o používání pro zlepšení vašeho zážitku",
+    "collectTitle": "Shromažďujeme:",
+    "collectItems": [
+      "Události spuštění aplikace",
+      "Využití přetažení souboru",
+      "Základní parametry výkonu aplikace"
+    ],
+    "notCollectTitle": "NENÍ sbírán:",
+    "notCollectItems": [
+      "Osobní údaje",
+      "Obsah nebo jména souboru",
+      "Vaše historie prohlížení"
+    ],
+    "decline": "Odmítnout",
+    "accept": "Přijmout"
+  },
+  "updater": {
+    "title": "Aktualizace softwaru",
+    "close": "Zavřít",
+    "checking": "Kontrola aktualizací...",
+    "downloading": "Stahování aktualizace...",
+    "downloadedTitle": "Stahování dokončeno!",
+    "downloadedDesc": "Příprava na instalaci...",
+    "installing": "Instalace aktualizace a restartování aplikace...",
+    "availableTitle": "Aktualizovat k dispozici!",
+    "version": "Verze {{version}}",
+    "noNotes": "Žádné poznámky k verzi nejsou k dispozici",
+    "releaseNotes": "Poznámky k vydání",
+    "autoDownload": "Stahování bude spuštěno automaticky...",
+    "latest": "Používáte nejnovější verzi!",
+    "errorTitle": "Chyba při kontrole aktualizací",
+    "downloadError": "Aktualizaci se nepodařilo stáhnout a nainstalovat: {{error}}",
+    "waiting": "Čeká se na kontrolu aktualizací..."
+  }
+}

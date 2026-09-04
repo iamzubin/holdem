@@ -12,6 +12,7 @@ import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { ChevronDown, Clipboard, Copy, Download, Settings, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from 'sonner';
+import { useTranslation } from "react-i18next";
 import { getFileExtension } from "./lib/utils";
 import { StackedIcons } from "./components/StackedIcons";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +23,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 function App() {
+  const { t } = useTranslation();
   const listenerSetup = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -120,19 +122,19 @@ function App() {
                 droppedFiles();
               }).catch(err => {
                 console.error('Failed to save data URI', err);
-                toast.error('Failed to save data image');
+                toast.error(t("app.toast.failedSaveDataImage"));
               });
               return;
             }
           } else if (src.match(/^https?:\/\//i)) {
-            toast.info('Downloading image...');
+            toast.info(t("app.toast.downloadingImage"));
             invoke<string>('download_image_to_shelf', { url: src })
               .then(path => {
                 invoke('add_files', { files: [path] });
                 droppedFiles();
               }).catch(err => {
                 console.error('Failed to download image from HTML', err);
-                toast.error('Could not download image: ' + err);
+                toast.error(t("app.toast.couldNotDownloadImage", { error: err }));
                 // Fallback to text link
                 invoke<string>('save_pasted_text', { text: src, extension: 'txt' }).then(p => { invoke('add_files', {files:[p]}); droppedFiles(); });
               });
@@ -202,8 +204,12 @@ function App() {
     return () => {
       unlistenNativeDrop.then(fn => fn());
       // unlisten.then(fn => fn());
+      // Reset the guard so a re-run (e.g. after a language change, which
+      // also runs this cleanup) re-registers the listener instead of
+      // exiting early while the listener stays removed.
+      listenerSetup.current = false;
     };
-  }, [addFiles, getFileIcon, navigate, droppedFiles]);
+  }, [addFiles, getFileIcon, navigate, droppedFiles, t]);
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -270,7 +276,7 @@ function App() {
   const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    toast.info('Drop received in webview!');
+    toast.info(t("app.toast.dropReceived"));
 
     const nativeFiles = Array.from(e.dataTransfer.files);
 
@@ -299,7 +305,7 @@ function App() {
     }
 
     if (virtualFiles.length > 0) {
-      toast.info('Processing virtual files from browser...');
+      toast.info(t("app.toast.processingVirtual"));
       for (const file of virtualFiles) {
         const reader = new FileReader();
         reader.onload = async () => {
@@ -319,7 +325,7 @@ function App() {
             droppedFiles();
           } catch (err) {
             console.error('Failed to save dropped virtual file', err);
-            toast.error('Failed to save dropped image');
+            toast.error(t("app.toast.failedSaveDroppedImage"));
           }
         };
         reader.readAsDataURL(file);
@@ -328,7 +334,7 @@ function App() {
     }
 
     if (nativeFiles.length === 0) {
-      toast.info('No files dropped, checking for text/html...');
+      toast.info(t("app.toast.checkingTextHtml"));
       const html = e.dataTransfer.getData("text/html");
       if (html) {
         const match = html.match(/<img.*?src=["'](.*?)["']/i);
@@ -382,7 +388,7 @@ function App() {
       return;
     }
 
-  }, [addFiles]);
+  }, [addFiles, t]);
 
   const openPopup = () => {
     invoke('open_popup_window').catch((err) => console.error(err));
@@ -444,7 +450,7 @@ function App() {
           ) : (
             <div className="flex flex-col items-center">
               <Download className="h-5 w-5" />
-              <span className="text-[8px]">Drop here</span>
+              <span className="text-[8px]">{t("app.dropHere")}</span>
             </div>
           )}
         </div>
@@ -455,7 +461,7 @@ function App() {
             onClick={openPopup}
             variant="secondary"
           >
-            <span>{files.length} file{files.length !== 1 ? 's' : ''}</span>
+            <span>{t("app.files", { count: files.length })}</span>
             <ChevronDown className="h-2 w-2 ml-1" />
           </Button>
         </div>
@@ -466,7 +472,7 @@ function App() {
           className="rounded-md p-0 mt-2 w-[90vw]"
           aria-describedby={undefined}
         >
-          <DialogTitle className="sr-only">Context Menu</DialogTitle>
+          <DialogTitle className="sr-only">{t("app.contextMenuTitle")}</DialogTitle>
           <div className="flex flex-col items-start text-foreground">
             {files.length > 0 ? (
               <>
@@ -493,7 +499,7 @@ function App() {
                   }}
                 >
                   <X className="h-4 w-4" />
-                  Clear
+                  {t("app.clear")}
                 </Button>
               </>
             ) : (
@@ -502,7 +508,7 @@ function App() {
                 variant="ghost"
               >
                 <Clipboard className="h-4 w-4 mr-2" />
-                Paste
+                {t("app.paste")}
               </Button>
             )}
           </div>

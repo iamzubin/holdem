@@ -1,0 +1,141 @@
+{
+  "common": {
+    "cancel": "Avbryt",
+    "save": "Lagre",
+    "close": "Lukk",
+    "clear": "Tøm",
+    "add": "Legg til",
+    "set": "Angi",
+    "stop": "Stopp",
+    "noneSet": "Ingen sett",
+    "loading": "Laster...",
+    "copyLink": "Kopier link"
+  },
+  "app": {
+    "dropHere": "Slipp her",
+    "files": "{{count}} fil",
+    "files_one": "{{count}} fil",
+    "files_other": "{{count}} filer",
+    "files_plural": "{{count}} filer",
+    "clear": "Tøm",
+    "paste": "Lim",
+    "contextMenuTitle": "Kontekstmeny",
+    "toast": {
+      "dropReceived": "Slipp mottatt i webvisning!",
+      "processingVirtual": "Behandler virtuelle filer fra nettleseren...",
+      "checkingTextHtml": "Ingen filer er droppet, sjekk etter tekst/html...",
+      "downloadingImage": "Laster ned bilde...",
+      "failedSaveDataImage": "Klarte ikke å lagre data bilde",
+      "failedSaveDroppedImage": "Kunne ikke lagre droppet bilde",
+      "couldNotDownloadImage": "Kunne ikke laste ned bilde: {{error}}"
+    }
+  },
+  "popup": {
+    "itemsSelected": "{{count}} elementer valgt",
+    "list": "Liste",
+    "grid": "Rutenett",
+    "removeSelected": "Fjern valgte filer"
+  },
+  "settings": {
+    "title": "Innstillinger",
+    "subtitle": "Administrer applikasjonsinnstillingene dine",
+    "loading": "Laster inn innstillinger...",
+    "inputMonitoring": {
+      "title": "Input Overvåkingstillatelse kreves",
+      "description": "For å bruke globale snarveier som Option+Space eller Ctrl+Space, trenger denne appen inndataovervåkingstillatelse. Dette er en macOS systemforutsetning.",
+      "openSettings": "Åpne systeminnstillinger",
+      "restartHint": "Etter at du har gitt tillatelse, restart appen for at endringene skal tre i kraft."
+    },
+    "general": {
+      "title": "Generelle innstillinger",
+      "description": "Konfigurer oppstart og personvern",
+      "startup": "Start ved systemoppstart",
+      "startupDesc": "Start appen automatisk når du logger inn",
+      "analytics": "Aktiver analyser",
+      "analyticsDesc": "Hjelp til med å forbedre Holdem ved å dele anonyme bruksdata"
+    },
+    "language": {
+      "title": "Språk",
+      "description": "Velg ditt foretrukne språk",
+      "label": "Vis språk",
+      "hint": "Endringene gjelder umiddelbart og lagres på denne enheten."
+    },
+    "shortcuts": {
+      "title": "Snarveier",
+      "description": "Tilpass hvordan du samhandler med appen",
+      "showHotkey": "Vis hurtigtast for vindu",
+      "pressKeys": "Trykk på nøkler...",
+      "listeningHint": "Trykk ønsket hurtigtast kombinasjon... Trykk Stopp når gjort",
+      "idleHint": "Global snarvei som bringer programmet til i forgrunnen",
+      "set": "Angi",
+      "stop": "Stopp",
+      "clear": "Tøm",
+      "noneSet": "Ingen sett"
+    },
+    "dragDrop": {
+      "title": "Dra & slipp oppsett",
+      "description": "Hvordan filer overføres når du drar ut av Holdem",
+      "dragToCopy": "Kopier filer til destinasjon",
+      "shiftToMove": "Hold Shift mens du dropper for å flytte filer",
+      "move": "flytt",
+      "macHint": "macOS viser et grønt + distinksjon ved kopiering. Ingen emblemer = flytte operasjon.",
+      "winHint": "Windows Explorer viser et prikket overlegg når du kopierer. En flytt pil-viser for å flytte operasjonen."
+    },
+    "mouse": {
+      "title": "Mus Monitor",
+      "description": "Følsomhet for full risting",
+      "sensitivity": "Sensitivitet",
+      "timing": "Tidsplan",
+      "requiredShakes": "Nødvendige ristinger",
+      "shakeThreshold": "Rist terskel",
+      "timeLimit": "Tidsgrense (ms)",
+      "closeDelay": "Lukk forsinkelse (ms)",
+      "whitelistTitle": "Hvitelistede apper",
+      "whitelistDesc": "Shakedeteksjon vil bare være aktiv når en av disse appene er fokus. Godkjenner prosessnavnene (f.eks. brave, brave.exe). ase-usynlig.",
+      "addPlaceholder": "Legg til prosessnavn...",
+      "add": "Legg til",
+      "emptyTitle": "Ingen apper er hvitelistet",
+      "emptyDesc": "Cursor shaking vil bli ignorert globalt"
+    },
+    "footer": {
+      "save": "Lagre innstillinger",
+      "saving": "Lagrer..."
+    }
+  },
+  "consent": {
+    "title": "Hjelp oss med å forbedre Holdem",
+    "description": "Vi vil gjerne samle inn anonyme bruksdata for å forbedre opplevelsen din",
+    "collectTitle": "Vi samler:",
+    "collectItems": [
+      "App start hendelser",
+      "Fildra-og-slipp bruk",
+      "Grunnleggende app ytelse måltall"
+    ],
+    "notCollectTitle": "Vi samler ikke:",
+    "notCollectItems": [
+      "Personlig informasjon",
+      "Filinnhold eller navn",
+      "Historikk for surfing"
+    ],
+    "decline": "Avslå",
+    "accept": "Godta"
+  },
+  "updater": {
+    "title": "Programvare oppdateringer",
+    "close": "Lukk",
+    "checking": "Ser etter oppdateringer...",
+    "downloading": "Laster ned oppdatering...",
+    "downloadedTitle": "Nedlasting fullført!",
+    "downloadedDesc": "Forbereder til å installere...",
+    "installing": "Installerer oppdatering og starter programmet på nytt...",
+    "availableTitle": "Oppdatering tilgjengelig!",
+    "version": "Versjon {{version}}",
+    "noNotes": "Ingen utgivelsesnotater tilgjengelig",
+    "releaseNotes": "Utgivelsesnotater",
+    "autoDownload": "Nedlasting vil starte automatisk...",
+    "latest": "Du kjører den nyeste versjonen!",
+    "errorTitle": "Feil under søk etter oppdateringer",
+    "downloadError": "Kunne ikke laste ned og installere oppdateringen: {{error}}",
+    "waiting": "Venter på å se etter oppdateringer..."
+  }
+}
