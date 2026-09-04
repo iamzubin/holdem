@@ -16,7 +16,7 @@ jobs:
   review:
     # Bots (dependabot, coderabbit, ...) lack the write permission the action
     # requires, so skip their pushes instead of failing the run.
-    if: github.event.pull_request.draft == false && !endsWith(github.actor, '[bot]') && github.actor != 'coderabbitai'
+    if: github.event.pull_request.draft == false && !endsWith(github.actor, '[bot]') && github.actor != 'coderabbitai' && github.event.pull_request.head.repo.fork == false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
@@ -27,13 +27,13 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
 
-      - uses: anomalyco/opencode/github@latest
+      - uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

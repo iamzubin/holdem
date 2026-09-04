@@ -14,9 +14,11 @@ permissions: {}
 
 on:
   issue_comment:
-    types: [created]
+    types: [created, edited]
   pull_request_review_comment:
-    types: [created]
+    types: [created, edited]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   opencode:
@@ -39,25 +41,25 @@ jobs:
     timeout-minutes: 15
     concurrency:
       group: opencode-task-${{ github.event.issue.number || github.event.pull_request.number }}
-      cancel-in-progress: false
+      cancel-in-progress: true
     permissions:
       contents: write
       pull-requests: write
       issues: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           # issue_comment defaults to the default branch; resolve the PR head
           # so /oc commands on a PR run against PR code (falls back to github.sha
           # for plain issues, where the agent creates a branch from HEAD).
           ref: ${{ github.event_name == 'pull_request_review_comment' && format('refs/pull/{0}/head', github.event.pull_request.number) || github.event.issue.pull_request && format('refs/pull/{0}/head', github.event.issue.number) || github.sha }}
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
           submodules: recursive
 
       - name: Run OpenCode
-        uses: anomalyco/opencode/github@latest
+        uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
