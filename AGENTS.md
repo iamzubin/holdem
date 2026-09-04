@@ -42,5 +42,6 @@ holdem_website/{app,components,hooks}
 
 ## Notes
 
+- Do not push unless explicitly asked to.
 - Desktop app is Windows-only (Tauri 2.x).
 - Tailwind versions differ: 3.x in `app/`, 4.x (CSS-based config) in `holdem_website/`.
