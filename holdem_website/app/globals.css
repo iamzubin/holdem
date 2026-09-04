@@ -1,21 +1,55 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
-@custom-variant dark (&:is(.dark *));
 
 /*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  Linear marketing canvas — dark-only system.
+  Canvas #010102 carries the page; hierarchy comes from the four-step
+  surface ladder + hairline borders, never shadows or gradients.
+  The single chromatic accent is lavender-blue, reserved for the brand
+  mark, primary CTA, focus rings, and link emphasis.
 */
+@theme {
+  --color-canvas: #010102;
+  --color-surface-1: #0d0e13;
+  --color-surface-2: #14161d;
+  --color-surface-3: #1b1e27;
+  --color-surface-4: #23262f;
+
+  --color-hairline: #23252a;
+  --color-hairline-strong: #343842;
+  --color-hairline-tertiary: #2a2d36;
+
+  --color-inverse-canvas: #ffffff;
+  --color-inverse-surface-1: #f7f8f8;
+  --color-inverse-surface-2: #e9ebf1;
+  --color-inverse-ink: #010102;
+
+  --color-ink: #f7f8f8;
+  --color-ink-muted: #d0d6e0;
+  --color-ink-subtle: #8a8f98;
+  --color-ink-tertiary: #62666d;
+
+  --color-primary: #5e6ad2;
+  --color-primary-hover: #828fff;
+  --color-primary-focus: #5e69d1;
+  --color-brand-secure: #7a7fad;
+
+  --color-success: #27a644;
+  --color-overlay: #000000;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+
+  ::selection {
+    background: rgb(94 106 210 / 0.35);
   }
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Download } from 'lucide-react'
 import { ButtonLink } from '../components/ui/button'
 import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
 
@@ -152,7 +153,7 @@ export default function PricingPage() {
 
       <div className="mt-8 rounded-2xl border border-zinc-200 p-6 text-center dark:border-zinc-800">
         <ButtonLink variant="primary" size="lg" href={DOWNLOAD_URL_FALLBACK} download>
-          ⬇️ Download Holdem — $0 forever
+          <Download className="h-5 w-5" /> Download Holdem — $0 forever
         </ButtonLink>
       </div>
 

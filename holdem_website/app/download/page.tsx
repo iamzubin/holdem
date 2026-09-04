@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Download } from 'lucide-react'
 import { ButtonLink } from '../components/ui/button'
 import { DOWNLOAD_URL_FALLBACK, GITHUB_REPO } from '@/lib/constants'
 
@@ -50,7 +51,7 @@ export default function DownloadPage() {
 
       <div className="mt-8 rounded-2xl border border-zinc-200 p-6 text-center dark:border-zinc-800">
         <ButtonLink variant="primary" size="lg" href={DOWNLOAD_URL_FALLBACK} download>
-          ⬇️ Download Holdem for Windows (x64)
+          <Download className="h-5 w-5" /> Download Holdem for Windows (x64)
         </ButtonLink>
         <p className="mt-3 text-xs text-zinc-500">
           Current release: v3.0.0 · Windows 10/11 x64 · .exe installer ·{' '}

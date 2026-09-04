@@ -1003,9 +1003,9 @@ export function HoldemDemo() {
           {shelfVisible && (
             <motion.div
               ref={shelfRef}
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
+              exit={{ opacity: 0, scale: 0.9 }}
               transition={{ type: 'spring', damping: 20, stiffness: 300 }}
               style={{
                 position: 'absolute',
