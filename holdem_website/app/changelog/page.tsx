@@ -62,8 +62,8 @@ export default function ChangelogPage() {
           <p className="text-ink-muted mt-2">
             Bug-fix release for file drops: dropping large folders no longer
             freezes the shelf, files and images dropped from browsers and
-            other apps land reliably, and fixed blank thumbnails for some
-            images.
+            other apps land reliably, fixed blank thumbnails for some
+            images, and fixed the popup shelf clipping the last row.
           </p>
           <a
             href={`${GITHUB_REPO}/releases`}

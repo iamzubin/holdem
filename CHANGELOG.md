@@ -3,7 +3,7 @@
 All notable changes to Holdem are documented here. The desktop app follows
 SemVer (`3.x.y` tags, no `v` prefix). Website copy that only references the
 current version lives in `holdem_website/`; the updater manifest
-(`holdem_website/public/update.json`) is synced automatically by CI after each
+(`holdem_website/public/update.json`) is synced manually after each
 release — do not hand-edit it.
 
 ## [3.1.1] - 2026-09-05
@@ -14,6 +14,8 @@ release — do not hand-edit it.
   now instant, and files, images, links, and text dropped from browsers and
   other apps land reliably every time.
 - Fixed blank thumbnails showing for some images.
+- Fixed popup shelf clipping the last row: the file list now scrolls
+  correctly without cutting off the final item.
 
 ## [3.1.0] - 2026-09-04
 
