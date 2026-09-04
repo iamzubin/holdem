@@ -3,7 +3,8 @@ name: Tauri Build and Release
 on:
   push:
     tags:
-      - "v*"
+      - 'v*.*.*'
+      - '[0-9]*.[0-9]*.[0-9]*'
 
 permissions:
   contents: write
@@ -55,10 +56,36 @@ jobs:
           tagName: ${{ github.ref_name }}
           projectPath: app
           args: --target ${{ matrix.target }}
-          releaseName: "Holdem v__VERSION__"
-          releaseBody: "See the release assets for this version."
+          releaseName: 'Holdem __VERSION__'
+          releaseBody: 'See the release assets below and the full notes at https://holdem.iamzub.in/changelog.'
           releaseDraft: false
           prerelease: false
+
+  publish-notes:
+    # Replaces the placeholder body with the matching CHANGELOG.md section,
+    # so `CHANGELOG.md` stays the single source of truth for release notes.
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (tag)
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Update release notes from CHANGELOG.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${{ github.ref_name }}"
+          ver="${tag#v}"
+          awk "/^## \[$ver\]/{flag=1;next}/^## \[/{flag=0}flag" CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "No CHANGELOG.md entry for $tag; keeping default body."
+            exit 0
+          fi
+          gh release edit "$tag" \
+            --repo "${{ github.repository }}" \
+            --notes-file notes.md
 
   sync-update-json-to-website:
     needs: release

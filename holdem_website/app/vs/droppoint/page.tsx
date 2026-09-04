@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: 'Is DropPoint still maintained?',
-    a: 'Sporadically: no new release since v1.2.1 (September 2022), though the default branch saw an August 2026 modernization (Electron 21→43, Node 22, CI). Day to day it still works, but the release cadence is slow. Holdem is under active development (v3.1.0).',
+    a: 'Sporadically: no new release since v1.2.1 (September 2022), though the default branch saw an August 2026 modernization (Electron 21→43, Node 22, CI). Day to day it still works, but the release cadence is slow. Holdem is under active development (see the changelog).',
   },
   {
     q: 'How do Holdem and DropPoint differ technically?',
@@ -111,7 +111,7 @@ export default function VsDroppointPage() {
           <strong>Verdict:</strong> Need one free shelf across Windows, Mac, and
           Linux right now? DropPoint still does the job. On Windows alone,
           Holdem wins on weight (Tauri/Rust vs Electron), trigger (shake vs
-          Shift+CapsLock), maintenance (v3.1.0 vs no release since 2022), and
+           Shift+CapsLock), maintenance (actively maintained vs no release since 2022), and
           extras like browser-image drops.
         </div>
 
@@ -184,7 +184,7 @@ export default function VsDroppointPage() {
               </tr>
               <tr>
                 <td className="px-4 py-3 font-medium">Maintenance</td>
-                <td className="px-4 py-3">Active — current release v3.1.0</td>
+                <td className="px-4 py-3">Active — frequent releases with auto-update</td>
                 <td className="px-4 py-3">
                   Slow — no release since v1.2.1 (Sep 2022); Aug 2026 branch
                   update
@@ -235,7 +235,7 @@ export default function VsDroppointPage() {
           in an app patched sporadically. That is not an attack: open-source
           maintainers move on, and the GPL code remains available for anyone to
           fork. But if you are choosing a shelf to rely on daily, an actively
-          developed app (Holdem v3.1.0, Tauri auto-updates via{' '}
+           developed app (Holdem, with Tauri auto-updates via{' '}
           <code>update.json</code>) is the safer bet — which is exactly why
           Holdem exists rather than as a DropPoint fork.
         </p>
