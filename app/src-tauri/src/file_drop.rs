@@ -1,4 +1,4 @@
-use crate::file::{get_dir_size, FileMetadata};
+use crate::file::FileMetadata;
 use crate::FileList;
 use std::path::PathBuf;
 use tauri::{AppHandle, Emitter};
@@ -19,9 +19,10 @@ pub fn handle_file_drop_from_paths(
                     // Keep the original reference. Dropping a file must never copy it.
                     let final_path = path.clone();
 
-                    // Calculate size correctly for directories
+                    // Directories store size 0 (no recursive walk — see file.rs).
+                    // This keeps drops instant for huge folders.
                     let size = if metadata.is_dir() {
-                        get_dir_size(path).unwrap_or(0)
+                        0
                     } else {
                         metadata.len()
                     };
@@ -50,7 +51,13 @@ pub fn handle_file_drop_from_paths(
         }
 
         // Now lock and add to list
-        let mut list = file_list.lock().unwrap();
+        let Ok(mut list) = file_list.lock() else {
+            error!(
+                "file_drop: FileList mutex poisoned, dropping {} path(s)",
+                paths.len()
+            );
+            return;
+        };
         let starting_id = list.len() as u64;
 
         for (i, mut file) in new_files.into_iter().enumerate() {

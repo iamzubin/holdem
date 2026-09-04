@@ -15,7 +15,7 @@
         "title": "holdem",
         "width": 165,
         "height": 175,
-        "dragDropEnabled": true,
+        "dragDropEnabled": false,
         "decorations": false,
         "transparent": false,
         "focus": false,

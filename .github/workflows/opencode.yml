@@ -4,6 +4,7 @@ name: opencode
 # `/opencode <instruction>` on any issue, PR, or PR review thread, e.g.:
 #   /oc review
 #   /oc fix the failing check
+#   /oc /resolve-threads  (reply + resolve fixed bot review threads)
 # This is also the "approve a review" path: commenting `/oc review`
 # runs a review on that PR on demand.
 #
@@ -66,3 +67,20 @@ jobs:
         with:
           model: opencode/muse-spark-1.3-contributor-free
           use_github_token: true
+
+      # The action posts session links as `opencode.ai/s/<id>` which 404s
+      # (upstream anomalyco/opencode#26417). The same id resolves under the
+      # current `opncd.ai/share/<id>` format, so rewrite bot comments.
+      - name: Fix opencode session link
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NUM="${{ github.event.issue.number || github.event.pull_request.number }}"
+          gh api "repos/$GITHUB_REPOSITORY/issues/$NUM/comments?per_page=100" \
+            --jq '[.[] | select((.user.login == "github-actions[bot]" or .user.login == "opencode-agent[bot]") and (.body | contains("https://opencode.ai/s/"))) | .id] | .[]' |
+          while read -r CID; do
+            BODY=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$CID" --jq .body)
+            FIXED=$(printf '%s' "$BODY" | sed 's#https://opencode\.ai/s/#https://opncd.ai/share/#g')
+            gh api "repos/$GITHUB_REPOSITORY/issues/comments/$CID" -X PATCH -f body="$FIXED" --silent
+          done

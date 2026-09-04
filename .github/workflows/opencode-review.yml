@@ -23,7 +23,9 @@ jobs:
       group: opencode-review-${{ github.event.pull_request.number }}
       cancel-in-progress: true
     permissions:
-      contents: read
+      # contents:write is required for resolveReviewThread (toggles PR
+      # conversation metadata, but GitHub still gates it behind contents:write).
+      contents: write
       pull-requests: write
       issues: write
     steps:
@@ -35,10 +37,15 @@ jobs:
 
       - uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
         env:
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          # No OPENCODE_API_KEY: with no Zen key configured opencode exposes
+          # only free models, and muse-spark-1.3-contributor-free is free.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # gh CLI prefers GH_TOKEN; keep both in sync so `gh api graphql`
+          # calls for thread history / resolve are authenticated.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           model: opencode/muse-spark-1.3-contributor-free
+          variant: xhigh
           use_github_token: true
           prompt: |
             Review this pull request. Format your final response EXACTLY like CodeRabbit with collapsible sections:
@@ -105,3 +112,46 @@ jobs:
                }
                EOF
             4. If the gh api command succeeds or fails (e.g. 422 due to line number or 403 on forks), do not abort. Always output the full CodeRabbit-formatted markdown review as your final message so it renders completely in the main PR comment.
+
+            Thread History Context (avoid duplicates, track fixes):
+            Before posting new inline comments, fetch existing PR conversation so you do not re-post what is already open:
+            1. Derive context once:
+               - `PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")`
+               - `OWNER=$(jq -r .repository.owner.login "$GITHUB_EVENT_PATH")` (fallback: `echo "$GITHUB_REPOSITORY" | cut -d/ -f1`)
+               - `REPO=$(jq -r .repository.name "$GITHUB_EVENT_PATH")` (fallback: `echo "$GITHUB_REPOSITORY" | cut -d/ -f2`)
+               - Ensure auth: `export GH_TOKEN="$GITHUB_TOKEN"` if `gh` reports auth errors.
+            2. Fetch history (read-only, best-effort — continue with the diff if any call fails):
+               - General comments (unresolvable, for context only): `gh pr view "$PR_NUMBER" --json title,body,comments --jq .`
+               - Inline comments: `gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/comments" --paginate --jq '.[] | {id, path, line, user: .user.login, body: .body[0:500]}'`
+               - Review threads with resolution state:
+                 `gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100){nodes{id,isResolved,isOutdated,path,line,comments(first:20){nodes{body,author{login},createdAt}}}}}}}' -f o="$OWNER" -f r="$REPO" -F n="$PR_NUMBER"`
+            3. Use the history to:
+               - Skip posting a new inline finding when an open (`isResolved:false`), non-outdated bot thread already covers the same `path:line` and issue.
+               - In your Verdict section, note carried-over open threads vs. newly introduced findings.
+
+            Resolve Fixed Bot Threads (bot threads only, auto on sync):
+            After completing the review above, close the loop on your own prior feedback:
+            1. From the thread list, consider only threads where `isResolved==false`, `isOutdated==false`, and the thread author / comments are from `github-actions[bot]` or `opencode-agent[bot]`.
+            2. For each such thread, verify the fix is present in the current code (`gh pr diff <number>`, `read`/`grep` the file). Only proceed when the underlying issue is actually fixed. Never resolve human threads, threads asking a question, deferred items, or anything you cannot verify.
+            3. For each verified fix, reply first then resolve (use the thread node `id` starting with `PRRT_`):
+               `gh api graphql -f query='mutation($id:ID!,$body:String!){addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:$id,body:$body}){comment{id}}}' -f id="PRRT_..." -f body="Fixed in $(git rev-parse --short HEAD): <what changed>"`
+               `gh api graphql -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}' -f id="PRRT_..."`
+            4. General PR comments (`gh pr view` comments) are unresolvable — reply via a normal PR comment instead if needed, never attempt GraphQL resolve on them.
+            5. If any fetch/reply/resolve call fails, log it and continue. Never abort the main CodeRabbit review because of thread maintenance.
+
+      # The action posts session links as `opencode.ai/s/<id>` which 404s
+      # (upstream anomalyco/opencode#26417). The same id resolves under the
+      # current `opncd.ai/share/<id>` format, so rewrite bot comments.
+      - name: Fix opencode session link
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NUM="${{ github.event.pull_request.number }}"
+          gh api "repos/$GITHUB_REPOSITORY/issues/$NUM/comments?per_page=100" \
+            --jq '[.[] | select((.user.login == "github-actions[bot]" or .user.login == "opencode-agent[bot]") and (.body | contains("https://opencode.ai/s/"))) | .id] | .[]' |
+          while read -r CID; do
+            BODY=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$CID" --jq .body)
+            FIXED=$(printf '%s' "$BODY" | sed 's#https://opencode\.ai/s/#https://opncd.ai/share/#g')
+            gh api "repos/$GITHUB_REPOSITORY/issues/comments/$CID" -X PATCH -f body="$FIXED" --silent
+          done
