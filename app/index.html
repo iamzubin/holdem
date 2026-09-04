@@ -12,10 +12,11 @@
       try {
         var key = "vite-ui-theme";
         var theme = new URLSearchParams(window.location.search).get("theme");
+        // First paint only — do not persist the param here. It can lag an
+        // in-flight `theme-changed` broadcast; the provider's broadcast
+        // listener owns persistence (see theme-provider.tsx).
         if (theme !== "dark" && theme !== "light" && theme !== "system") {
           theme = localStorage.getItem(key) || "system";
-        } else {
-          try { localStorage.setItem(key, theme); } catch (e) {}
         }
         var resolved = theme;
         if (theme === "system") {

@@ -47,11 +47,9 @@ function readInitialTheme(storageKey: string, fallback: Theme): Theme {
   try {
     const param = new URLSearchParams(window.location.search).get("theme")
     if (isTheme(param)) {
-      try {
-        localStorage.setItem(storageKey, param)
-      } catch {
-        // storage unavailable (private mode, etc.) — still honor the param
-      }
+      // First paint only — do not persist here. The opener's value can lag an
+      // in-flight `theme-changed` broadcast; persisting it would clobber the
+      // fresher store. The broadcast listener below owns persistence.
       return param
     }
   } catch {
@@ -118,6 +116,15 @@ export function ThemeProvider({
       .then((unlisten) => {
         if (cancelled) unlisten()
         else unlistenTheme = unlisten
+        // A broadcast fired before `listen` attached would otherwise be missed
+        // (leaving a possibly stale `?theme=` seed). Re-read the shared store
+        // once subscribed; a harmless no-op when storages are isolated.
+        try {
+          const stored = localStorage.getItem(storageKey)
+          if (isTheme(stored)) setThemeState((current) => (current === stored ? current : stored))
+        } catch {
+          // storage unavailable — keep param-derived state
+        }
       })
       .catch(() => {
         // Not running inside Tauri (plain browser dev) — `storage` listener above still syncs tabs.
