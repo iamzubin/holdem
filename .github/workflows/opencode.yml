@@ -4,6 +4,7 @@ name: opencode
 # `/opencode <instruction>` on any issue, PR, or PR review thread, e.g.:
 #   /oc review
 #   /oc fix the failing check
+#   /oc /resolve-threads  (reply + resolve fixed bot review threads)
 # This is also the "approve a review" path: commenting `/oc review`
 # runs a review on that PR on demand.
 #
