@@ -7,7 +7,6 @@ import { closeWindow } from "@/lib/windowUtils";
 import { FileWithPath } from "@/types";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { ChevronDown, Download, Settings, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -47,25 +46,14 @@ function App() {
     if (listenerSetup.current) return;
     listenerSetup.current = true;
     let cancelled = false;
-    let unlistenWebview: (() => void) | undefined;
     let unlistenNavigate: (() => void) | undefined;
 
-    const setupFileListener = async () => {
-      const webview = await getCurrentWebview();
-      const fn = await webview.onDragDropEvent(async (event) => {
-        if (event.payload.type === 'drop') {
-          invoke('mark_drop_received').catch(() => {});
-          droppedFiles();
-        }
-      });
-      if (cancelled) {
-        fn();
-      } else {
-        unlistenWebview = fn;
-      }
-    };
-
-    setupFileListener();
+    // Drops are owned by the native HoldemDropTarget (see
+    // src-tauri/src/drop_target.rs). The frontend only forwards blob-backed
+    // virtual files that the backend can never resolve (blob: URLs are
+    // opaque to reqwest by design). Everything else — real paths, HTML,
+    // URLs, plain text, bitmaps, FileGroupDescriptor virtual files — is
+    // handled natively and arrives via the `files_updated` event.
 
     // Set up navigation event listener
     const unlisten = listen<string>("navigate_to", (event) => {
@@ -84,13 +72,12 @@ function App() {
     return () => {
       cancelled = true;
       unlisten.then(fn => fn());
-      if (unlistenWebview) unlistenWebview();
       if (unlistenNavigate) unlistenNavigate();
       // Reset the guard so a re-run (e.g. StrictMode remount) re-registers
       // listeners instead of exiting early while they stay removed.
       listenerSetup.current = false;
     };
-  }, [navigate, droppedFiles]);
+  }, [navigate]);
 
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -108,43 +95,39 @@ function App() {
     e.dataTransfer.dropEffect = 'copy';
   }, []);
 
+  // Thin forwarder only: backend owns all drops EXCEPT blob-backed virtual
+  // files (browser canvas / Discord / blob:<uuid>), which reqwest can never
+  // resolve. Those arrive here as File objects WITHOUT a .path — read them
+  // via FileReader and hand the bytes to the backend. Everything else
+  // returns early so the same physical drop is never processed twice.
   const handleDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    invoke('mark_drop_received').catch(() => {});
 
-    const nativeFiles = Array.from(e.dataTransfer.files);
-    const validPaths: string[] = [];
-    const virtualFiles: File[] = [];
+    const files = Array.from(e.dataTransfer.files);
+    const virtualFiles = files.filter((f) => !(f as FileWithPath).path);
 
-    nativeFiles.forEach((file) => {
-      const path = (file as FileWithPath).path;
-      if (path) {
-        validPaths.push(path);
-      } else {
-        virtualFiles.push(file);
-      }
-    });
-
-    if (validPaths.length > 0) {
-      invoke('add_files', { files: validPaths })
-        .then(() => droppedFiles())
-        .catch((err) => console.error('Failed to add dropped files', err));
+    if (virtualFiles.length === 0) {
+      // Real files, HTML, URLs, text, bitmaps, FileGroupDescriptor drops:
+      // the native drop target already shelved them. Just refresh.
+      droppedFiles();
       return;
     }
 
-    if (virtualFiles.length > 0) {
-      for (const file of virtualFiles) {
-        const reader = new FileReader();
+    invoke('mark_drop_received').catch(() => {});
+    for (const file of virtualFiles) {
+      const reader = new FileReader();
+      const done = new Promise<void>((resolve) => {
         reader.onload = async () => {
-          const base64Data = (reader.result as string).split(',')[1];
-          let extension = 'png';
-          if (file.name && file.name.includes('.')) {
-            extension = file.name.split('.').pop()?.toLowerCase() || 'png';
-          } else if (file.type) {
-            extension = file.type.split('/')[1] || 'png';
-          }
           try {
+            const result = reader.result as string;
+            const base64Data = result.includes(',') ? result.split(',')[1] : result;
+            let extension = 'png';
+            if (file.name && file.name.includes('.')) {
+              extension = file.name.split('.').pop()?.toLowerCase() || 'png';
+            } else if (file.type) {
+              extension = file.type.split('/')[1] || 'png';
+            }
             const path = await invoke<string>('save_pasted_data_base64', {
               dataBase64: base64Data,
               extension,
@@ -153,60 +136,17 @@ function App() {
             await invoke('add_files', { files: [path] });
             droppedFiles();
           } catch (err) {
-            console.error('Failed to save dropped virtual file', err);
+            console.error('Failed to save dropped virtual (blob) file', err);
           }
+          resolve();
         };
-        reader.readAsDataURL(file);
-      }
-      return;
-    }
-
-    // In-webview HTML / text drops fallback
-    const html = e.dataTransfer.getData("text/html");
-    if (html) {
-      const match = html.match(/<img.*?src=["'](.*?)["']/i);
-      if (match && match[1]) {
-        const src = match[1];
-        if (src.startsWith('data:image/')) {
-          const base64Data = src.split(',')[1];
-          try {
-            const path = await invoke<string>('save_pasted_data_base64', {
-              dataBase64: base64Data,
-              extension: 'png',
-              originalName: null,
-            });
-            await invoke('add_files', { files: [path] });
-            droppedFiles();
-          } catch (err) {
-            console.error('Failed to save dropped base64 image', err);
-          }
-          return;
-        } else {
-          try {
-            const path = await invoke<string>('download_image_to_shelf', { url: src });
-            await invoke('add_files', { files: [path] });
-            droppedFiles();
-            return;
-          } catch (err) {
-            console.error('Failed to fetch and save dropped image URL', err);
-          }
-        }
-      }
-    }
-
-    const textData = e.dataTransfer.getData("text/plain") || e.dataTransfer.getData("text");
-    if (textData) {
-      try {
-        const path = await invoke<string>('save_pasted_text', {
-          text: textData,
-          extension: 'txt',
-          originalName: null,
-        });
-        await invoke('add_files', { files: [path] });
-        droppedFiles();
-      } catch (err) {
-        console.error('Failed to drop text', err);
-      }
+        reader.onerror = () => {
+          console.error('Failed to read dropped virtual file', reader.error);
+          resolve();
+        };
+      });
+      reader.readAsDataURL(file);
+      await done;
     }
   }, [droppedFiles]);
 

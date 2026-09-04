@@ -1,7 +1,7 @@
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::sync::Mutex;
-use tauri::{DragDropEvent, Manager, PhysicalPosition, WebviewUrl, WebviewWindowBuilder, WindowEvent};
+use tauri::{Manager, PhysicalPosition, WebviewUrl, WebviewWindowBuilder};
 use tauri_plugin_updater::UpdaterExt;
 use tracing::{error, info, warn};
 use windows::Win32::Foundation::{POINT, WAIT_OBJECT_0};
@@ -246,33 +246,6 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             }
 
             Ok(())
-        })
-        .on_window_event(|window, event| {
-            if let WindowEvent::DragDrop(drop_event) = event {
-                let drag_state = window.app_handle().state::<Arc<DragState>>().inner();
-                match drop_event {
-                    DragDropEvent::Enter { .. } => {
-                        drag_state.drag_started.store(true, Ordering::Relaxed);
-                    }
-                    DragDropEvent::Drop { paths, .. } => {
-                        info!("Received {} dropped file(s) in the app window", paths.len());
-                        drag_state.successful_drop.store(true, Ordering::Relaxed);
-                        drag_state.drag_started.store(false, Ordering::Relaxed);
-
-                        // Handle the file drop
-                        let app_handle = window.app_handle();
-                        let file_list_state = app_handle.state::<FileList>();
-                        file_drop::handle_file_drop_from_paths(
-                            paths.clone(),
-                            file_list_state.inner().clone(),
-                            app_handle.clone(),
-                        );
-
-                        // Do not hide the window after processing - let user interact with the files
-                    }
-                    _ => {}
-                }
-            }
         })
 }
 
