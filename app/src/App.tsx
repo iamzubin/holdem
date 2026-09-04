@@ -204,6 +204,10 @@ function App() {
     return () => {
       unlistenNativeDrop.then(fn => fn());
       // unlisten.then(fn => fn());
+      // Reset the guard so a re-run (e.g. after a language change, which
+      // also runs this cleanup) re-registers the listener instead of
+      // exiting early while the listener stays removed.
+      listenerSetup.current = false;
     };
   }, [addFiles, getFileIcon, navigate, droppedFiles, t]);
 

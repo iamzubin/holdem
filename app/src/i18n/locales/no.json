@@ -19,7 +19,7 @@
     "files_plural": "{{count}} filer",
     "clear": "Tøm",
     "paste": "Lim",
-    "contextMenuTitle": "Sammenhengende meny",
+    "contextMenuTitle": "Kontekstmeny",
     "toast": {
       "dropReceived": "Slipp mottatt i webvisning!",
       "processingVirtual": "Behandler virtuelle filer fra nettleseren...",
@@ -42,7 +42,7 @@
     "loading": "Laster inn innstillinger...",
     "inputMonitoring": {
       "title": "Input Overvåkingstillatelse kreves",
-      "description": "For å bruke globale snarveier som Option+Space eller Ctrl+Space, trenger denne appen innspillingstillatelse. Dette er en macOS systemforutsetning.",
+      "description": "For å bruke globale snarveier som Option+Space eller Ctrl+Space, trenger denne appen inndataovervåkingstillatelse. Dette er en macOS systemforutsetning.",
       "openSettings": "Åpne systeminnstillinger",
       "restartHint": "Etter at du har gitt tillatelse, restart appen for at endringene skal tre i kraft."
     },
@@ -91,7 +91,7 @@
       "timeLimit": "Tidsgrense (ms)",
       "closeDelay": "Lukk forsinkelse (ms)",
       "whitelistTitle": "Hvitelistede apper",
-      "whitelistDesc": "Shakedeteksjon vil bare være aktiv når en av disse appene er fokus. Godkjenner prosessnavnene (f.eks. modig, brave.ex). ase-usynlig.",
+      "whitelistDesc": "Shakedeteksjon vil bare være aktiv når en av disse appene er fokus. Godkjenner prosessnavnene (f.eks. brave, brave.exe). ase-usynlig.",
       "addPlaceholder": "Legg til prosessnavn...",
       "add": "Legg til",
       "emptyTitle": "Ingen apper er hvitelistet",

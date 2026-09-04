@@ -15,6 +15,10 @@
     "dropHere": "إسقاط هنا",
     "files": "ملف {{count}}",
     "files_one": "ملف {{count}}",
+    "files_zero": "لا ملفات",
+    "files_two": "ملفان",
+    "files_few": "{{count}} ملفات",
+    "files_many": "{{count}} ملفًا",
     "files_other": "ملفات {{count}}",
     "files_plural": "ملفات {{count}}",
     "clear": "مسح",
@@ -31,7 +35,7 @@
     }
   },
   "popup": {
-    "itemsSelected": "{{count}} items selected",
+    "itemsSelected": "{{count}} عناصر محددة",
     "list": "قائمة",
     "grid": "الشبكة",
     "removeSelected": "إزالة الملفات المحددة"
@@ -91,7 +95,7 @@
       "timeLimit": "الحد الزمني (مللي ثانية)",
       "closeDelay": "إغلاق التأخير (مللي ثانية)",
       "whitelistTitle": "تطبيقات القائمة البيضاء",
-      "whitelistDesc": "الكشف عن الاهتزاز لن يكون نشطاً إلا عندما يكون أحد هذه التطبيقات مركزًا. يقبل أسماء العمليات (مثل الشجاعة والشجاعة.exe).",
+      "whitelistDesc": "الكشف عن الاهتزاز لن يكون نشطاً إلا عندما يكون أحد هذه التطبيقات مركزًا. يقبل أسماء العمليات (مثل brave, brave.exe).",
       "addPlaceholder": "إضافة اسم العملية...",
       "add": "إضافة",
       "emptyTitle": "لا توجد تطبيقات في القائمة البيضاء",

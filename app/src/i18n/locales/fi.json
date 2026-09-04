@@ -76,7 +76,7 @@
       "title": "Vedä & Pudota Käyttäytyminen",
       "description": "Miten tiedostoja siirretään vetämällä pois Holdem",
       "dragToCopy": "Kopioi tiedostoja määränpäähän",
-      "shiftToMove": "Pidä siirto pohjassa siirtääksesi tiedostoja",
+      "shiftToMove": "Pidä Shift-näppäintä pohjassa siirtääksesi tiedostoja",
       "move": "siirrä",
       "macHint": "macOS näyttää vihreän + merkin, kun kopioidaan. Ei merkkiä = siirto operaatio.",
       "winHint": "Windows Explorer näyttää pistetyn peittokuvan kopioidessa. Liiku nuoli näyttää liikkua operaatioon."
@@ -87,7 +87,7 @@
       "sensitivity": "Herkkyys",
       "timing": "Ajoitus",
       "requiredShakes": "Tarvittavat Ravisteet",
-      "shakeThreshold": "Ravista Kynnysarvoa",
+      "shakeThreshold": "Ravistuskynnys",
       "timeLimit": "Aikaraja (ms)",
       "closeDelay": "Sulje Viive (Ms)",
       "whitelistTitle": "Sallitut Sovellukset",

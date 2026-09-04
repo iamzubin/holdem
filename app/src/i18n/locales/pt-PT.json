@@ -8,7 +8,7 @@
     "set": "Definir",
     "stop": "Interromper",
     "noneSet": "Nenhum conjunto",
-    "loading": "Carregandochar@@0",
+    "loading": "A carregar...",
     "copyLink": "Copiar link"
   },
   "app": {
@@ -21,7 +21,7 @@
     "paste": "Colar",
     "contextMenuTitle": "Menu de contexto",
     "toast": {
-      "dropReceived": "Drop received in webview!",
+      "dropReceived": "Drop recebido na webview!",
       "processingVirtual": "Processando arquivos virtuais do navegador...",
       "checkingTextHtml": "Nenhum arquivo deixado, verificando por texto/html...",
       "downloadingImage": "Baixando imagem...",
@@ -37,7 +37,7 @@
     "removeSelected": "Remover Arquivos Selecionados"
   },
   "settings": {
-    "title": "Confirgurações",
+    "title": "Configurações",
     "subtitle": "Gerenciar suas preferências de aplicação",
     "loading": "Carregando configurações...",
     "inputMonitoring": {
@@ -98,8 +98,8 @@
       "emptyDesc": "A vibração do cursor será ignorada globalmente"
     },
     "footer": {
-      "save": "Salvar Configurações",
-      "saving": "Salvando..."
+      "save": "Guardar definições",
+      "saving": "A guardar..."
     }
   },
   "consent": {

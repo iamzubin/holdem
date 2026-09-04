@@ -2,7 +2,6 @@ import { invoke } from '@tauri-apps/api/core';
 import { X, Plus, Trash2, Keyboard, Monitor, Settings, Info, AlertTriangle, Languages } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supportedLanguages } from '@/i18n';
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -13,6 +12,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { supportedLanguages } from '@/i18n';
 
 const isMac = navigator.platform.toLowerCase().includes('mac');
 
@@ -458,7 +458,14 @@ export default function SettingsPage() {
                                         key={lang.code}
                                         variant={i18n.language === lang.code ? "default" : "outline"}
                                         size="sm"
-                                        onClick={() => i18n.changeLanguage(lang.code)}
+                                        aria-pressed={i18n.language === lang.code}
+                                        onClick={async () => {
+                                            try {
+                                                await i18n.changeLanguage(lang.code);
+                                            } catch (err) {
+                                                console.error('Failed to change language:', err);
+                                            }
+                                        }}
                                         className="shrink-0"
                                     >
                                         {lang.nativeLabel}

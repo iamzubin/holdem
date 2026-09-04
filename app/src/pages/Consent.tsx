@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { invoke } from '@tauri-apps/api/core';
 import { closeWindow } from '@/lib/windowUtils';
-import { useTranslation } from 'react-i18next';
 
 export default function Consent() {
   const { t } = useTranslation();

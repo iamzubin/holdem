@@ -32,6 +32,8 @@
   },
   "popup": {
     "itemsSelected": "{{count}} items selected",
+    "itemsSelected_one": "{{count}} item selected",
+    "itemsSelected_other": "{{count}} items selected",
     "list": "List",
     "grid": "Grid",
     "removeSelected": "Remove Selected Files"

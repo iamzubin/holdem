@@ -43,7 +43,7 @@
     "inputMonitoring": {
       "title": "Autorisation de surveillance d'entrée requise",
       "description": "Pour utiliser des raccourcis globaux tels que Option+Espace ou Ctrl+Espace, cette application a besoin des autorisations de Surveillance de l'entrée. Ceci est une exigence du système macOS.",
-      "openSettings": "Ouvrir les paramètres de la console",
+      "openSettings": "Ouvrir les réglages système",
       "restartHint": "Après avoir accordé l'autorisation, redémarrez l'application pour que les modifications prennent effet."
     },
     "general": {

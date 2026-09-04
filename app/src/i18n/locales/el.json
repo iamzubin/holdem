@@ -15,8 +15,8 @@
     "dropHere": "Ρίξτε εδώ",
     "files": "Αρχείο {{count}}",
     "files_one": "Αρχείο {{count}}",
-    "files_other": "{{count}} files",
-    "files_plural": "{{count}} files",
+    "files_other": "{{count}} αρχεία",
+    "files_plural": "{{count}} αρχεία",
     "clear": "Εκκαθάριση",
     "paste": "Επικόλληση",
     "contextMenuTitle": "Μενού Περιεχομένου",
@@ -31,7 +31,7 @@
     }
   },
   "popup": {
-    "itemsSelected": "{{count}} items selected",
+    "itemsSelected": "{{count}} επιλεγμένα στοιχεία",
     "list": "Λίστα",
     "grid": "Πλέγμα",
     "removeSelected": "Αφαίρεση Επιλεγμένων Αρχείων"
@@ -91,7 +91,7 @@
       "timeLimit": "Χρονικό Όριο (ms)",
       "closeDelay": "Κλείσιμο Καθυστέρησης (Ms)",
       "whitelistTitle": "Εγκεκριμένες Εφαρμογές",
-      "whitelistDesc": "Ο εντοπισμός κουνήματος θα είναι ενεργός μόνο όταν μια από αυτές τις εφαρμογές είναι εστιασμένη. Αποδέχεται ονόματα διεργασιών (π.χ. γενναίος, brave.exe).",
+      "whitelistDesc": "Ο εντοπισμός κουνήματος θα είναι ενεργός μόνο όταν μια από αυτές τις εφαρμογές είναι εστιασμένη. Αποδέχεται ονόματα διεργασιών (π.χ. brave, brave.exe).",
       "addPlaceholder": "Προσθήκη ονόματος διεργασίας...",
       "add": "Προσθήκη",
       "emptyTitle": "Καμία λευκή λίστα εφαρμογών",
@@ -129,7 +129,7 @@
     "downloadedDesc": "Προετοιμασία για εγκατάσταση...",
     "installing": "Εγκατάσταση ενημέρωσης και επανεκκίνηση εφαρμογής...",
     "availableTitle": "Διαθέσιμη Ενημέρωση!",
-    "version": "Version {{version}}",
+    "version": "Έκδοση {{version}}",
     "noNotes": "Καμία διαθέσιμη σημείωση έκδοσης",
     "releaseNotes": "Σημειώσεις Έκδοσης",
     "autoDownload": "Η λήψη θα ξεκινήσει αυτόματα...",

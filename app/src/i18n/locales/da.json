@@ -91,7 +91,7 @@
       "timeLimit": "Tidsgrænse (ms)",
       "closeDelay": "Luk Forsinkelse (ms)",
       "whitelistTitle": "Hvidlistede Apps",
-      "whitelistDesc": "Rystesøgning vil kun være aktiv, når en af disse apps er fokuseret. Accepterer procesnavne (f.eks. modig, brave.exe). Case-ufølsom.",
+      "whitelistDesc": "Rystesøgning vil kun være aktiv, når en af disse apps er fokuseret. Accepterer procesnavne (f.eks. brave, brave.exe). Case-ufølsom.",
       "addPlaceholder": "Tilføj procesnavn...",
       "add": "Tilføj",
       "emptyTitle": "Ingen apps whitelistet",

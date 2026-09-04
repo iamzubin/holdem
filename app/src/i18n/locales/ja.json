@@ -23,7 +23,7 @@
     "toast": {
       "dropReceived": "Webビューで受信したドロップ!",
       "processingVirtual": "ブラウザから仮想ファイルを処理しています...",
-      "checkingTextHtml": "ファイルが削除されていません。text/htmlを確認しています。",
+      "checkingTextHtml": "ドロップされたファイルがありません。text/htmlを確認しています。",
       "downloadingImage": "画像をダウンロードしています...",
       "failedSaveDataImage": "データ画像の保存に失敗しました",
       "failedSaveDroppedImage": "ドロップした画像を保存できませんでした",
@@ -91,7 +91,7 @@
       "timeLimit": "時間制限 (ms)",
       "closeDelay": "Close Delay (ms)",
       "whitelistTitle": "ホワイトリストに登録されたアプリ",
-      "whitelistDesc": "シェイク検出は、これらのアプリのいずれかがフォーカスされている場合にのみ有効になります。プロセス名（例えば、brabe.exe）を受け入れます。大文字小文字を区別しません。",
+      "whitelistDesc": "シェイク検出は、これらのアプリのいずれかがフォーカスされている場合にのみ有効になります。プロセス名（例：brave, brave.exe）を受け入れます。大文字小文字を区別しません。",
       "addPlaceholder": "プロセス名を追加...",
       "add": "追加",
       "emptyTitle": "ホワイトリストに登録されたアプリはありません",
@@ -105,7 +105,7 @@
   "consent": {
     "title": "Holdemの改善にご協力ください",
     "description": "ユーザーエクスペリエンスを向上させるために匿名の使用データを収集します。",
-    "collectTitle": "受け取った回数：",
+    "collectTitle": "収集する情報：",
     "collectItems": [
       "アプリ起動イベント",
       "ファイルのドラッグ＆ドロップの使用法",

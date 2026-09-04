@@ -32,8 +32,8 @@
   },
   "popup": {
     "itemsSelected": "{{count}} items geselecteerd",
-    "list": "Klantenlijst",
-    "grid": "Rooster",
+    "list": "Lijst",
+    "grid": "Raster",
     "removeSelected": "Geselecteerde bestanden verwijderen"
   },
   "settings": {
@@ -41,7 +41,7 @@
     "subtitle": "Beheer uw applicatievoorkeuren",
     "loading": "Instellingen laden...",
     "inputMonitoring": {
-      "title": "Toediening Invoer Toestemming Vereist",
+      "title": "Toestemming voor invoermonitoring vereist",
       "description": "Om globale snelkoppelingen zoals Option+Space of Ctrl+Space, heeft deze app invoercontrole nodig. Dit is een macOS-systeemvereiste.",
       "openSettings": "Open systeeminstellingen",
       "restartHint": "Na het verlenen van de toestemming, start de app opnieuw op om wijzigingen toe te passen."
