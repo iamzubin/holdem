@@ -377,7 +377,8 @@ pub fn remove_files(
     let app_handle_clone = app_handle.clone();
     tauri::async_runtime::spawn(async move {
         for _ in removed_files {
-            let _ = analytics::send_file_removed_event(&app_handle_clone).await;
+            let _ =
+                analytics::send_analytics_event(&app_handle_clone, "file_removed", None).await;
         }
     });
 
@@ -408,7 +409,8 @@ pub fn rename_file(
         // Send analytics event for file rename (fire and forget)
         let app_handle_clone = app_handle.clone();
         tauri::async_runtime::spawn(async move {
-            let _ = analytics::send_file_renamed_event(&app_handle_clone).await;
+            let _ =
+                analytics::send_analytics_event(&app_handle_clone, "file_renamed", None).await;
         });
 
         app_handle
@@ -432,7 +434,15 @@ pub fn clear_files(app_handle: AppHandle, file_list: State<'_, FileList>) -> Res
     // Send analytics event for clearing files (fire and forget)
     let app_handle_clone = app_handle.clone();
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_files_cleared_event(&app_handle_clone, num_files).await;
+        let _ = analytics::send_analytics_event(
+            &app_handle_clone,
+            "files_cleared",
+            Some(vec![(
+                "num_files",
+                serde_json::Value::Number((num_files as i64).into()),
+            )]),
+        )
+        .await;
     });
 
     app_handle

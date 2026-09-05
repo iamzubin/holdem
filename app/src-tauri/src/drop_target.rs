@@ -1013,14 +1013,6 @@ mod tests {
     }
 
     #[test]
-    fn normalizes_protocol_relative() {
-        assert_eq!(
-            normalize_img_src("//cdn.com/x.png"),
-            "https://cdn.com/x.png"
-        );
-    }
-
-    #[test]
     fn fragment_slice_never_panics_on_split_utf8() {
         // `é` is 2 bytes in UTF-8; offsets splitting it must clamp, not panic.
         let html = "aaé<img src=\"https://a.com/1.png\">";

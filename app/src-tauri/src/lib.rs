@@ -177,7 +177,15 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 if let Ok(updater) = app_handle.updater() {
                     if let Ok(Some(_update)) = updater.check().await {
                         // Send analytics event for update available (fire and forget)
-                        std::mem::drop(analytics::send_update_checked_event(&app_handle, true));
+                        let _ = analytics::send_analytics_event(
+                            &app_handle,
+                            "update_checked",
+                            Some(vec![(
+                                "update_available",
+                                serde_json::Value::Bool(true),
+                            )]),
+                        )
+                        .await;
 
                         // Open the updater window if an update is available
                         if let Some(existing_window) = app_handle.get_webview_window("updater") {
@@ -197,7 +205,15 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                         }
                     } else {
                         // Send analytics event for no update available (fire and forget)
-                        std::mem::drop(analytics::send_update_checked_event(&app_handle, false));
+                        let _ = analytics::send_analytics_event(
+                            &app_handle,
+                            "update_checked",
+                            Some(vec![(
+                                "update_available",
+                                serde_json::Value::Bool(false),
+                            )]),
+                        )
+                        .await;
                     }
                 }
             });

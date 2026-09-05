@@ -78,7 +78,8 @@ pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), St
             .map_err(|e: tauri::Error| e.to_string())?;
 
             // Send analytics event (fire and forget)
-            std::mem::drop(analytics::send_popup_window_opened_event(&app_clone));
+            let _ =
+                analytics::send_analytics_event(&app_clone, "popup_window_opened", None).await;
 
             Ok::<(), String>(())
         });
@@ -128,7 +129,7 @@ pub fn open_settings_window(app: AppHandle, theme: Option<String>) -> Result<(),
                 .map_err(|e: tauri::Error| e.to_string())?;
 
             // Send analytics event (fire and forget)
-            std::mem::drop(analytics::send_settings_opened_event(&app_clone));
+            let _ = analytics::send_analytics_event(&app_clone, "settings_opened", None).await;
 
             Ok::<(), String>(())
         });

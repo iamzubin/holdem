@@ -34,7 +34,7 @@ pub fn save_config(
 pub fn restart_app(app: AppHandle) -> Result<(), String> {
     let app_clone = app.clone();
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_app_restarted_event(&app_clone).await;
+        let _ = analytics::send_analytics_event(&app_clone, "app_restarted", None).await;
     });
 
     app.restart();
@@ -51,7 +51,12 @@ pub fn set_autostart(app_handle: AppHandle, enabled: bool) -> Result<(), String>
     }
 
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_autostart_toggled_event(&app_handle, enabled).await;
+        let _ = analytics::send_analytics_event(
+            &app_handle,
+            "autostart_toggled",
+            Some(vec![("enabled", serde_json::Value::Bool(enabled))]),
+        )
+        .await;
     });
 
     Ok(())
@@ -226,8 +231,15 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
     let app_handle_clone = app_handle.clone();
     let shortcut_str_clone = shortcut_str.clone();
     tauri::async_runtime::spawn(async move {
-        let _ =
-            analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
+        let _ = analytics::send_analytics_event(
+            &app_handle_clone,
+            "hotkey_registered",
+            Some(vec![(
+                "hotkey",
+                serde_json::Value::String(shortcut_str_clone),
+            )]),
+        )
+        .await;
     });
 
     Ok(())
@@ -267,7 +279,7 @@ pub fn decline_analytics_consent(
     info!("Analytics consent declined");
 
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_consent_declined_event(&app_handle).await;
+        let _ = analytics::send_analytics_event(&app_handle, "consent_declined", None).await;
     });
 
     Ok(())

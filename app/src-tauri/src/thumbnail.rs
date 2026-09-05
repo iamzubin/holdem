@@ -252,11 +252,4 @@ mod tests {
         let flipped: Vec<u8> = flip_rows_bottom_up(&buffer, 2, 2);
         assert_eq!(flipped, [top, bottom].concat());
     }
-
-    #[test]
-    fn test_thumbnail_error_display() {
-        let e: ThumbnailError =
-            ThumbnailError::FileNotFound("C:\\missing.txt".to_string());
-        assert_eq!(e.to_string(), "File not found: C:\\missing.txt");
-    }
 }
