@@ -75,6 +75,12 @@ jobs:
         with:
           model: opencode/muse-spark-1.3-contributor-free
           use_github_token: true
+          prompt: |
+            Governance rules (highest priority, apply to every task — see agent.md at the repo root for details):
+            - Do NOT commit, push, or open PRs unless the triggering user comment explicitly asks for code changes to be committed, pushed, or opened as a PR.
+            - Questions, reviews, explanations, approvals, and triage are answer-only: reply in the thread, leave the working tree untouched.
+            - If code changes were requested but committing was not: leave changes uncommitted and say so in the reply.
+            - Never touch dist/, lockfiles, or generated files unless the task requires it; verify with git status --short before finishing.
 
       # The action posts session links as `opencode.ai/s/<id>` which 404s
       # (upstream anomalyco/opencode#26417). The same id resolves under the
