@@ -35,6 +35,10 @@ jobs:
           persist-credentials: false
           submodules: recursive
 
+      # No git identity step here: this job is read-only by prompt
+      # (comments + own-thread resolves only) and checks out with
+      # persist-credentials: false, so it cannot push anyway.
+
       - uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
         env:
           # No OPENCODE_API_KEY: with no Zen key configured opencode exposes
@@ -48,6 +52,8 @@ jobs:
           variant: xhigh
           use_github_token: true
           prompt: |
+            You are a read-only reviewer. NEVER run git commit, git push, gh commands that mutate code, or any edit/write/bash step that modifies files. Your only write actions are PR comments, inline review comments, and resolving your own prior bot threads (steps 5-6 below). Leave `git status` clean.
+
             Review this pull request. Format your final response EXACTLY like CodeRabbit with collapsible sections:
 
             ## 🤖 Review — PR #<number>
@@ -67,15 +73,24 @@ jobs:
             <details open>
             <summary><b>🎯 Review Findings</b></summary>
 
-            Numbered, most severe first. Each finding uses this format:
+            Report at most 5 findings, most severe first — fewer is fine, zero is a good outcome.
+            ONLY report these classes, in this priority order:
+            1. Memory safety: unwrap/expect/panic paths, `unsafe` misuse, OOM/overflow, unbounded allocation on untrusted input.
+            2. Security: injection, path traversal, secret/key exposure, unsafe URLs or deserialization.
+            3. Data loss / corruption: silent drops, partial writes, lost events, state divergence.
+            4. Crashes / deadlocks / hangs, including poisoned-mutex and thread-death paths.
+            5. Concrete correctness bugs with a failing input or trace.
+            Explicitly OUT OF SCOPE — do not report, no matter how tempting: style, naming, formatting, comment wording, docs, refactors/simplifications, micro-performance, dead code that is harmless, missing tests for trivial code, speculative "consider" items.
+            Do not re-report an issue covered by an open, non-outdated bot thread, or an issue already fixed in the current diff.
+            Each finding uses this format:
             #### <Severity>: <short title> — `path/to/file:line`
             <why it matters / root cause explanation>
             Fix:
             ```<lang>
             <concrete code fix>
             ```
-            Severities: High (bug / security / data loss), Medium (correctness / robustness / perf), Low (nit / readability).
-            Only actionable findings with concrete file/line references. No generic advice or compliments.
+            Severities: High (bug / security / data loss / crash), Medium (robustness gap with a realistic trigger).
+            There is no Low severity. Only actionable findings with concrete file/line references. No generic advice or compliments.
             If no issues are found, state: "No major issues identified."
 
             </details>
@@ -83,8 +98,8 @@ jobs:
             <details>
             <summary><b>ℹ️ Review Info & Verdict</b></summary>
 
-            - **Focus areas for this repo**: Rust panics/unwraps, Tauri command misuse, TS type safety, error propagation.
-            - **Verdict:** APPROVE | REQUEST CHANGES | COMMENT
+            - **Focus areas for this repo**: Rust panics/unwraps, unsafe/OOM paths, Tauri command misuse, error propagation, data-loss on failure paths.
+            - **Verdict:** APPROVE, or REQUEST CHANGES only when at least one High finding exists. Medium-only reviews get COMMENT, never REQUEST CHANGES.
 
             </details>
 
