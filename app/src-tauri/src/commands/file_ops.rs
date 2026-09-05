@@ -348,6 +348,15 @@ pub fn remove_files(
         .lock()
         .map_err(|_| "Failed to acquire lock".to_string())?;
 
+    // Validate upfront: a single unknown id must not leave a
+    // partially-mutated list with no emit (the frontend would diverge
+    // until its next refresh).
+    for file_id in &file_ids {
+        if !list.iter().any(|f| f.id == *file_id) {
+            return Err(format!("File with ID {} not found", file_id));
+        }
+    }
+
     let mut removed_files = Vec::new();
     for file_id in file_ids {
         if let Some(pos) = list.iter().position(|f| f.id == file_id) {

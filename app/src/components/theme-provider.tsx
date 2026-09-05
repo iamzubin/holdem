@@ -45,11 +45,21 @@ function readInitialTheme(storageKey: string, fallback: Theme): Theme {
   // Newly created windows (popup/settings/…) may carry the opener's theme
   // as `?theme=` so they paint correctly even before any event arrives.
   try {
-    const param = new URLSearchParams(window.location.search).get("theme")
+    const params = new URLSearchParams(window.location.search)
+    const param = params.get("theme")
     if (isTheme(param)) {
       // First paint only — do not persist here. The opener's value can lag an
       // in-flight `theme-changed` broadcast; persisting it would clobber the
       // fresher store. The broadcast listener below owns persistence.
+      // Strip the param once consumed so a later reload can't re-apply a
+      // stale seed over the canonical store.
+      try {
+        params.delete("theme")
+        const search = params.toString()
+        window.history.replaceState(null, "", window.location.pathname + (search ? `?${search}` : "") + window.location.hash)
+      } catch {
+        // history unavailable — re-read after subscribe still converges
+      }
       return param
     }
   } catch {

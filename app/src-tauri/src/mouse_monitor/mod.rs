@@ -139,13 +139,17 @@ pub fn start_mouse_monitor(
         let mut last_direction: Option<i32> = None;
 
         loop {
+            let check_interval = Duration::from_millis(30);
+            // Never unwrap here: a poisoned config lock would kill this
+            // detached loop with no restart, silently disabling shake-to-show.
             let config = {
                 let state: State<Arc<Mutex<AppConfig>>> = app_handle.state();
-                let lock = state.lock().unwrap();
+                let Ok(lock) = state.lock() else {
+                    thread::sleep(check_interval);
+                    continue;
+                };
                 lock.mouse_monitor.clone()
             };
-
-            let check_interval = Duration::from_millis(30);
             let movement_time_limit = Duration::from_millis(config.shake_time_limit);
 
             let current_pos = get_mouse_pos();
