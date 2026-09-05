@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Annuleren",
-    "save": "Opslaan",
-    "close": "Afsluiten",
-    "clear": "Verwijderen",
-    "add": "Toevoegen",
-    "set": "Instellen",
-    "stop": "Stoppen",
-    "noneSet": "Niet ingesteld",
-    "loading": "Laden...",
-    "copyLink": "Koppeling kopiëren"
+    "close": "Afsluiten"
   },
   "app": {
     "dropHere": "Hier neerzetten",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} bestanden",
     "files_plural": "{{count}} bestanden",
     "clear": "Verwijderen",
-    "paste": "Plakken",
-    "contextMenuTitle": "Contextmenu",
-    "toast": {
-      "dropReceived": "Drop ontvangen in webview!",
-      "processingVirtual": "Verwerken van virtuele bestanden van browser...",
-      "checkingTextHtml": "Geen bestanden neergezet, controleren op tekst/html...",
-      "downloadingImage": "Afbeelding downloaden...",
-      "failedSaveDataImage": "Dataafbeelding opslaan mislukt",
-      "failedSaveDroppedImage": "Kan neergezette afbeelding niet opslaan",
-      "couldNotDownloadImage": "Kan afbeelding niet downloaden: {{error}}"
-    }
+    "contextMenuTitle": "Contextmenu"
   },
   "popup": {
     "itemsSelected": "{{count}} items geselecteerd",
@@ -36,18 +17,13 @@
     "grid": "Rooster",
     "removeSelected": "Geselecteerde bestanden verwijderen",
     "itemsSelected_one": "{{count}} item geselecteerd",
-    "itemsSelected_other": "{{count}} items geselecteerd"
+    "itemsSelected_other": "{{count}} items geselecteerd",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Instellingen",
     "subtitle": "Beheer uw applicatievoorkeuren",
     "loading": "Instellingen laden...",
-    "inputMonitoring": {
-      "title": "Toegang tot invoermonitoring vereist",
-      "description": "Om globale snelkoppelingen zoals Option+Space of Ctrl+Space, heeft deze app invoercontrole nodig. Dit is een macOS-systeemvereiste.",
-      "openSettings": "Open systeeminstellingen",
-      "restartHint": "Na het verlenen van de toestemming, start de app opnieuw op om wijzigingen toe te passen."
-    },
     "general": {
       "title": "Algemene instellingen",
       "description": "Configureren van start en privacy gedrag",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Taal",
       "description": "Kies uw voorkeurstaal",
-      "label": "Taal weergeven",
-      "hint": "Wijzigingen gelden onmiddellijk en worden opgeslagen op dit apparaat."
+      "label": "Taal weergeven"
     },
     "shortcuts": {
       "title": "Snelkoppelingen",
       "description": "Aanpassen hoe je omgaat met de app",
       "showHotkey": "Toon venster sneltoets",
       "pressKeys": "Druk op de toetsen...",
-      "listeningHint": "Druk op de gewenste toetscombinatie... Druk op Stop als u klaar bent",
-      "idleHint": "Globale snelkoppeling om de app op de voorgrond te brengen",
       "set": "Instellen",
       "stop": "Stoppen",
       "clear": "Verwijderen",
       "noneSet": "Niet ingesteld"
     },
     "dragDrop": {
-      "title": "Sleep & Drop Gedrag",
-      "description": "Hoe bestanden worden overgebracht bij het uit Holdem slepen",
       "dragToCopy": "Bestanden kopiëren naar bestemming",
-      "shiftToMove": "Houd Shift ingedrukt tijdens dropping om bestanden te verplaatsen",
-      "move": "verplaats",
-      "macHint": "macOS toont een groene + badge bij kopiëren. Geen badge = verplaatsbewerking.",
-      "winHint": "Windows Explorer toont een zwevende overlay tijdens het kopiëren. Een bewegende pijl toont voor de verplaatsing."
+      "shiftToMove": "Houd Shift ingedrukt tijdens dropping om bestanden te verplaatsen"
     },
     "mouse": {
       "title": "Muis Monitor",
       "description": "Afstemmen van shakedetectie gevoeligheid",
-      "sensitivity": "Gevoeligheid",
-      "timing": "Timing",
       "requiredShakes": "Vereiste Schudden",
       "shakeThreshold": "Schud drempelwaarde",
       "timeLimit": "Tijdslimiet (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Toegestane Apps",
       "whitelistDesc": "Schuddetectie is alleen actief wanneer een van deze apps de focus heeft. Accepteert procesnamen (bijv. brave, brave.exe). Niet hoofdlettergevoelig.",
       "addPlaceholder": "Voeg procesnaam toe...",
-      "add": "Toevoegen",
-      "emptyTitle": "Geen apps op de whitelist",
-      "emptyDesc": "Cursor schudden zal wereldwijd worden genegeerd"
+      "add": "Toevoegen"
     },
     "footer": {
       "save": "Instellingen opslaan",
       "saving": "Opslaan..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

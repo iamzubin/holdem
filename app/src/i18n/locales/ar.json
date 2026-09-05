@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "إلغاء",
-    "save": "حفظ",
-    "close": "أغلق",
-    "clear": "مسح",
-    "add": "إضافة",
-    "set": "تعيين",
-    "stop": "توقف",
-    "noneSet": "لم يتم التعيين",
-    "loading": "تحميل...",
-    "copyLink": "نسخ الرابط"
+    "close": "أغلق"
   },
   "app": {
     "dropHere": "إسقاط هنا",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} ملف",
     "files_plural": "{{count}} ملفات",
     "clear": "مسح",
-    "paste": "لصق",
     "contextMenuTitle": "قائمة السياق",
-    "toast": {
-      "dropReceived": "تم استلام الإفلات في عرض الويب!",
-      "processingVirtual": "معالجة الملفات الافتراضية من المتصفح...",
-      "checkingTextHtml": "لم يتم إفلات أي ملفات، جارٍ البحث عن نص/HTML...",
-      "downloadingImage": "جاري تحميل الصورة...",
-      "failedSaveDataImage": "فشل في حفظ صورة البيانات",
-      "failedSaveDroppedImage": "فشل حفظ الصورة المُفلتة",
-      "couldNotDownloadImage": "تعذر تحميل الصورة: {{error}}"
-    },
     "files_zero": "لا توجد ملفات",
     "files_two": "ملفان",
     "files_few": "{{count}} ملفات",
@@ -44,18 +25,13 @@
     "itemsSelected_two": "تم تحديد عنصرين",
     "itemsSelected_few": "تم تحديد {{count}} عناصر",
     "itemsSelected_many": "تم تحديد {{count}} عنصرًا",
-    "itemsSelected_other": "تم تحديد {{count}} عنصر"
+    "itemsSelected_other": "تم تحديد {{count}} عنصر",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "الإعدادات",
     "subtitle": "إدارة تفضيلات التطبيق الخاص بك",
     "loading": "جاري تحميل الإعدادات...",
-    "inputMonitoring": {
-      "title": "مطلوب إذن مراقبة الإدخال",
-      "description": "لاستخدام الاختصارات العالمية مثل Option+Space أو Ctrl+Space، يحتاج هذا التطبيق إلى إذن رصد الإدخال. وهذا شرط لنظام macOS.",
-      "openSettings": "فتح إعدادات النظام",
-      "restartHint": "بعد منح الإذن، أعد تشغيل التطبيق لكي تصبح التغييرات سارية المفعول."
-    },
     "general": {
       "title": "الإعدادات العامة",
       "description": "تهيئة بدء التشغيل وسلوك الخصوصية",
@@ -67,35 +43,25 @@
     "language": {
       "title": "اللغة",
       "description": "اختر لغتك المفضلة",
-      "label": "لغة العرض",
-      "hint": "تطبق التغييرات فورا ويتم حفظها على هذا الجهاز."
+      "label": "لغة العرض"
     },
     "shortcuts": {
       "title": "الاختصارات",
       "description": "تخصيص كيفية التفاعل مع التطبيق",
       "showHotkey": "مفتاح الاختصار لإظهار النافذة",
       "pressKeys": "اضغط على المفاتيح...",
-      "listeningHint": "اضغط على مجموعة المفاتيح المطلوبة... اضغط على إيقاف عند الانتهاء",
-      "idleHint": "اختصار عام لجلب التطبيق إلى المقدمة",
       "set": "تعيين",
       "stop": "توقف",
       "clear": "مسح",
       "noneSet": "لم يتم التعيين"
     },
     "dragDrop": {
-      "title": "سلوك السحب والإفلات",
-      "description": "كيف يتم نقل الملفات عند السحب خارج هولديم",
       "dragToCopy": "نسخ الملفات إلى الوجهة",
-      "shiftToMove": "اضغط مع الاستمرار على Shift أثناء الإفلات لنقل الملفات",
-      "move": "نقل",
-      "macHint": "يعرض macOS شارة أخضر + عند النسخ. لا توجد شارة = نقل العملية.",
-      "winHint": "ويعرض مستكشف ويندوز تراكب منقطع عند النسخ. يظهر سهم تحرك لعملية النقل."
+      "shiftToMove": "اضغط مع الاستمرار على Shift أثناء الإفلات لنقل الملفات"
     },
     "mouse": {
       "title": "مراقبة الفأرة",
       "description": "حساسية اكتشاف اهتزاز دقيق",
-      "sensitivity": "الحساسية",
-      "timing": "التوقيت",
       "requiredShakes": "اهتزازات مطلوبة",
       "shakeThreshold": "حد الاهتزاز",
       "timeLimit": "الحد الزمني (مللي ثانية)",
@@ -103,13 +69,18 @@
       "whitelistTitle": "تطبيقات القائمة البيضاء",
       "whitelistDesc": "سيتم تفعيل اكتشاف اهتزاز المؤشر فقط عندما يكون أحد هذه التطبيقات قيد التركيز. يقبل أسماء العمليات (مثل brave وbrave.exe). غير حساس لحالة الأحرف.",
       "addPlaceholder": "إضافة اسم العملية...",
-      "add": "إضافة",
-      "emptyTitle": "لا توجد تطبيقات في القائمة البيضاء",
-      "emptyDesc": "سيتم تجاهل مؤشر الاهتزاز عالميا"
+      "add": "إضافة"
     },
     "footer": {
       "save": "حفظ الإعدادات",
       "saving": "حفظ..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {
