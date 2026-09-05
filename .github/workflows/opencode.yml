@@ -59,6 +59,14 @@ jobs:
           persist-credentials: true
           submodules: recursive
 
+      # The agent commits and pushes when a task ends in code changes, but
+      # stock runners ship with no git identity, so `git commit` dies with
+      # exit 128 ("Author identity unknown"). Set the bot identity up front.
+      - name: Configure git identity for agent commits
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Run OpenCode
         uses: anomalyco/opencode/github@77fc88c8ade8e5a620ebbe1197f3a572d29ae91a # latest
         env:
