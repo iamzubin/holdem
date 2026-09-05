@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { check } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { closeCurrentWindow } from "@/lib/windowUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -187,7 +187,7 @@ const Updater: React.FC = () => {
         variant="ghost"
         size="icon"
         className="absolute top-2 right-2"
-        onClick={() => getCurrentWindow().close()}
+        onClick={closeCurrentWindow}
         aria-label={t("updater.close")}
       >
         <svg className="w-6 h-6" fill="none" stroke="#ff0000" viewBox="0 0 24 24">

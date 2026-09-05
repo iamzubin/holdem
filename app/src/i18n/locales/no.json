@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Avbryt",
-    "save": "Lagre",
-    "close": "Lukk",
-    "clear": "Tøm",
-    "add": "Legg til",
-    "set": "Angi",
-    "stop": "Stopp",
-    "noneSet": "Ingen angitt",
-    "loading": "Laster...",
-    "copyLink": "Kopier link"
+    "close": "Lukk"
   },
   "app": {
     "dropHere": "Slipp her",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} filer",
     "files_plural": "{{count}} filer",
     "clear": "Tøm",
-    "paste": "Lim",
-    "contextMenuTitle": "Sammenhengende meny",
-    "toast": {
-      "dropReceived": "Slipp mottatt i webvisning!",
-      "processingVirtual": "Behandler virtuelle filer fra nettleseren...",
-      "checkingTextHtml": "Ingen filer er droppet, sjekk etter tekst/html...",
-      "downloadingImage": "Laster ned bilde...",
-      "failedSaveDataImage": "Klarte ikke å lagre data bilde",
-      "failedSaveDroppedImage": "Kunne ikke lagre droppet bilde",
-      "couldNotDownloadImage": "Kunne ikke laste ned bilde: {{error}}"
-    }
+    "contextMenuTitle": "Sammenhengende meny"
   },
   "popup": {
     "itemsSelected": "{{count}} elementer valgt",
@@ -36,18 +17,13 @@
     "grid": "Rutenett",
     "removeSelected": "Fjern valgte filer",
     "itemsSelected_one": "{{count}} element valgt",
-    "itemsSelected_other": "{{count}} elementer valgt"
+    "itemsSelected_other": "{{count}} elementer valgt",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Innstillinger",
     "subtitle": "Administrer applikasjonsinnstillingene dine",
     "loading": "Laster inn innstillinger...",
-    "inputMonitoring": {
-      "title": "Input Overvåkingstillatelse kreves",
-      "description": "For å bruke globale snarveier som Option+Space eller Ctrl+Space, trenger denne appen innspillingstillatelse. Dette er en macOS systemforutsetning.",
-      "openSettings": "Åpne systeminnstillinger",
-      "restartHint": "Etter at du har gitt tillatelse, restart appen for at endringene skal tre i kraft."
-    },
     "general": {
       "title": "Generelle innstillinger",
       "description": "Konfigurer oppstart og personvern",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Språk",
       "description": "Velg ditt foretrukne språk",
-      "label": "Vis språk",
-      "hint": "Endringene gjelder umiddelbart og lagres på denne enheten."
+      "label": "Vis språk"
     },
     "shortcuts": {
       "title": "Snarveier",
       "description": "Tilpass hvordan du samhandler med appen",
       "showHotkey": "Vis hurtigtast for vindu",
       "pressKeys": "Tryk på taster...",
-      "listeningHint": "Trykk ønsket hurtigtast kombinasjon... Trykk Stopp når gjort",
-      "idleHint": "Global snarvei som bringer programmet til i forgrunnen",
       "set": "Angi",
       "stop": "Stopp",
       "clear": "Tøm",
       "noneSet": "Ingen angitt"
     },
     "dragDrop": {
-      "title": "Dra & slipp oppsett",
-      "description": "Hvordan filer overføres når du drar ut av Holdem",
       "dragToCopy": "Kopier filer til destinasjon",
-      "shiftToMove": "Hold Shift mens du dropper for å flytte filer",
-      "move": "flytt",
-      "macHint": "macOS viser et grønt + distinksjon ved kopiering. Ingen emblemer = flytte operasjon.",
-      "winHint": "Windows Explorer viser et prikket overlegg når du kopierer. En flytt pil-viser for å flytte operasjonen."
+      "shiftToMove": "Hold Shift mens du dropper for å flytte filer"
     },
     "mouse": {
       "title": "Mus Monitor",
       "description": "Følsomhet for full risting",
-      "sensitivity": "Sensitivitet",
-      "timing": "Tidsplan",
       "requiredShakes": "Nødvendige ristinger",
       "shakeThreshold": "Rist terskel",
       "timeLimit": "Tidsgrense (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Hvitelistede apper",
       "whitelistDesc": "Ristedeteksjon vil bare være aktiv når en av disse appene har fokus. Godtar prosessnavn (f.eks. brave, brave.exe). Skiller ikke mellom store og små bokstaver.",
       "addPlaceholder": "Legg til prosessnavn...",
-      "add": "Legg til",
-      "emptyTitle": "Ingen apper er hvitelistet",
-      "emptyDesc": "Cursor shaking vil bli ignorert globalt"
+      "add": "Legg til"
     },
     "footer": {
       "save": "Lagre innstillinger",
       "saving": "Lagrer..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { invoke } from '@tauri-apps/api/core';
-import { closeWindow } from '@/lib/windowUtils';
+import { closeCurrentWindow } from '@/lib/windowUtils';
 import { useTranslation } from 'react-i18next';
 
 export default function Consent() {
@@ -27,11 +27,11 @@ export default function Consent() {
       await invoke('accept_analytics_consent');
       // Add a small delay before closing to ensure the event is sent
       setTimeout(() => {
-        closeWindow();
+        closeCurrentWindow();
       }, 100);
     } catch (error) {
       console.error('Failed to accept analytics consent:', error);
-      closeWindow();
+      closeCurrentWindow();
     }
   };
 
@@ -40,11 +40,11 @@ export default function Consent() {
       await invoke('decline_analytics_consent');
       // Add a small delay before closing to ensure the event is sent
       setTimeout(() => {
-        closeWindow();
+        closeCurrentWindow();
       }, 100);
     } catch (error) {
       console.error('Failed to decline analytics consent:', error);
-      closeWindow();
+      closeCurrentWindow();
     }
   };
 

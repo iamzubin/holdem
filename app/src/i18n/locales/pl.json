@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Anuluj",
-    "save": "Zapisz",
-    "close": "Zamknij",
-    "clear": "Wyczyść",
-    "add": "Dodaj",
-    "set": "Ustaw",
-    "stop": "Zatrzymaj",
-    "noneSet": "Brak",
-    "loading": "Ładowanie...",
-    "copyLink": "Kopiuj link"
+    "close": "Zamknij"
   },
   "app": {
     "dropHere": "Upuść tutaj",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} plików",
     "files_plural": "{{count}} plików",
     "clear": "Wyczyść",
-    "paste": "Wklej",
     "contextMenuTitle": "Menu kontekstowe",
-    "toast": {
-      "dropReceived": "Odebrano pliki w widoku webview!",
-      "processingVirtual": "Przetwarzanie plików wirtualnych z przeglądarki...",
-      "checkingTextHtml": "Nie upuszczono żadnych plików, sprawdzanie text/html...",
-      "downloadingImage": "Pobieranie obrazu...",
-      "failedSaveDataImage": "Nie udało się zapisać obrazu danych",
-      "failedSaveDroppedImage": "Nie udało się zapisać upuszczonego obrazu",
-      "couldNotDownloadImage": "Nie można pobrać obrazu: {{error}}"
-    },
     "files_few": "{{count}} pliki",
     "files_many": "{{count}} plików"
   },
@@ -40,18 +21,13 @@
     "itemsSelected_one": "Wybrano {{count}} element",
     "itemsSelected_few": "Wybrano {{count}} elementy",
     "itemsSelected_many": "Wybrano {{count}} elementów",
-    "itemsSelected_other": "Wybrano {{count}} elementów"
+    "itemsSelected_other": "Wybrano {{count}} elementów",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Ustawienia",
     "subtitle": "Zarządzaj preferencjami aplikacji",
     "loading": "Ładowanie ustawień...",
-    "inputMonitoring": {
-      "title": "Wymagane uprawnienia do monitorowania wejścia",
-      "description": "Aby używać globalnych skrótów takich jak Option+Space lub Ctrl+Space, ta aplikacja potrzebuje uprawnień do monitorowania wejściowego. Jest to wymóg systemu macOS.",
-      "openSettings": "Otwórz ustawienia systemowe",
-      "restartHint": "Po przyznaniu uprawnień, zrestartuj aplikację, aby zmiany odniosły skutek."
-    },
     "general": {
       "title": "Ustawienia ogólne",
       "description": "Skonfiguruj tryb uruchamiania i zachowanie prywatności",
@@ -63,35 +39,25 @@
     "language": {
       "title": "Język",
       "description": "Wybierz preferowany język",
-      "label": "Wyświetl język",
-      "hint": "Zmiany mają natychmiastowe zastosowanie i są zapisywane na tym urządzeniu."
+      "label": "Wyświetl język"
     },
     "shortcuts": {
       "title": "Skróty",
       "description": "Dostosuj sposób interakcji z aplikacją",
       "showHotkey": "Pokaż skrót okna",
       "pressKeys": "Naciśnij klawisze...",
-      "listeningHint": "Naciśnij żądaną kombinację klawiszy... Kliknij Zatrzymaj po zakończeniu",
-      "idleHint": "Globalny skrót, aby przenieść aplikację na pierwszy plan",
       "set": "Ustaw",
       "stop": "Zatrzymaj",
       "clear": "Wyczyść",
       "noneSet": "Brak"
     },
     "dragDrop": {
-      "title": "Zachowanie przeciągnij i upuść",
-      "description": "Jak pliki są przesyłane podczas przeciągania z Holdem",
       "dragToCopy": "Skopiuj pliki do miejsca docelowego",
-      "shiftToMove": "Przytrzymaj Shift podczas upuszczania, aby przenieść pliki",
-      "move": "przesuń",
-      "macHint": "macOS pokazuje zieloną + odznakę podczas kopiowania. Nie ma odznaki = operacja przeniesienia.",
-      "winHint": "Podczas kopiowania Windows Explorer pokazuje wykropkowaną nakładkę. Przenieś strzałkę pokazuje operację."
+      "shiftToMove": "Przytrzymaj Shift podczas upuszczania, aby przenieść pliki"
     },
     "mouse": {
       "title": "Monitor myszy",
       "description": "Dokładnie dostosuj czułość wykrywania wstrząsu",
-      "sensitivity": "Czułość",
-      "timing": "Harmonogram",
       "requiredShakes": "Wymagane potrząśnięcia",
       "shakeThreshold": "Próg potrząsania",
       "timeLimit": "Limit czasu (ms)",
@@ -99,13 +65,18 @@
       "whitelistTitle": "Aplikacje na białej liście",
       "whitelistDesc": "Wykrywanie potrząsania będzie aktywne tylko wtedy, gdy jedna z tych aplikacji jest aktywna. Akceptuje nazwy procesów (np. brave, brave.exe). Wielkość liter nie ma znaczenia.",
       "addPlaceholder": "Dodaj nazwę procesu...",
-      "add": "Dodaj",
-      "emptyTitle": "Brak aplikacji na białej liście",
-      "emptyDesc": "Wstrząśnięcie kursorem będzie ignorowane globalnie"
+      "add": "Dodaj"
     },
     "footer": {
       "save": "Zapisz ustawienia",
       "saving": "Zapisywanie..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

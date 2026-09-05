@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Cancel",
-    "save": "Save",
-    "close": "Close",
-    "clear": "Clear",
-    "add": "Add",
-    "set": "Set",
-    "stop": "Stop",
-    "noneSet": "None set",
-    "loading": "Loading...",
-    "copyLink": "Copy Link"
+    "close": "Close"
   },
   "app": {
     "dropHere": "Drop here",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} files",
     "files_plural": "{{count}} files",
     "clear": "Clear",
-    "paste": "Paste",
-    "contextMenuTitle": "Context Menu",
-    "toast": {
-      "dropReceived": "Drop received in webview!",
-      "processingVirtual": "Processing virtual files from browser...",
-      "checkingTextHtml": "No files dropped, checking for text/html...",
-      "downloadingImage": "Downloading image...",
-      "failedSaveDataImage": "Failed to save data image",
-      "failedSaveDroppedImage": "Failed to save dropped image",
-      "couldNotDownloadImage": "Could not download image: {{error}}"
-    }
+    "contextMenuTitle": "Context Menu"
   },
   "popup": {
     "itemsSelected": "{{count}} items selected",
@@ -36,18 +17,13 @@
     "itemsSelected_other": "{{count}} items selected",
     "list": "List",
     "grid": "Grid",
+    "viewMode": "View mode",
     "removeSelected": "Remove Selected Files"
   },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your application preferences",
     "loading": "Loading settings...",
-    "inputMonitoring": {
-      "title": "Input Monitoring Permission Required",
-      "description": "To use global shortcuts like Option+Space or Ctrl+Space, this app needs Input Monitoring permission. This is a macOS system requirement.",
-      "openSettings": "Open System Settings",
-      "restartHint": "After granting permission, restart the app for changes to take effect."
-    },
     "general": {
       "title": "General Settings",
       "description": "Configure startup and privacy behavior",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Language",
       "description": "Choose your preferred language",
-      "label": "Display Language",
-      "hint": "Changes apply immediately and are saved on this device."
+      "label": "Display Language"
     },
     "shortcuts": {
       "title": "Shortcuts",
       "description": "Customize how you interact with the app",
       "showHotkey": "Show Window Hotkey",
       "pressKeys": "Press keys...",
-      "listeningHint": "Press desired key combination... Press Stop when done",
-      "idleHint": "Global shortcut to bring the app to foreground",
       "set": "Set",
       "stop": "Stop",
       "clear": "Clear",
       "noneSet": "None set"
     },
     "dragDrop": {
-      "title": "Drag & Drop Behavior",
-      "description": "How files are transferred when dragging out of Holdem",
       "dragToCopy": "Copy files to destination",
-      "shiftToMove": "Hold Shift while dropping to move files",
-      "move": "move",
-      "macHint": "macOS shows a green + badge when copying. No badge = move operation.",
-      "winHint": "Windows Explorer shows a dotted overlay when copying. A move arrow shows for move operation."
+      "shiftToMove": "Hold Shift while dropping to move files"
     },
     "mouse": {
       "title": "Mouse Monitor",
       "description": "Fine-tune shake detection sensitivity",
-      "sensitivity": "Sensitivity",
-      "timing": "Timing",
       "requiredShakes": "Required Shakes",
       "shakeThreshold": "Shake Threshold",
       "timeLimit": "Time Limit (ms)",
@@ -95,9 +61,14 @@
       "whitelistTitle": "Whitelisted Apps",
       "whitelistDesc": "Shake detection will only be active when one of these apps is focused. Accepts process names (e.g. brave, brave.exe). Case-insensitive.",
       "addPlaceholder": "Add process name...",
-      "add": "Add",
-      "emptyTitle": "No apps whitelisted",
-      "emptyDesc": "Cursor shaking will be ignored globally"
+      "add": "Add"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     },
     "footer": {
       "save": "Save Settings",

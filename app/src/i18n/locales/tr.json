@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "İptal",
-    "save": "Kaydet",
-    "close": "Kapat",
-    "clear": "Temizle",
-    "add": "Ekle",
-    "set": "Ayarla",
-    "stop": "Durdur",
-    "noneSet": "Belirtilmedi",
-    "loading": "Yükleniyor...",
-    "copyLink": "Bağlantıyı Kopyala"
+    "close": "Kapat"
   },
   "app": {
     "dropHere": "Buraya bırak",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} dosya",
     "files_plural": "{{count}} dosya",
     "clear": "Temizle",
-    "paste": "Yapıştır",
-    "contextMenuTitle": "Bağlam Menüsü",
-    "toast": {
-      "dropReceived": "Web görünümünde bırakma alındı!",
-      "processingVirtual": "Tarayıcıdan sanal dosyalar işleniyor...",
-      "checkingTextHtml": "Bırakılan dosya yok, metin/html denetleniyor...",
-      "downloadingImage": "Görüntü indiriliyor...",
-      "failedSaveDataImage": "Veri görüntüsü kaydedilemedi",
-      "failedSaveDroppedImage": "Bırakılan görüntü kaydedilemedi",
-      "couldNotDownloadImage": "Görüntü indirilemedi: {{error}}"
-    }
+    "contextMenuTitle": "Bağlam Menüsü"
   },
   "popup": {
     "itemsSelected": "{{count}} öğe seçildi",
@@ -36,18 +17,13 @@
     "grid": "Izgara",
     "removeSelected": "Seçili Dosyaları Kaldır",
     "itemsSelected_one": "{{count}} öğe seçildi",
-    "itemsSelected_other": "{{count}} öğe seçildi"
+    "itemsSelected_other": "{{count}} öğe seçildi",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Ayarlar",
     "subtitle": "Uygulama tercihlerinizi yönetin",
     "loading": "Ayarlar yükleniyor...",
-    "inputMonitoring": {
-      "title": "Girdi İzleme İzni Gerekli",
-      "description": "Option+Space veya Ctrl+Space gibi genel kısayolları kullanmak için bu uygulamanın Girdi İzleme iznine ihtiyacı vardır. Bu bir macOS sistem gereksinimidir.",
-      "openSettings": "Sistem Ayarlarını Aç",
-      "restartHint": "İzni verdikten sonra değişikliklerin geçerli olması için uygulamayı yeniden başlatın."
-    },
     "general": {
       "title": "Genel Ayarlar",
       "description": "Başlangıç ve gizlilik davranışını yapılandırın",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Dil",
       "description": "Tercih ettiğiniz dili seçin",
-      "label": "Görüntüleme Dili",
-      "hint": "Değişiklikler hemen uygulanır ve bu cihazda kaydedilir."
+      "label": "Görüntüleme Dili"
     },
     "shortcuts": {
       "title": "Kısayollar",
       "description": "Uygulamayla etkileşim şeklinizi özelleştirin",
       "showHotkey": "Pencereyi Gösterme Kısayolu",
       "pressKeys": "Tuşlara basın...",
-      "listeningHint": "İstediğiniz tuş kombinasyonuna basın... Bitince Durdur'a basın",
-      "idleHint": "Uygulamayı öne getiren genel kısayol",
       "set": "Ayarla",
       "stop": "Durdur",
       "clear": "Temizle",
       "noneSet": "Belirtilmedi"
     },
     "dragDrop": {
-      "title": "Sürükle ve Bırak Davranışı",
-      "description": "Dosyalar Holdem dışına sürüklenirken nasıl aktarılır",
       "dragToCopy": "Dosyaları hedefe kopyala",
-      "shiftToMove": "Dosyaları taşımak için bırakırken Shift tuşunu basılı tutun",
-      "move": "taşıma",
-      "macHint": "macOS, kopyalarken yeşil + rozeti gösterir. Rozet yoksa taşıma işlemidir.",
-      "winHint": "Windows Gezgini, kopyalarken noktalı kaplama gösterir. Taşıma işlemi için taşıma oku görünür."
+      "shiftToMove": "Dosyaları taşımak için bırakırken Shift tuşunu basılı tutun"
     },
     "mouse": {
       "title": "Fare İzleyici",
       "description": "Sarsıntı algılama hassasiyetini ayarlayın",
-      "sensitivity": "Hassasiyet",
-      "timing": "Zamanlama",
       "requiredShakes": "Gerekli Sarsıntı Sayısı",
       "shakeThreshold": "Sarsıntı Eşiği",
       "timeLimit": "Süre Sınırı (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "İzin Verilen Uygulamalar",
       "whitelistDesc": "Sarsıntı algılama yalnızca bu uygulamalardan birine odaklanıldığında etkin olur. İşlem adlarını kabul eder (örn. brave, brave.exe). Büyük/küçük harf duyarsızdır.",
       "addPlaceholder": "İşlem adı ekleyin...",
-      "add": "Ekle",
-      "emptyTitle": "İzin verilen uygulama yok",
-      "emptyDesc": "İmleç sarsıntısı genel olarak yoksayılır"
+      "add": "Ekle"
     },
     "footer": {
       "save": "Ayarları Kaydet",
       "saving": "Kaydediliyor..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

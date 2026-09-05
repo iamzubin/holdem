@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Zrušit",
-    "save": "Uložit",
-    "close": "Zavřít",
-    "clear": "Vyčistit",
-    "add": "Přidat",
-    "set": "Nastavit",
-    "stop": "Zastavit",
-    "noneSet": "Nenastaveno",
-    "loading": "Načítám...",
-    "copyLink": "Kopírovat odkaz"
+    "close": "Zavřít"
   },
   "app": {
     "dropHere": "Přetáhněte sem",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} souborů",
     "files_plural": "{{count}} souborů",
     "clear": "Vyčistit",
-    "paste": "Vložit",
     "contextMenuTitle": "Kontextové menu",
-    "toast": {
-      "dropReceived": "Přetažení přijato ve webview!",
-      "processingVirtual": "Zpracovávání virtuálních souborů z prohlížeče...",
-      "checkingTextHtml": "Nebyly přetaženy žádné soubory, kontrola text/html...",
-      "downloadingImage": "Stahování obrázku...",
-      "failedSaveDataImage": "Nepodařilo se uložit datový obrázek",
-      "failedSaveDroppedImage": "Nepodařilo se uložit přetažený obrázek",
-      "couldNotDownloadImage": "Nelze stáhnout obrázek: {{error}}"
-    },
     "files_few": "{{count}} soubory",
     "files_many": "{{count}} souborů"
   },
@@ -40,18 +21,13 @@
     "itemsSelected_one": "Vybrána {{count}} položka",
     "itemsSelected_few": "Vybrány {{count}} položky",
     "itemsSelected_many": "Vybráno {{count}} položek",
-    "itemsSelected_other": "Vybráno {{count}} položek"
+    "itemsSelected_other": "Vybráno {{count}} položek",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Nastavení",
     "subtitle": "Spravovat nastavení aplikace",
     "loading": "Načítání nastavení...",
-    "inputMonitoring": {
-      "title": "Vyžadováno oprávnění pro sledování vstupu",
-      "description": "Chcete-li používat globální zkratky jako Option+Mezerník nebo Ctrl+Mezerník, tato aplikace potřebuje oprávnění ke sledování vstupu. Toto je systémový požadavek macOS.",
-      "openSettings": "Otevřít nastavení systému",
-      "restartHint": "Po udělení oprávnění restartujte aplikaci, aby se změny projevily."
-    },
     "general": {
       "title": "Obecná nastavení",
       "description": "Konfigurovat chování spuštění a soukromí",
@@ -63,35 +39,25 @@
     "language": {
       "title": "Jazyk",
       "description": "Vyberte preferovaný jazyk",
-      "label": "Jazyk zobrazení",
-      "hint": "Změny se aplikují okamžitě a jsou uloženy na tomto zařízení."
+      "label": "Jazyk zobrazení"
     },
     "shortcuts": {
       "title": "Zkratky",
       "description": "Přizpůsobte si, jak komunikujete s aplikací",
       "showHotkey": "Zobrazit klávesovou zkratku okna",
       "pressKeys": "Stiskněte klávesy...",
-      "listeningHint": "Stiskněte požadovanou kombinaci kláves... Po dokončení stiskněte Zastavit",
-      "idleHint": "Globální zkratka pro posunutí aplikace do popředí",
       "set": "Nastavit",
       "stop": "Zastavit",
       "clear": "Vyčistit",
       "noneSet": "Nenastaveno"
     },
     "dragDrop": {
-      "title": "Chování přetažením",
-      "description": "Jak se přenášejí soubory při přetahování z Holdem",
       "dragToCopy": "Kopírovat soubory do cíle",
-      "shiftToMove": "Podržením Shift při přetažení přesunout soubory",
-      "move": "přesunout",
-      "macHint": "macOS zobrazuje při kopírování zelený + odznak. Žádný odznak = přesunout operaci.",
-      "winHint": "Průzkumník Windows zobrazuje při kopírování vytečkovaný překryv. Šipka pohybu zobrazuje pohyb."
+      "shiftToMove": "Podržením Shift při přetažení přesunout soubory"
     },
     "mouse": {
       "title": "Monitor myši",
       "description": "Citlivost detekce jemného protřepání",
-      "sensitivity": "Citlivost",
-      "timing": "Časování",
       "requiredShakes": "Požadovaná zatřesení",
       "shakeThreshold": "Práh zatřesení",
       "timeLimit": "Časový limit (ms)",
@@ -99,13 +65,18 @@
       "whitelistTitle": "Povolené aplikace",
       "whitelistDesc": "Detekce zatřesení bude aktivní pouze v případě, že je aktivní jedna z těchto aplikací. Přijímá názvy procesů (např. brave, brave.exe). Nerozlišuje velká a malá písmena.",
       "addPlaceholder": "Přidat název procesu...",
-      "add": "Přidat",
-      "emptyTitle": "Žádné aplikace na seznamu povolených",
-      "emptyDesc": "Zatřesení kurzorem bude ignorováno globálně"
+      "add": "Přidat"
     },
     "footer": {
       "save": "Uložit nastavení",
       "saving": "Ukládání..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

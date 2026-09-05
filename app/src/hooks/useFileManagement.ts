@@ -5,9 +5,8 @@ import { invoke } from '@tauri-apps/api/core';
 
 export const useFileManagement = () => {
   const [files, setFiles] = useState<FilePreview[]>([]);
-  const [isWindowVisible, setIsWindowVisible] = useState(true);
 
-  const fetchFiles = useCallback(async () => {
+  const refreshFiles = useCallback(async () => {
     try {
       const fetchedFiles: FilePreview[] = await invoke('get_files');
       setFiles(fetchedFiles);
@@ -16,100 +15,31 @@ export const useFileManagement = () => {
     }
   }, []);
 
-  const refreshFiles = useCallback(async () => {
-    if (isWindowVisible) {
-      try {
-        await invoke('refresh_file_list');
-      } catch (error) {
-        console.error('Error refreshing files:', error);
-      }
-    }
-  }, [isWindowVisible]);
-
   useEffect(() => {
-    fetchFiles();
+    refreshFiles();
 
-    // Initialize listeners
-    const setupListeners = async () => {
-      const unlistenUpdated = await listen('files_updated', () => {
-        fetchFiles();
-      });
-
-      return () => {
-        unlistenUpdated();
-      };
-    };
-
-    let cleanupListeners: (() => void) | undefined;
-    setupListeners().then(cleanup => {
-      cleanupListeners = cleanup;
+    let unlisten: (() => void) | undefined;
+    let cancelled = false;
+    listen('files_updated', () => {
+      refreshFiles();
+    }).then((fn) => {
+      if (cancelled) fn();
+      else unlisten = fn;
     });
 
-    // Set up visibility change listener
-    const handleVisibilityChange = () => {
-      setIsWindowVisible(document.visibilityState === 'visible');
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Set up periodic refresh
-    const refreshInterval = setInterval(refreshFiles, 1000);
-
     return () => {
-      if (cleanupListeners) cleanupListeners();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      clearInterval(refreshInterval);
+      cancelled = true;
+      unlisten?.();
     };
-  }, [fetchFiles, refreshFiles]);
+  }, [refreshFiles]);
 
-  const addFiles = useCallback(async (newFiles: FilePreview[]) => {
-    const paths = newFiles.map(file => file.path);
-    try {
-      await invoke('add_files', { files: paths });
-      // The backend will emit a 'file_added' event, so we don't need to update the state here
-    } catch (error) {
-      console.error('Error adding files:', error);
-    }
-  }, []);
-
-  const remove_files = useCallback(async (ids: number[]) => {
-    try {
-      await invoke('remove_files', { fileIds: ids });
-      // The backend will emit a 'file_removed' event, so we don't need to update the state here
-    } catch (error) {
-      console.error('Error removing files:', error);
-    }
-  }, []);
-
-  const clearFiles = useCallback(async (ids: number[]) => {
+  const clearFiles = useCallback(async () => {
     try {
       await invoke('clear_files');
     } catch (error) {
-      console.error('Error removing files:', error);
+      console.error('Error clearing files:', error);
     }
   }, []);
 
-  const droppedFiles = useCallback(async () => {
-    fetchFiles();
-  }, []);
-
-  const renameFile = useCallback(async (id: number, newName: string) => {
-    try {
-      await invoke('rename_file', { fileId: id, newName });
-      // The backend will emit a 'file_renamed' event, so we don't need to update the state here
-    } catch (error) {
-      console.error('Error renaming file:', error);
-    }
-  }, []);
-
-  const getFileIcon = useCallback(async (filePath: string): Promise<string> => {
-    try {
-      const iconBase64: string = await invoke('get_file_icon_base64', { filePath });
-      return iconBase64;
-    } catch (error) {
-      console.error('Error fetching file icon:', error);
-      throw error;
-    }
-  }, []);
-
-  return { files, addFiles, remove_files, renameFile, getFileIcon, clearFiles, droppedFiles };
+  return { files, refreshFiles, clearFiles };
 };

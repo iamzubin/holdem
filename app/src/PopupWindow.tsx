@@ -1,34 +1,33 @@
-import { DynamicFileIcon } from "@/components/FileIcon";
+import { FileThumb } from '@/components/FileThumb';
+import { Button } from '@/components/ui/button';
+import { useFileManagement } from '@/hooks/useFileManagement';
+import { useNativeDrag } from '@/hooks/useNativeDrag';
+import { formatFileSize } from '@/lib/utils';
+import { closeCurrentWindow } from '@/lib/windowUtils';
+import { FilePreview } from '@/types';
 import * as ContextMenu from '@radix-ui/react-context-menu';
-import { Button } from "@/components/ui/button";
-import { useFileManagement } from "@/hooks/useFileManagement";
-import { setPendingFiles, prepareDragImage, triggerNativeDrag } from "@/lib/fileUtils";
-import { invoke } from "@tauri-apps/api/core";
-import { List as ListIcon, Grid as GridIcon } from 'lucide-react';
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import { Toaster } from "sonner";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { invoke } from '@tauri-apps/api/core';
+import { Grid as GridIcon, List as ListIcon } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
-import { useTranslation } from 'react-i18next';
+
+type ViewMode = 'list' | 'grid';
 
 const PopupWindow: React.FC = () => {
   const { t } = useTranslation();
   const { files } = useFileManagement();
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [lastSelectedFile, setLastSelectedFile] = useState<string | null>(null);
   const fileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const dragTimeoutRef = useRef<number | null>(null);
+  const { beginDrag, handleMouseUp } = useNativeDrag();
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (!hasInteracted) {
-        invoke('close_popup_window').catch((error) => {
-          console.error('Failed to close popup window after inactivity:', error);
-        });
-      }
+      if (!hasInteracted) closeCurrentWindow();
     }, 3000);
 
     const handleFocus = () => {
@@ -37,11 +36,7 @@ const PopupWindow: React.FC = () => {
     };
 
     const handleBlur = () => {
-      if (hasInteracted) {
-        invoke('close_popup_window').catch((error) => {
-          console.error('Failed to close popup window on blur:', error);
-        });
-      }
+      if (hasInteracted) closeCurrentWindow();
     };
 
     window.addEventListener('focus', handleFocus);
@@ -54,95 +49,47 @@ const PopupWindow: React.FC = () => {
     };
   }, [hasInteracted]);
 
-  const isMouseDownRef = useRef(false);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>, file: FilePreview) => {
+      if (e.button !== 0) return;
+      e.stopPropagation();
+      const filesToDrag =
+        selectedFiles.size > 0 ? files.filter((f) => selectedFiles.has(f.id.toString())) : [file];
+      beginDrag(filesToDrag, fileRefs.current[file.id]);
+    },
+    [files, selectedFiles, beginDrag],
+  );
 
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>, file: any) => {
-    // Only trigger on left mouse button
-    if (e.button !== 0) return;
-    
-    e.stopPropagation();
-    isMouseDownRef.current = true;
-    
-    // Determine which files to drag
-    let filesToDrag: any[];
-    if (selectedFiles.size > 0) {
-      filesToDrag = files.filter(f => selectedFiles.has(f.id.toString()));
-    } else {
-      filesToDrag = [file];
-    }
-    
-    setPendingFiles(filesToDrag);
-    
-    // Get the element for image capture
-    const element = fileRefs.current[file.id];
-    if (element) {
-      prepareDragImage(element).then(() => {
-        if (isMouseDownRef.current) {
-          dragTimeoutRef.current = window.setTimeout(() => {
-            if (isMouseDownRef.current) {
-              triggerNativeDrag();
-            }
-          }, 150);
-        }
-      });
-    } else {
-      dragTimeoutRef.current = window.setTimeout(() => {
-        if (isMouseDownRef.current) {
-          triggerNativeDrag();
-        }
-      }, 150);
-    }
-  }, [files, selectedFiles]);
-
-  const handleMouseUp = useCallback(() => {
-    isMouseDownRef.current = false;
-    if (dragTimeoutRef.current) {
-      clearTimeout(dragTimeoutRef.current);
-      dragTimeoutRef.current = null;
-    }
-  }, []);
-
-  const handleFileClick = useCallback((fileId: string, event: React.MouseEvent) => {
-    setSelectedFiles(prev => {
-      const newSet = new Set(prev);
-      if (event.shiftKey && lastSelectedFile) {
-        const fileIds = files.map(f => f.id.toString());
-        const startIndex = fileIds.indexOf(lastSelectedFile);
-        const endIndex = fileIds.indexOf(fileId);
-        const [start, end] = [Math.min(startIndex, endIndex), Math.max(startIndex, endIndex)];
-        for (let i = start; i <= end; i++) {
-          newSet.add(fileIds[i]);
-        }
-      } else if (event.ctrlKey || event.metaKey) {
-        if (newSet.has(fileId)) {
-          newSet.delete(fileId);
+  const handleFileClick = useCallback(
+    (fileId: string, event: React.MouseEvent) => {
+      setSelectedFiles((prev) => {
+        const newSet = new Set(prev);
+        if (event.shiftKey && lastSelectedFile) {
+          const fileIds = files.map((f) => f.id.toString());
+          const startIndex = fileIds.indexOf(lastSelectedFile);
+          const endIndex = fileIds.indexOf(fileId);
+          const [start, end] = [Math.min(startIndex, endIndex), Math.max(startIndex, endIndex)];
+          for (let i = start; i <= end; i++) {
+            newSet.add(fileIds[i]);
+          }
+        } else if (event.ctrlKey || event.metaKey) {
+          if (newSet.has(fileId)) {
+            newSet.delete(fileId);
+          } else {
+            newSet.add(fileId);
+          }
         } else {
+          newSet.clear();
           newSet.add(fileId);
         }
-      } else {
-        newSet.clear();
-        newSet.add(fileId);
-      }
-      return newSet;
-    });
-    setLastSelectedFile(fileId);
-  }, [files, lastSelectedFile]);
+        return newSet;
+      });
+      setLastSelectedFile(fileId);
+    },
+    [files, lastSelectedFile],
+  );
 
-  const getTotalSize = (files: any[]): string => {
-    const totalBytes = files.reduce((acc, file) => acc + file.size, 0);
-    return formatFileSize(totalBytes);
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024 * 1024) {
-      return `${(bytes / 1024).toFixed(1)} KB`;
-    }
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  const toggleViewMode = () => {
-    setViewMode(prev => prev === 'list' ? 'grid' : 'list');
-  };
+  const totalSize = formatFileSize(files.reduce((acc, file) => acc + file.size, 0));
 
   const handleRemoveSelectedFiles = useCallback(() => {
     const fileIds = Array.from(selectedFiles)
@@ -167,6 +114,8 @@ const PopupWindow: React.FC = () => {
     });
   }, [files]);
 
+  const isList = viewMode === 'list';
+
   return (
     <div
       className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2 rounded border border-border"
@@ -176,91 +125,102 @@ const PopupWindow: React.FC = () => {
         <div className="flex items-center gap-2">
           {files.length > 0 && (
             <>
-              <span className="text-xs text-primary">{t("popup.itemsSelected", { count: files.length })}</span>
-              <span className="text-xs text-primary">{getTotalSize(files)}</span>
+              <span className="text-xs text-primary">
+                {t('popup.itemsSelected', { count: files.length })}
+              </span>
+              <span className="text-xs text-primary">{totalSize}</span>
             </>
           )}
         </div>
-        <div className="flex gap-2">
-          <ToggleGroup
-            type="single"
-            value={viewMode}
-            onValueChange={toggleViewMode}
-            >
-            <ToggleGroupItem value="list" className="text-primary">
-              <span className="sr-only">{t("popup.list")}</span>
-              <ListIcon className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="grid" className="text-primary">
-              <span className="sr-only">{t("popup.grid")}</span>
-              <GridIcon className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
+        <div className="flex items-center gap-1" role="group" aria-label={t('popup.viewMode')}>
+          <Button
+            variant={isList ? 'secondary' : 'ghost'}
+            size="icon"
+            className="h-7 w-7 text-primary"
+            onClick={() => setViewMode('list')}
+            aria-pressed={isList}
+            aria-label={t('popup.list')}
+          >
+            <ListIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={!isList ? 'secondary' : 'ghost'}
+            size="icon"
+            className="h-7 w-7 text-primary"
+            onClick={() => setViewMode('grid')}
+            aria-pressed={!isList}
+            aria-label={t('popup.grid')}
+          >
+            <GridIcon className="h-4 w-4" />
+          </Button>
         </div>
       </div>
-      <SimpleBar id="RSC-Example" style={{ flex: 1, minHeight: 0, height: 'auto' }} className="min-h-0">
-      <div className="flex min-h-0 flex-col pb-1">
-        <ContextMenu.Root>
-          <ContextMenu.Trigger>
-          <div className={`${viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'space-y-1'} pb-1`}>
-            {files.map(file => (
-              <div
-                key={file.id}
-                ref={el => { fileRefs.current[file.id] = el; }}
-                className={`
-                  ${viewMode === 'list'
-                    ? 'flex items-center gap-2 p-1 rounded'
-                    : 'flex flex-col items-center p-1 rounded'
-                  }
-                  ${selectedFiles.has(file.id.toString()) ? 'bg-accent bg-opacity-50' : ''}
-                  cursor-grab active:cursor-grabbing
-                `}
-                onClick={(e) => handleFileClick(file.id.toString(), e)}
-                onMouseDown={(e) => handleMouseDown(e, file)}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-              >
-                <div className={`
-                   flex items-center justify-center overflow-hidden
-                  ${viewMode === 'list' ? 'w-8 h-8 flex-shrink-0' : 'w-12 h-12 mb-1'}
-                `}>
-                  {file.preview ? (
-                    <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <DynamicFileIcon file={file} />
-                  )}
-                </div>
-                <div className={`
-                  ${viewMode === 'list' ? 'flex-grow min-w-0' : 'w-full text-center'}
-                `}>
-                  <p className="text-xs text-primary font-medium truncate" title={file.name}>{file.name}</p>
-                  {viewMode === 'grid' && (
-                    <span className="text-[10px] text-primary">{formatFileSize(file.size)}</span>
-                  )}
-                </div>
-                {viewMode === 'list' && (
-                  <span className="text-[10px] text-primary flex-shrink-0">{formatFileSize(file.size)}</span>
-                )}
+      <SimpleBar style={{ flex: 1, minHeight: 0, height: 'auto' }} className="min-h-0">
+        <div className="flex min-h-0 flex-col pb-1">
+          <ContextMenu.Root>
+            <ContextMenu.Trigger>
+              <div className={isList ? 'space-y-1 pb-1' : 'grid grid-cols-2 gap-1 pb-1'}>
+                {files.map((file) => (
+                  <div
+                    key={file.id}
+                    ref={(el) => {
+                      fileRefs.current[file.id] = el;
+                    }}
+                    className={
+                      isList
+                        ? `flex items-center gap-2 p-1 rounded cursor-grab active:cursor-grabbing${selectedFiles.has(file.id.toString()) ? ' bg-accent bg-opacity-50' : ''}`
+                        : `flex flex-col items-center p-1 rounded cursor-grab active:cursor-grabbing${selectedFiles.has(file.id.toString()) ? ' bg-accent bg-opacity-50' : ''}`
+                    }
+                    onClick={(e) => handleFileClick(file.id.toString(), e)}
+                    onMouseDown={(e) => handleMouseDown(e, file)}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                  >
+                    <div
+                      className={
+                        isList
+                          ? 'flex items-center justify-center overflow-hidden w-8 h-8 flex-shrink-0'
+                          : 'flex items-center justify-center overflow-hidden w-12 h-12 mb-1'
+                      }
+                    >
+                      <FileThumb file={file} />
+                    </div>
+                    <div className={isList ? 'flex-grow min-w-0' : 'w-full text-center'}>
+                      <p
+                        className="text-xs text-primary font-medium truncate"
+                        title={file.name}
+                      >
+                        {file.name}
+                      </p>
+                      {!isList && (
+                        <span className="text-[10px] text-primary">
+                          {formatFileSize(file.size)}
+                        </span>
+                      )}
+                    </div>
+                    {isList && (
+                      <span className="text-[10px] text-primary flex-shrink-0">
+                        {formatFileSize(file.size)}
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          </ContextMenu.Trigger>
-        <ContextMenu.Portal>
-          <ContextMenu.Content className="min-w-[200px] bg-background rounded-md overflow-hidden p-1">
-            <ContextMenu.Item
-              onClick={handleRemoveSelectedFiles}
-              disabled={selectedFiles.size === 0}
-              className="text-xs text-primary rounded px-2 py-1.5 cursor-pointer hover:bg-secondary focus:bg-secondary outline-none disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {t("popup.removeSelected")}
-            </ContextMenu.Item>
-          </ContextMenu.Content>
-        </ContextMenu.Portal>
-      </ContextMenu.Root>
-      </div>
+            </ContextMenu.Trigger>
+            <ContextMenu.Portal>
+              <ContextMenu.Content className="min-w-[200px] bg-background rounded-md overflow-hidden p-1">
+                <ContextMenu.Item
+                  onClick={handleRemoveSelectedFiles}
+                  disabled={selectedFiles.size === 0}
+                  className="text-xs text-primary rounded px-2 py-1.5 cursor-pointer hover:bg-secondary focus:bg-secondary outline-none disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {t('popup.removeSelected')}
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Portal>
+          </ContextMenu.Root>
+        </div>
       </SimpleBar>
-
-      <Toaster />
     </div>
   );
 };

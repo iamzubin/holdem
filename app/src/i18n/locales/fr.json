@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Annuler",
-    "save": "Enregistrer",
-    "close": "Fermer",
-    "clear": "Effacer",
-    "add": "Ajouter",
-    "set": "Régler",
-    "stop": "Arrêter",
-    "noneSet": "Non défini",
-    "loading": "Chargement en cours...",
-    "copyLink": "Copier le lien"
+    "close": "Fermer"
   },
   "app": {
     "dropHere": "Déposer ici",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} fichiers",
     "files_plural": "{{count}} fichiers",
     "clear": "Effacer",
-    "paste": "Coller",
-    "contextMenuTitle": "Menu contextuel",
-    "toast": {
-      "dropReceived": "Dépôt reçu dans la vue web !",
-      "processingVirtual": "Traitement des fichiers virtuels depuis le navigateur...",
-      "checkingTextHtml": "Aucun fichier déposé, vérification du texte/HTML...",
-      "downloadingImage": "Téléchargement de l'image...",
-      "failedSaveDataImage": "Échec de l'enregistrement de l'image de données",
-      "failedSaveDroppedImage": "Échec de l'enregistrement de l'image déposée",
-      "couldNotDownloadImage": "Impossible de télécharger l'image: {{error}}"
-    }
+    "contextMenuTitle": "Menu contextuel"
   },
   "popup": {
     "itemsSelected": "{{count}} éléments sélectionnés",
@@ -36,18 +17,13 @@
     "grid": "Grille",
     "removeSelected": "Supprimer les fichiers sélectionnés",
     "itemsSelected_one": "{{count}} élément sélectionné",
-    "itemsSelected_other": "{{count}} éléments sélectionnés"
+    "itemsSelected_other": "{{count}} éléments sélectionnés",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Réglages",
     "subtitle": "Gérer vos préférences d'application",
     "loading": "Chargement des paramètres...",
-    "inputMonitoring": {
-      "title": "Autorisation de surveillance d'entrée requise",
-      "description": "Pour utiliser des raccourcis globaux tels que Option+Espace ou Ctrl+Espace, cette application a besoin des autorisations de Surveillance de l'entrée. Ceci est une exigence du système macOS.",
-      "openSettings": "Ouvrir les paramètres système",
-      "restartHint": "Après avoir accordé l'autorisation, redémarrez l'application pour que les modifications prennent effet."
-    },
     "general": {
       "title": "Paramètres généraux",
       "description": "Configurer le comportement de démarrage et de confidentialité",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Langue",
       "description": "Choisissez votre langue préférée",
-      "label": "Langue d'affichage",
-      "hint": "Les modifications s’appliquent immédiatement et sont enregistrées sur cet appareil."
+      "label": "Langue d'affichage"
     },
     "shortcuts": {
       "title": "Raccourcis",
       "description": "Personnalisez la façon dont vous interagissez avec l'application",
       "showHotkey": "Afficher le raccourci clavier de la fenêtre",
       "pressKeys": "Appuyez sur des touches...",
-      "listeningHint": "Appuyez sur la combinaison de touches souhaitée... Appuyez sur Arrêter une fois terminé",
-      "idleHint": "Raccourci global pour mettre l'application au premier plan",
       "set": "Régler",
       "stop": "Arrêter",
       "clear": "Effacer",
       "noneSet": "Non défini"
     },
     "dragDrop": {
-      "title": "Comportement de glisser-déposer",
-      "description": "Comment les fichiers sont transférés en faisant glisser hors de Holdem",
       "dragToCopy": "Copier les fichiers vers la destination",
-      "shiftToMove": "Maintenez la touche Maj enfoncée pour déplacer les fichiers",
-      "move": "déplacer",
-      "macHint": "macOS affiche un badge vert + lors de la copie. Aucun badge = opération de déplacement.",
-      "winHint": "L'Explorateur Windows affiche une superposition en pointillés lors de la copie. Une flèche de déplacement indique pour une opération de déplacement."
+      "shiftToMove": "Maintenez la touche Maj enfoncée pour déplacer les fichiers"
     },
     "mouse": {
       "title": "Moniteur de souris",
       "description": "Sensibilité à la détection des secousses",
-      "sensitivity": "Sensibilité",
-      "timing": "Timing",
       "requiredShakes": "Secouements requis",
       "shakeThreshold": "Seuil de secousse",
       "timeLimit": "Limite de temps (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Applications en liste blanche",
       "whitelistDesc": "La détection d'agitation ne sera active que lorsque l'une de ces applications est au premier plan. Accepte les noms de processus (ex. brave, brave.exe). Insensible à la casse.",
       "addPlaceholder": "Ajouter un nom de processus...",
-      "add": "Ajouter",
-      "emptyTitle": "Aucune application en liste blanche",
-      "emptyDesc": "Le tremblement de curseur sera ignoré globalement"
+      "add": "Ajouter"
     },
     "footer": {
       "save": "Enregistrer les paramètres",
       "saving": "Sauvegarde en cours..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {
