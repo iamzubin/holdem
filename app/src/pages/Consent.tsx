@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { invoke } from '@tauri-apps/api/core';
@@ -7,9 +7,14 @@ import { useTranslation } from 'react-i18next';
 
 export default function Consent() {
   const { t } = useTranslation();
-  // Handle window close events
+  const choiceMadeRef = useRef(false);
+
+  // Handle window close events. `.close()` fires `beforeunload` (unlike the
+  // old `hide()`), so skip the default decline once the user has chosen —
+  // otherwise Accept would be overwritten by Decline on close.
   useEffect(() => {
     const handleBeforeUnload = () => {
+      if (choiceMadeRef.current) return;
       // If user closes window without making a choice, decline by default
       invoke('decline_analytics_consent').catch((error) => {
         console.error('Failed to decline analytics consent during window close:', error);
@@ -23,6 +28,7 @@ export default function Consent() {
   }, []);
 
   const handleAccept = async () => {
+    choiceMadeRef.current = true;
     try {
       await invoke('accept_analytics_consent');
       // Add a small delay before closing to ensure the event is sent
@@ -36,6 +42,7 @@ export default function Consent() {
   };
 
   const handleDecline = async () => {
+    choiceMadeRef.current = true;
     try {
       await invoke('decline_analytics_consent');
       // Add a small delay before closing to ensure the event is sent

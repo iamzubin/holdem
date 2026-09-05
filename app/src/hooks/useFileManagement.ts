@@ -8,6 +8,10 @@ export const useFileManagement = () => {
 
   const refreshFiles = useCallback(async () => {
     try {
+      // Prune externally-deleted paths first (`get_files` is a pure clone
+      // and would otherwise leave ghosts). No polling — this runs on mount,
+      // on `files_updated`, and on explicit refreshes only.
+      await invoke('refresh_file_list').catch(() => {});
       const fetchedFiles: FilePreview[] = await invoke('get_files');
       setFiles(fetchedFiles);
     } catch (error) {
