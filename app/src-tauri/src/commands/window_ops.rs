@@ -2,11 +2,25 @@ use crate::analytics;
 use crate::DragState;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager, Runtime, State, WebviewUrl, WebviewWindowBuilder};
 use tracing::info;
 
+fn sanitize_theme(theme: Option<String>) -> Option<String> {
+    match theme.as_deref() {
+        Some("dark") | Some("light") | Some("system") => theme,
+        _ => None,
+    }
+}
+
+fn url_with_theme(base: &str, theme: Option<String>) -> String {
+    match sanitize_theme(theme) {
+        Some(t) => format!("{}?theme={}", base, t),
+        None => base.to_string(),
+    }
+}
+
 #[tauri::command]
-pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
+pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), String> {
     // Get the main window
     let main_window = app
         .get_webview_window("main")
@@ -43,11 +57,12 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
     } else {
         // Create the popup window
         let app_clone = app.clone();
+        let popup_url = url_with_theme("popup", theme);
         tauri::async_runtime::spawn(async move {
             WebviewWindowBuilder::new(
                 &app,
-                "popup",                         // Window label
-                WebviewUrl::App("popup".into()), // Assuming same frontend build
+                "popup",                           // Window label
+                WebviewUrl::App(popup_url.into()), // Same frontend build, themed via `?theme=`
             )
             .title("File List")
             .decorations(false) // Remove window decorations for a popup feel
@@ -63,7 +78,8 @@ pub fn open_popup_window(app: AppHandle) -> Result<(), String> {
             .map_err(|e: tauri::Error| e.to_string())?;
 
             // Send analytics event (fire and forget)
-            std::mem::drop(analytics::send_popup_window_opened_event(&app_clone));
+            let _ =
+                analytics::send_analytics_event(&app_clone, "popup_window_opened", None).await;
 
             Ok::<(), String>(())
         });
@@ -81,16 +97,7 @@ pub fn close_popup_window(app: AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
-    // Get the main window
-    let main_window = app
-        .get_webview_window("main")
-        .ok_or("Main window not found")?;
-
-    // Get the position and size of the main window
-    let _position = main_window.outer_position().map_err(|e| e.to_string())?;
-    let _size = main_window.outer_size().map_err(|e| e.to_string())?;
-
+pub fn open_settings_window(app: AppHandle, theme: Option<String>) -> Result<(), String> {
     // Define settings window dimensions
     let settings_width = 500.0;
     let settings_height = 600.0;
@@ -100,8 +107,9 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
     } else {
         // Create the settings window
         let app_clone = app.clone();
+        let settings_url = url_with_theme("settings", theme);
         tauri::async_runtime::spawn(async move {
-            WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App("settings".into()))
+            WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App(settings_url.into()))
                 .title("Settings")
                 .decorations(false)
                 .shadow(false)
@@ -112,7 +120,7 @@ pub fn open_settings_window(app: AppHandle) -> Result<(), String> {
                 .map_err(|e: tauri::Error| e.to_string())?;
 
             // Send analytics event (fire and forget)
-            std::mem::drop(analytics::send_settings_opened_event(&app_clone));
+            let _ = analytics::send_analytics_event(&app_clone, "settings_opened", None).await;
 
             Ok::<(), String>(())
         });
@@ -128,11 +136,35 @@ pub fn close_settings_window(app: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+/// Canonical "bring the main window back": show + unminimize + focus.
+/// Used by the hotkey handler, tray click, shortcut callback, and the
+/// `show_main_window` command so the sequence can't drift again.
+pub(crate) fn reveal_main_window<R: Runtime>(app: &AppHandle<R>) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window("main") {
+        window.show().map_err(|e| e.to_string())?;
+        window.unminimize().map_err(|e| e.to_string())?;
+        window.set_focus().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 #[tauri::command]
 pub fn show_main_window(app_handle: AppHandle) -> Result<(), String> {
-    if let Some(window) = app_handle.get_webview_window("main") {
-        window.show().map_err(|e| e.to_string())?;
-        window.set_focus().map_err(|e| e.to_string())?;
+    reveal_main_window(&app_handle)
+}
+
+/// Show the updater window, building it on first use.
+pub(crate) fn open_updater_window<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
+    if let Some(existing) = app.get_webview_window("updater") {
+        existing.show()?;
+        existing.set_focus()?;
+    } else {
+        WebviewWindowBuilder::new(app, "updater", WebviewUrl::App("/updater".into()))
+            .title("Software Updates")
+            .inner_size(500.0, 400.0)
+            .center()
+            .decorations(false)
+            .build()?;
     }
     Ok(())
 }

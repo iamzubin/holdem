@@ -1,12 +1,12 @@
 import { DynamicFileIcon } from "@/components/FileIcon";
+import * as ContextMenu from '@radix-ui/react-context-menu';
 import { Button } from "@/components/ui/button";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { setPendingFiles, prepareDragImage, triggerNativeDrag } from "@/lib/fileUtils";
 import { invoke } from "@tauri-apps/api/core";
-import { MoreHorizontal, List as ListIcon, Grid as GridIcon, Trash2 } from 'lucide-react';
+import { List as ListIcon, Grid as GridIcon } from 'lucide-react';
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Toaster } from "sonner";
-import * as ContextMenu from '@radix-ui/react-context-menu';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
@@ -145,7 +145,10 @@ const PopupWindow: React.FC = () => {
   };
 
   const handleRemoveSelectedFiles = useCallback(() => {
-    invoke('remove_files', { fileIds: Array.from(selectedFiles).map(id => parseInt(id)) })
+    const fileIds = Array.from(selectedFiles)
+      .map((id) => Number(id))
+      .filter((n) => Number.isInteger(n) && n >= 0);
+    invoke('remove_files', { fileIds })
       .then(() => {
         setSelectedFiles(new Set());
       })
@@ -154,8 +157,21 @@ const PopupWindow: React.FC = () => {
       });
   }, [selectedFiles]);
 
+  // Prune selected ids that no longer exist whenever the file list refreshes.
+  useEffect(() => {
+    setSelectedFiles((prev) => {
+      if (prev.size === 0) return prev;
+      const ids = new Set(files.map((file) => file.id.toString()));
+      const next = new Set([...prev].filter((id) => ids.has(id)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [files]);
+
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2 rounded border border-border">
+    <div
+      className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2 rounded border border-border"
+      onContextMenu={(event) => event.preventDefault()}
+    >
       <div className="flex shrink-0 justify-between items-center mb-2">
         <div className="flex items-center gap-2">
           {files.length > 0 && (
@@ -228,15 +244,14 @@ const PopupWindow: React.FC = () => {
               </div>
             ))}
           </div>
-        </ContextMenu.Trigger>
+          </ContextMenu.Trigger>
         <ContextMenu.Portal>
           <ContextMenu.Content className="min-w-[200px] bg-background rounded-md overflow-hidden p-1">
-            <ContextMenu.Item 
-              className="text-sm  hover:bg-secondary rounded flex items-center px-2 py-1 cursor-pointer text-primary"
+            <ContextMenu.Item
               onClick={handleRemoveSelectedFiles}
               disabled={selectedFiles.size === 0}
+              className="text-xs text-primary rounded px-2 py-1.5 cursor-pointer hover:bg-secondary focus:bg-secondary outline-none disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <Trash2 className="w-4 h-4 me-2" />
               {t("popup.removeSelected")}
             </ContextMenu.Item>
           </ContextMenu.Content>

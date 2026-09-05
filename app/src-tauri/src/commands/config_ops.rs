@@ -1,7 +1,7 @@
 use crate::analytics;
 use crate::config::AppConfig;
 use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, State};
 use tauri_plugin_autostart::ManagerExt;
 use tracing::{error, info, warn};
 
@@ -34,7 +34,7 @@ pub fn save_config(
 pub fn restart_app(app: AppHandle) -> Result<(), String> {
     let app_clone = app.clone();
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_app_restarted_event(&app_clone).await;
+        let _ = analytics::send_analytics_event(&app_clone, "app_restarted", None).await;
     });
 
     app.restart();
@@ -51,65 +51,15 @@ pub fn set_autostart(app_handle: AppHandle, enabled: bool) -> Result<(), String>
     }
 
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_autostart_toggled_event(&app_handle, enabled).await;
+        let _ = analytics::send_analytics_event(
+            &app_handle,
+            "autostart_toggled",
+            Some(vec![("enabled", serde_json::Value::Bool(enabled))]),
+        )
+        .await;
     });
 
     Ok(())
-}
-
-#[cfg(target_os = "macos")]
-fn parse_keycode(key: &str) -> Option<i64> {
-    let key_upper = key.to_uppercase();
-    match key_upper.as_str() {
-        "A" => Some(0),
-        "B" => Some(1),
-        "C" => Some(2),
-        "D" => Some(3),
-        "E" => Some(4),
-        "F" => Some(5),
-        "G" => Some(6),
-        "H" => Some(7),
-        "I" => Some(8),
-        "J" => Some(9),
-        "K" => Some(10),
-        "L" => Some(11),
-        "M" => Some(12),
-        "N" => Some(13),
-        "O" => Some(14),
-        "P" => Some(15),
-        "Q" => Some(16),
-        "R" => Some(17),
-        "S" => Some(18),
-        "T" => Some(19),
-        "U" => Some(20),
-        "V" => Some(21),
-        "W" => Some(22),
-        "X" => Some(23),
-        "Y" => Some(24),
-        "Z" => Some(25),
-        "SPACE" | "SPACEBAR" => Some(49),
-        "RETURN" | "ENTER" => Some(36),
-        "TAB" => Some(48),
-        "DELETE" => Some(51),
-        "ESCAPE" | "ESC" => Some(53),
-        "F1" => Some(122),
-        "F2" => Some(120),
-        "F3" => Some(99),
-        "F4" => Some(118),
-        "F5" => Some(96),
-        "F6" => Some(97),
-        "F7" => Some(98),
-        "F8" => Some(100),
-        "F9" => Some(101),
-        "F10" => Some(109),
-        "F11" => Some(103),
-        "F12" => Some(111),
-        "UP" | "ARROWUP" => Some(126),
-        "DOWN" | "ARROWDOWN" => Some(125),
-        "LEFT" | "ARROWLEFT" => Some(123),
-        "RIGHT" | "ARROWRIGHT" => Some(124),
-        _ => None,
-    }
 }
 
 #[cfg(target_os = "windows")]
@@ -168,10 +118,6 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
         return Ok(());
     }
 
-    register_hotkey_windows(app_handle, shortcut_str)
-}
-
-fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
     let app_handle_clone = app_handle.clone();
     info!("Registering Windows hotkey: {}", shortcut_str);
 
@@ -209,14 +155,8 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
     app_handle
         .global_shortcut()
         .on_shortcut(shortcut, move |_app, _shortcut, _event| {
-            if let Some(window) = app_handle_clone.get_webview_window("main") {
-                if let Err(e) = window.show() {
-                    error!("Failed to show window after hotkey press: {}", e);
-                    return;
-                }
-                if let Err(e) = window.set_focus() {
-                    error!("Failed to focus window after hotkey press: {}", e);
-                }
+            if let Err(e) = super::window_ops::reveal_main_window(&app_handle_clone) {
+                error!("Failed to reveal window after hotkey press: {}", e);
             }
         })
         .map_err(|e| format!("Failed to set shortcut callback: {}", e))?;
@@ -226,8 +166,15 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
     let app_handle_clone = app_handle.clone();
     let shortcut_str_clone = shortcut_str.clone();
     tauri::async_runtime::spawn(async move {
-        let _ =
-            analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
+        let _ = analytics::send_analytics_event(
+            &app_handle_clone,
+            "hotkey_registered",
+            Some(vec![(
+                "hotkey",
+                serde_json::Value::String(shortcut_str_clone),
+            )]),
+        )
+        .await;
     });
 
     Ok(())
@@ -267,7 +214,7 @@ pub fn decline_analytics_consent(
     info!("Analytics consent declined");
 
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_consent_declined_event(&app_handle).await;
+        let _ = analytics::send_analytics_event(&app_handle, "consent_declined", None).await;
     });
 
     Ok(())
@@ -283,15 +230,7 @@ pub fn check_analytics_consent(config: State<Arc<Mutex<AppConfig>>>) -> Result<b
 
 #[tauri::command]
 pub fn check_config_exists(app_handle: AppHandle) -> bool {
-    AppConfig::config_exists(&app_handle)
-}
-
-#[tauri::command]
-pub fn check_input_monitoring_permission(_app_handle: AppHandle) -> Result<bool, String> {
-    Ok(true)
-}
-
-#[tauri::command]
-pub fn open_input_monitoring_settings(_app_handle: AppHandle) -> Result<(), String> {
-    Ok(())
+    AppConfig::get_config_path(&app_handle)
+        .map(|p| p.exists())
+        .unwrap_or(false)
 }

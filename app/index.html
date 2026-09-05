@@ -5,6 +5,28 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tauri + React + Typescript</title>
+    <script>
+      // Apply the saved theme before React mounts so every window
+      // (main/popup/settings/…) paints with the right colors immediately.
+      // Must stay in sync with `src/components/theme-provider.tsx`.
+      try {
+        var key = "vite-ui-theme";
+        var theme = new URLSearchParams(window.location.search).get("theme");
+        // First paint only — do not persist the param here. It can lag an
+        // in-flight `theme-changed` broadcast; the provider's broadcast
+        // listener owns persistence (see theme-provider.tsx).
+        if (theme !== "dark" && theme !== "light" && theme !== "system") {
+          theme = localStorage.getItem(key) || "system";
+        }
+        var resolved = theme;
+        if (theme === "system") {
+          resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.classList.remove("light", "dark");
+        document.documentElement.classList.add(resolved);
+        document.documentElement.style.colorScheme = resolved;
+      } catch (e) {}
+    </script>
   </head>
 
   <body>

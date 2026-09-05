@@ -13,9 +13,11 @@ import { useTranslation } from "react-i18next";
 import { StackedIcons } from "./components/StackedIcons";
 import { useNavigate } from "react-router-dom";
 import { listen } from "@tauri-apps/api/event";
+import { useTheme } from "@/components/theme-provider";
 
 function App() {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const listenerSetup = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { files, clearFiles, droppedFiles } = useFileManagement();
@@ -151,7 +153,7 @@ function App() {
   }, [droppedFiles]);
 
   const openPopup = () => {
-    invoke('open_popup_window').catch((err) => console.error(err));
+    invoke('open_popup_window', { theme }).catch((err) => console.error(err));
   };
 
   const stackedIconsRef = useRef<HTMLDivElement>(null);
@@ -162,7 +164,7 @@ function App() {
   }, []);
 
   const openSettings = () => {
-    invoke('open_settings_window').catch((err) => console.error(err));
+    invoke('open_settings_window', { theme }).catch((err) => console.error(err));
   };
 
   return (

@@ -14,39 +14,10 @@ pub fn handle_file_drop_from_paths(
         let mut new_files = Vec::new();
 
         for path in paths.iter() {
-            if path.exists() {
-                if let Ok(metadata) = path.metadata() {
-                    // Keep the original reference. Dropping a file must never copy it.
-                    let final_path = path.clone();
-
-                    // Directories store size 0 (no recursive walk — see file.rs).
-                    // This keeps drops instant for huge folders.
-                    let size = if metadata.is_dir() {
-                        0
-                    } else {
-                        metadata.len()
-                    };
-
-                    let file = FileMetadata {
-                        id: 0, // Will be updated later
-                        name: final_path
-                            .file_name()
-                            .and_then(|n| n.to_str())
-                            .unwrap_or("Unknown")
-                            .to_string(),
-                        path: final_path,
-                        size,
-                        file_type: if metadata.is_dir() {
-                            "folder".to_string()
-                        } else {
-                            path.extension()
-                                .and_then(|ext| ext.to_str())
-                                .unwrap_or("unknown")
-                                .to_string()
-                        },
-                    };
-                    new_files.push(file);
-                }
+            // Keep the original reference. Dropping a file must never copy it.
+            // Ids are assigned below once the list is locked.
+            if let Some(file) = FileMetadata::from_path(0, path.clone()) {
+                new_files.push(file);
             }
         }
 
