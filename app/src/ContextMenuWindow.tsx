@@ -8,6 +8,14 @@ import { useTranslation } from "react-i18next";
 /** Emitted when "Select All" is picked; the popup window listens and selects its files. */
 export const POPUP_SELECT_ALL_EVENT = "popup-select-all";
 
+/**
+ * Emitted by the backend when the context menu window opens/closes.
+ * The popup listens and suppresses its blur/inactivity auto-close
+ * while the menu is open.
+ */
+export const CONTEXT_MENU_OPENED_EVENT = "contextmenu-opened";
+export const CONTEXT_MENU_CLOSED_EVENT = "contextmenu-closed";
+
 function MenuItem({
   icon,
   label,

@@ -2,8 +2,8 @@ use crate::analytics;
 use crate::DragState;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder};
-use tracing::info;
+use tauri::{AppHandle, Emitter, Manager, State, WebviewUrl, WebviewWindowBuilder};
+use tracing::{info, warn};
 use windows::Win32::Foundation::POINT;
 use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
 
@@ -93,6 +93,7 @@ pub fn close_popup_window(app: AppHandle) -> Result<(), String> {
     // A context menu belongs to the popup — never leave it dangling.
     if let Some(menu_window) = app.get_webview_window("contextmenu") {
         let _ = menu_window.close();
+        let _ = app.emit("contextmenu-closed", ());
     }
     let popup_window = app
         .get_webview_window("popup")
@@ -110,6 +111,7 @@ pub fn open_context_menu_window(
 ) -> Result<(), String> {
     // Remember what the menu should act on; the menu window reads it back
     // via `get_context_menu_selection` on mount.
+    let selected_count = file_ids.len();
     *selection
         .lock()
         .map_err(|_| "Failed to lock context menu selection".to_string())? = file_ids;
@@ -121,7 +123,9 @@ pub fn open_context_menu_window(
 
     // Anchor the menu at the cursor (physical px) and keep it fully on-screen.
     let mut cursor = POINT { x: 0, y: 0 };
-    let _ = unsafe { GetCursorPos(&mut cursor) };
+    if unsafe { GetCursorPos(&mut cursor) }.is_err() {
+        warn!("GetCursorPos failed; anchoring context menu at monitor origin");
+    }
     let menu_width = 230.0;
     let menu_height = 128.0;
     let (menu_x, menu_y) =
@@ -141,11 +145,18 @@ pub fn open_context_menu_window(
 
     // Unlike popup/settings there is no toggle: a right-click elsewhere
     // repositions the menu instead of just dismissing it.
+    // NOTE: destroy (not close) — close() is async and the label stays
+    // reserved until teardown, so an immediate rebuild would fail with
+    // "window label already exists" and the menu would never reopen.
     if let Some(existing) = app.get_webview_window("contextmenu") {
-        let _ = existing.close();
+        let _ = existing.destroy();
     }
 
     let menu_url = url_with_theme("contextmenu", theme);
+    info!(
+        "Opening context menu window - cursor=({}, {}), menu_pos=({}, {}), menu_size=({}, {}), selected_files={}",
+        cursor.x, cursor.y, menu_x, menu_y, menu_width, menu_height, selected_count
+    );
     WebviewWindowBuilder::new(&app, "contextmenu", WebviewUrl::App(menu_url.into()))
         .title("Context Menu")
         .decorations(false)
@@ -163,6 +174,9 @@ pub fn open_context_menu_window(
         .position(menu_x, menu_y)
         .build()
         .map_err(|e| e.to_string())?;
+    // The popup tracks this to suppress its blur/inactivity auto-close
+    // while the menu is open (see PopupWindow).
+    let _ = app.emit("contextmenu-opened", ());
     Ok(())
 }
 
@@ -172,6 +186,7 @@ pub fn close_context_menu_window(app: AppHandle) -> Result<(), String> {
     if let Some(menu_window) = app.get_webview_window("contextmenu") {
         menu_window.close().map_err(|e| e.to_string())?;
     }
+    let _ = app.emit("contextmenu-closed", ());
     Ok(())
 }
 
