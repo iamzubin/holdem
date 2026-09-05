@@ -1,4 +1,5 @@
 import { DynamicFileIcon } from "@/components/FileIcon";
+import * as ContextMenu from '@radix-ui/react-context-menu';
 import { Button } from "@/components/ui/button";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { setPendingFiles, prepareDragImage, triggerNativeDrag } from "@/lib/fileUtils";
@@ -143,6 +144,19 @@ const PopupWindow: React.FC = () => {
     setViewMode(prev => prev === 'list' ? 'grid' : 'list');
   };
 
+  const handleRemoveSelectedFiles = useCallback(() => {
+    const fileIds = Array.from(selectedFiles)
+      .map((id) => Number(id))
+      .filter((n) => Number.isInteger(n) && n >= 0);
+    invoke('remove_files', { fileIds })
+      .then(() => {
+        setSelectedFiles(new Set());
+      })
+      .catch((error) => {
+        console.error('Failed to remove selected files:', error);
+      });
+  }, [selectedFiles]);
+
   // Prune selected ids that no longer exist whenever the file list refreshes.
   useEffect(() => {
     setSelectedFiles((prev) => {
@@ -186,6 +200,8 @@ const PopupWindow: React.FC = () => {
       </div>
       <SimpleBar id="RSC-Example" style={{ flex: 1, minHeight: 0, height: 'auto' }} className="min-h-0">
       <div className="flex min-h-0 flex-col pb-1">
+        <ContextMenu.Root>
+          <ContextMenu.Trigger>
           <div className={`${viewMode === 'grid' ? 'grid grid-cols-2 gap-1' : 'space-y-1'} pb-1`}>
             {files.map(file => (
               <div
@@ -228,6 +244,19 @@ const PopupWindow: React.FC = () => {
               </div>
             ))}
           </div>
+          </ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Content className="min-w-[200px] bg-background rounded-md overflow-hidden p-1">
+            <ContextMenu.Item
+              onClick={handleRemoveSelectedFiles}
+              disabled={selectedFiles.size === 0}
+              className="text-xs text-primary rounded px-2 py-1.5 cursor-pointer hover:bg-secondary focus:bg-secondary outline-none disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {t("popup.removeSelected")}
+            </ContextMenu.Item>
+          </ContextMenu.Content>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>
       </div>
       </SimpleBar>
 
