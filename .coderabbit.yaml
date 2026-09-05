@@ -1,0 +1,5 @@
+# CodeRabbit is disabled repo-wide. The opencode review workflow
+# (.github/workflows/opencode-review.yml) is the reviewer of record.
+# A review can still be triggered manually with `@coderabbitai review`.
+reviews:
+  auto_review: false
