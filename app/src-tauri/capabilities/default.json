@@ -5,7 +5,6 @@
   "windows": [
     "main",
     "popup",
-    "contextmenu",
     "settings",
     "updater",
     "consent"

@@ -38,11 +38,6 @@
     "grid": "Grid",
     "removeSelected": "Remove Selected Files"
   },
-  "contextMenu": {
-    "selectAll": "Select All",
-    "removeSelected": "Remove Selected",
-    "clearAll": "Clear All"
-  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your application preferences",

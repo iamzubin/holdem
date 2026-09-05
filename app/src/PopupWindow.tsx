@@ -1,15 +1,8 @@
 import { DynamicFileIcon } from "@/components/FileIcon";
-import { useTheme } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { useFileManagement } from "@/hooks/useFileManagement";
 import { setPendingFiles, prepareDragImage, triggerNativeDrag } from "@/lib/fileUtils";
-import {
-  CONTEXT_MENU_CLOSED_EVENT,
-  CONTEXT_MENU_OPENED_EVENT,
-  POPUP_SELECT_ALL_EVENT,
-} from "./ContextMenuWindow";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
 import { List as ListIcon, Grid as GridIcon } from 'lucide-react';
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Toaster } from "sonner";
@@ -20,7 +13,6 @@ import { useTranslation } from 'react-i18next';
 
 const PopupWindow: React.FC = () => {
   const { t } = useTranslation();
-  const { theme } = useTheme();
   const { files } = useFileManagement();
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -28,14 +20,10 @@ const PopupWindow: React.FC = () => {
   const [lastSelectedFile, setLastSelectedFile] = useState<string | null>(null);
   const fileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const dragTimeoutRef = useRef<number | null>(null);
-  // True while the context menu window is open. The menu is meant to be
-  // non-activating, but if opening it blurs us anyway we must NOT treat
-  // that as "user left" — closing here would take the menu down with us.
-  const menuOpenRef = useRef(false);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (!hasInteracted && !menuOpenRef.current) {
+      if (!hasInteracted) {
         invoke('close_popup_window').catch((error) => {
           console.error('Failed to close popup window after inactivity:', error);
         });
@@ -48,7 +36,6 @@ const PopupWindow: React.FC = () => {
     };
 
     const handleBlur = () => {
-      if (menuOpenRef.current) return;
       if (hasInteracted) {
         invoke('close_popup_window').catch((error) => {
           console.error('Failed to close popup window on blur:', error);
@@ -156,69 +143,7 @@ const PopupWindow: React.FC = () => {
     setViewMode(prev => prev === 'list' ? 'grid' : 'list');
   };
 
-  // The context menu lives in its own non-activating window (see
-  // ContextMenuWindow). Any mousedown here dismisses it; a right-click
-  // reopens it at the cursor via the backend.
-  const dismissMenu = useCallback(() => {
-    menuOpenRef.current = false;
-    invoke('close_context_menu_window').catch(() => {});
-  }, []);
-
-  const handleContextMenu = useCallback((event: React.MouseEvent, fileId?: string) => {
-    event.preventDefault();
-    event.stopPropagation();
-    // Standard UX: right-clicking an unselected file acts on that file,
-    // not on whatever stale selection exists (which may even be empty).
-    let ids: string[];
-    if (fileId && !selectedFiles.has(fileId)) {
-      setSelectedFiles(new Set([fileId]));
-      ids = [fileId];
-    } else {
-      ids = Array.from(selectedFiles);
-    }
-    const fileIds = ids
-      .map((id) => Number(id))
-      .filter((n) => Number.isInteger(n) && n >= 0);
-    menuOpenRef.current = true;
-    invoke('open_context_menu_window', { theme, fileIds })
-      .catch((error) => {
-        menuOpenRef.current = false;
-        console.error('Failed to open context menu window:', error);
-      });
-  }, [theme, selectedFiles]);
-
-  // Track backend menu open/close so the blur/inactivity auto-close above
-  // stays suppressed exactly while the menu lives (covers closes we did
-  // not initiate from this window).
-  useEffect(() => {
-    let unlistenOpened: (() => void) | undefined;
-    let unlistenClosed: (() => void) | undefined;
-    let cancelled = false;
-    listen(CONTEXT_MENU_OPENED_EVENT, () => {
-      menuOpenRef.current = true;
-    })
-      .then((fn) => {
-        if (cancelled) fn();
-        else unlistenOpened = fn;
-      })
-      .catch(() => {});
-    listen(CONTEXT_MENU_CLOSED_EVENT, () => {
-      menuOpenRef.current = false;
-    })
-      .then((fn) => {
-        if (cancelled) fn();
-        else unlistenClosed = fn;
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-      unlistenOpened?.();
-      unlistenClosed?.();
-    };
-  }, []);
-
-  // Removal now happens from the context menu window, so prune ids that
-  // no longer exist whenever the file list refreshes.
+  // Prune selected ids that no longer exist whenever the file list refreshes.
   useEffect(() => {
     setSelectedFiles((prev) => {
       if (prev.size === 0) return prev;
@@ -228,29 +153,10 @@ const PopupWindow: React.FC = () => {
     });
   }, [files]);
 
-  // "Select All" picked in the context menu window.
-  useEffect(() => {
-    let unlisten: (() => void) | undefined;
-    let cancelled = false;
-    listen(POPUP_SELECT_ALL_EVENT, () => {
-      setSelectedFiles(new Set(files.map((file) => file.id.toString())));
-    })
-      .then((fn) => {
-        if (cancelled) fn();
-        else unlisten = fn;
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-      unlisten?.();
-    };
-  }, [files]);
-
   return (
     <div
       className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2 rounded border border-border"
-      onContextMenu={handleContextMenu}
-      onMouseDownCapture={dismissMenu}
+      onContextMenu={(event) => event.preventDefault()}
     >
       <div className="flex shrink-0 justify-between items-center mb-2">
         <div className="flex items-center gap-2">
@@ -294,7 +200,6 @@ const PopupWindow: React.FC = () => {
                   cursor-grab active:cursor-grabbing
                 `}
                 onClick={(e) => handleFileClick(file.id.toString(), e)}
-                onContextMenu={(e) => handleContextMenu(e, file.id.toString())}
                 onMouseDown={(e) => handleMouseDown(e, file)}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
