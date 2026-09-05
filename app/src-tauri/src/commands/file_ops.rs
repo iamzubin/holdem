@@ -26,36 +26,16 @@ pub fn add_files(
 
     let mut changed = false;
     for path_str in files.iter() {
-        let path = PathBuf::from(path_str);
-        if path.exists() {
-            let metadata = path.metadata().map_err(|e| e.to_string())?;
-
-            // Directories store size 0 — no recursive walk (instant drops).
-            let size = if metadata.is_dir() { 0 } else { metadata.len() };
-
-            let file = FileMetadata {
-                id: list.len() as u64,
-                name: path
-                    .file_name()
-                    .and_then(|n| n.to_str())
-                    .unwrap_or("Unknown")
-                    .to_string(),
-                path: path.clone(),
-                size,
-                file_type: if metadata.is_dir() {
-                    "folder".to_string()
-                } else {
-                    path.extension()
-                        .and_then(|ext| ext.to_str())
-                        .unwrap_or("unknown")
-                        .to_string()
-                },
-            };
-            // Avoid duplicates
-            if !list.iter().any(|f| f.path == file.path) {
-                list.push(file);
-                changed = true;
-            }
+        // Missing/unreadable paths are skipped instead of failing the batch.
+        let Some(file) =
+            FileMetadata::from_path(list.len() as u64, PathBuf::from(path_str))
+        else {
+            continue;
+        };
+        // Avoid duplicates
+        if !list.iter().any(|f| f.path == file.path) {
+            list.push(file);
+            changed = true;
         }
     }
     drop(list);
@@ -172,11 +152,43 @@ fn split_stem_ext(suggested: &str, default_ext: &str) -> (String, String) {
     (stem, ext)
 }
 
+/// Extension for a known image MIME fragment — either an HTTP
+/// `Content-Type` value or a `data:` URL header. `None` for anything else.
+pub fn ext_from_image_mime(fragment: &str) -> Option<&'static str> {
+    if fragment.contains("image/png") {
+        Some("png")
+    } else if fragment.contains("image/jpeg") || fragment.contains("image/jpg") {
+        Some("jpg")
+    } else if fragment.contains("image/webp") {
+        Some("webp")
+    } else if fragment.contains("image/gif") {
+        Some("gif")
+    } else if fragment.contains("image/svg") {
+        Some("svg")
+    } else {
+        None
+    }
+}
+
 /// Save a URL that could not be fetched (auth-walled, blob:, non-image)
 /// as a tiny `.url` placeholder so the drop is never silently lost.
 pub fn save_url_placeholder(url: &str) -> Result<String, String> {
     let body = format!("[InternetShortcut]\nURL={}\n", url);
     save_bytes_to_drop_folder(body.as_bytes(), "link", "url")
+}
+
+/// Resolve the suggested filename for pasted content: an explicit
+/// `original_name` wins, otherwise the per-kind fallback stem. Either way
+/// `save_bytes_to_drop_folder` uniquifies it against duplicate events.
+fn paste_suggested_name(
+    original_name: Option<String>,
+    fallback_stem: &str,
+) -> String {
+    original_name
+        .as_deref()
+        .filter(|n| !n.trim().is_empty())
+        .unwrap_or(fallback_stem)
+        .to_string()
 }
 
 #[tauri::command]
@@ -185,26 +197,16 @@ pub fn save_pasted_text(
     extension: String,
     original_name: Option<String>,
 ) -> Result<String, String> {
-    use std::io::Write;
-    let folder = drop_folder()?;
     let ext = if extension.trim().is_empty() {
         "txt"
     } else {
         extension.trim()
     };
-    let file_name = if let Some(name) = original_name.as_deref().filter(|n| !n.trim().is_empty()) {
-        // Even explicit names get uniquified to survive duplicate drop events.
-        let (stem, ext2) = split_stem_ext(name, ext);
-        unique_file_name(&stem, &ext2)
-    } else {
-        unique_file_name("note", ext)
-    };
-    let new_path = unique_path_in(&folder, &file_name);
-
-    let mut file = std::fs::File::create(&new_path).map_err(|e| e.to_string())?;
-    file.write_all(text.as_bytes()).map_err(|e| e.to_string())?;
-
-    Ok(new_path.to_string_lossy().to_string())
+    save_bytes_to_drop_folder(
+        text.as_bytes(),
+        &paste_suggested_name(original_name, "note"),
+        ext,
+    )
 }
 
 #[tauri::command]
@@ -231,20 +233,11 @@ pub fn save_pasted_data_base64(
     } else {
         extension.trim()
     };
-    let file_name = if let Some(name) = original_name.as_deref().filter(|n| !n.trim().is_empty()) {
-        let (stem, ext2) = split_stem_ext(name, ext);
-        unique_file_name(&stem, &ext2)
-    } else {
-        unique_file_name("drop", ext)
-    };
-    let folder = drop_folder()?;
-    let new_path = unique_path_in(&folder, &file_name);
-
-    use std::io::Write;
-    let mut file = std::fs::File::create(&new_path).map_err(|e| e.to_string())?;
-    file.write_all(&bytes).map_err(|e| e.to_string())?;
-
-    Ok(new_path.to_string_lossy().to_string())
+    save_bytes_to_drop_folder(
+        &bytes,
+        &paste_suggested_name(original_name, "drop"),
+        ext,
+    )
 }
 
 #[tauri::command]
@@ -320,31 +313,27 @@ pub async fn download_image_to_shelf(
             return Err("Downloaded file exceeds 25 MB limit".to_string());
         }
     }
-    let ext = if content_type.starts_with("image/png") {
-        "png"
-    } else if content_type.starts_with("image/jpeg") {
-        "jpg"
-    } else if content_type.starts_with("image/webp") {
-        "webp"
-    } else if content_type.starts_with("image/gif") {
-        "gif"
-    } else if content_type.starts_with("image/svg") {
-        "svg"
-    } else if content_type.starts_with("image/") {
-        content_type
+    let ext: &str = match ext_from_image_mime(&content_type) {
+        Some(known) => known,
+        None if content_type.starts_with("image/") => content_type
             .split('/')
             .nth(1)
             .and_then(|s| s.split(';').next())
-            .unwrap_or("png")
-    } else if content_type.is_empty() || content_type.starts_with("application/octet-stream") {
-        // No content-type — fall back to URL extension guess.
-        std::path::Path::new(&suggested)
-            .extension()
-            .and_then(|e| e.to_str())
-            .unwrap_or("png")
-    } else {
-        // HTML login wall etc. — don't save corrupt file.
-        return save_url_placeholder(&url);
+            .unwrap_or("png"),
+        None
+            if content_type.is_empty()
+                || content_type.starts_with("application/octet-stream") =>
+        {
+            // No content-type — fall back to URL extension guess.
+            std::path::Path::new(&suggested)
+                .extension()
+                .and_then(|e| e.to_str())
+                .unwrap_or("png")
+        }
+        None => {
+            // HTML login wall etc. — don't save corrupt file.
+            return save_url_placeholder(&url);
+        }
     };
 
     save_bytes_to_drop_folder(&bytes, &suggested, ext)
@@ -365,12 +354,17 @@ pub fn remove_files(
             let file_name = list[pos].name.clone();
             list.remove(pos);
             removed_files.push(file_name);
-            app_handle
-                .emit("files_updated", ())
-                .map_err(|e| e.to_string())?;
         } else {
             return Err(format!("File with ID {} not found", file_id));
         }
+    }
+    drop(list);
+
+    // Single emit per batch — N emits for N files thrashed the frontend.
+    if !removed_files.is_empty() {
+        app_handle
+            .emit("files_updated", ())
+            .map_err(|e| e.to_string())?;
     }
 
     // Send analytics events for removed files (fire and forget)
@@ -483,10 +477,6 @@ pub fn refresh_file_list(
 }
 
 #[tauri::command]
-pub fn get_file_icon_base64(
-    _app_handle: AppHandle,
-    _file_list: State<'_, FileList>,
-    file_path: &str,
-) -> Result<String, String> {
+pub fn get_file_icon_base64(file_path: &str) -> Result<String, String> {
     get_thumbnail_base64(std::path::Path::new(file_path)).map_err(|e| e.to_string())
 }

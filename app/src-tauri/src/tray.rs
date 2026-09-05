@@ -1,7 +1,7 @@
 use tauri::{
     menu::{Menu, MenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    Manager, Runtime, WebviewUrl, WebviewWindowBuilder,
+    Runtime,
 };
 
 pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
@@ -19,25 +19,8 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
                 app.exit(0);
             }
             "check_update" => {
-                // Open a dedicated updater window
-                // First check if window already exists
-                if let Some(existing_window) = app.get_webview_window("updater") {
-                    let _ = existing_window.show();
-                    let _ = existing_window.set_focus();
-                } else {
-                    // Create a new window for the updater
-                    let _ = WebviewWindowBuilder::new(
-                        app,
-                        "updater",
-                        WebviewUrl::App("/updater".into()),
-                    )
-                    .title("Software Updates")
-                    .inner_size(500.0, 400.0)
-                    .decorations(false)
-                    .center()
-                    .build();
-                }
-                // The update check is now handled directly by the Updater component
+                // The update check itself is handled by the Updater component.
+                let _ = crate::commands::window_ops::open_updater_window(app);
             }
             _ => {}
         })
@@ -49,11 +32,7 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
             } = event
             {
                 let app = tray.app_handle();
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.show();
-                    let _ = window.unminimize();
-                    let _ = window.set_focus();
-                }
+                let _ = crate::commands::window_ops::reveal_main_window(app);
             }
         })
         .build(app);

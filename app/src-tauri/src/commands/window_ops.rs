@@ -2,7 +2,7 @@ use crate::analytics;
 use crate::DragState;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager, Runtime, State, WebviewUrl, WebviewWindowBuilder};
 use tracing::info;
 
 fn sanitize_theme(theme: Option<String>) -> Option<String> {
@@ -98,15 +98,6 @@ pub fn close_popup_window(app: AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 pub fn open_settings_window(app: AppHandle, theme: Option<String>) -> Result<(), String> {
-    // Get the main window
-    let main_window = app
-        .get_webview_window("main")
-        .ok_or("Main window not found")?;
-
-    // Get the position and size of the main window
-    let _position = main_window.outer_position().map_err(|e| e.to_string())?;
-    let _size = main_window.outer_size().map_err(|e| e.to_string())?;
-
     // Define settings window dimensions
     let settings_width = 500.0;
     let settings_height = 600.0;
@@ -145,11 +136,35 @@ pub fn close_settings_window(app: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+/// Canonical "bring the main window back": show + unminimize + focus.
+/// Used by the hotkey handler, tray click, shortcut callback, and the
+/// `show_main_window` command so the sequence can't drift again.
+pub(crate) fn reveal_main_window<R: Runtime>(app: &AppHandle<R>) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window("main") {
+        window.show().map_err(|e| e.to_string())?;
+        window.unminimize().map_err(|e| e.to_string())?;
+        window.set_focus().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 #[tauri::command]
 pub fn show_main_window(app_handle: AppHandle) -> Result<(), String> {
-    if let Some(window) = app_handle.get_webview_window("main") {
-        window.show().map_err(|e| e.to_string())?;
-        window.set_focus().map_err(|e| e.to_string())?;
+    reveal_main_window(&app_handle)
+}
+
+/// Show the updater window, building it on first use.
+pub(crate) fn open_updater_window<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
+    if let Some(existing) = app.get_webview_window("updater") {
+        existing.show()?;
+        existing.set_focus()?;
+    } else {
+        WebviewWindowBuilder::new(app, "updater", WebviewUrl::App("/updater".into()))
+            .title("Software Updates")
+            .inner_size(500.0, 400.0)
+            .center()
+            .decorations(false)
+            .build()?;
     }
     Ok(())
 }

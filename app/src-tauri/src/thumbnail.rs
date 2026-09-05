@@ -98,11 +98,17 @@ fn generate_thumbnail(file_path: &Path) -> Result<(Vec<u8>, u32, u32), Thumbnail
             }
         };
 
-    let hbitmap: HBITMAP = match get_hbitmap(&shell_item) {
+    let dimensions: SIZE = SIZE {
+        cx: THUMB_PX,
+        cy: THUMB_PX,
+    };
+    let hbitmap: HBITMAP = match unsafe { shell_item.GetImage(dimensions, SIIGBF(0)) } {
         Ok(h) => h,
         Err(e) => {
             unsafe { CoUninitialize() };
-            return Err(e);
+            return Err(ThumbnailError::GenerationFailed(format!(
+                "GetImage failed: {e}"
+            )));
         }
     };
 
@@ -114,15 +120,6 @@ fn generate_thumbnail(file_path: &Path) -> Result<(Vec<u8>, u32, u32), Thumbnail
     }
 
     result
-}
-
-fn get_hbitmap(shell_item: &IShellItemImageFactory) -> Result<HBITMAP, ThumbnailError> {
-    let dimensions: SIZE = SIZE {
-        cx: THUMB_PX,
-        cy: THUMB_PX,
-    };
-    unsafe { shell_item.GetImage(dimensions, SIIGBF(0)) }
-        .map_err(|e| ThumbnailError::GenerationFailed(format!("GetImage failed: {e}")))
 }
 
 /// Extract RGBA8 from an `HBITMAP` via GDI.
@@ -145,9 +142,10 @@ fn hbitmap_to_rgba(hbitmap: HBITMAP) -> Result<(Vec<u8>, u32, u32), ThumbnailErr
             "Invalid bitmap dimensions".to_string(),
         ));
     }
+    // `== 0` is already excluded by the `<= 0` check above.
     let width: u32 = bitmap.bmWidth as u32;
     let height: u32 = bitmap.bmHeight as u32;
-    if width == 0 || height == 0 || width > 2048 || height > 2048 {
+    if width > 2048 || height > 2048 {
         return Err(ThumbnailError::GenerationFailed(
             "Suspicious bitmap dimensions".to_string(),
         ));

@@ -219,10 +219,6 @@ impl HoldemDropTarget {
         }
     }
 
-    unsafe fn extract_text(&self, data_obj: &IDataObject) -> Option<String> {
-        self.extract_unicode_text_with_format(data_obj, CF_UNICODETEXT.0)
-    }
-
     /// Explicit URL flavors (address-bar / link drags). Disambiguates real
     /// URL drags from plain text that merely happens to start with http.
     unsafe fn extract_url(&self, data_obj: &IDataObject) -> Option<String> {
@@ -495,7 +491,9 @@ impl IDropTarget_Impl for HoldemDropTarget_Impl {
                 }
 
                 // 6. Plain text last resort.
-                if let Some(text) = self.extract_text(dataobj) {
+                if let Some(text) =
+                    self.extract_unicode_text_with_format(dataobj, CF_UNICODETEXT.0)
+                {
                     let text = text.trim();
                     if !text.is_empty() {
                         mark_drop(&self.app_handle);
@@ -793,19 +791,8 @@ fn handle_image_srcs(srcs: Vec<String>, referer: Option<String>, app_handle: App
                 if let Some(comma) = src.find(',') {
                     let header = &src[..comma];
                     let b64 = &src[comma + 1..];
-                    let ext = if header.contains("image/png") {
-                        "png"
-                    } else if header.contains("image/jpeg") || header.contains("image/jpg") {
-                        "jpg"
-                    } else if header.contains("image/webp") {
-                        "webp"
-                    } else if header.contains("image/gif") {
-                        "gif"
-                    } else if header.contains("image/svg") {
-                        "svg"
-                    } else {
-                        "png"
-                    };
+                    let ext = crate::commands::file_ops::ext_from_image_mime(header)
+                        .unwrap_or("png");
                     match crate::commands::file_ops::save_pasted_data_base64(
                         b64.to_string(),
                         ext.to_string(),
