@@ -359,12 +359,11 @@ pub fn remove_files(
 
     let mut removed_files = Vec::new();
     for file_id in file_ids {
+        // Presence was validated upfront, so this always hits.
         if let Some(pos) = list.iter().position(|f| f.id == file_id) {
             let file_name = list[pos].name.clone();
             list.remove(pos);
             removed_files.push(file_name);
-        } else {
-            return Err(format!("File with ID {} not found", file_id));
         }
     }
     drop(list);

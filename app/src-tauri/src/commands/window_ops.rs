@@ -159,7 +159,10 @@ pub(crate) fn open_updater_window<R: Runtime>(app: &AppHandle<R>) -> tauri::Resu
         existing.show()?;
         existing.set_focus()?;
     } else {
-        WebviewWindowBuilder::new(app, "updater", WebviewUrl::App("/updater".into()))
+        // Seeded without a theme (callers don't hold one); first paint
+        // falls back to storage like any other window.
+        let updater_url = url_with_theme("updater", None);
+        WebviewWindowBuilder::new(app, "updater", WebviewUrl::App(updater_url.into()))
             .title("Software Updates")
             .inner_size(500.0, 400.0)
             .center()
