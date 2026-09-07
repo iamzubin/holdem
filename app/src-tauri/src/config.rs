@@ -48,14 +48,6 @@ impl Default for AppConfig {
 }
 
 impl AppConfig {
-    pub fn config_exists(app_handle: &AppHandle) -> bool {
-        if let Ok(config_path) = Self::get_config_path(app_handle) {
-            config_path.exists()
-        } else {
-            false
-        }
-    }
-
     pub fn load(app_handle: &AppHandle) -> Self {
         let config_path = match Self::get_config_path(app_handle) {
             Ok(path) => path,
@@ -114,7 +106,7 @@ impl AppConfig {
         Ok(())
     }
 
-    fn get_config_path(app_handle: &AppHandle) -> Result<PathBuf, String> {
+    pub fn get_config_path(app_handle: &AppHandle) -> Result<PathBuf, String> {
         let app_dir = app_handle
             .path()
             .app_config_dir()

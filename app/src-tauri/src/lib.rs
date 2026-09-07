@@ -1,17 +1,16 @@
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::sync::Mutex;
-use tauri::{Manager, PhysicalPosition, WebviewUrl, WebviewWindowBuilder};
+use tauri::{Manager, PhysicalPosition};
 use tauri_plugin_updater::UpdaterExt;
 use tracing::{error, info, warn};
 use windows::Win32::Foundation::{POINT, WAIT_OBJECT_0};
 use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
 use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
 
-#[derive(Clone)]
 pub(crate) struct DragState {
-    pub(crate) drag_started: Arc<AtomicBool>,
-    pub(crate) successful_drop: Arc<AtomicBool>,
+    pub(crate) drag_started: AtomicBool,
+    pub(crate) successful_drop: AtomicBool,
 }
 
 mod analytics;
@@ -67,9 +66,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                                 });
                             }
 
-                            let _ = window.show();
-                            let _ = window.unminimize();
-                            let _ = window.set_focus();
+                            let _ = commands::window_ops::reveal_main_window(app);
                         }
                         tauri_plugin_global_shortcut::ShortcutState::Released => {}
                     }
@@ -80,7 +77,6 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
 
     builder
         .invoke_handler(tauri::generate_handler![
-            // start_drag,
             start_multi_drag,
             start_text_drag,
             open_popup_window,
@@ -109,8 +105,6 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             decline_analytics_consent,
             check_analytics_consent,
             check_config_exists,
-            check_input_monitoring_permission,
-            open_input_monitoring_settings,
             mark_drop_received,
         ])
         .setup(|app| {
@@ -166,8 +160,8 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
 
             // Create drag state
             let drag_state = Arc::new(DragState {
-                drag_started: Arc::new(AtomicBool::new(false)),
-                successful_drop: Arc::new(AtomicBool::new(false)),
+                drag_started: AtomicBool::new(false),
+                successful_drop: AtomicBool::new(false),
             });
             app.manage(drag_state.clone());
 
@@ -177,27 +171,29 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 if let Ok(updater) = app_handle.updater() {
                     if let Ok(Some(_update)) = updater.check().await {
                         // Send analytics event for update available (fire and forget)
-                        std::mem::drop(analytics::send_update_checked_event(&app_handle, true));
+                        let _ = analytics::send_analytics_event(
+                            &app_handle,
+                            "update_checked",
+                            Some(vec![(
+                                "update_available",
+                                serde_json::Value::Bool(true),
+                            )]),
+                        )
+                        .await;
 
                         // Open the updater window if an update is available
-                        if let Some(existing_window) = app_handle.get_webview_window("updater") {
-                            let _ = existing_window.show();
-                            let _ = existing_window.set_focus();
-                        } else {
-                            let _ = WebviewWindowBuilder::new(
-                                &app_handle,
-                                "updater",
-                                WebviewUrl::App("/updater".into()),
-                            )
-                            .title("Software Updates")
-                            .inner_size(500.0, 400.0)
-                            .center()
-                            .decorations(false)
-                            .build();
-                        }
+                        let _ = commands::window_ops::open_updater_window(&app_handle);
                     } else {
                         // Send analytics event for no update available (fire and forget)
-                        std::mem::drop(analytics::send_update_checked_event(&app_handle, false));
+                        let _ = analytics::send_analytics_event(
+                            &app_handle,
+                            "update_checked",
+                            Some(vec![(
+                                "update_available",
+                                serde_json::Value::Bool(false),
+                            )]),
+                        )
+                        .await;
                     }
                 }
             });

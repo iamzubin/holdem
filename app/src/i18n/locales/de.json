@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Abbrechen",
-    "save": "Speichern",
-    "close": "Schließen",
-    "clear": "Leeren",
-    "add": "Neu",
-    "set": "Setzen",
-    "stop": "Stoppen",
-    "noneSet": "Nicht festgelegt",
-    "loading": "Wird geladen...",
-    "copyLink": "Link kopieren"
+    "close": "Schließen"
   },
   "app": {
     "dropHere": "Hier ablegen",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} Dateien",
     "files_plural": "{{count}} Dateien",
     "clear": "Leeren",
-    "paste": "Einfügen",
-    "contextMenuTitle": "Kontextmenü",
-    "toast": {
-      "dropReceived": "Dateien in Webansicht empfangen!",
-      "processingVirtual": "Bearbeite virtuelle Dateien aus dem Browser...",
-      "checkingTextHtml": "Keine Dateien abgelegt, suche nach Text/HTML...",
-      "downloadingImage": "Bild wird heruntergeladen...",
-      "failedSaveDataImage": "Fehler beim Speichern des Datenbildes",
-      "failedSaveDroppedImage": "Fehler beim Speichern des abgelegten Bildes",
-      "couldNotDownloadImage": "Bild konnte nicht heruntergeladen werden: {{error}}"
-    }
+    "contextMenuTitle": "Kontextmenü"
   },
   "popup": {
     "itemsSelected": "{{count}} Elemente ausgewählt",
@@ -36,18 +17,13 @@
     "grid": "Raster",
     "removeSelected": "Ausgewählte Dateien entfernen",
     "itemsSelected_one": "{{count}} Element ausgewählt",
-    "itemsSelected_other": "{{count}} Elemente ausgewählt"
+    "itemsSelected_other": "{{count}} Elemente ausgewählt",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Einstellungen",
     "subtitle": "Verwalten Sie Ihre Anwendungseinstellungen",
     "loading": "Lade Einstellungen...",
-    "inputMonitoring": {
-      "title": "Eingangsüberwachungsberechtigung erforderlich",
-      "description": "Um globale Verknüpfungen wie Option+Leerzeichen oder Strg+Leerzeichen zu verwenden, benötigt diese App Eingangsüberwachungsberechtigung. Dies ist eine MacOS-Systemanforderung.",
-      "openSettings": "Systemeinstellungen öffnen",
-      "restartHint": "Nach Erteilung der Berechtigung starten Sie die App neu, damit die Änderungen wirksam werden."
-    },
     "general": {
       "title": "Allgemeine Einstellungen",
       "description": "Start-und Privatsphäre-Verhalten konfigurieren",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Sprache",
       "description": "Wählen Sie Ihre bevorzugte Sprache",
-      "label": "Sprache anzeigen",
-      "hint": "Änderungen gelten sofort und werden auf diesem Gerät gespeichert."
+      "label": "Sprache anzeigen"
     },
     "shortcuts": {
       "title": "Verknüpfungen",
       "description": "Anpassen, wie Sie mit der App interagieren",
       "showHotkey": "Fenster-Hotkey anzeigen",
       "pressKeys": "Tasten drücken...",
-      "listeningHint": "Gewünschte Tastenkombination drücken... Nach Abschluss auf Stopp drücken",
-      "idleHint": "Globale Verknüpfung, um die App in den Vordergrund zu rücken",
       "set": "Setzen",
       "stop": "Stoppen",
       "clear": "Leeren",
       "noneSet": "Nicht festgelegt"
     },
     "dragDrop": {
-      "title": "Drag & Drop Verhalten",
-      "description": "Wie Dateien beim Ziehen aus Holdem übertragen werden",
       "dragToCopy": "Dateien in das Ziel kopieren",
-      "shiftToMove": "Shift während des Ablegens halten um Dateien zu verschieben",
-      "move": "verschieben",
-      "macHint": "macOS zeigt beim Kopieren ein grünes + Abzeichen an. Kein Abzeichen = Verschieben Operation.",
-      "winHint": "Beim Kopieren zeigt der Windows Explorer ein gepunktetes Overlay an. Ein Verschiebungspfeil zeigt den Verschiebungsvorgang an."
+      "shiftToMove": "Shift während des Ablegens halten um Dateien zu verschieben"
     },
     "mouse": {
       "title": "Maus-Monitor",
       "description": "Feinabstimmung Schüttelerkennung Empfindlichkeit",
-      "sensitivity": "Empfindlichkeit",
-      "timing": "Timing",
       "requiredShakes": "Erforderliche Schüttelbewegungen",
       "shakeThreshold": "Schüttelschwelle",
       "timeLimit": "Zeitlimit (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Apps auf der Whitelist",
       "whitelistDesc": "Die Schüttelerkennung ist nur aktiv, wenn eine dieser Apps im Fokus ist. Akzeptiert Prozessnamen (z. B. brave, brave.exe). Groß-/Kleinschreibung ignorieren.",
       "addPlaceholder": "Prozessname hinzufügen...",
-      "add": "Neu",
-      "emptyTitle": "Keine Apps auf der Whitelist",
-      "emptyDesc": "Cursorschütteln wird global ignoriert"
+      "add": "Neu"
     },
     "footer": {
       "save": "Einstellungen speichern",
       "saving": "Speichern..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {
