@@ -38,7 +38,7 @@ tracing-appender = "0.2"
 url = "2"
 windows-core = "0.61.2"
 
-windows = { version = "0.61.3", features = [
+windows = { version = "0.62.2", features = [
     "Win32_Foundation",
     "Win32_Graphics_Gdi",
     "Win32_UI_Input_KeyboardAndMouse",
