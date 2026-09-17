@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Annulla",
-    "save": "Salva",
-    "close": "Chiudi",
-    "clear": "Cancella",
-    "add": "Aggiungi",
-    "set": "Imposta",
-    "stop": "Ferma",
-    "noneSet": "Nessuno impostato",
-    "loading": "Caricamento...",
-    "copyLink": "Copia Collegamento"
+    "close": "Chiudi"
   },
   "app": {
     "dropHere": "Rilascia qui",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} file",
     "files_plural": "{{count}} file",
     "clear": "Pulisci",
-    "paste": "Incolla",
-    "contextMenuTitle": "Menu Contestuale",
-    "toast": {
-      "dropReceived": "File rilasciati ricevuti nella webview!",
-      "processingVirtual": "Elaborazione di file virtuali dal browser...",
-      "checkingTextHtml": "Nessun file rilasciato, controllo testo/html...",
-      "downloadingImage": "Scaricamento immagine...",
-      "failedSaveDataImage": "Impossibile salvare l'immagine dei dati",
-      "failedSaveDroppedImage": "Impossibile salvare l'immagine rilasciata",
-      "couldNotDownloadImage": "Impossibile scaricare l'immagine: {{error}}"
-    }
+    "contextMenuTitle": "Menu Contestuale"
   },
   "popup": {
     "itemsSelected": "{{count}} elementi selezionati",
@@ -36,18 +17,13 @@
     "grid": "Griglia",
     "removeSelected": "Rimuovi File Selezionati",
     "itemsSelected_one": "{{count}} elemento selezionato",
-    "itemsSelected_other": "{{count}} elementi selezionati"
+    "itemsSelected_other": "{{count}} elementi selezionati",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Impostazioni",
     "subtitle": "Gestisci le preferenze dell'applicazione",
     "loading": "Caricamento impostazioni...",
-    "inputMonitoring": {
-      "title": "Permesso Di Monitoraggio Input Richiesto",
-      "description": "Per utilizzare scorciatoie globali come Option+Space o Ctrl+Space, questa app ha bisogno del permesso di monitoraggio degli input. Questo è un requisito di sistema macOS.",
-      "openSettings": "Apri Impostazioni Di Sistema",
-      "restartHint": "Dopo aver concesso il permesso, riavvia l'app per rendere effettive le modifiche."
-    },
     "general": {
       "title": "Impostazioni Generali",
       "description": "Configura il comportamento di avvio e privacy",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Lingua",
       "description": "Scegli la tua lingua preferita",
-      "label": "Visualizza Lingua",
-      "hint": "Le modifiche si applicano immediatamente e vengono salvate su questo dispositivo."
+      "label": "Visualizza Lingua"
     },
     "shortcuts": {
       "title": "Scorciatoie",
       "description": "Personalizza come interagisci con l'app",
       "showHotkey": "Mostra Scorciatoia Finestra",
       "pressKeys": "Premi i tasti...",
-      "listeningHint": "Premi la combinazione di tasti desiderata... Premi Stop al termine",
-      "idleHint": "Scorciatoia globale per portare l'app in primo piano",
       "set": "Imposta",
       "stop": "Ferma",
       "clear": "Pulisci",
       "noneSet": "Nessuno impostato"
     },
     "dragDrop": {
-      "title": "Comportamento Trascina E Rilascia",
-      "description": "Come vengono trasferiti i file quando si trascina da Holdem",
       "dragToCopy": "Copia i file nella destinazione",
-      "shiftToMove": "Tieni premuto Maiusc mentre rilascia per spostare i file",
-      "move": "sposta",
-      "macHint": "macOS mostra un verde + distintivo durante la copia. Nessun distintivo = operazione di spostamento.",
-      "winHint": "Windows Explorer mostra una sovrapposizione tratteggiata durante la copia. Una freccia di spostamento mostra per l'operazione di spostamento."
+      "shiftToMove": "Tieni premuto Maiusc mentre rilascia per spostare i file"
     },
     "mouse": {
       "title": "Monitor Del Mouse",
       "description": "Ottimizza la sensibilità al rilevamento dello scuotimento",
-      "sensitivity": "Sensibilità",
-      "timing": "Tempistica",
       "requiredShakes": "Agitazioni richieste",
       "shakeThreshold": "Soglia Shake",
       "timeLimit": "Limite Di Tempo (Ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Applicazioni Whitelisted",
       "whitelistDesc": "Il rilevamento dell'agitazione sarà attivo solo quando una di queste app è in primo piano. Accetta nomi di processi (ad es. brave, brave.exe). Non distingue tra maiuscole e minuscole.",
       "addPlaceholder": "Aggiungi nome processo...",
-      "add": "Aggiungi",
-      "emptyTitle": "Nessuna app nella whitelist",
-      "emptyDesc": "Lo scuotimento del cursore verrà ignorato globalmente"
+      "add": "Aggiungi"
     },
     "footer": {
       "save": "Salva Impostazioni",
       "saving": "Salvataggio..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

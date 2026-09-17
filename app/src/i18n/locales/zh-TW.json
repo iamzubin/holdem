@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "取消",
-    "save": "儲存",
-    "close": "關閉",
-    "clear": "清除",
-    "add": "新增",
-    "set": "設定",
-    "stop": "停止",
-    "noneSet": "未設定",
-    "loading": "載入中...",
-    "copyLink": "複製連結"
+    "close": "關閉"
   },
   "app": {
     "dropHere": "拖放到這裡",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} 個檔案",
     "files_plural": "{{count}} 個檔案",
     "clear": "清除",
-    "paste": "貼上",
-    "contextMenuTitle": "快顯功能表",
-    "toast": {
-      "dropReceived": "已在網頁檢視中接收到拖放！",
-      "processingVirtual": "正在處理來自瀏覽器的虛擬檔案...",
-      "checkingTextHtml": "未偵測到檔案，正在檢查文字/HTML...",
-      "downloadingImage": "正在下載圖片...",
-      "failedSaveDataImage": "儲存資料圖片失敗",
-      "failedSaveDroppedImage": "儲存拖放的圖片失敗",
-      "couldNotDownloadImage": "無法下載圖片：{{error}}"
-    }
+    "contextMenuTitle": "快顯功能表"
   },
   "popup": {
     "itemsSelected": "已選取 {{count}} 個項目",
@@ -36,18 +17,13 @@
     "grid": "網格",
     "removeSelected": "刪除所選檔案",
     "itemsSelected_one": "已選取 {{count}} 個項目",
-    "itemsSelected_other": "已選取 {{count}} 個項目"
+    "itemsSelected_other": "已選取 {{count}} 個項目",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "設定",
     "subtitle": "管理您的應用程式偏好設定",
     "loading": "正在載入設定...",
-    "inputMonitoring": {
-      "title": "需要輸入監控權限",
-      "description": "若要使用 Option+Space 或 Ctrl+Space 等全域快速鍵，此應用程式需要輸入監控權限。這是 macOS 系統要求。",
-      "openSettings": "開啟系統設定",
-      "restartHint": "授與權限後，請重新啟動應用程式以使變更生效。"
-    },
     "general": {
       "title": "一般設定",
       "description": "設定開機啟動與隱私權行為",
@@ -59,35 +35,25 @@
     "language": {
       "title": "語言",
       "description": "選擇您偏好的語言",
-      "label": "顯示語言",
-      "hint": "變更將立即生效，並儲存在此裝置上。"
+      "label": "顯示語言"
     },
     "shortcuts": {
       "title": "快速鍵",
       "description": "自訂與應用程式的互動方式",
       "showHotkey": "顯示視窗快速鍵",
       "pressKeys": "請按按鍵...",
-      "listeningHint": "請按下想要的按鍵組合...完成後請按停止",
-      "idleHint": "將應用程式帶到前景的全域快速鍵",
       "set": "設定",
       "stop": "停止",
       "clear": "清除",
       "noneSet": "未設定"
     },
     "dragDrop": {
-      "title": "拖放行為",
-      "description": "從 Holdem 拖出檔案時的傳輸方式",
       "dragToCopy": "複製檔案到目的地",
-      "shiftToMove": "拖放時按住 Shift 即可移動檔案",
-      "move": "移動",
-      "macHint": "macOS 在複製時會顯示綠色 + 徽章。沒有徽章即為移動操作。",
-      "winHint": "Windows 檔案總管在複製時會顯示虛線覆蓋。移動操作會顯示移動箭頭。"
+      "shiftToMove": "拖放時按住 Shift 即可移動檔案"
     },
     "mouse": {
       "title": "滑鼠監控",
       "description": "微調晃動偵測靈敏度",
-      "sensitivity": "靈敏度",
-      "timing": "時間",
       "requiredShakes": "所需晃動次數",
       "shakeThreshold": "晃動閾值",
       "timeLimit": "時間限制（毫秒）",
@@ -95,13 +61,18 @@
       "whitelistTitle": "白名單應用程式",
       "whitelistDesc": "僅在白名單中的應用程式為使用中時，才會啟用晃動偵測。接受處理程序名稱（例如 brave、brave.exe），不分大小寫。",
       "addPlaceholder": "新增處理程序名稱...",
-      "add": "新增",
-      "emptyTitle": "沒有白名單應用程式",
-      "emptyDesc": "將在全域忽略游標晃動"
+      "add": "新增"
     },
     "footer": {
       "save": "儲存設定",
       "saving": "儲存中..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

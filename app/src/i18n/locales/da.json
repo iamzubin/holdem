@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Annuller",
-    "save": "Gem",
-    "close": "Luk",
-    "clear": "Ryd",
-    "add": "Tilføj",
-    "set": "Indstil",
-    "stop": "Stop",
-    "noneSet": "Ingen angivet",
-    "loading": "Indlæser...",
-    "copyLink": "Kopier Link"
+    "close": "Luk"
   },
   "app": {
     "dropHere": "Slip her",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} filer",
     "files_plural": "{{count}} filer",
     "clear": "Ryd",
-    "paste": "Indsæt",
-    "contextMenuTitle": "Sammenhængs Menu",
-    "toast": {
-      "dropReceived": "Drop modtaget i webview!",
-      "processingVirtual": "Behandler virtuelle filer fra browser...",
-      "checkingTextHtml": "Ingen filer droppet, tjek for tekst / html...",
-      "downloadingImage": "Downloader billede...",
-      "failedSaveDataImage": "Kunne ikke gemme databillede",
-      "failedSaveDroppedImage": "Mislykkedes at gemme droppet billede",
-      "couldNotDownloadImage": "Kunne ikke downloade billede: {{error}}"
-    }
+    "contextMenuTitle": "Sammenhængs Menu"
   },
   "popup": {
     "itemsSelected": "{{count}} elementer valgt",
@@ -36,18 +17,13 @@
     "grid": "Gitter",
     "removeSelected": "Fjern Valgte Filer",
     "itemsSelected_one": "{{count}} element valgt",
-    "itemsSelected_other": "{{count}} elementer valgt"
+    "itemsSelected_other": "{{count}} elementer valgt",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Indstillinger",
     "subtitle": "Administrer dine app-præferencer",
     "loading": "Indlæser indstillinger...",
-    "inputMonitoring": {
-      "title": "Input Overvågningstilladelse Kræves",
-      "description": "Hvis du vil bruge globale genveje såsom Option+Space eller Ctrl+Space, skal denne app bruge Input-overvågningstilladelse. Dette er et macOS-systemkrav.",
-      "openSettings": "Åbn Systemindstillinger",
-      "restartHint": "Efter at have givet tilladelse, genstarte app'en for at ændringerne kan træde i kraft."
-    },
     "general": {
       "title": "Generelle Indstillinger",
       "description": "Indstil opstarts- og privatlivsadfærd",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Sprog",
       "description": "Vælg dit foretrukne sprog",
-      "label": "Vis Sprog",
-      "hint": "Ændringer gælder straks og gemmes på denne enhed."
+      "label": "Vis Sprog"
     },
     "shortcuts": {
       "title": "Genveje",
       "description": "Tilpas hvordan du interagerer med appen",
       "showHotkey": "Vis Vindue Genvejstast",
       "pressKeys": "Tryk på taster...",
-      "listeningHint": "Tryk på den ønskede tastekombination... Tryk på Stop når du er færdig",
-      "idleHint": "Global genvej for at bringe appen i forgrunden",
       "set": "Indstil",
       "stop": "Stop",
       "clear": "Ryd",
       "noneSet": "Ingen angivet"
     },
     "dragDrop": {
-      "title": "Træk Og Slip Opførsel",
-      "description": "Hvordan filer overføres når du trækker ud af Holdem",
       "dragToCopy": "Kopier filer til destination",
-      "shiftToMove": "Hold Shift nede mens du slipper for at flytte filer",
-      "move": "flyt",
-      "macHint": "macOS viser et grønt + badge ved kopiering. Intet badge = flytning.",
-      "winHint": "Windows Stifinder viser en stiplet overlejring, når du kopierer. En flytte pil viser for flytning."
+      "shiftToMove": "Hold Shift nede mens du slipper for at flytte filer"
     },
     "mouse": {
       "title": "Mus Monitor",
       "description": "Fin- tune rystedetektionsfølsomhed",
-      "sensitivity": "Følsomhed",
-      "timing": "Tidspunkt",
       "requiredShakes": "Påkrævede Rystelser",
       "shakeThreshold": "Ryst Tærskelværdi",
       "timeLimit": "Tidsgrænse (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Hvidlistede Apps",
       "whitelistDesc": "Rystedetektering vil kun være aktiv, når en af disse apps har fokus. Accepterer procesnavne (f.eks. brave, brave.exe). Skelner ikke mellem store og små bogstaver.",
       "addPlaceholder": "Tilføj procesnavn...",
-      "add": "Tilføj",
-      "emptyTitle": "Ingen apps whitelistet",
-      "emptyDesc": "Markør rystning vil blive ignoreret globalt"
+      "add": "Tilføj"
     },
     "footer": {
       "save": "Gem Indstillinger",
       "saving": "Gemmer..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

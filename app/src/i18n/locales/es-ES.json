@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Cancelar",
-    "save": "Guardar",
-    "close": "Cerrar",
-    "clear": "Limpiar",
-    "add": "Añadir",
-    "set": "Fijar",
-    "stop": "Parar",
-    "noneSet": "Ninguno establecido",
-    "loading": "Cargando...",
-    "copyLink": "Copiar enlace"
+    "close": "Cerrar"
   },
   "app": {
     "dropHere": "Soltar aquí",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} archivos",
     "files_plural": "{{count}} archivos",
     "clear": "Limpiar",
-    "paste": "Pegar",
-    "contextMenuTitle": "Menú contextual",
-    "toast": {
-      "dropReceived": "¡Archivos soltados recibidos en la vista web!",
-      "processingVirtual": "Procesando archivos virtuales desde el navegador...",
-      "checkingTextHtml": "No se han soltado archivos, comprobando texto/html...",
-      "downloadingImage": "Descargando imagen...",
-      "failedSaveDataImage": "Error al guardar la imagen de datos",
-      "failedSaveDroppedImage": "Error al guardar la imagen soltada",
-      "couldNotDownloadImage": "No se pudo descargar la imagen: {{error}}"
-    }
+    "contextMenuTitle": "Menú contextual"
   },
   "popup": {
     "itemsSelected": "{{count}} elementos seleccionados",
@@ -36,18 +17,13 @@
     "grid": "Rejilla",
     "removeSelected": "Eliminar archivos seleccionados",
     "itemsSelected_one": "{{count}} elemento seleccionado",
-    "itemsSelected_other": "{{count}} elementos seleccionados"
+    "itemsSelected_other": "{{count}} elementos seleccionados",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Ajustes",
     "subtitle": "Administrar las preferencias de la aplicación",
     "loading": "Cargando ajustes...",
-    "inputMonitoring": {
-      "title": "Se requiere permiso de monitoreo de entradas",
-      "description": "Para usar accesos directos globales como Opción+Espacio o Ctrl+Espacio, esta aplicación necesita permiso de monitoreo de entrada. Esto es un requisito del sistema macOS.",
-      "openSettings": "Abrir ajustes del sistema",
-      "restartHint": "Después de conceder el permiso, reinicie la aplicación para que los cambios surtan efecto."
-    },
     "general": {
       "title": "Configuración General",
       "description": "Configurar el comportamiento de inicio y privacidad",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Idioma",
       "description": "Elige tu idioma preferido",
-      "label": "Mostrar idioma",
-      "hint": "Los cambios se aplican inmediatamente y se guardan en este dispositivo."
+      "label": "Mostrar idioma"
     },
     "shortcuts": {
       "title": "Atajos",
       "description": "Personaliza cómo interactúa con la aplicación",
       "showHotkey": "Mostrar Acceso Rápido de Ventana",
       "pressKeys": "Presione las teclas...",
-      "listeningHint": "Presione la combinación de teclas deseada... Presione Detener al terminar",
-      "idleHint": "Acceso directo global para llevar la aplicación a primer plano",
       "set": "Fijar",
       "stop": "Parar",
       "clear": "Limpiar",
       "noneSet": "Ninguno establecido"
     },
     "dragDrop": {
-      "title": "Arrastrar y soltar el comportamiento",
-      "description": "Cómo se transfieren los archivos cuando se arrastra fuera del Holdem",
       "dragToCopy": "Copiar archivos al destino",
-      "shiftToMove": "Mantenga pulsado Shift mientras se suelta para mover archivos",
-      "move": "mover",
-      "macHint": "macOS muestra un verde + insignia al copiar. Sin insignia = operación de movimiento.",
-      "winHint": "El Explorador de Windows muestra una superposición punteada al copiar. Una flecha de movimiento se muestra para la operación de movimiento."
+      "shiftToMove": "Mantenga pulsado Shift mientras se suelta para mover archivos"
     },
     "mouse": {
       "title": "Seguidor del ratón",
       "description": "Afinar sensibilidad a la detección de sacudidas",
-      "sensitivity": "Sensibilidad",
-      "timing": "Tiempo",
       "requiredShakes": "Sacudidas requeridas",
       "shakeThreshold": "Umbral de agitar",
       "timeLimit": "Límite de tiempo (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Aplicaciones en la lista blanca",
       "whitelistDesc": "La detección de sacudidas solo se activará cuando una de estas aplicaciones esté en primer plano. Acepta nombres de procesos (p. ej., brave, brave.exe). Insensible a mayúsculas y minúsculas.",
       "addPlaceholder": "Añadir nombre de proceso...",
-      "add": "Añadir",
-      "emptyTitle": "No hay aplicaciones en la lista blanca",
-      "emptyDesc": "La sacudida del cursor será ignorada globalmente"
+      "add": "Añadir"
     },
     "footer": {
       "save": "Guardar ajustes",
       "saving": "Guardando..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

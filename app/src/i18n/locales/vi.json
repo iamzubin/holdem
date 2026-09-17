@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Hủy",
-    "save": "Lưu",
-    "close": "Đóng",
-    "clear": "Xóa",
-    "add": "Thêm",
-    "set": "Đặt",
-    "stop": "Dừng",
-    "noneSet": "Chưa đặt",
-    "loading": "Đang tải...",
-    "copyLink": "Sao chép liên kết"
+    "close": "Đóng"
   },
   "app": {
     "dropHere": "Thả vào đây",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} tệp",
     "files_plural": "{{count}} tệp",
     "clear": "Xóa",
-    "paste": "Dán",
-    "contextMenuTitle": "Menu ngữ cảnh",
-    "toast": {
-      "dropReceived": "Đã nhận thao tác thả trong chế độ xem web!",
-      "processingVirtual": "Đang xử lý tệp ảo từ trình duyệt...",
-      "checkingTextHtml": "Không có tệp được thả, đang kiểm tra văn bản/html...",
-      "downloadingImage": "Đang tải hình ảnh xuống...",
-      "failedSaveDataImage": "Không lưu được hình ảnh dữ liệu",
-      "failedSaveDroppedImage": "Không lưu được hình ảnh được thả",
-      "couldNotDownloadImage": "Không tải được hình ảnh: {{error}}"
-    }
+    "contextMenuTitle": "Menu ngữ cảnh"
   },
   "popup": {
     "itemsSelected": "Đã chọn {{count}} mục",
@@ -36,18 +17,13 @@
     "grid": "Lưới",
     "removeSelected": "Xóa các tệp đã chọn",
     "itemsSelected_one": "Đã chọn {{count}} mục",
-    "itemsSelected_other": "Đã chọn {{count}} mục"
+    "itemsSelected_other": "Đã chọn {{count}} mục",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Cài đặt",
     "subtitle": "Quản lý tùy chọn ứng dụng của bạn",
     "loading": "Đang tải cài đặt...",
-    "inputMonitoring": {
-      "title": "Yêu cầu quyền Giám sát đầu vào",
-      "description": "Để dùng các phím tắt toàn cục như Option+Space hoặc Ctrl+Space, ứng dụng này cần quyền Giám sát đầu vào. Đây là yêu cầu hệ thống của macOS.",
-      "openSettings": "Mở Cài đặt hệ thống",
-      "restartHint": "Sau khi cấp quyền, hãy khởi động lại ứng dụng để thay đổi có hiệu lực."
-    },
     "general": {
       "title": "Cài đặt chung",
       "description": "Định cấu hình khởi động và hành vi quyền riêng tư",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Ngôn ngữ",
       "description": "Chọn ngôn ngữ bạn muốn",
-      "label": "Ngôn ngữ hiển thị",
-      "hint": "Thay đổi được áp dụng ngay và lưu trên thiết bị này."
+      "label": "Ngôn ngữ hiển thị"
     },
     "shortcuts": {
       "title": "Phím tắt",
       "description": "Tùy chỉnh cách bạn tương tác với ứng dụng",
       "showHotkey": "Phím tắt hiện cửa sổ",
       "pressKeys": "Nhấn các phím...",
-      "listeningHint": "Nhấn tổ hợp phím mong muốn... Nhấn Dừng khi xong",
-      "idleHint": "Phím tắt toàn cục để đưa ứng dụng lên trước",
       "set": "Đặt",
       "stop": "Dừng",
       "clear": "Xóa",
       "noneSet": "Chưa đặt"
     },
     "dragDrop": {
-      "title": "Hành vi kéo và thả",
-      "description": "Cách tệp được chuyển khi kéo ra khỏi Holdem",
       "dragToCopy": "Sao chép tệp đến đích",
-      "shiftToMove": "Giữ Shift khi thả để di chuyển tệp",
-      "move": "di chuyển",
-      "macHint": "macOS hiển thị huy hiệu + màu xanh lá khi sao chép. Không có huy hiệu = thao tác di chuyển.",
-      "winHint": "Windows Explorer hiển thị lớp phủ chấm khi sao chép. Mũi tên di chuyển hiển thị cho thao tác di chuyển."
+      "shiftToMove": "Giữ Shift khi thả để di chuyển tệp"
     },
     "mouse": {
       "title": "Giám sát chuột",
       "description": "Tinh chỉnh độ nhạy phát hiện lắc",
-      "sensitivity": "Độ nhạy",
-      "timing": "Thời gian",
       "requiredShakes": "Số lần lắc yêu cầu",
       "shakeThreshold": "Ngưỡng lắc",
       "timeLimit": "Giới hạn thời gian (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Ứng dụng được phép",
       "whitelistDesc": "Tính năng phát hiện lắc chỉ hoạt động khi một trong các ứng dụng này được chọn. Chấp nhận tên tiến trình (ví dụ: brave, brave.exe). Không phân biệt chữ hoa/thường.",
       "addPlaceholder": "Thêm tên tiến trình...",
-      "add": "Thêm",
-      "emptyTitle": "Không có ứng dụng được phép",
-      "emptyDesc": "Thao tác lắc chuột sẽ bị bỏ qua trên toàn hệ thống"
+      "add": "Thêm"
     },
     "footer": {
       "save": "Lưu cài đặt",
       "saving": "Đang lưu..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

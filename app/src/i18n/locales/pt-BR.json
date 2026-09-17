@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "cancelar",
-    "save": "Guardar",
-    "close": "FECHAR",
-    "clear": "Limpar",
-    "add": "Adicionar",
-    "set": "Definir",
-    "stop": "Interromper",
-    "noneSet": "Nenhum definido",
-    "loading": "Carregando...",
-    "copyLink": "Copiar link"
+    "close": "FECHAR"
   },
   "app": {
     "dropHere": "Solte aqui",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} arquivos",
     "files_plural": "{{count}} arquivos",
     "clear": "Limpar",
-    "paste": "Colar",
-    "contextMenuTitle": "Menu de contexto",
-    "toast": {
-      "dropReceived": "Arquivos recebidos na webview!",
-      "processingVirtual": "Processando arquivos virtuais do navegador...",
-      "checkingTextHtml": "Nenhum arquivo solto, verificando texto/html...",
-      "downloadingImage": "Baixando imagem...",
-      "failedSaveDataImage": "Falha ao salvar a imagem de dados",
-      "failedSaveDroppedImage": "Falha ao salvar imagem solta",
-      "couldNotDownloadImage": "Não foi possível baixar a imagem: {{error}}"
-    }
+    "contextMenuTitle": "Menu de contexto"
   },
   "popup": {
     "itemsSelected": "{{count}} itens selecionados",
@@ -36,18 +17,13 @@
     "grid": "Grade",
     "removeSelected": "Remover Arquivos Selecionados",
     "itemsSelected_one": "{{count}} item selecionado",
-    "itemsSelected_other": "{{count}} itens selecionados"
+    "itemsSelected_other": "{{count}} itens selecionados",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Configurações",
     "subtitle": "Gerenciar suas preferências de aplicação",
     "loading": "Carregando configurações...",
-    "inputMonitoring": {
-      "title": "Permissão de Monitoramento de Entrada Necessária",
-      "description": "Para usar atalhos globais como Option+Space ou Ctrl+Space, este aplicativo precisa da permissão de Monitoramento de entrada. Este é um requisito de sistema macOS.",
-      "openSettings": "Abrir Configurações do Sistema",
-      "restartHint": "Após a concessão de permissão, reinicie o aplicativo para que as alterações tenham efeito."
-    },
     "general": {
       "title": "Configurações Gerais",
       "description": "Configurar a inicialização e comportamento de privacidade",
@@ -59,35 +35,25 @@
     "language": {
       "title": "IDIOMA",
       "description": "Escolha o idioma de sua preferência",
-      "label": "Exibir idioma",
-      "hint": "As alterações se aplicam imediatamente e são salvas neste dispositivo."
+      "label": "Exibir idioma"
     },
     "shortcuts": {
       "title": "Atalhos",
       "description": "Personalize como interage com o app",
       "showHotkey": "Mostrar Tecla de Atalho",
       "pressKeys": "Pressione as teclas...",
-      "listeningHint": "Pressione a combinação de teclas desejada... Pressione Parar quando terminar",
-      "idleHint": "Atalho global para trazer o aplicativo para o primeiro plano",
       "set": "Definir",
       "stop": "Interromper",
       "clear": "Limpar",
       "noneSet": "Nenhum definido"
     },
     "dragDrop": {
-      "title": "Comportamento Arrastar e Soltar",
-      "description": "Como os arquivos são transferidos quando arrastando para fora de Holdem",
       "dragToCopy": "Copiar arquivos para o destino",
-      "shiftToMove": "Segure Shift enquanto solta para mover arquivos",
-      "move": "mover",
-      "macHint": "macOS mostra um distintivo verde + durante a cópia. Nenhum distintivo = operação de movimento.",
-      "winHint": "A seta para mover mostra uma sobreposição pontilhada ao copiar. Uma seta mostra para operação de movimento."
+      "shiftToMove": "Segure Shift enquanto solta para mover arquivos"
     },
     "mouse": {
       "title": "Monitor de Mouse",
       "description": "Ajustar sensibilidade de detecção de agitação",
-      "sensitivity": "Sensibilidade",
-      "timing": "Sincronismo",
       "requiredShakes": "Agitações necessárias",
       "shakeThreshold": "Limite de Agitação",
       "timeLimit": "Limite de Tempo (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Aplicativos permitidos",
       "whitelistDesc": "A detecção de agitação só estará ativa quando um desses aplicativos estiver em primeiro plano. Aceita nomes de processos (ex.: brave, brave.exe). Não diferencia maiúsculas de minúsculas.",
       "addPlaceholder": "Adicionar nome do processo...",
-      "add": "Adicionar",
-      "emptyTitle": "Nenhum app com permissão",
-      "emptyDesc": "A vibração do cursor será ignorada globalmente"
+      "add": "Adicionar"
     },
     "footer": {
       "save": "Salvar Configurações",
       "saving": "Salvando..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {

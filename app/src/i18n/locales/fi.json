@@ -1,15 +1,6 @@
 {
   "common": {
-    "cancel": "Peruuta",
-    "save": "Tallenna",
-    "close": "Sulje",
-    "clear": "Tyhjennä",
-    "add": "Lisää",
-    "set": "Aseta",
-    "stop": "Pysäytä",
-    "noneSet": "Ei asetettu",
-    "loading": "Ladataan...",
-    "copyLink": "Kopioi Linkki"
+    "close": "Sulje"
   },
   "app": {
     "dropHere": "Pudota tähän",
@@ -18,17 +9,7 @@
     "files_other": "{{count}} tiedostoa",
     "files_plural": "{{count}} tiedostoa",
     "clear": "Tyhjennä",
-    "paste": "Liitä",
-    "contextMenuTitle": "Kontekstivalikko",
-    "toast": {
-      "dropReceived": "Pudotus vastaanotettu webview-näkymässä!",
-      "processingVirtual": "Käsitellään virtuaalisia tiedostoja selaimesta...",
-      "checkingTextHtml": "Yhtään tiedostoa ei pudonnut, tarkistetaan tekstille/html...",
-      "downloadingImage": "Ladataan kuvaa...",
-      "failedSaveDataImage": "Datakuvan tallennus epäonnistui",
-      "failedSaveDroppedImage": "Pudotetun kuvan tallentaminen epäonnistui",
-      "couldNotDownloadImage": "Ei voitu ladata kuvaa: {{error}}"
-    }
+    "contextMenuTitle": "Kontekstivalikko"
   },
   "popup": {
     "itemsSelected": "{{count}} kohdetta valittu",
@@ -36,18 +17,13 @@
     "grid": "Ruudukko",
     "removeSelected": "Poista Valitut Tiedostot",
     "itemsSelected_one": "{{count}} kohde valittu",
-    "itemsSelected_other": "{{count}} kohdetta valittu"
+    "itemsSelected_other": "{{count}} kohdetta valittu",
+    "viewMode": "View mode"
   },
   "settings": {
     "title": "Asetukset",
     "subtitle": "Hallinnoi sovelluksen asetuksia",
     "loading": "Ladataan asetuksia...",
-    "inputMonitoring": {
-      "title": "Pakollinen Syötteiden Tarkkailulupa",
-      "description": "Käyttääksesi yleisiä pikakuvakkeita, kuten Option+Space tai Ctrl+Space, tämä sovellus tarvitsee Input Monitoring -oikeuden. Tämä on macOS-järjestelmän vaatimus.",
-      "openSettings": "Avaa Järjestelmäasetukset",
-      "restartHint": "Luvan myöntämisen jälkeen käynnistä sovellus uudelleen, jotta muutokset tulevat voimaan."
-    },
     "general": {
       "title": "Yleiset Asetukset",
       "description": "Määritä käynnistys- ja yksityisyyskäyttäytyminen",
@@ -59,35 +35,25 @@
     "language": {
       "title": "Kieli",
       "description": "Valitse haluamasi kieli",
-      "label": "Näytä Kieli",
-      "hint": "Muutokset tulevat voimaan välittömästi ja ne tallennetaan tälle laitteelle."
+      "label": "Näytä Kieli"
     },
     "shortcuts": {
       "title": "Pikanäppäimet",
       "description": "Mukauta miten olet vuorovaikutuksessa sovelluksen kanssa",
       "showHotkey": "Näytä Ikkunan Pikanäppäin",
       "pressKeys": "Paina näppäimiä...",
-      "listeningHint": "Paina haluttua näppäinyhdistelmää... Paina pysäytä kun valmis",
-      "idleHint": "Yleinen pikakuvake sovelluksen tuomiseksi etualalle",
       "set": "Aseta",
       "stop": "Pysäytä",
       "clear": "Tyhjennä",
       "noneSet": "Ei asetettu"
     },
     "dragDrop": {
-      "title": "Vedä & Pudota Käyttäytyminen",
-      "description": "Miten tiedostoja siirretään vetämällä pois Holdem",
       "dragToCopy": "Kopioi tiedostoja määränpäähän",
-      "shiftToMove": "Pidä siirto pohjassa siirtääksesi tiedostoja",
-      "move": "siirrä",
-      "macHint": "macOS näyttää vihreän + merkin, kun kopioidaan. Ei merkkiä = siirto operaatio.",
-      "winHint": "Windows Explorer näyttää pistetyn peittokuvan kopioidessa. Liiku nuoli näyttää liikkua operaatioon."
+      "shiftToMove": "Pidä siirto pohjassa siirtääksesi tiedostoja"
     },
     "mouse": {
       "title": "Hiiren Valvonta",
       "description": "Hienosäädä ravistuksen havaitsemisherkkyys",
-      "sensitivity": "Herkkyys",
-      "timing": "Ajoitus",
       "requiredShakes": "Vaaditut ravistukset",
       "shakeThreshold": "Ravistuskynnys",
       "timeLimit": "Aikaraja (ms)",
@@ -95,13 +61,18 @@
       "whitelistTitle": "Sallitut Sovellukset",
       "whitelistDesc": "Ravistuksen tunnistus on aktiivinen vain, kun jokin näistä sovelluksista on aktiivisena. Hyväksyy prosessien nimet (esim. brave, brave.exe). Ei kirjainkoosta riippuvainen.",
       "addPlaceholder": "Lisää prosessin nimi...",
-      "add": "Lisää",
-      "emptyTitle": "Ei sallittuja sovelluksia",
-      "emptyDesc": "Kohdistin ravisteleminen jätetään huomiotta globaalisti"
+      "add": "Lisää"
     },
     "footer": {
       "save": "Tallenna Asetukset",
       "saving": "Tallennetaan..."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Holdem looks.",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
     }
   },
   "consent": {
