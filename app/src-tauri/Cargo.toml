@@ -23,7 +23,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-fs = "2.2.1"
 chrono = "0.4"
-base64 = "0.22.1"
+base64 = "0.23.1"
 tauri-plugin-process = "2.2.1"
 drag = { path = "drag-patch" }
 image = "0.25"
