@@ -64,21 +64,32 @@ fn decoder_to_hbitmap(decoder: IWICBitmapDecoder) -> Result<HBITMAP> {
         let mut height: u32 = 0;
         frame.GetSize(&mut width, &mut height)?;
 
-        let mut pixel_buf: Vec<u8> = vec![0; (width * height * 4) as usize];
+        // Guard against overflow / absurd sizes from malformed images.
+        let stride = width.checked_mul(4).ok_or(crate::Error::ImageNotFound)?;
+        let len = (stride as usize)
+            .checked_mul(height as usize)
+            // CopyPixels takes a u32 buffer size (windows-rs unwraps the conversion).
+            .filter(|&len| len > 0 && len <= u32::MAX as usize && height <= i32::MAX as u32)
+            .ok_or(crate::Error::ImageNotFound)?;
+        let mut pixel_buf: Vec<u8> = vec![0; len];
         let pixel_format = frame.GetPixelFormat()?;
         if pixel_format != GUID_WICPixelFormat32bppPBGRA {
             let bitmap_source = WICConvertBitmapSource(&GUID_WICPixelFormat32bppPBGRA, &frame)?;
-            bitmap_source.CopyPixels(std::ptr::null(), width * 4, &mut pixel_buf)?;
+            bitmap_source.CopyPixels(std::ptr::null(), stride, &mut pixel_buf)?;
         } else {
-            frame.CopyPixels(std::ptr::null(), width * 4, &mut pixel_buf)?;
+            frame.CopyPixels(std::ptr::null(), stride, &mut pixel_buf)?;
         }
 
-        Ok(CreateBitmap(
+        let hbitmap = CreateBitmap(
             width as i32,
             height as i32,
             1,
             32,
             Some(pixel_buf.as_ptr() as *const c_void),
-        ))
+        );
+        if hbitmap.is_invalid() {
+            return Err(windows::core::Error::from_thread().into());
+        }
+        Ok(hbitmap)
     }
 }

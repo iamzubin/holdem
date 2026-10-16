@@ -11,34 +11,34 @@ name = "holdem_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.2.0", features = [] }
+tauri-build = { version = "2.7.3", features = [] }
 
 [dependencies]
-tauri = { version = "2.5.1", features = ["tray-icon"] }
-tauri-plugin-shell = "2.3.3"
-tauri-plugin-updater = "2.11"
-tauri-plugin-autostart = "2.3.0"
-tauri-plugin-global-shortcut = "2.3.1"
+tauri = { version = "2.12.4", features = ["tray-icon"] }
+tauri-plugin-shell = "2.5.0"
+tauri-plugin-updater = "2.14.0"
+tauri-plugin-autostart = "2.7.0"
+tauri-plugin-global-shortcut = "2.4.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tauri-plugin-fs = "2.2.1"
-chrono = "0.4"
+tauri-plugin-fs = "2.7.1"
+chrono = "0.4.45"
 base64 = "0.23.1"
-tauri-plugin-process = "2.2.1"
+tauri-plugin-process = "2.4.0"
 drag = { path = "drag-patch" }
-image = "0.25"
-reqwest = { version = "0.12", features = ["json", "stream"] }
-posthog-rs = "0.3.5"
-tokio = "1.47.0"
-uuid = { version = "1.0", features = ["v4"] }
-thiserror = "2"
+image = "0.25.10"
+reqwest = { version = "0.13.5", features = ["json", "stream"] }
+posthog-rs = { version = "0.27.0", default-features = false, features = ["async-client"] }
+tokio = "1.53.3"
+uuid = { version = "1.28.0", features = ["v4"] }
+thiserror = "2.0.21"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 tracing-appender = "0.2"
 url = "2"
-windows-core = "0.61.2"
+windows-core = "0.62.2"
 
-windows = { version = "0.61.3", features = [
+windows = { version = "0.62.2", features = [
     "Win32_Foundation",
     "Win32_Graphics_Gdi",
     "Win32_UI_Input_KeyboardAndMouse",

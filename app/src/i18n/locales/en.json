@@ -72,7 +72,8 @@
     },
     "footer": {
       "save": "Save Settings",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "saveFailed": "Couldn't save settings"
     }
   },
   "consent": {

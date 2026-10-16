@@ -125,31 +125,20 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             let config = config::AppConfig::load(app.handle());
             app.manage(Arc::new(Mutex::new(config.clone())));
 
-            // Initialize analytics service
-            let analytics_service = AnalyticsService::new();
-            let analytics_enabled = config.analytics_enabled;
-            let uuid = config.analytics_uuid.clone();
-
-            // Store analytics service in app state first
-            let analytics_state = Arc::new(Mutex::new(analytics_service));
+            // Store the analytics service with the saved consent right away so
+            // runtime consent changes always act on the live state. The
+            // PostHog client is created lazily, only when consent is given.
+            let analytics_state: analytics::AnalyticsState = Arc::new(Mutex::new(
+                AnalyticsService::new(config.analytics_enabled, config.analytics_uuid.clone()),
+            ));
             app.manage(analytics_state.clone());
 
-            // Initialize analytics service asynchronously
-            let analytics_state_clone = analytics_state.clone();
-            tauri::async_runtime::spawn(async move {
-                let mut service = AnalyticsService::new();
-                let _ = service.initialize(analytics_enabled, uuid).await;
-
-                // Update the service with the initialized client
-                if let Ok(mut state) = analytics_state_clone.lock() {
-                    *state = service;
-                }
-            });
-
-            // Send app_started event if analytics is enabled
             if config.analytics_enabled {
                 let app_handle = app.handle().clone();
                 tauri::async_runtime::spawn(async move {
+                    if let Err(e) = analytics::ensure_client(&analytics_state).await {
+                        warn!("Failed to initialize analytics: {}", e);
+                    }
                     let _ = analytics::send_analytics_event(&app_handle, "app_started", None).await;
                 });
             }

@@ -168,8 +168,8 @@ const PopupWindow: React.FC = () => {
                     }}
                     className={
                       isList
-                        ? `flex items-center gap-2 p-1 rounded cursor-grab active:cursor-grabbing${selectedFiles.has(file.id.toString()) ? ' bg-accent bg-opacity-50' : ''}`
-                        : `flex flex-col items-center p-1 rounded cursor-grab active:cursor-grabbing${selectedFiles.has(file.id.toString()) ? ' bg-accent bg-opacity-50' : ''}`
+                        ? `flex items-center gap-2 p-1 rounded cursor-grab active:cursor-grabbing${selectedFiles.has(file.id.toString()) ? ' bg-accent/50' : ''}`
+                        : `flex flex-col items-center p-1 rounded cursor-grab active:cursor-grabbing${selectedFiles.has(file.id.toString()) ? ' bg-accent/50' : ''}`
                     }
                     onClick={(e) => handleFileClick(file.id.toString(), e)}
                     onMouseDown={(e) => handleMouseDown(e, file)}

@@ -11,37 +11,15 @@ pub struct AnalyticsService {
 }
 
 impl AnalyticsService {
-    pub fn new() -> Self {
+    /// Creates the service with the user's current consent. The PostHog
+    /// client is created lazily (see [`ensure_client`]) and only once consent
+    /// has been given.
+    pub fn new(enabled: bool, uuid: String) -> Self {
         Self {
             client: None,
-            enabled: false,
-            uuid: String::new(),
+            enabled,
+            uuid,
         }
-    }
-
-    pub async fn initialize(
-        &mut self,
-        analytics_enabled: bool,
-        uuid: String,
-    ) -> Result<(), String> {
-        self.enabled = analytics_enabled;
-        self.uuid = uuid;
-
-        if !self.enabled {
-            info!("Analytics disabled; skipping initialization");
-            return Ok(());
-        }
-
-        // Use compile-time environment variable
-        if let Some(posthog_key) = option_env!("POSTHOG_KEY") {
-            info!("Initializing PostHog client");
-            let client = client(posthog_key).await;
-            self.client = Some(Arc::new(client));
-            info!("PostHog client initialized successfully");
-        } else {
-            warn!("POSTHOG_KEY is not set; analytics will remain disabled");
-        }
-        Ok(())
     }
 
     pub async fn send_event(
@@ -62,7 +40,7 @@ impl AnalyticsService {
                 }
             }
 
-            match client.capture(event).await {
+            match client.capture_immediate(event).await {
                 Ok(_) => {
                     info!("Analytics event sent: {}", event_name);
                     Ok(())
@@ -76,7 +54,6 @@ impl AnalyticsService {
             Err("Analytics client not initialized".to_string())
         }
     }
-
 }
 
 // Global analytics service instance
@@ -90,6 +67,62 @@ pub fn get_analytics_service(app_handle: &AppHandle) -> Result<AnalyticsState, S
         .ok_or_else(|| "Analytics service not found".to_string())
 }
 
+/// Creates the PostHog client if analytics is enabled and no client exists
+/// yet. Safe to call repeatedly; a no-op when disabled or already initialised.
+pub async fn ensure_client(state: &AnalyticsState) -> Result<(), String> {
+    let needs_client = {
+        let guard = state
+            .lock()
+            .map_err(|e| format!("Failed to lock analytics service: {}", e))?;
+        guard.enabled && guard.client.is_none()
+    };
+    if !needs_client {
+        return Ok(());
+    }
+
+    let Some(posthog_key) = option_env!("POSTHOG_KEY") else {
+        warn!("POSTHOG_KEY is not set; analytics will remain disabled");
+        return Ok(());
+    };
+
+    info!("Initializing PostHog client");
+    let new_client = Arc::new(client(posthog_key).await);
+
+    let mut guard = state
+        .lock()
+        .map_err(|e| format!("Failed to lock analytics service: {}", e))?;
+    if guard.client.is_none() {
+        guard.client = Some(new_client);
+        info!("PostHog client initialized successfully");
+    }
+    Ok(())
+}
+
+/// Applies the user's analytics consent to the running service immediately.
+///
+/// Disabling takes effect synchronously: every event dispatched after this
+/// returns is dropped. Returns `true` when the enabled state actually changed.
+pub fn set_analytics_enabled(app_handle: &AppHandle, enabled: bool) -> Result<bool, String> {
+    let state = get_analytics_service(app_handle)?;
+    let changed = {
+        let mut guard = state
+            .lock()
+            .map_err(|e| format!("Failed to lock analytics service: {}", e))?;
+        let changed = guard.enabled != enabled;
+        guard.enabled = enabled;
+        changed
+    };
+
+    if changed {
+        info!(
+            "Analytics {} at runtime",
+            if enabled { "enabled" } else { "disabled" }
+        );
+    }
+
+    Ok(changed)
+}
+
 // Helper function to send event using app handle
 pub async fn send_analytics_event(
     app_handle: &AppHandle,
@@ -101,6 +134,9 @@ pub async fn send_analytics_event(
         let guard = analytics_service
             .lock()
             .map_err(|e| format!("Failed to lock analytics service: {}", e))?;
+        if !guard.enabled {
+            return Ok(());
+        }
         guard.clone()
     };
     service.send_event(event_name, properties).await

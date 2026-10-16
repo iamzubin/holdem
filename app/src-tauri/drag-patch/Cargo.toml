@@ -29,7 +29,7 @@ name = "drag"
 path = "src/lib.rs"
 
 [dependencies.log]
-version = "0.4"
+version = "0.4.34"
 
 [dependencies.raw-window-handle]
 version = "0.6.2"
@@ -39,19 +39,19 @@ version = "1"
 optional = true
 
 [dependencies.thiserror]
-version = "1"
-
-[dev-dependencies.tao]
-version = "0.30.3"
-
-[dev-dependencies.tauri]
 version = "2"
 
+[dev-dependencies.tao]
+version = "0.37.1"
+
+[dev-dependencies.tauri]
+version = "2.12.4"
+
 [dev-dependencies.winit]
-version = "0.30.5"
+version = "0.30.13"
 
 [dev-dependencies.wry]
-version = "0.46.1"
+version = "0.57.0"
 
 [features]
 serde = ["dep:serde"]
@@ -78,10 +78,10 @@ version = "0.2.7"
 version = "1.0.5"
 
 [target.'cfg(target_os = "windows")'.dependencies.windows]
-version = "0.52"
+version = "0.62.2"
 features = [
-    "implement",
     "Win32_Foundation",
+    "Win32_Globalization",
     "Win32_Graphics_Gdi",
     "Win32_System_Com",
     "Win32_System_Com_StructuredStorage",
@@ -96,4 +96,4 @@ features = [
 ]
 
 [target.'cfg(target_os = "windows")'.dependencies.windows-core]
-version = "0.58"
+version = "0.62.2"
