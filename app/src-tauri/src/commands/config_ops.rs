@@ -3,7 +3,7 @@ use crate::config::AppConfig;
 use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, State};
 use tauri_plugin_autostart::ManagerExt;
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 
 use thiserror::Error;
 
@@ -25,7 +25,7 @@ pub fn save_config(
 ) -> Result<(), String> {
     let analytics_enabled = new_config.analytics_enabled;
     if !analytics_enabled {
-        apply_analytics_consent(&app_handle, false)?;
+        analytics::apply_consent(&app_handle, false).map_err(|e| e.to_string())?;
     }
     {
         let mut config = config
@@ -35,7 +35,7 @@ pub fn save_config(
         config.save(&app_handle)?;
     }
     if analytics_enabled {
-        apply_analytics_consent(&app_handle, true)?;
+        analytics::apply_consent(&app_handle, true).map_err(|e| e.to_string())?;
     }
     Ok(())
 }
@@ -124,14 +124,23 @@ pub fn parse_hotkey(shortcut_str: &str) -> Result<Shortcut, HotkeyError> {
     Ok(Shortcut::new(Some(modifiers), code))
 }
 
+/// The shortcut currently registered by [`register_hotkey`], kept so a failed
+/// registration can restore it.
+static ACTIVE_HOTKEY: Mutex<Option<Shortcut>> = Mutex::new(None);
+
 #[tauri::command]
 pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
+    let mut active = ACTIVE_HOTKEY
+        .lock()
+        .map_err(|e| format!("Failed to lock hotkey state: {}", e))?;
+
     if shortcut_str.trim().is_empty() {
         // Clearing the hotkey must also drop the currently registered one.
         app_handle
             .global_shortcut()
             .unregister_all()
             .map_err(|e| format!("Failed to unregister hotkey: {}", e))?;
+        *active = None;
         info!("Hotkey cleared");
         return Ok(());
     }
@@ -139,24 +148,30 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
     // Parse before touching the existing registration so an invalid hotkey
     // leaves the previous one working.
     let shortcut = parse_hotkey(&shortcut_str).map_err(|e| e.to_string())?;
+    if *active == Some(shortcut) {
+        return Ok(());
+    }
 
-    let app_handle_clone = app_handle.clone();
     info!("Registering Windows hotkey: {}", shortcut_str);
 
     if let Err(e) = app_handle.global_shortcut().unregister_all() {
         warn!("Failed to unregister existing hotkeys: {}", e);
     }
 
-    // `on_shortcut` registers the shortcut and its handler in one step; a
-    // separate `register` call first makes it fail with "already registered".
-    app_handle
-        .global_shortcut()
-        .on_shortcut(shortcut, move |_app, _shortcut, _event| {
-            if let Err(e) = super::window_ops::reveal_main_window(&app_handle_clone) {
-                error!("Failed to reveal window after hotkey press: {}", e);
+    // Presses are handled by the plugin-wide handler in lib.rs, so only the
+    // registration is needed here.
+    if let Err(e) = app_handle.global_shortcut().register(shortcut) {
+        // e.g. another app owns the combo: keep the previous hotkey working.
+        if let Some(previous) = *active {
+            if let Err(restore) = app_handle.global_shortcut().register(previous) {
+                warn!("Failed to restore previous hotkey: {}", restore);
+                *active = None;
             }
-        })
-        .map_err(|e| format!("Failed to register shortcut: {}", e))?;
+        }
+        return Err(format!("Failed to register shortcut: {}", e));
+    }
+    *active = Some(shortcut);
+    drop(active);
 
     info!("Windows hotkey registered successfully");
 
@@ -174,30 +189,6 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
         .await;
     });
 
-    Ok(())
-}
-
-/// Pushes the consent choice into the running analytics service. Opting out
-/// takes effect before this returns and sends nothing; opting in lazily
-/// creates the PostHog client and records `consent_accepted` once per
-/// transition.
-fn apply_analytics_consent(app_handle: &AppHandle, enabled: bool) -> Result<(), String> {
-    let changed = analytics::set_analytics_enabled(app_handle, enabled)?;
-    if !enabled {
-        return Ok(());
-    }
-
-    let state = analytics::get_analytics_service(app_handle)?;
-    let app_handle = app_handle.clone();
-    tauri::async_runtime::spawn(async move {
-        if let Err(e) = analytics::ensure_client(&state).await {
-            warn!("Failed to initialize analytics: {}", e);
-            return;
-        }
-        if changed {
-            let _ = analytics::send_analytics_event(&app_handle, "consent_accepted", None).await;
-        }
-    });
     Ok(())
 }
 
@@ -220,7 +211,7 @@ pub fn accept_analytics_consent(
 ) -> Result<(), String> {
     persist_analytics_consent(&config, &app_handle, true)?;
     info!("Analytics consent accepted");
-    apply_analytics_consent(&app_handle, true)
+    analytics::apply_consent(&app_handle, true).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -230,7 +221,7 @@ pub fn decline_analytics_consent(
 ) -> Result<(), String> {
     // Stop the live service first so nothing is sent even if persisting fails.
     // No "consent_declined" event is sent: opting out means no further events.
-    apply_analytics_consent(&app_handle, false)?;
+    analytics::apply_consent(&app_handle, false).map_err(|e| e.to_string())?;
     persist_analytics_consent(&config, &app_handle, false)?;
     info!("Analytics consent declined");
     Ok(())

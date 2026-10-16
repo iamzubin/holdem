@@ -97,7 +97,9 @@ fn cleanup_old_drop_folders(
     let Some(cutoff) = today.pred_opt() else {
         return Ok(0);
     };
-    let shelf_keys: Vec<String> = shelf_paths.iter().map(|p| path_key(p)).collect();
+    // Canonicalizing every shelf path is filesystem work, so only do it once a
+    // folder is actually old enough to delete.
+    let mut shelf_keys: Option<Vec<String>> = None;
 
     let mut removed = 0;
     for entry in entries.flatten() {
@@ -118,7 +120,9 @@ fn cleanup_old_drop_folders(
             continue;
         }
         let folder = entry.path();
-        if is_referenced(&folder, &shelf_keys) {
+        let keys = shelf_keys
+            .get_or_insert_with(|| shelf_paths.iter().map(|p| path_key(p)).collect());
+        if is_referenced(&folder, keys) {
             continue;
         }
         match std::fs::remove_dir_all(&folder) {
