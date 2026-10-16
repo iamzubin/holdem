@@ -27,9 +27,9 @@ pub fn add_files(
     let mut changed = false;
     for path_str in files.iter() {
         // Missing/unreadable paths are skipped instead of failing the batch.
-        let Some(file) =
-            FileMetadata::from_path(list.len() as u64, PathBuf::from(path_str))
-        else {
+        // Ids come from a global counter, never the list length: a length-based
+        // id repeats after a removal and makes two shelf entries share an id.
+        let Some(file) = FileMetadata::from_path(PathBuf::from(path_str)) else {
             continue;
         };
         // Avoid duplicates

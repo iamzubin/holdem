@@ -18,13 +18,23 @@
     "core:window:allow-close",
     "core:window:allow-hide",
     "core:window:allow-theme",
+    "core:window:allow-set-focus",
     "fs:read-meta",
     "fs:allow-read-file",
     "fs:allow-read",
     "fs:allow-open",
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        {
+          "path": "$TEMP/holdem_drops/**"
+        }
+      ]
+    },
     "updater:allow-check",
     "updater:default",
     "updater:allow-download-and-install",
+    "process:allow-restart",
     "global-shortcut:allow-is-registered",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",

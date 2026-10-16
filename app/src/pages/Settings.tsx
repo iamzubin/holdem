@@ -51,12 +51,15 @@ const buildHotkey = (event: KeyboardEvent): string => {
     event.metaKey && 'Meta',
   ].filter(Boolean) as string[];
   if (!MODIFIER_KEYS.includes(event.key)) {
+    // Use the physical key code (Space, ArrowUp, F5, Comma, Numpad1, ...) so
+    // the backend can map it; `event.key` varies with Shift/layout and is " "
+    // for Space.
     parts.push(
       event.code.startsWith('Key')
         ? event.code.slice(3)
         : event.code.startsWith('Digit')
           ? event.code.slice(5)
-          : event.key,
+          : event.code,
     );
   }
   return parts.join('+');
@@ -67,14 +70,22 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const [currentHotkey, setCurrentHotkey] = useState('');
   const [newApp, setNewApp] = useState('');
   const hotkeyHandlerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
+  // Hotkey as saved on disk, so an unchanged hotkey is never re-validated
+  // (older versions saved strings the backend no longer accepts) and a failed
+  // save can restore it.
+  const savedHotkeyRef = useRef('');
 
   useEffect(() => {
     invoke<AppConfig>('get_config')
-      .then(setConfig)
+      .then((loaded) => {
+        savedHotkeyRef.current = loaded.hotkey;
+        setConfig(loaded);
+      })
       .catch((error) => {
         console.error('Failed to load config:', error);
         setConfig(defaults);
@@ -99,14 +110,31 @@ export default function SettingsPage() {
   const saveConfig = async () => {
     if (!config) return;
     setSaving(true);
+    setSaveError(null);
+    const hotkeyChanged = config.hotkey !== savedHotkeyRef.current;
+    let hotkeyRegistered = false;
     try {
+      // Register a changed hotkey first: it validates the key and fails
+      // without touching the saved config or the currently active hotkey.
+      if (hotkeyChanged) {
+        await invoke('register_hotkey', { shortcutStr: config.hotkey });
+        hotkeyRegistered = true;
+      }
+      // Also applies the analytics consent to the running app.
       await invoke('save_config', { newConfig: config });
+      savedHotkeyRef.current = config.hotkey;
+      hotkeyRegistered = false;
       await invoke('set_autostart', { enabled: config.autostart });
-      await invoke('register_hotkey', { shortcutStr: config.hotkey });
-      await invoke(config.analytics_enabled ? 'accept_analytics_consent' : 'decline_analytics_consent');
       await closeCurrentWindow();
     } catch (error) {
       console.error('Failed to save settings:', error);
+      setSaveError(String(error));
+      if (hotkeyRegistered) {
+        // The config was not saved: go back to the hotkey that is on disk.
+        await invoke('register_hotkey', { shortcutStr: savedHotkeyRef.current }).catch((e) =>
+          console.error('Failed to restore previous hotkey:', e),
+        );
+      }
     } finally {
       setSaving(false);
     }
@@ -366,6 +394,11 @@ export default function SettingsPage() {
         </div>
       </main>
       <footer className="border-t bg-background/95 p-4">
+        {saveError && (
+          <p role="alert" className="mb-2 text-xs text-destructive">
+            {t('settings.footer.saveFailed')}: {saveError}
+          </p>
+        )}
         <Button className="w-full" onClick={saveConfig} disabled={saving}>
           {saving ? t('settings.footer.saving') : t('settings.footer.save')}
         </Button>

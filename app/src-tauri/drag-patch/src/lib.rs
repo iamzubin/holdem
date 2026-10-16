@@ -131,7 +131,7 @@ pub enum DragItem {
     Files(Vec<PathBuf>),
     /// Data to share with another app.
     ///
-    /// - **Windows**: Not supported. Will result in a dummy drag operation of current folder that will be cancelled upon dropping.
+    /// - **Windows**: Text only. The first `text/plain` payload returned by the provider (UTF-8) is offered as `CF_UNICODETEXT` and `CF_TEXT`.
     /// - **Linux (gtk)**: Not supported. Will result in a dummy drag operation that contains nothing to drop.
     Data {
         provider: DataProvider,
@@ -139,18 +139,13 @@ pub enum DragItem {
     },
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 #[repr(u64)]
 pub enum DragMode {
+    #[default]
     Copy = 1,  // NSDragOperationCopy
     Move = 16, // NSDragOperationMove
     CopyOrMove = 17, // NSDragOperationCopy | NSDragOperationMove
-}
-
-impl Default for DragMode {
-    fn default() -> Self {
-        DragMode::Copy
-    }
 }
 
 #[cfg(target_os = "macos")]
