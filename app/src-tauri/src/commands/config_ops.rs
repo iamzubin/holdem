@@ -31,8 +31,9 @@ pub fn save_config(
         let mut config = config
             .lock()
             .map_err(|e| format!("Failed to lock config: {}", e))?;
+        // Write first so a failed save leaves memory matching the disk.
+        new_config.save(&app_handle)?;
         *config = new_config;
-        config.save(&app_handle)?;
     }
     if analytics_enabled {
         analytics::apply_consent(&app_handle, true).map_err(|e| e.to_string())?;
@@ -82,6 +83,40 @@ pub enum HotkeyError {
     MultipleKeys(String),
     #[error("Unsupported hotkey key \"{0}\"")]
     UnsupportedKey(String),
+    #[error("Hotkey \"{0}\" needs Ctrl, Alt, Shift or Win; only F1-F24 work alone")]
+    MissingModifier(String),
+}
+
+/// F1-F24 are rarely typed, so they may be a hotkey on their own. Any other
+/// bare key would be swallowed system-wide and break typing in every app.
+fn is_function_key(code: Code) -> bool {
+    matches!(
+        code,
+        Code::F1
+            | Code::F2
+            | Code::F3
+            | Code::F4
+            | Code::F5
+            | Code::F6
+            | Code::F7
+            | Code::F8
+            | Code::F9
+            | Code::F10
+            | Code::F11
+            | Code::F12
+            | Code::F13
+            | Code::F14
+            | Code::F15
+            | Code::F16
+            | Code::F17
+            | Code::F18
+            | Code::F19
+            | Code::F20
+            | Code::F21
+            | Code::F22
+            | Code::F23
+            | Code::F24
+    )
 }
 
 /// Resolves a single non-modifier key name (e.g. `N`, `1`, `Space`,
@@ -95,8 +130,9 @@ fn parse_key_code(key: &str) -> Result<Code, HotkeyError> {
 }
 
 /// Parses a `Mod+Mod+Key` string into a [`Shortcut`]. Exactly one
-/// non-modifier key is required; unknown keys are an error rather than being
-/// silently replaced. Also accepts the `KeyboardEvent.key` strings older
+/// non-modifier key is required, plus at least one modifier unless the key is
+/// F1-F24; unknown keys are an error rather than being silently replaced.
+/// Also accepts the `KeyboardEvent.key` strings older
 /// builds saved (e.g. `Ctrl+,`, `Ctrl+ArrowUp`, and `Ctrl+ ` for Space).
 pub fn parse_hotkey(shortcut_str: &str) -> Result<Shortcut, HotkeyError> {
     let mut modifiers = Modifiers::empty();
@@ -128,6 +164,9 @@ pub fn parse_hotkey(shortcut_str: &str) -> Result<Shortcut, HotkeyError> {
     }
 
     let code = code.ok_or_else(|| HotkeyError::MissingKey(shortcut_str.to_string()))?;
+    if modifiers.is_empty() && !is_function_key(code) {
+        return Err(HotkeyError::MissingModifier(shortcut_str.to_string()));
+    }
     Ok(Shortcut::new(Some(modifiers), code))
 }
 
@@ -220,8 +259,11 @@ fn persist_analytics_consent(
     let mut config = config
         .lock()
         .map_err(|e| format!("Failed to lock config: {}", e))?;
-    config.analytics_enabled = enabled;
-    config.save(app_handle)
+    let mut updated = config.clone();
+    updated.analytics_enabled = enabled;
+    updated.save(app_handle)?;
+    *config = updated;
+    Ok(())
 }
 
 #[tauri::command]
@@ -375,6 +417,20 @@ mod tests {
         assert_eq!(
             parse_hotkey("Ctrl+A+B"),
             Err(HotkeyError::MultipleKeys("Ctrl+A+B".to_string()))
+        );
+    }
+
+    #[test]
+    fn rejects_bare_keys_except_function_keys() {
+        for bare in ["N", "Escape", "Tab", "Space", "1", "ArrowUp"] {
+            assert_eq!(
+                parse_hotkey(bare),
+                Err(HotkeyError::MissingModifier(bare.to_string()))
+            );
+        }
+        assert_eq!(
+            parse_hotkey("F24"),
+            Ok(shortcut(Modifiers::empty(), Code::F24))
         );
     }
 
