@@ -11,7 +11,7 @@
     "files_other": "{{count}} souborů",
     "files_plural": "{{count}} souborů",
     "clear": "Vyčistit",
-    "contextMenuTitle": "Kontextové menu"
+    "contextMenuTitle": "Akce poličky"
   },
   "popup": {
     "itemsSelected": "Vybráno {{count}} položek",
@@ -22,7 +22,7 @@
     "list": "Seznam",
     "grid": "Mřížka",
     "viewMode": "Režim zobrazení",
-    "removeSelected": "Odstranit vybrané soubory",
+    "removeSelected": "Odebrat z poličky",
     "files": "Soubory v poličce",
     "folder": "Složka"
   },
@@ -30,6 +30,7 @@
     "title": "Nastavení",
     "subtitle": "Spravovat nastavení aplikace",
     "loading": "Načítání nastavení...",
+    "loadFailed": "Nastavení se nepodařilo načíst",
     "general": {
       "title": "Obecná nastavení",
       "description": "Konfigurovat chování spuštění a soukromí",
@@ -56,18 +57,18 @@
       "needsModifier": "Přidejte Ctrl, Alt, Shift nebo Win. Samostatně fungují jen F1–F24."
     },
     "dragDrop": {
-      "dragToCopy": "Kopírovat soubory do cíle",
+      "dragToCopy": "Přetažením souborů ven je zkopírujete",
       "shiftToMove": "Podržením Shift při přetažení přesunout soubory"
     },
     "mouse": {
       "title": "Monitor myši",
       "description": "Citlivost detekce jemného protřepání",
       "requiredShakes": "Požadovaná zatřesení",
-      "shakeThreshold": "Práh zatřesení",
+      "shakeThreshold": "Vzdálenost zatřesení (px)",
       "timeLimit": "Časový limit (ms)",
-      "closeDelay": "Zpoždění zavření (ms)",
+      "closeDelay": "Skrýt nepoužívanou poličku po (ms)",
       "whitelistTitle": "Povolené aplikace",
-      "whitelistDesc": "Detekce zatřesení bude aktivní pouze v případě, že je aktivní jedna z těchto aplikací. Přijímá názvy procesů (např. brave, brave.exe). Nerozlišuje velká a malá písmena.",
+      "whitelistDesc": "Zatřesení otevře poličku, pouze když je v popředí jedna z těchto aplikací. Přijímá názvy procesů (např. brave, brave.exe), nerozlišuje velká a malá písmena. Ponechte seznam prázdný, chcete-li povolit všechny aplikace.",
       "addPlaceholder": "Přidat název procesu...",
       "add": "Přidat",
       "removeApp": "Odebrat {{app}}"
@@ -103,7 +104,9 @@
       "Vaše historie prohlížení"
     ],
     "decline": "Odmítnout",
-    "accept": "Přijmout"
+    "accept": "Přijmout",
+    "changeLater": "Toto můžete kdykoli změnit v Nastavení.",
+    "summonTip": "Chcete-li poličku po skrytí znovu zobrazit, zatřeste myší doleva a doprava při přetahování souboru, nebo si v Nastavení nastavte klávesovou zkratku."
   },
   "updater": {
     "title": "Aktualizace softwaru",
@@ -123,6 +126,8 @@
     "waiting": "Čeká se na kontrolu aktualizací...",
     "restartWarning": "Holdem se restartuje, aby dokončil aktualizaci. Polička bude vyprázdněna.",
     "installNow": "Nainstalovat nyní",
-    "later": "Později"
+    "later": "Později",
+    "retry": "Zkusit znovu",
+    "downloadErrorTitle": "Aktualizaci se nepodařilo stáhnout"
   }
 }

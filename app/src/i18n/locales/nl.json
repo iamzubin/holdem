@@ -9,7 +9,7 @@
     "files_other": "{{count}} bestanden",
     "files_plural": "{{count}} bestanden",
     "clear": "Verwijderen",
-    "contextMenuTitle": "Contextmenu"
+    "contextMenuTitle": "Plankacties"
   },
   "popup": {
     "itemsSelected": "{{count}} items geselecteerd",
@@ -18,7 +18,7 @@
     "list": "Lijst",
     "grid": "Rooster",
     "viewMode": "Weergavemodus",
-    "removeSelected": "Geselecteerde bestanden verwijderen",
+    "removeSelected": "Van de plank halen",
     "files": "Bestanden op de plank",
     "folder": "Map"
   },
@@ -26,6 +26,7 @@
     "title": "Instellingen",
     "subtitle": "Beheer uw applicatievoorkeuren",
     "loading": "Instellingen laden...",
+    "loadFailed": "Kan instellingen niet laden",
     "general": {
       "title": "Algemene instellingen",
       "description": "Configureren van start en privacy gedrag",
@@ -52,18 +53,18 @@
       "needsModifier": "Voeg Ctrl, Alt, Shift of Win toe. Alleen F1–F24 werken zonder extra toets."
     },
     "dragDrop": {
-      "dragToCopy": "Bestanden kopiëren naar bestemming",
+      "dragToCopy": "Sleep bestanden naar buiten om ze te kopiëren",
       "shiftToMove": "Houd Shift ingedrukt tijdens dropping om bestanden te verplaatsen"
     },
     "mouse": {
       "title": "Muis Monitor",
       "description": "Afstemmen van shakedetectie gevoeligheid",
       "requiredShakes": "Vereiste Schudden",
-      "shakeThreshold": "Schud drempelwaarde",
+      "shakeThreshold": "Schudafstand (px)",
       "timeLimit": "Tijdslimiet (ms)",
-      "closeDelay": "Sluiten vertraging (ms)",
+      "closeDelay": "Ongebruikte plank verbergen na (ms)",
       "whitelistTitle": "Toegestane Apps",
-      "whitelistDesc": "Schuddetectie is alleen actief wanneer een van deze apps de focus heeft. Accepteert procesnamen (bijv. brave, brave.exe). Niet hoofdlettergevoelig.",
+      "whitelistDesc": "Schudden opent de plank alleen als een van deze apps op de voorgrond staat. Accepteert procesnamen (bijv. brave, brave.exe), niet hoofdlettergevoelig. Laat de lijst leeg om alle apps toe te staan.",
       "addPlaceholder": "Voeg procesnaam toe...",
       "add": "Toevoegen",
       "removeApp": "{{app}} verwijderen"
@@ -99,7 +100,9 @@
       "Uw surfgeschiedenis"
     ],
     "decline": "Afwijzen",
-    "accept": "Accepteren"
+    "accept": "Accepteren",
+    "changeLater": "Je kunt dit altijd wijzigen in Instellingen.",
+    "summonTip": "Om de plank terug te halen nadat je hem hebt verborgen, schud je de muis heen en weer terwijl je een bestand sleept, of stel je een sneltoets in bij Instellingen."
   },
   "updater": {
     "title": "Software-updates",
@@ -119,6 +122,8 @@
     "waiting": "Wachten om te controleren op updates...",
     "restartWarning": "Holdem wordt opnieuw gestart om de update te voltooien. De plank wordt leeggemaakt.",
     "installNow": "Nu installeren",
-    "later": "Later"
+    "later": "Later",
+    "retry": "Opnieuw proberen",
+    "downloadErrorTitle": "Kan de update niet downloaden"
   }
 }

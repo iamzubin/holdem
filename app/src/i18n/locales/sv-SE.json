@@ -9,7 +9,7 @@
     "files_other": "{{count}} filer",
     "files_plural": "{{count}} filer",
     "clear": "Rensa",
-    "contextMenuTitle": "Kontextmeny"
+    "contextMenuTitle": "Hyllåtgärder"
   },
   "popup": {
     "itemsSelected": "{{count}} markerade objekt",
@@ -18,7 +18,7 @@
     "list": "Lista",
     "grid": "Rutnät",
     "viewMode": "Visningsläge",
-    "removeSelected": "Ta bort markerade filer",
+    "removeSelected": "Ta bort från hyllan",
     "files": "Filer på hyllan",
     "folder": "Mapp"
   },
@@ -26,6 +26,7 @@
     "title": "Inställningar",
     "subtitle": "Hantera dina programinställningar",
     "loading": "Laddar inställningar...",
+    "loadFailed": "Det gick inte att läsa in inställningarna",
     "general": {
       "title": "Allmänna inställningar",
       "description": "Konfigurera uppstarts- och sekretessbeteende",
@@ -52,18 +53,18 @@
       "needsModifier": "Lägg till Ctrl, Alt, Shift eller Win. Endast F1–F24 fungerar ensamma."
     },
     "dragDrop": {
-      "dragToCopy": "Kopiera filer till destination",
+      "dragToCopy": "Dra ut filer för att kopiera dem",
       "shiftToMove": "Håll ned Shift medan du släpper för att flytta filer"
     },
     "mouse": {
       "title": "Mus Monitor",
       "description": "Fin-tune shake detektionskänslighet",
       "requiredShakes": "Krävs skakningar",
-      "shakeThreshold": "Skaka tröskel",
+      "shakeThreshold": "Skakavstånd (px)",
       "timeLimit": "Tidsgräns (ms)",
-      "closeDelay": "Stäng fördröjning (ms)",
+      "closeDelay": "Dölj oanvänd hylla efter (ms)",
       "whitelistTitle": "Vitlistade appar",
-      "whitelistDesc": "Skakningsdetektering är endast aktiv när en av dessa appar är i fokus. Accepterar processnamn (t.ex. brave, brave.exe). Skiftlägesokänslig.",
+      "whitelistDesc": "Skakningar öppnar hyllan bara när någon av dessa appar är i förgrunden. Accepterar processnamn (t.ex. brave, brave.exe), skiftlägesokänsligt. Lämna listan tom för att tillåta alla appar.",
       "addPlaceholder": "Lägg till processnamn...",
       "add": "Lägg till",
       "removeApp": "Ta bort {{app}}"
@@ -99,7 +100,9 @@
       "Din webbhistorik"
     ],
     "decline": "Avböj",
-    "accept": "Acceptera"
+    "accept": "Acceptera",
+    "changeLater": "Du kan ändra detta när som helst i Inställningar.",
+    "summonTip": "Om du vill ta fram hyllan igen efter att ha dolt den skakar du musen åt vänster och höger medan du drar en fil, eller ställer in en snabbtangent i Inställningar."
   },
   "updater": {
     "title": "Programuppdateringar",
@@ -119,6 +122,8 @@
     "waiting": "Väntar på att söka efter uppdateringar...",
     "restartWarning": "Holdem startas om för att slutföra uppdateringen. Hyllan töms.",
     "installNow": "Installera nu",
-    "later": "Senare"
+    "later": "Senare",
+    "retry": "Försök igen",
+    "downloadErrorTitle": "Det gick inte att ladda ner uppdateringen"
   }
 }

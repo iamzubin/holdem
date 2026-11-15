@@ -9,7 +9,7 @@
     "files_other": "{{count}} archivos",
     "files_plural": "{{count}} archivos",
     "clear": "Limpiar",
-    "contextMenuTitle": "Menú contextual"
+    "contextMenuTitle": "Acciones del estante"
   },
   "popup": {
     "itemsSelected": "{{count}} elementos seleccionados",
@@ -18,7 +18,7 @@
     "list": "Lista",
     "grid": "Rejilla",
     "viewMode": "Modo de vista",
-    "removeSelected": "Eliminar archivos seleccionados",
+    "removeSelected": "Quitar del estante",
     "files": "Archivos del estante",
     "folder": "Carpeta"
   },
@@ -26,6 +26,7 @@
     "title": "Ajustes",
     "subtitle": "Administrar las preferencias de la aplicación",
     "loading": "Cargando ajustes...",
+    "loadFailed": "No se pudieron cargar los ajustes",
     "general": {
       "title": "Configuración General",
       "description": "Configurar el comportamiento de inicio y privacidad",
@@ -52,18 +53,18 @@
       "needsModifier": "Añade Ctrl, Alt, Shift o Win. Solo F1–F24 funcionan por sí solas."
     },
     "dragDrop": {
-      "dragToCopy": "Copiar archivos al destino",
+      "dragToCopy": "Arrastra archivos fuera para copiarlos",
       "shiftToMove": "Mantenga pulsado Shift mientras se suelta para mover archivos"
     },
     "mouse": {
       "title": "Seguidor del ratón",
       "description": "Afinar sensibilidad a la detección de sacudidas",
       "requiredShakes": "Sacudidas requeridas",
-      "shakeThreshold": "Umbral de agitar",
+      "shakeThreshold": "Distancia de sacudida (px)",
       "timeLimit": "Límite de tiempo (ms)",
-      "closeDelay": "Retraso de cierre (ms)",
+      "closeDelay": "Ocultar el estante sin usar tras (ms)",
       "whitelistTitle": "Aplicaciones en la lista blanca",
-      "whitelistDesc": "La detección de sacudidas solo se activará cuando una de estas aplicaciones esté en primer plano. Acepta nombres de procesos (p. ej., brave, brave.exe). Insensible a mayúsculas y minúsculas.",
+      "whitelistDesc": "Agitar el ratón solo abre el estante cuando una de estas aplicaciones está en primer plano. Acepta nombres de procesos (p. ej., brave, brave.exe), sin distinguir mayúsculas y minúsculas. Deja la lista vacía para permitir todas las aplicaciones.",
       "addPlaceholder": "Añadir nombre de proceso...",
       "add": "Añadir",
       "removeApp": "Eliminar {{app}}"
@@ -99,7 +100,9 @@
       "Tu historial de navegación"
     ],
     "decline": "Rechazar",
-    "accept": "Aceptar"
+    "accept": "Aceptar",
+    "changeLater": "Puedes cambiar esto en cualquier momento en Ajustes.",
+    "summonTip": "Para volver a mostrar el estante después de ocultarlo, agita el ratón a izquierda y derecha mientras arrastras un archivo, o configura un atajo de teclado en Ajustes."
   },
   "updater": {
     "title": "Actualizaciones",
@@ -119,6 +122,8 @@
     "waiting": "Esperando para buscar actualizaciones...",
     "restartWarning": "Holdem se reiniciará para completar la actualización. El estante se vaciará.",
     "installNow": "Instalar ahora",
-    "later": "Más tarde"
+    "later": "Más tarde",
+    "retry": "Reintentar",
+    "downloadErrorTitle": "No se pudo descargar la actualización"
   }
 }

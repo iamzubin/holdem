@@ -9,7 +9,7 @@
     "files_other": "{{count}} filer",
     "files_plural": "{{count}} filer",
     "clear": "Ryd",
-    "contextMenuTitle": "Sammenhængs Menu"
+    "contextMenuTitle": "Hyldehandlinger"
   },
   "popup": {
     "itemsSelected": "{{count}} elementer valgt",
@@ -18,7 +18,7 @@
     "list": "Liste",
     "grid": "Gitter",
     "viewMode": "Visningstilstand",
-    "removeSelected": "Fjern Valgte Filer",
+    "removeSelected": "Fjern fra hylden",
     "files": "Filer på hylden",
     "folder": "Mappe"
   },
@@ -26,6 +26,7 @@
     "title": "Indstillinger",
     "subtitle": "Administrer dine app-præferencer",
     "loading": "Indlæser indstillinger...",
+    "loadFailed": "Indstillingerne kunne ikke indlæses",
     "general": {
       "title": "Generelle Indstillinger",
       "description": "Indstil opstarts- og privatlivsadfærd",
@@ -52,18 +53,18 @@
       "needsModifier": "Tilføj Ctrl, Alt, Shift eller Win. Kun F1–F24 virker alene."
     },
     "dragDrop": {
-      "dragToCopy": "Kopier filer til destination",
+      "dragToCopy": "Træk filer ud for at kopiere dem",
       "shiftToMove": "Hold Shift nede mens du slipper for at flytte filer"
     },
     "mouse": {
       "title": "Mus Monitor",
       "description": "Fin- tune rystedetektionsfølsomhed",
       "requiredShakes": "Påkrævede Rystelser",
-      "shakeThreshold": "Ryst Tærskelværdi",
+      "shakeThreshold": "Rysteafstand (px)",
       "timeLimit": "Tidsgrænse (ms)",
-      "closeDelay": "Luk Forsinkelse (ms)",
+      "closeDelay": "Skjul ubrugt hylde efter (ms)",
       "whitelistTitle": "Hvidlistede Apps",
-      "whitelistDesc": "Rystedetektering vil kun være aktiv, når en af disse apps har fokus. Accepterer procesnavne (f.eks. brave, brave.exe). Skelner ikke mellem store og små bogstaver.",
+      "whitelistDesc": "Rystelser åbner kun hylden, mens en af disse apps er i forgrunden. Accepterer procesnavne (f.eks. brave, brave.exe) og skelner ikke mellem store og små bogstaver. Lad listen være tom for at tillade alle apps.",
       "addPlaceholder": "Tilføj procesnavn...",
       "add": "Tilføj",
       "removeApp": "Fjern {{app}}"
@@ -99,7 +100,9 @@
       "Din browserhistorik"
     ],
     "decline": "Afvis",
-    "accept": "Accepter"
+    "accept": "Accepter",
+    "changeLater": "Du kan til enhver tid ændre dette i Indstillinger.",
+    "summonTip": "Hvis du vil have hylden frem igen efter at have skjult den, kan du ryste musen fra side til side, mens du trækker en fil, eller angive en genvejstast i Indstillinger."
   },
   "updater": {
     "title": "Softwareopdateringer",
@@ -119,6 +122,8 @@
     "waiting": "Venter på at søge efter opdateringer...",
     "restartWarning": "Holdem genstarter for at fuldføre opdateringen. Hylden bliver tømt.",
     "installNow": "Installer nu",
-    "later": "Senere"
+    "later": "Senere",
+    "retry": "Prøv igen",
+    "downloadErrorTitle": "Opdateringen kunne ikke downloades"
   }
 }

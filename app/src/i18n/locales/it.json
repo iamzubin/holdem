@@ -9,7 +9,7 @@
     "files_other": "{{count}} file",
     "files_plural": "{{count}} file",
     "clear": "Pulisci",
-    "contextMenuTitle": "Menu Contestuale"
+    "contextMenuTitle": "Azioni della mensola"
   },
   "popup": {
     "itemsSelected": "{{count}} elementi selezionati",
@@ -18,7 +18,7 @@
     "list": "Elenco",
     "grid": "Griglia",
     "viewMode": "Modalità di visualizzazione",
-    "removeSelected": "Rimuovi File Selezionati",
+    "removeSelected": "Rimuovi dalla mensola",
     "files": "File sulla mensola",
     "folder": "Cartella"
   },
@@ -26,6 +26,7 @@
     "title": "Impostazioni",
     "subtitle": "Gestisci le preferenze dell'applicazione",
     "loading": "Caricamento impostazioni...",
+    "loadFailed": "Impossibile caricare le impostazioni",
     "general": {
       "title": "Impostazioni Generali",
       "description": "Configura il comportamento di avvio e privacy",
@@ -52,18 +53,18 @@
       "needsModifier": "Aggiungi Ctrl, Alt, Shift o Win. Solo F1–F24 funzionano da soli."
     },
     "dragDrop": {
-      "dragToCopy": "Copia i file nella destinazione",
+      "dragToCopy": "Trascina i file fuori per copiarli",
       "shiftToMove": "Tieni premuto Maiusc mentre rilascia per spostare i file"
     },
     "mouse": {
       "title": "Monitor Del Mouse",
       "description": "Ottimizza la sensibilità al rilevamento dello scuotimento",
       "requiredShakes": "Agitazioni richieste",
-      "shakeThreshold": "Soglia Shake",
+      "shakeThreshold": "Distanza di scuotimento (px)",
       "timeLimit": "Limite Di Tempo (Ms)",
-      "closeDelay": "Ritardo di chiusura (ms)",
+      "closeDelay": "Nascondi la mensola inutilizzata dopo (ms)",
       "whitelistTitle": "Applicazioni Whitelisted",
-      "whitelistDesc": "Il rilevamento dell'agitazione sarà attivo solo quando una di queste app è in primo piano. Accetta nomi di processi (ad es. brave, brave.exe). Non distingue tra maiuscole e minuscole.",
+      "whitelistDesc": "Scuotere il mouse apre la mensola solo quando una di queste app è in primo piano. Accetta nomi di processi (ad es. brave, brave.exe), senza distinzione tra maiuscole e minuscole. Lascia l'elenco vuoto per consentire tutte le app.",
       "addPlaceholder": "Aggiungi nome processo...",
       "add": "Aggiungi",
       "removeApp": "Rimuovi {{app}}"
@@ -99,7 +100,9 @@
       "La tua cronologia di navigazione"
     ],
     "decline": "Rifiuta",
-    "accept": "Accetta"
+    "accept": "Accetta",
+    "changeLater": "Puoi modificare questa scelta in qualsiasi momento nelle Impostazioni.",
+    "summonTip": "Per far ricomparire la mensola dopo averla nascosta, scuoti il mouse a destra e a sinistra mentre trascini un file, oppure imposta una scorciatoia da tastiera nelle Impostazioni."
   },
   "updater": {
     "title": "Aggiornamenti Software",
@@ -119,6 +122,8 @@
     "waiting": "In attesa di controllare gli aggiornamenti...",
     "restartWarning": "Holdem verrà riavviato per completare l'aggiornamento. La mensola verrà svuotata.",
     "installNow": "Installa ora",
-    "later": "Più tardi"
+    "later": "Più tardi",
+    "retry": "Riprova",
+    "downloadErrorTitle": "Impossibile scaricare l'aggiornamento"
   }
 }

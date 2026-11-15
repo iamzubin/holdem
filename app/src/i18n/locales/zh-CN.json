@@ -9,7 +9,7 @@
     "files_other": "{{count}} 个文件",
     "files_plural": "{{count}} 个文件",
     "clear": "清空",
-    "contextMenuTitle": "上下文菜单"
+    "contextMenuTitle": "暂存架操作"
   },
   "popup": {
     "itemsSelected": "已选择 {{count}} 项",
@@ -18,7 +18,7 @@
     "list": "列表",
     "grid": "网格",
     "viewMode": "视图模式",
-    "removeSelected": "删除选中的文件",
+    "removeSelected": "从暂存架移除",
     "files": "暂存架上的文件",
     "folder": "文件夹"
   },
@@ -26,6 +26,7 @@
     "title": "设置",
     "subtitle": "管理您的应用程序首选项",
     "loading": "正在加载设置...",
+    "loadFailed": "无法加载设置",
     "general": {
       "title": "常规设置",
       "description": "配置启动和隐私行为",
@@ -52,18 +53,18 @@
       "needsModifier": "请加上 Ctrl、Alt、Shift 或 Win。只有 F1–F24 可单独使用。"
     },
     "dragDrop": {
-      "dragToCopy": "复制文件到目标",
+      "dragToCopy": "将文件拖出即可复制",
       "shiftToMove": "丢弃时按住 Shift 键移动文件"
     },
     "mouse": {
       "title": "鼠标监视器",
       "description": "微调晃动检测灵敏度",
       "requiredShakes": "所需的晃动",
-      "shakeThreshold": "摇动阈值",
+      "shakeThreshold": "晃动距离 (px)",
       "timeLimit": "时间限制 (ms)",
-      "closeDelay": "关闭延迟 (ms)",
+      "closeDelay": "未使用时隐藏暂存架的延迟 (ms)",
       "whitelistTitle": "白名单应用",
-      "whitelistDesc": "晃动检测仅在这些应用处于焦点状态时激活。接受进程名称（例如 brave、brave.exe）。不区分大小写。",
+      "whitelistDesc": "仅当这些应用之一位于前台时，晃动才会打开暂存架。接受进程名称（例如 brave、brave.exe），不区分大小写。将列表留空可允许所有应用。",
       "addPlaceholder": "添加流程名称...",
       "add": "添加",
       "removeApp": "移除 {{app}}"
@@ -99,7 +100,9 @@
       "您的浏览历史"
     ],
     "decline": "拒绝",
-    "accept": "接受"
+    "accept": "接受",
+    "changeLater": "您可以随时在“设置”中更改此选项。",
+    "summonTip": "隐藏暂存架后，如需重新显示，可在拖动文件时左右晃动鼠标，或在“设置”中设置热键。"
   },
   "updater": {
     "title": "软件更新",
@@ -119,6 +122,8 @@
     "waiting": "正在等待检查更新...",
     "restartWarning": "Holdem 将重启以完成更新，暂存架上的文件将被清空。",
     "installNow": "立即安装",
-    "later": "稍后"
+    "later": "稍后",
+    "retry": "重试",
+    "downloadErrorTitle": "无法下载更新"
   }
 }

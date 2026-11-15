@@ -9,7 +9,7 @@
     "files_other": "{{count}} tiedostoa",
     "files_plural": "{{count}} tiedostoa",
     "clear": "Tyhjennä",
-    "contextMenuTitle": "Kontekstivalikko"
+    "contextMenuTitle": "Hyllyn toiminnot"
   },
   "popup": {
     "itemsSelected": "{{count}} kohdetta valittu",
@@ -18,7 +18,7 @@
     "list": "Lista",
     "grid": "Ruudukko",
     "viewMode": "Näkymätila",
-    "removeSelected": "Poista Valitut Tiedostot",
+    "removeSelected": "Poista hyllystä",
     "files": "Hyllyn tiedostot",
     "folder": "Kansio"
   },
@@ -26,6 +26,7 @@
     "title": "Asetukset",
     "subtitle": "Hallinnoi sovelluksen asetuksia",
     "loading": "Ladataan asetuksia...",
+    "loadFailed": "Asetuksia ei voitu ladata",
     "general": {
       "title": "Yleiset Asetukset",
       "description": "Määritä käynnistys- ja yksityisyyskäyttäytyminen",
@@ -52,18 +53,18 @@
       "needsModifier": "Lisää Ctrl, Alt, Shift tai Win. Vain F1–F24 toimivat yksinään."
     },
     "dragDrop": {
-      "dragToCopy": "Kopioi tiedostoja määränpäähän",
+      "dragToCopy": "Kopioi tiedostot vetämällä ne ulos",
       "shiftToMove": "Pidä siirto pohjassa siirtääksesi tiedostoja"
     },
     "mouse": {
       "title": "Hiiren Valvonta",
       "description": "Hienosäädä ravistuksen havaitsemisherkkyys",
       "requiredShakes": "Vaaditut ravistukset",
-      "shakeThreshold": "Ravistuskynnys",
+      "shakeThreshold": "Ravistuksen etäisyys (px)",
       "timeLimit": "Aikaraja (ms)",
-      "closeDelay": "Sulkemisviive (ms)",
+      "closeDelay": "Käyttämättömän hyllyn piilotusviive (ms)",
       "whitelistTitle": "Sallitut Sovellukset",
-      "whitelistDesc": "Ravistuksen tunnistus on aktiivinen vain, kun jokin näistä sovelluksista on aktiivisena. Hyväksyy prosessien nimet (esim. brave, brave.exe). Ei kirjainkoosta riippuvainen.",
+      "whitelistDesc": "Ravistus avaa hyllyn vain, kun jokin näistä sovelluksista on etualalla. Hyväksyy prosessien nimet (esim. brave, brave.exe), kirjainkoolla ei ole väliä. Jätä luettelo tyhjäksi, jos haluat sallia kaikki sovellukset.",
       "addPlaceholder": "Lisää prosessin nimi...",
       "add": "Lisää",
       "removeApp": "Poista {{app}}"
@@ -99,7 +100,9 @@
       "Sinun selaushistoriasi"
     ],
     "decline": "Hylkää",
-    "accept": "Hyväksy"
+    "accept": "Hyväksy",
+    "changeLater": "Voit muuttaa tätä milloin tahansa Asetuksissa.",
+    "summonTip": "Saat hyllyn takaisin näkyviin piilottamisen jälkeen ravistamalla hiirtä vasemmalle ja oikealle tiedostoa vetäessäsi tai määrittämällä pikanäppäimen Asetuksissa."
   },
   "updater": {
     "title": "Ohjelmiston Päivitykset",
@@ -119,6 +122,8 @@
     "waiting": "Odotetaan päivitysten tarkistamista...",
     "restartWarning": "Holdem käynnistyy uudelleen päivityksen viimeistelemiseksi. Hylly tyhjennetään.",
     "installNow": "Asenna nyt",
-    "later": "Myöhemmin"
+    "later": "Myöhemmin",
+    "retry": "Yritä uudelleen",
+    "downloadErrorTitle": "Päivitystä ei voitu ladata"
   }
 }

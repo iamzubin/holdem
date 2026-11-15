@@ -10,7 +10,7 @@
     "files_other": "{{count}} de fișiere",
     "files_plural": "{{count}} de fișiere",
     "clear": "Curăță",
-    "contextMenuTitle": "Meniu contextual"
+    "contextMenuTitle": "Acțiuni raft"
   },
   "popup": {
     "itemsSelected": "{{count}} elemente selectate",
@@ -20,7 +20,7 @@
     "list": "Listă",
     "grid": "Grilă",
     "viewMode": "Mod de vizualizare",
-    "removeSelected": "Elimină fişierele selectate",
+    "removeSelected": "Elimină de pe raft",
     "files": "Fișiere pe raft",
     "folder": "Folder"
   },
@@ -28,6 +28,7 @@
     "title": "Setări",
     "subtitle": "Gestionează preferințele aplicației",
     "loading": "Se încarcă setările...",
+    "loadFailed": "Setările nu au putut fi încărcate",
     "general": {
       "title": "Setări generale",
       "description": "Configurați comportamentul de pornire și confidențialitate",
@@ -54,18 +55,18 @@
       "needsModifier": "Adăugați Ctrl, Alt, Shift sau Win. Doar F1–F24 funcționează singure."
     },
     "dragDrop": {
-      "dragToCopy": "Copiază fișierele la destinație",
+      "dragToCopy": "Trageți fișierele în afară pentru a le copia",
       "shiftToMove": "Țineți apăsat Shift în timp ce plasați pentru a muta fișiere"
     },
     "mouse": {
       "title": "Monitorizare Mouse",
       "description": "Sensibilitatea de detectare a agitării finit",
       "requiredShakes": "Scuturări necesare",
-      "shakeThreshold": "Pragul de agitare",
+      "shakeThreshold": "Distanța de scuturare (px)",
       "timeLimit": "Limita de timp (ms)",
-      "closeDelay": "Întârziere închidere (ms)",
+      "closeDelay": "Ascunde raftul nefolosit după (ms)",
       "whitelistTitle": "Aplicații permise",
-      "whitelistDesc": "Detectarea mișcării va fi activă doar atunci când una dintre aceste aplicații este în prim-plan. Acceptă nume de procese (de ex. brave, brave.exe). Insensibil la majuscule și minuscule.",
+      "whitelistDesc": "Scuturarea deschide raftul doar când una dintre aceste aplicații este în prim-plan. Acceptă nume de procese (de ex. brave, brave.exe), fără a ține cont de majuscule. Lăsați lista goală pentru a permite toate aplicațiile.",
       "addPlaceholder": "Adaugă numele procesului...",
       "add": "Adăugare",
       "removeApp": "Elimină {{app}}"
@@ -101,7 +102,9 @@
       "Istoricul de navigare"
     ],
     "decline": "Refuzați",
-    "accept": "Acceptă"
+    "accept": "Acceptă",
+    "changeLater": "Puteți modifica oricând această opțiune din Setări.",
+    "summonTip": "Pentru a readuce raftul după ce l-ați ascuns, scuturați mouse-ul stânga-dreapta în timp ce trageți un fișier sau setați o tastă rapidă în Setări."
   },
   "updater": {
     "title": "Actualizări software",
@@ -121,6 +124,8 @@
     "waiting": "Se așteaptă să se verifice actualizările...",
     "restartWarning": "Holdem va reporni pentru a finaliza actualizarea. Raftul va fi golit.",
     "installNow": "Instalează acum",
-    "later": "Mai târziu"
+    "later": "Mai târziu",
+    "retry": "Încercați din nou",
+    "downloadErrorTitle": "Actualizarea nu a putut fi descărcată"
   }
 }

@@ -9,7 +9,7 @@
     "files_other": "{{count}} dosya",
     "files_plural": "{{count}} dosya",
     "clear": "Temizle",
-    "contextMenuTitle": "Bağlam Menüsü"
+    "contextMenuTitle": "Raf işlemleri"
   },
   "popup": {
     "itemsSelected": "{{count}} öğe seçildi",
@@ -18,7 +18,7 @@
     "list": "Liste",
     "grid": "Izgara",
     "viewMode": "Görüntüleme modu",
-    "removeSelected": "Seçili Dosyaları Kaldır",
+    "removeSelected": "Raftan kaldır",
     "files": "Raftaki dosyalar",
     "folder": "Klasör"
   },
@@ -26,6 +26,7 @@
     "title": "Ayarlar",
     "subtitle": "Uygulama tercihlerinizi yönetin",
     "loading": "Ayarlar yükleniyor...",
+    "loadFailed": "Ayarlar yüklenemedi",
     "general": {
       "title": "Genel Ayarlar",
       "description": "Başlangıç ve gizlilik davranışını yapılandırın",
@@ -52,18 +53,18 @@
       "needsModifier": "Ctrl, Alt, Shift veya Win ekleyin. Yalnızca F1–F24 tek başına çalışır."
     },
     "dragDrop": {
-      "dragToCopy": "Dosyaları hedefe kopyala",
+      "dragToCopy": "Kopyalamak için dosyaları dışarı sürükleyin",
       "shiftToMove": "Dosyaları taşımak için bırakırken Shift tuşunu basılı tutun"
     },
     "mouse": {
       "title": "Fare İzleyici",
       "description": "Sarsıntı algılama hassasiyetini ayarlayın",
       "requiredShakes": "Gerekli Sarsıntı Sayısı",
-      "shakeThreshold": "Sarsıntı Eşiği",
+      "shakeThreshold": "Sallama mesafesi (px)",
       "timeLimit": "Süre Sınırı (ms)",
-      "closeDelay": "Kapatma Gecikmesi (ms)",
+      "closeDelay": "Kullanılmayan rafı gizleme süresi (ms)",
       "whitelistTitle": "İzin Verilen Uygulamalar",
-      "whitelistDesc": "Sarsıntı algılama yalnızca bu uygulamalardan birine odaklanıldığında etkin olur. İşlem adlarını kabul eder (örn. brave, brave.exe). Büyük/küçük harf duyarsızdır.",
+      "whitelistDesc": "Sallama, rafı yalnızca bu uygulamalardan biri öndeyken açar. İşlem adlarını kabul eder (örn. brave, brave.exe), büyük/küçük harf duyarsızdır. Tüm uygulamalara izin vermek için listeyi boş bırakın.",
       "addPlaceholder": "İşlem adı ekleyin...",
       "add": "Ekle",
       "removeApp": "Kaldır: {{app}}"
@@ -99,7 +100,9 @@
       "Gezinme geçmişiniz"
     ],
     "decline": "Reddet",
-    "accept": "Kabul Et"
+    "accept": "Kabul Et",
+    "changeLater": "Bunu istediğiniz zaman Ayarlar'dan değiştirebilirsiniz.",
+    "summonTip": "Rafı gizledikten sonra geri getirmek için bir dosyayı sürüklerken fareyi sağa sola sallayın veya Ayarlar'dan bir kısayol tuşu belirleyin."
   },
   "updater": {
     "title": "Yazılım Güncellemeleri",
@@ -119,6 +122,8 @@
     "waiting": "Güncellemelerin denetlenmesi bekleniyor...",
     "restartWarning": "Holdem, güncellemeyi tamamlamak için yeniden başlatılacak. Raftaki dosyalar temizlenecek.",
     "installNow": "Şimdi kur",
-    "later": "Daha sonra"
+    "later": "Daha sonra",
+    "retry": "Tekrar dene",
+    "downloadErrorTitle": "Güncelleme indirilemedi"
   }
 }

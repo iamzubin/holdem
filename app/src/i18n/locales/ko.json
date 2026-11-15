@@ -9,7 +9,7 @@
     "files_other": "{{count}}개의 파일",
     "files_plural": "{{count}}개의 파일",
     "clear": "지우기",
-    "contextMenuTitle": "컨텍스트 메뉴"
+    "contextMenuTitle": "선반 작업"
   },
   "popup": {
     "itemsSelected": "{{count}}개 항목 선택됨",
@@ -18,7 +18,7 @@
     "list": "목록",
     "grid": "그리드",
     "viewMode": "보기 모드",
-    "removeSelected": "선택한 파일 삭제",
+    "removeSelected": "선반에서 제거",
     "files": "선반의 파일",
     "folder": "폴더"
   },
@@ -26,6 +26,7 @@
     "title": "설정",
     "subtitle": "애플리케이션 환경설정을 관리합니다",
     "loading": "설정을 불러오는 중...",
+    "loadFailed": "설정을 불러올 수 없습니다",
     "general": {
       "title": "일반 설정",
       "description": "시작 및 개인정보 보호 동작을 설정합니다",
@@ -52,18 +53,18 @@
       "needsModifier": "Ctrl, Alt, Shift 또는 Win을 함께 누르세요. F1–F24만 단독으로 사용할 수 있습니다."
     },
     "dragDrop": {
-      "dragToCopy": "파일을 대상에 복사",
+      "dragToCopy": "파일을 밖으로 드래그하여 복사",
       "shiftToMove": "놓을 때 Shift를 누른 채로 있으면 파일을 이동합니다"
     },
     "mouse": {
       "title": "마우스 모니터",
       "description": "흔들기 감지 민감도를 조정합니다",
       "requiredShakes": "필요한 흔들기 횟수",
-      "shakeThreshold": "흔들기 임계값",
+      "shakeThreshold": "흔들기 거리(픽셀)",
       "timeLimit": "제한 시간(밀리초)",
-      "closeDelay": "닫기 지연(밀리초)",
+      "closeDelay": "사용하지 않는 선반 숨김 시간(밀리초)",
       "whitelistTitle": "허용된 앱",
-      "whitelistDesc": "이러한 앱 중 하나에 포커스가 있을 때만 흔들기 감지가 활성화됩니다. 프로세스 이름(예: brave, brave.exe)을 입력하세요. 대소문자를 구분하지 않습니다.",
+      "whitelistDesc": "이 앱 중 하나가 앞에 있을 때만 흔들어서 선반을 열 수 있습니다. 프로세스 이름(예: brave, brave.exe)을 입력하세요. 대소문자를 구분하지 않습니다. 목록을 비워 두면 모든 앱에서 작동합니다.",
       "addPlaceholder": "프로세스 이름 추가...",
       "add": "추가",
       "removeApp": "{{app}} 제거"
@@ -99,7 +100,9 @@
       "검색 기록"
     ],
     "decline": "거부",
-    "accept": "수락"
+    "accept": "수락",
+    "changeLater": "이 설정은 언제든지 설정에서 변경할 수 있습니다.",
+    "summonTip": "선반을 숨긴 후 다시 표시하려면 파일을 드래그하는 동안 마우스를 좌우로 흔들거나 설정에서 단축키를 지정하세요."
   },
   "updater": {
     "title": "소프트웨어 업데이트",
@@ -119,6 +122,8 @@
     "waiting": "업데이트 확인을 기다리는 중...",
     "restartWarning": "업데이트를 완료하기 위해 Holdem이 다시 시작됩니다. 선반의 파일은 지워집니다.",
     "installNow": "지금 설치",
-    "later": "나중에"
+    "later": "나중에",
+    "retry": "다시 시도",
+    "downloadErrorTitle": "업데이트를 다운로드할 수 없습니다"
   }
 }

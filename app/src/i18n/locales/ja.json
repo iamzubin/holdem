@@ -9,7 +9,7 @@
     "files_other": "{{count}} ファイル",
     "files_plural": "{{count}} ファイル",
     "clear": "クリア",
-    "contextMenuTitle": "コンテキストメニュー"
+    "contextMenuTitle": "シェルフの操作"
   },
   "popup": {
     "itemsSelected": "{{count}} 個の項目を選択中",
@@ -18,7 +18,7 @@
     "list": "リスト",
     "grid": "グリッド",
     "viewMode": "表示モード",
-    "removeSelected": "選択したファイルを削除",
+    "removeSelected": "シェルフから外す",
     "files": "シェルフ上のファイル",
     "folder": "フォルダー"
   },
@@ -26,6 +26,7 @@
     "title": "設定",
     "subtitle": "アプリケーション設定の管理",
     "loading": "設定を読み込んでいます...",
+    "loadFailed": "設定を読み込めませんでした",
     "general": {
       "title": "全般設定",
       "description": "スタートアップとプライバシーの動作を設定する",
@@ -52,18 +53,18 @@
       "needsModifier": "Ctrl、Alt、Shift、Win のいずれかを追加してください。単独で使えるのは F1–F24 のみです。"
     },
     "dragDrop": {
-      "dragToCopy": "コピー先にファイルをコピー",
+      "dragToCopy": "ファイルを外へドラッグしてコピー",
       "shiftToMove": "ファイルを移動するにはShiftキーを押しながらドロップします"
     },
     "mouse": {
       "title": "マウスモニター",
       "description": "シェイク検出感度を微調整する",
       "requiredShakes": "必要なシェイク数",
-      "shakeThreshold": "振動閾値",
+      "shakeThreshold": "シェイクの距離 (px)",
       "timeLimit": "時間制限 (ms)",
-      "closeDelay": "終了遅延 (ms)",
+      "closeDelay": "未使用のシェルフを隠すまでの時間 (ms)",
       "whitelistTitle": "ホワイトリストに登録されたアプリ",
-      "whitelistDesc": "シェイク検出は、これらのアプリのいずれかにフォーカスがある場合にのみ有効になります。プロセス名（例: brave、brave.exe）を入力できます。大文字と小文字は区別されません。",
+      "whitelistDesc": "これらのアプリのいずれかが前面にあるときだけ、シェイクでシェルフが開きます。プロセス名（例: brave、brave.exe）を入力できます。大文字と小文字は区別されません。リストを空にすると、すべてのアプリで有効になります。",
       "addPlaceholder": "プロセス名を追加...",
       "add": "追加",
       "removeApp": "{{app}} を削除"
@@ -99,7 +100,9 @@
       "閲覧履歴"
     ],
     "decline": "同意しない",
-    "accept": "同意する"
+    "accept": "同意する",
+    "changeLater": "この設定はいつでも「設定」で変更できます。",
+    "summonTip": "非表示にしたシェルフを再表示するには、ファイルをドラッグしながらマウスを左右に振るか、「設定」でホットキーを設定してください。"
   },
   "updater": {
     "title": "ソフトウェアの更新",
@@ -119,6 +122,8 @@
     "waiting": "更新の確認を待っています...",
     "restartWarning": "アップデートを完了するために Holdem が再起動します。シェルフ上のファイルはクリアされます。",
     "installNow": "今すぐインストール",
-    "later": "後で"
+    "later": "後で",
+    "retry": "再試行",
+    "downloadErrorTitle": "アップデートをダウンロードできませんでした"
   }
 }

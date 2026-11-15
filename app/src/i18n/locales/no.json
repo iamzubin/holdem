@@ -9,7 +9,7 @@
     "files_other": "{{count}} filer",
     "files_plural": "{{count}} filer",
     "clear": "Tøm",
-    "contextMenuTitle": "Sammenhengende meny"
+    "contextMenuTitle": "Hyllehandlinger"
   },
   "popup": {
     "itemsSelected": "{{count}} elementer valgt",
@@ -18,7 +18,7 @@
     "list": "Liste",
     "grid": "Rutenett",
     "viewMode": "Visningsmodus",
-    "removeSelected": "Fjern valgte filer",
+    "removeSelected": "Fjern fra hyllen",
     "files": "Filer på hyllen",
     "folder": "Mappe"
   },
@@ -26,6 +26,7 @@
     "title": "Innstillinger",
     "subtitle": "Administrer applikasjonsinnstillingene dine",
     "loading": "Laster inn innstillinger...",
+    "loadFailed": "Kunne ikke laste inn innstillingene",
     "general": {
       "title": "Generelle innstillinger",
       "description": "Konfigurer oppstart og personvern",
@@ -52,18 +53,18 @@
       "needsModifier": "Legg til Ctrl, Alt, Shift eller Win. Bare F1–F24 fungerer alene."
     },
     "dragDrop": {
-      "dragToCopy": "Kopier filer til destinasjon",
+      "dragToCopy": "Dra filer ut for å kopiere dem",
       "shiftToMove": "Hold Shift mens du dropper for å flytte filer"
     },
     "mouse": {
       "title": "Mus Monitor",
       "description": "Følsomhet for full risting",
       "requiredShakes": "Nødvendige ristinger",
-      "shakeThreshold": "Rist terskel",
+      "shakeThreshold": "Risteavstand (px)",
       "timeLimit": "Tidsgrense (ms)",
-      "closeDelay": "Lukk forsinkelse (ms)",
+      "closeDelay": "Skjul ubrukt hylle etter (ms)",
       "whitelistTitle": "Hvitelistede apper",
-      "whitelistDesc": "Ristedeteksjon vil bare være aktiv når en av disse appene har fokus. Godtar prosessnavn (f.eks. brave, brave.exe). Skiller ikke mellom store og små bokstaver.",
+      "whitelistDesc": "Risting åpner hyllen bare når en av disse appene er i forgrunnen. Godtar prosessnavn (f.eks. brave, brave.exe) og skiller ikke mellom store og små bokstaver. La listen stå tom for å tillate alle apper.",
       "addPlaceholder": "Legg til prosessnavn...",
       "add": "Legg til",
       "removeApp": "Fjern {{app}}"
@@ -99,7 +100,9 @@
       "Historikk for surfing"
     ],
     "decline": "Avslå",
-    "accept": "Godta"
+    "accept": "Godta",
+    "changeLater": "Du kan når som helst endre dette i Innstillinger.",
+    "summonTip": "For å få frem hyllen igjen etter at du har skjult den, rister du musen fra side til side mens du drar en fil, eller angir en hurtigtast i Innstillinger."
   },
   "updater": {
     "title": "Programvare oppdateringer",
@@ -119,6 +122,8 @@
     "waiting": "Venter på å se etter oppdateringer...",
     "restartWarning": "Holdem starter på nytt for å fullføre oppdateringen. Hyllen blir tømt.",
     "installNow": "Installer nå",
-    "later": "Senere"
+    "later": "Senere",
+    "retry": "Prøv igjen",
+    "downloadErrorTitle": "Kunne ikke laste ned oppdateringen"
   }
 }

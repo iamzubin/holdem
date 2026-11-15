@@ -9,7 +9,7 @@
     "files_other": "{{count}} ficheiros",
     "files_plural": "{{count}} ficheiros",
     "clear": "Limpar",
-    "contextMenuTitle": "Menu de contexto"
+    "contextMenuTitle": "Ações da prateleira"
   },
   "popup": {
     "itemsSelected": "{{count}} itens selecionados",
@@ -18,7 +18,7 @@
     "list": "Lista",
     "grid": "Grade",
     "viewMode": "Modo de visualização",
-    "removeSelected": "Remover Ficheiros Selecionados",
+    "removeSelected": "Remover da prateleira",
     "files": "Ficheiros na prateleira",
     "folder": "Pasta"
   },
@@ -26,12 +26,13 @@
     "title": "Definições",
     "subtitle": "Gerir as preferências da sua aplicação",
     "loading": "A carregar definições...",
+    "loadFailed": "Não foi possível carregar as definições",
     "general": {
       "title": "Definições Gerais",
       "description": "Configurar o arranque e o comportamento de privacidade",
       "startup": "Iniciar no Arranque do Sistema",
       "startupDesc": "Iniciar automaticamente a aplicação ao iniciar sessão",
-      "analytics": "Habilitar Analytics",
+      "analytics": "Ativar análises",
       "analyticsDesc": "Ajude a melhorar o Holdem partilhando dados anónimos de utilização"
     },
     "language": {
@@ -41,7 +42,7 @@
     },
     "shortcuts": {
       "title": "Atalhos",
-      "description": "Personalize como interage com o app",
+      "description": "Personalize como interage com a aplicação",
       "showHotkey": "Tecla de Atalho para Mostrar Janela",
       "pressKeys": "Prima as teclas...",
       "set": "Definir",
@@ -52,18 +53,18 @@
       "needsModifier": "Adicione Ctrl, Alt, Shift ou Win. Apenas F1–F24 funcionam sozinhas."
     },
     "dragDrop": {
-      "dragToCopy": "Copiar arquivos para o destino",
+      "dragToCopy": "Arraste ficheiros para fora para os copiar",
       "shiftToMove": "Segure Shift enquanto solta para mover arquivos"
     },
     "mouse": {
       "title": "Monitor do rato",
       "description": "Ajustar sensibilidade de detecção de agitação",
       "requiredShakes": "Agitações necessárias",
-      "shakeThreshold": "Limite de Agitação",
+      "shakeThreshold": "Distância da agitação (px)",
       "timeLimit": "Limite de Tempo (ms)",
-      "closeDelay": "Atraso de encerramento (ms)",
+      "closeDelay": "Ocultar prateleira não utilizada após (ms)",
       "whitelistTitle": "Aplicações permitidas",
-      "whitelistDesc": "A deteção de agitação só estará ativa quando uma destas aplicações estiver em primeiro plano. Aceita nomes de processos (por exemplo, brave, brave.exe). Não sensível a maiúsculas/minúsculas.",
+      "whitelistDesc": "Agitar o rato só abre a prateleira quando uma destas aplicações está em primeiro plano. Aceita nomes de processos (por exemplo, brave, brave.exe), sem distinção entre maiúsculas e minúsculas. Deixe a lista vazia para permitir todas as aplicações.",
       "addPlaceholder": "Adicionar nome do processo...",
       "add": "Adicionar",
       "removeApp": "Remover {{app}}"
@@ -99,7 +100,9 @@
       "Seu histórico de navegação"
     ],
     "decline": "Recusar",
-    "accept": "Aceitar"
+    "accept": "Aceitar",
+    "changeLater": "Pode alterar isto a qualquer momento nas Definições.",
+    "summonTip": "Para voltar a mostrar a prateleira depois de a ocultar, abane o rato para a esquerda e para a direita enquanto arrasta um ficheiro, ou defina uma tecla de atalho nas Definições."
   },
   "updater": {
     "title": "Atualizações do Software",
@@ -119,6 +122,8 @@
     "waiting": "Esperando por atualizações...",
     "restartWarning": "O Holdem será reiniciado para concluir a atualização. A prateleira será esvaziada.",
     "installNow": "Instalar agora",
-    "later": "Mais tarde"
+    "later": "Mais tarde",
+    "retry": "Tentar novamente",
+    "downloadErrorTitle": "Não foi possível transferir a atualização"
   }
 }

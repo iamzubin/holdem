@@ -11,7 +11,7 @@
     "files_other": "{{count}} plików",
     "files_plural": "{{count}} plików",
     "clear": "Wyczyść",
-    "contextMenuTitle": "Menu kontekstowe"
+    "contextMenuTitle": "Akcje półki"
   },
   "popup": {
     "itemsSelected": "Wybrano {{count}} elementów",
@@ -22,7 +22,7 @@
     "list": "Lista",
     "grid": "Siatka",
     "viewMode": "Tryb widoku",
-    "removeSelected": "Usuń wybrane pliki",
+    "removeSelected": "Zdejmij z półki",
     "files": "Pliki na półce",
     "folder": "Folder"
   },
@@ -30,6 +30,7 @@
     "title": "Ustawienia",
     "subtitle": "Zarządzaj preferencjami aplikacji",
     "loading": "Ładowanie ustawień...",
+    "loadFailed": "Nie udało się wczytać ustawień",
     "general": {
       "title": "Ustawienia ogólne",
       "description": "Skonfiguruj tryb uruchamiania i zachowanie prywatności",
@@ -56,18 +57,18 @@
       "needsModifier": "Dodaj Ctrl, Alt, Shift lub Win. Samodzielnie działają tylko F1–F24."
     },
     "dragDrop": {
-      "dragToCopy": "Skopiuj pliki do miejsca docelowego",
+      "dragToCopy": "Przeciągnij pliki na zewnątrz, aby je skopiować",
       "shiftToMove": "Przytrzymaj Shift podczas upuszczania, aby przenieść pliki"
     },
     "mouse": {
       "title": "Monitor myszy",
       "description": "Dokładnie dostosuj czułość wykrywania wstrząsu",
       "requiredShakes": "Wymagane potrząśnięcia",
-      "shakeThreshold": "Próg potrząsania",
+      "shakeThreshold": "Odległość potrząśnięcia (px)",
       "timeLimit": "Limit czasu (ms)",
-      "closeDelay": "Zamknij opóźnienie (ms)",
+      "closeDelay": "Ukryj nieużywaną półkę po (ms)",
       "whitelistTitle": "Aplikacje na białej liście",
-      "whitelistDesc": "Wykrywanie potrząsania będzie aktywne tylko wtedy, gdy jedna z tych aplikacji jest aktywna. Akceptuje nazwy procesów (np. brave, brave.exe). Wielkość liter nie ma znaczenia.",
+      "whitelistDesc": "Potrząśnięcie otwiera półkę tylko wtedy, gdy jedna z tych aplikacji jest na pierwszym planie. Akceptuje nazwy procesów (np. brave, brave.exe), wielkość liter nie ma znaczenia. Pozostaw listę pustą, aby zezwolić na wszystkie aplikacje.",
       "addPlaceholder": "Dodaj nazwę procesu...",
       "add": "Dodaj",
       "removeApp": "Usuń {{app}}"
@@ -103,7 +104,9 @@
       "Twoja historia przeglądania"
     ],
     "decline": "Odrzuć",
-    "accept": "Zaakceptuj"
+    "accept": "Zaakceptuj",
+    "changeLater": "Możesz to zmienić w dowolnym momencie w Ustawieniach.",
+    "summonTip": "Aby przywrócić półkę po jej ukryciu, potrząśnij myszą w lewo i w prawo podczas przeciągania pliku lub ustaw skrót klawiszowy w Ustawieniach."
   },
   "updater": {
     "title": "Aktualizacje oprogramowania",
@@ -123,6 +126,8 @@
     "waiting": "Oczekiwanie na sprawdzenie aktualizacji...",
     "restartWarning": "Holdem uruchomi się ponownie, aby dokończyć aktualizację. Półka zostanie wyczyszczona.",
     "installNow": "Zainstaluj teraz",
-    "later": "Później"
+    "later": "Później",
+    "retry": "Spróbuj ponownie",
+    "downloadErrorTitle": "Nie udało się pobrać aktualizacji"
   }
 }

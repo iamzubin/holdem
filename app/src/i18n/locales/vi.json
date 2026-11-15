@@ -9,7 +9,7 @@
     "files_other": "{{count}} tệp",
     "files_plural": "{{count}} tệp",
     "clear": "Xóa",
-    "contextMenuTitle": "Menu ngữ cảnh"
+    "contextMenuTitle": "Thao tác với kệ"
   },
   "popup": {
     "itemsSelected": "Đã chọn {{count}} mục",
@@ -18,7 +18,7 @@
     "list": "Danh sách",
     "grid": "Lưới",
     "viewMode": "Chế độ xem",
-    "removeSelected": "Xóa các tệp đã chọn",
+    "removeSelected": "Gỡ khỏi kệ",
     "files": "Tệp trên kệ",
     "folder": "Thư mục"
   },
@@ -26,6 +26,7 @@
     "title": "Cài đặt",
     "subtitle": "Quản lý tùy chọn ứng dụng của bạn",
     "loading": "Đang tải cài đặt...",
+    "loadFailed": "Không thể tải cài đặt",
     "general": {
       "title": "Cài đặt chung",
       "description": "Định cấu hình khởi động và hành vi quyền riêng tư",
@@ -52,18 +53,18 @@
       "needsModifier": "Thêm Ctrl, Alt, Shift hoặc Win. Chỉ F1–F24 mới dùng được riêng lẻ."
     },
     "dragDrop": {
-      "dragToCopy": "Sao chép tệp đến đích",
+      "dragToCopy": "Kéo tệp ra ngoài để sao chép",
       "shiftToMove": "Giữ Shift khi thả để di chuyển tệp"
     },
     "mouse": {
       "title": "Giám sát chuột",
       "description": "Tinh chỉnh độ nhạy phát hiện lắc",
       "requiredShakes": "Số lần lắc yêu cầu",
-      "shakeThreshold": "Ngưỡng lắc",
+      "shakeThreshold": "Khoảng cách lắc (px)",
       "timeLimit": "Giới hạn thời gian (ms)",
-      "closeDelay": "Độ trễ đóng (ms)",
+      "closeDelay": "Ẩn kệ không dùng sau (ms)",
       "whitelistTitle": "Ứng dụng được phép",
-      "whitelistDesc": "Tính năng phát hiện lắc chỉ hoạt động khi một trong các ứng dụng này được chọn. Chấp nhận tên tiến trình (ví dụ: brave, brave.exe). Không phân biệt chữ hoa/thường.",
+      "whitelistDesc": "Lắc chuột chỉ mở kệ khi một trong các ứng dụng này đang ở phía trước. Chấp nhận tên tiến trình (ví dụ: brave, brave.exe), không phân biệt chữ hoa/thường. Để trống danh sách để cho phép mọi ứng dụng.",
       "addPlaceholder": "Thêm tên tiến trình...",
       "add": "Thêm",
       "removeApp": "Xóa {{app}}"
@@ -99,7 +100,9 @@
       "Lịch sử duyệt web của bạn"
     ],
     "decline": "Từ chối",
-    "accept": "Đồng ý"
+    "accept": "Đồng ý",
+    "changeLater": "Bạn có thể thay đổi điều này bất cứ lúc nào trong Cài đặt.",
+    "summonTip": "Để hiện lại kệ sau khi ẩn, hãy lắc chuột sang trái và phải trong khi kéo một tệp, hoặc đặt phím tắt trong Cài đặt."
   },
   "updater": {
     "title": "Cập nhật phần mềm",
@@ -119,6 +122,8 @@
     "waiting": "Đang chờ kiểm tra cập nhật...",
     "restartWarning": "Holdem sẽ khởi động lại để hoàn tất cập nhật. Các tệp trên kệ sẽ bị xóa.",
     "installNow": "Cài đặt ngay",
-    "later": "Để sau"
+    "later": "Để sau",
+    "retry": "Thử lại",
+    "downloadErrorTitle": "Không thể tải xuống bản cập nhật"
   }
 }

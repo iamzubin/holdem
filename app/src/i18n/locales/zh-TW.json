@@ -9,7 +9,7 @@
     "files_other": "{{count}} 個檔案",
     "files_plural": "{{count}} 個檔案",
     "clear": "清除",
-    "contextMenuTitle": "快顯功能表"
+    "contextMenuTitle": "暫存架動作"
   },
   "popup": {
     "itemsSelected": "已選取 {{count}} 個項目",
@@ -18,7 +18,7 @@
     "list": "列表",
     "grid": "網格",
     "viewMode": "檢視模式",
-    "removeSelected": "刪除所選檔案",
+    "removeSelected": "從暫存架移除",
     "files": "暫存架上的檔案",
     "folder": "資料夾"
   },
@@ -26,6 +26,7 @@
     "title": "設定",
     "subtitle": "管理您的應用程式偏好設定",
     "loading": "正在載入設定...",
+    "loadFailed": "無法載入設定",
     "general": {
       "title": "一般設定",
       "description": "設定開機啟動與隱私權行為",
@@ -52,18 +53,18 @@
       "needsModifier": "請加上 Ctrl、Alt、Shift 或 Win。只有 F1–F24 可單獨使用。"
     },
     "dragDrop": {
-      "dragToCopy": "複製檔案到目的地",
+      "dragToCopy": "將檔案拖曳出去即可複製",
       "shiftToMove": "拖放時按住 Shift 即可移動檔案"
     },
     "mouse": {
       "title": "滑鼠監控",
       "description": "微調晃動偵測靈敏度",
       "requiredShakes": "所需晃動次數",
-      "shakeThreshold": "晃動閾值",
+      "shakeThreshold": "晃動距離（像素）",
       "timeLimit": "時間限制（毫秒）",
-      "closeDelay": "關閉延遲（毫秒）",
+      "closeDelay": "未使用時隱藏暫存架的延遲（毫秒）",
       "whitelistTitle": "白名單應用程式",
-      "whitelistDesc": "僅在白名單中的應用程式為使用中時，才會啟用晃動偵測。接受處理程序名稱（例如 brave、brave.exe），不分大小寫。",
+      "whitelistDesc": "僅在這些應用程式之一位於前景時，晃動才會開啟暫存架。接受處理程序名稱（例如 brave、brave.exe），不分大小寫。將清單留空即可允許所有應用程式。",
       "addPlaceholder": "新增處理程序名稱...",
       "add": "新增",
       "removeApp": "移除 {{app}}"
@@ -99,7 +100,9 @@
       "您的瀏覽記錄"
     ],
     "decline": "拒絕",
-    "accept": "接受"
+    "accept": "接受",
+    "changeLater": "您可以隨時在「設定」中變更此選項。",
+    "summonTip": "隱藏暫存架後若要重新顯示，可在拖曳檔案時左右晃動滑鼠，或在「設定」中設定快速鍵。"
   },
   "updater": {
     "title": "軟體更新",
@@ -119,6 +122,8 @@
     "waiting": "等待檢查更新...",
     "restartWarning": "Holdem 將重新啟動以完成更新，暫存架上的檔案將被清除。",
     "installNow": "立即安裝",
-    "later": "稍後"
+    "later": "稍後",
+    "retry": "再試一次",
+    "downloadErrorTitle": "無法下載更新"
   }
 }

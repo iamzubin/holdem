@@ -9,7 +9,7 @@
     "files_other": "{{count}} fichiers",
     "files_plural": "{{count}} fichiers",
     "clear": "Effacer",
-    "contextMenuTitle": "Menu contextuel"
+    "contextMenuTitle": "Actions de l'étagère"
   },
   "popup": {
     "itemsSelected": "{{count}} éléments sélectionnés",
@@ -18,7 +18,7 @@
     "list": "Liste",
     "grid": "Grille",
     "viewMode": "Mode d'affichage",
-    "removeSelected": "Supprimer les fichiers sélectionnés",
+    "removeSelected": "Retirer de l'étagère",
     "files": "Fichiers de l'étagère",
     "folder": "Dossier"
   },
@@ -26,6 +26,7 @@
     "title": "Réglages",
     "subtitle": "Gérer vos préférences d'application",
     "loading": "Chargement des paramètres...",
+    "loadFailed": "Impossible de charger les réglages",
     "general": {
       "title": "Paramètres généraux",
       "description": "Configurer le comportement de démarrage et de confidentialité",
@@ -52,18 +53,18 @@
       "needsModifier": "Ajoutez Ctrl, Alt, Shift ou Win. Seules les touches F1–F24 fonctionnent sans modificateur."
     },
     "dragDrop": {
-      "dragToCopy": "Copier les fichiers vers la destination",
+      "dragToCopy": "Faites glisser les fichiers vers l'extérieur pour les copier",
       "shiftToMove": "Maintenez la touche Maj enfoncée pour déplacer les fichiers"
     },
     "mouse": {
       "title": "Moniteur de souris",
       "description": "Sensibilité à la détection des secousses",
       "requiredShakes": "Secouements requis",
-      "shakeThreshold": "Seuil de secousse",
+      "shakeThreshold": "Distance de secousse (px)",
       "timeLimit": "Limite de temps (ms)",
-      "closeDelay": "Délai de fermeture (ms)",
+      "closeDelay": "Masquer l'étagère inutilisée après (ms)",
       "whitelistTitle": "Applications en liste blanche",
-      "whitelistDesc": "La détection d'agitation ne sera active que lorsque l'une de ces applications est au premier plan. Accepte les noms de processus (ex. brave, brave.exe). Insensible à la casse.",
+      "whitelistDesc": "Secouer la souris n'ouvre l'étagère que lorsque l'une de ces applications est au premier plan. Accepte les noms de processus (ex. brave, brave.exe), sans distinction de casse. Laissez la liste vide pour autoriser toutes les applications.",
       "addPlaceholder": "Ajouter un nom de processus...",
       "add": "Ajouter",
       "removeApp": "Supprimer {{app}}"
@@ -99,7 +100,9 @@
       "Votre historique de navigation"
     ],
     "decline": "Refuser",
-    "accept": "Accepter"
+    "accept": "Accepter",
+    "changeLater": "Vous pouvez modifier ce choix à tout moment dans les Réglages.",
+    "summonTip": "Pour faire réapparaître l'étagère après l'avoir masquée, secouez la souris de gauche à droite en faisant glisser un fichier, ou définissez un raccourci clavier dans les Réglages."
   },
   "updater": {
     "title": "Mises à jour du logiciel",
@@ -119,6 +122,8 @@
     "waiting": "En attente de vérification des mises à jour...",
     "restartWarning": "Holdem va redémarrer pour terminer la mise à jour. L'étagère sera vidée.",
     "installNow": "Installer maintenant",
-    "later": "Plus tard"
+    "later": "Plus tard",
+    "retry": "Réessayer",
+    "downloadErrorTitle": "Impossible de télécharger la mise à jour"
   }
 }

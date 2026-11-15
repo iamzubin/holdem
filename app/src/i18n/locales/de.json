@@ -9,7 +9,7 @@
     "files_other": "{{count}} Dateien",
     "files_plural": "{{count}} Dateien",
     "clear": "Leeren",
-    "contextMenuTitle": "Kontextmenü"
+    "contextMenuTitle": "Ablage-Aktionen"
   },
   "popup": {
     "itemsSelected": "{{count}} Elemente ausgewählt",
@@ -18,7 +18,7 @@
     "list": "Liste",
     "grid": "Raster",
     "viewMode": "Ansichtsmodus",
-    "removeSelected": "Ausgewählte Dateien entfernen",
+    "removeSelected": "Aus der Ablage entfernen",
     "files": "Dateien in der Ablage",
     "folder": "Ordner"
   },
@@ -26,6 +26,7 @@
     "title": "Einstellungen",
     "subtitle": "Verwalten Sie Ihre Anwendungseinstellungen",
     "loading": "Lade Einstellungen...",
+    "loadFailed": "Einstellungen konnten nicht geladen werden",
     "general": {
       "title": "Allgemeine Einstellungen",
       "description": "Start-und Privatsphäre-Verhalten konfigurieren",
@@ -40,7 +41,7 @@
       "label": "Sprache anzeigen"
     },
     "shortcuts": {
-      "title": "Verknüpfungen",
+      "title": "Tastenkürzel",
       "description": "Anpassen, wie Sie mit der App interagieren",
       "showHotkey": "Fenster-Hotkey anzeigen",
       "pressKeys": "Tasten drücken...",
@@ -52,18 +53,18 @@
       "needsModifier": "Fügen Sie Ctrl, Alt, Shift oder Win hinzu. Nur F1–F24 funktionieren allein."
     },
     "dragDrop": {
-      "dragToCopy": "Dateien in das Ziel kopieren",
+      "dragToCopy": "Dateien zum Kopieren herausziehen",
       "shiftToMove": "Shift während des Ablegens halten um Dateien zu verschieben"
     },
     "mouse": {
       "title": "Maus-Monitor",
       "description": "Feinabstimmung Schüttelerkennung Empfindlichkeit",
       "requiredShakes": "Erforderliche Schüttelbewegungen",
-      "shakeThreshold": "Schüttelschwelle",
+      "shakeThreshold": "Schüttelweite (px)",
       "timeLimit": "Zeitlimit (ms)",
-      "closeDelay": "Schließverzögerung (ms)",
+      "closeDelay": "Unbenutzte Ablage ausblenden nach (ms)",
       "whitelistTitle": "Apps auf der Whitelist",
-      "whitelistDesc": "Die Schüttelerkennung ist nur aktiv, wenn eine dieser Apps im Fokus ist. Akzeptiert Prozessnamen (z. B. brave, brave.exe). Groß-/Kleinschreibung ignorieren.",
+      "whitelistDesc": "Schütteln öffnet die Ablage nur, wenn eine dieser Apps im Vordergrund ist. Akzeptiert Prozessnamen (z. B. brave, brave.exe), ohne Beachtung der Groß-/Kleinschreibung. Lassen Sie die Liste leer, um alle Apps zuzulassen.",
       "addPlaceholder": "Prozessname hinzufügen...",
       "add": "Hinzufügen",
       "removeApp": "{{app}} entfernen"
@@ -99,7 +100,9 @@
       "Ihr Browserverlauf"
     ],
     "decline": "Ablehnen",
-    "accept": "Akzeptieren"
+    "accept": "Akzeptieren",
+    "changeLater": "Sie können dies jederzeit in den Einstellungen ändern.",
+    "summonTip": "Um die Ablage nach dem Ausblenden wieder anzuzeigen, schütteln Sie die Maus beim Ziehen einer Datei nach links und rechts, oder legen Sie in den Einstellungen einen Hotkey fest."
   },
   "updater": {
     "title": "Software-Updates",
@@ -119,6 +122,8 @@
     "waiting": "Warte auf Updates...",
     "restartWarning": "Holdem wird neu gestartet, um das Update abzuschließen. Die Ablage wird geleert.",
     "installNow": "Jetzt installieren",
-    "later": "Später"
+    "later": "Später",
+    "retry": "Erneut versuchen",
+    "downloadErrorTitle": "Update konnte nicht heruntergeladen werden"
   }
 }
