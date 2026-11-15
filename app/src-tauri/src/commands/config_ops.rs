@@ -96,13 +96,20 @@ fn parse_key_code(key: &str) -> Result<Code, HotkeyError> {
 
 /// Parses a `Mod+Mod+Key` string into a [`Shortcut`]. Exactly one
 /// non-modifier key is required; unknown keys are an error rather than being
-/// silently replaced.
+/// silently replaced. Also accepts the `KeyboardEvent.key` strings older
+/// builds saved (e.g. `Ctrl+,`, `Ctrl+ArrowUp`, and `Ctrl+ ` for Space).
 pub fn parse_hotkey(shortcut_str: &str) -> Result<Shortcut, HotkeyError> {
     let mut modifiers = Modifiers::empty();
     let mut code: Option<Code> = None;
 
-    for part in shortcut_str.split('+') {
-        let part = part.trim();
+    for raw in shortcut_str.split('+') {
+        let part = raw.trim();
+        // Older builds saved `KeyboardEvent.key`, which is " " for Space.
+        let part = if part.is_empty() && !raw.is_empty() {
+            "Space"
+        } else {
+            part
+        };
         if part.is_empty() {
             return Err(HotkeyError::EmptyPart(shortcut_str.to_string()));
         }
@@ -127,6 +134,19 @@ pub fn parse_hotkey(shortcut_str: &str) -> Result<Shortcut, HotkeyError> {
 /// The shortcut currently registered by [`register_hotkey`], kept so a failed
 /// registration can restore it.
 static ACTIVE_HOTKEY: Mutex<Option<Shortcut>> = Mutex::new(None);
+
+/// True when `shortcut_str` is the hotkey currently registered. Lets Settings
+/// retry a saved hotkey whose registration failed (e.g. at startup).
+#[tauri::command]
+pub fn is_hotkey_active(shortcut_str: String) -> Result<bool, String> {
+    let active = ACTIVE_HOTKEY
+        .lock()
+        .map_err(|e| format!("Failed to lock hotkey state: {}", e))?;
+    Ok(match parse_hotkey(&shortcut_str) {
+        Ok(shortcut) => *active == Some(shortcut),
+        Err(_) => false,
+    })
+}
 
 #[tauri::command]
 pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
@@ -345,12 +365,37 @@ mod tests {
             Err(HotkeyError::MissingKey("Ctrl+Shift".to_string()))
         );
         assert_eq!(
-            parse_hotkey("Ctrl+ "),
-            Err(HotkeyError::EmptyPart("Ctrl+ ".to_string()))
+            parse_hotkey("Ctrl+"),
+            Err(HotkeyError::EmptyPart("Ctrl+".to_string()))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl++N"),
+            Err(HotkeyError::EmptyPart("Ctrl++N".to_string()))
         );
         assert_eq!(
             parse_hotkey("Ctrl+A+B"),
             Err(HotkeyError::MultipleKeys("Ctrl+A+B".to_string()))
+        );
+    }
+
+    #[test]
+    fn parses_legacy_event_key_strings() {
+        // Older builds saved `KeyboardEvent.key` for non-letter, non-digit keys.
+        assert_eq!(
+            parse_hotkey("Ctrl+ "),
+            Ok(shortcut(Modifiers::CONTROL, Code::Space))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+Shift+,"),
+            Ok(shortcut(Modifiers::CONTROL | Modifiers::SHIFT, Code::Comma))
+        );
+        assert_eq!(
+            parse_hotkey("Alt+ArrowUp"),
+            Ok(shortcut(Modifiers::ALT, Code::ArrowUp))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+Enter"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Enter))
         );
     }
 }

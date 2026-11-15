@@ -75,8 +75,8 @@ export default function SettingsPage() {
   const [currentHotkey, setCurrentHotkey] = useState('');
   const [newApp, setNewApp] = useState('');
   const hotkeyHandlerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
-  // Hotkey as saved on disk, so an unchanged hotkey is never re-validated
-  // (older versions saved strings the backend no longer accepts) and a failed
+  // Hotkey as saved on disk, so an unchanged hotkey never blocks saving
+  // (older versions saved strings the backend may not accept) and a failed
   // save can restore it.
   const savedHotkeyRef = useRef('');
 
@@ -125,10 +125,25 @@ export default function SettingsPage() {
       savedHotkeyRef.current = config.hotkey;
       hotkeyRegistered = false;
       await invoke('set_autostart', { enabled: config.autostart });
+      // An unchanged hotkey can still be inactive if its registration failed
+      // at startup (another app held the combo, or an old saved string).
+      // Retry it after saving so a bad hotkey never blocks other settings.
+      if (!hotkeyChanged && config.hotkey.trim() !== '') {
+        const active = await invoke<boolean>('is_hotkey_active', { shortcutStr: config.hotkey });
+        if (!active) {
+          try {
+            await invoke('register_hotkey', { shortcutStr: config.hotkey });
+          } catch (error) {
+            console.error('Failed to register saved hotkey:', error);
+            setSaveError(`${t('settings.footer.hotkeyFailed')}: ${String(error)}`);
+            return;
+          }
+        }
+      }
       await closeCurrentWindow();
     } catch (error) {
       console.error('Failed to save settings:', error);
-      setSaveError(String(error));
+      setSaveError(`${t('settings.footer.saveFailed')}: ${String(error)}`);
       if (hotkeyRegistered) {
         // The config was not saved: go back to the hotkey that is on disk.
         await invoke('register_hotkey', { shortcutStr: savedHotkeyRef.current }).catch((e) =>
@@ -396,7 +411,7 @@ export default function SettingsPage() {
       <footer className="border-t bg-background/95 p-4">
         {saveError && (
           <p role="alert" className="mb-2 text-xs text-destructive">
-            {t('settings.footer.saveFailed')}: {saveError}
+            {saveError}
           </p>
         )}
         <Button className="w-full" onClick={saveConfig} disabled={saving}>

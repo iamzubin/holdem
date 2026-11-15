@@ -100,6 +100,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             restart_app,
             set_autostart,
             register_hotkey,
+            is_hotkey_active,
             show_main_window,
             accept_analytics_consent,
             decline_analytics_consent,
