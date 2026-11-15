@@ -35,7 +35,7 @@ export const useNativeDrag = () => {
       };
 
       if (element) {
-        prepareDragImage(element).then(() => {
+        prepareDragImage(element, filesToDrag.length).then(() => {
           if (isMouseDownRef.current) schedule();
         });
       } else {

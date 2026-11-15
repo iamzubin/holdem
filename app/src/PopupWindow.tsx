@@ -19,35 +19,42 @@ const PopupWindow: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { files } = useFileManagement();
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
-  const [hasInteracted, setHasInteracted] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [lastSelectedFile, setLastSelectedFile] = useState<string | null>(null);
   const fileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const { beginDrag, handleMouseUp } = useNativeDrag();
 
+  // The popup opens unfocused. It closes 3s after the pointer is outside it,
+  // unless the user has clicked into it; after that, it closes on blur.
+  // Hovering or scrolling without clicking must not count as "unused".
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (!hasInteracted) closeCurrentWindow();
-    }, 3000);
-
+    const root = document.documentElement;
+    let timeoutId: number | undefined;
+    const startCloseTimer = () => {
+      window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(closeCurrentWindow, 3000);
+    };
+    const stopCloseTimer = () => window.clearTimeout(timeoutId);
     const handleFocus = () => {
-      clearTimeout(timeoutId);
-      setHasInteracted(true);
+      root.removeEventListener('mouseleave', startCloseTimer);
+      stopCloseTimer();
     };
+    const handleBlur = () => closeCurrentWindow();
 
-    const handleBlur = () => {
-      if (hasInteracted) closeCurrentWindow();
-    };
-
+    startCloseTimer();
+    root.addEventListener('mouseenter', stopCloseTimer);
+    root.addEventListener('mouseleave', startCloseTimer);
     window.addEventListener('focus', handleFocus);
     window.addEventListener('blur', handleBlur);
 
     return () => {
+      root.removeEventListener('mouseenter', stopCloseTimer);
+      root.removeEventListener('mouseleave', startCloseTimer);
       window.removeEventListener('focus', handleFocus);
       window.removeEventListener('blur', handleBlur);
-      clearTimeout(timeoutId);
+      stopCloseTimer();
     };
-  }, [hasInteracted]);
+  }, []);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement>, file: FilePreview) => {

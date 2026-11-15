@@ -47,8 +47,9 @@ export const NumberField: React.FC<NumberFieldProps> = ({ id, label, value, min,
 
   useEffect(() => setDraft(String(value)), [value]);
 
+  // The backend stores whole numbers and rejects the whole save on a decimal.
   const commit = () => {
-    const parsed = Number(draft);
+    const parsed = Math.round(Number(draft));
     const next = draft.trim() === '' || Number.isNaN(parsed) ? value : Math.min(max, Math.max(min, parsed));
     setDraft(String(next));
     if (next !== value) onChange(next);
@@ -62,12 +63,15 @@ export const NumberField: React.FC<NumberFieldProps> = ({ id, label, value, min,
         type="number"
         min={min}
         max={max}
+        step={1}
         value={draft}
         onChange={(event) => {
           setDraft(event.target.value);
           const parsed = Number(event.target.value);
-          // Apply in-range values right away so Save never misses them.
-          if (event.target.value.trim() !== '' && parsed >= min && parsed <= max) onChange(parsed);
+          // Apply in-range whole numbers right away so Save never misses them.
+          if (event.target.value.trim() !== '' && Number.isInteger(parsed) && parsed >= min && parsed <= max) {
+            onChange(parsed);
+          }
         }}
         onBlur={commit}
         onKeyDown={(event) => {

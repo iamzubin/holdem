@@ -27,20 +27,6 @@ interface AppConfig {
   analytics_uuid: string;
 }
 
-const defaults: AppConfig = {
-  mouse_monitor: {
-    required_shakes: 5,
-    shake_time_limit: 1500,
-    shake_threshold: 100,
-    window_close_delay: 3000,
-    whitelist: ['explorer.exe'],
-  },
-  autostart: false,
-  hotkey: '',
-  analytics_enabled: false,
-  analytics_uuid: '',
-};
-
 const MODIFIER_KEYS = ['Control', 'Alt', 'Shift', 'Meta'];
 
 // Matches the backend rule: a key with no modifier would be swallowed in
@@ -73,6 +59,7 @@ export default function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [config, setConfig] = useState<AppConfig | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
@@ -92,8 +79,10 @@ export default function SettingsPage() {
         setConfig(loaded);
       })
       .catch((error) => {
+        // Don't fall back to defaults: saving them would overwrite the
+        // user's real config.
         console.error('Failed to load config:', error);
-        setConfig(defaults);
+        setLoadError(String(error));
       });
   }, []);
 
@@ -211,6 +200,19 @@ export default function SettingsPage() {
     }
     setNewApp('');
   };
+
+  if (loadError) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+        <p role="alert" className="text-sm text-destructive">
+          {t('settings.loadFailed')}: {loadError}
+        </p>
+        <Button variant="outline" size="sm" onClick={closeCurrentWindow}>
+          {t('common.close')}
+        </Button>
+      </div>
+    );
+  }
 
   if (!config) {
     return (

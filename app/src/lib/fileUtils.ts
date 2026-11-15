@@ -3,28 +3,28 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { FilePreview } from "../types.ts";
 
 /**
- * Capture an HTML element as a PNG data URL using canvas.
- * Returns null if capture fails.
+ * Draw the drag image: the element's thumbnails stacked like StackedIcons,
+ * with a badge showing `fileCount` when more than one file is dragged.
+ * Returns null when the element has no loaded thumbnails (the backend then
+ * uses its default image).
  */
-async function captureElementAsImage(element: HTMLElement): Promise<string | null> {
+async function captureElementAsImage(
+  element: HTMLElement,
+  fileCount: number,
+): Promise<string | null> {
   try {
-    // Use html2canvas-style approach with native canvas
     const rect = element.getBoundingClientRect();
-    const scale = window.devicePixelRatio || 2; // Retina/HiDPI support
-    const targetSize = 256; // 256px as user requested (hi-quality for Mac Retina)
-    
+    const targetSize = 256;
+
     const canvas = document.createElement('canvas');
     canvas.width = targetSize;
     canvas.height = targetSize;
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
 
-    // Scale and center the element content
+    // Scale the element to fill 75% of the canvas, leaving padding around it.
     const maxDim = Math.max(rect.width, rect.height);
-    const drawScale = (targetSize * 0.75) / maxDim; // Leave 12.5% padding on each side
-
-    const offsetX = (targetSize - rect.width * drawScale) / 2;
-    const offsetY = (targetSize - rect.height * drawScale) / 2;
+    const drawScale = (targetSize * 0.75) / maxDim;
 
     // Draw all img children (thumbnails/previews) onto the canvas
     const images = element.querySelectorAll('img');
@@ -51,15 +51,15 @@ async function captureElementAsImage(element: HTMLElement): Promise<string | nul
         ctx.restore();
       }
 
-      // Draw file count badge if multiple files
-      if (imageElements.length > 1) {
-        drawCountBadge(ctx, targetSize, imageElements.length);
+      // The stack shows at most 5 thumbnails, and a popup row shows one, so
+      // the badge counts the files being dragged, not the images drawn.
+      if (fileCount > 1) {
+        drawCountBadge(ctx, targetSize, fileCount);
       }
 
       return canvas.toDataURL('image/png');
     }
 
-    // Fallback: draw a generic file icon if no images
     return null;
   } catch (e) {
     console.error('Failed to capture element as image:', e);
@@ -95,8 +95,8 @@ let pendingDragImage: string | null = null;
 // Store pending files for drag
 let pendingFiles: FilePreview[] = [];
 
-export const prepareDragImage = async (element: HTMLElement): Promise<void> => {
-  pendingDragImage = await captureElementAsImage(element);
+export const prepareDragImage = async (element: HTMLElement, fileCount: number): Promise<void> => {
+  pendingDragImage = await captureElementAsImage(element, fileCount);
 };
 
 export const setPendingFiles = (files: FilePreview[]): void => {
@@ -129,7 +129,8 @@ export const triggerNativeDrag = (): void => {
   setTimeout(async () => {
     if (
       filesToDrag.length === 1 &&
-      (filesToDrag[0].name.startsWith('pasted_') || filesToDrag[0].name.startsWith('note_')) &&
+      // Dropped text snippets are saved as note_<time>_<id>.txt.
+      filesToDrag[0].name.startsWith('note_') &&
       filesToDrag[0].name.endsWith('.txt')
     ) {
       try {

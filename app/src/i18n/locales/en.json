@@ -26,6 +26,7 @@
     "title": "Settings",
     "subtitle": "Manage your application preferences",
     "loading": "Loading settings...",
+    "loadFailed": "Couldn't load settings",
     "general": {
       "title": "General Settings",
       "description": "Configure startup and privacy behavior",
