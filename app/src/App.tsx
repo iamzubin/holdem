@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useFileManagement } from '@/hooks/useFileManagement';
 import { hideMainWindow } from '@/lib/windowUtils';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
+import { cn } from '@/lib/utils';
 import { ChevronDown, Download, Settings, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +17,24 @@ function App() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDropHover, setIsDropHover] = useState(false);
   const { files, clearFiles, refreshFiles } = useFileManagement();
+
+  // The native drop target reports drags over the shelf (see drop_target.rs).
+  useEffect(() => {
+    let cancelled = false;
+    let unlisten: (() => void) | undefined;
+    listen<boolean>('drop-hover', (event) => setIsDropHover(event.payload))
+      .then((fn) => {
+        if (cancelled) fn();
+        else unlisten = fn;
+      })
+      .catch((error) => console.error('Failed to listen for drop hover:', error));
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  }, []);
 
   // Check analytics consent on mount
   useEffect(() => {
@@ -111,8 +130,11 @@ function App() {
     [refreshFiles],
   );
 
-  const openPopup = () => {
-    invoke('open_popup_window', { theme }).catch((err) => console.error(err));
+  // detail is 0 for keyboard activation (Enter/Space): focus the popup then.
+  const openPopup = (event: React.MouseEvent) => {
+    invoke('open_popup_window', { theme, focus: event.detail === 0 }).catch((err) =>
+      console.error(err),
+    );
   };
 
   const handleContextMenu = useCallback(
@@ -135,7 +157,10 @@ function App() {
 
   return (
     <div
-      className="fixed inset-0 text-foreground flex flex-col bg-background p-2 focus:outline-none"
+      className={cn(
+        'fixed inset-0 text-foreground flex flex-col bg-background p-2 focus:outline-none transition-colors',
+        isDropHover && 'bg-primary/10 ring-2 ring-inset ring-primary',
+      )}
       onContextMenu={handleContextMenu}
       tabIndex={0}
       onDragEnter={preventDefault}
@@ -157,7 +182,7 @@ function App() {
         <Button
           variant="ghost"
           size="icon"
-          className="text-foreground hover:bg-gray-500 hover:text-background rounded h-5 w-5"
+          className="text-foreground hover:bg-accent hover:text-accent-foreground rounded h-5 w-5"
           onClick={openSettings}
           aria-label={t('settings.title')}
         >
@@ -166,7 +191,7 @@ function App() {
         <Button
           variant="ghost"
           size="icon"
-          className="text-foreground hover:bg-red-500 hover:text-background rounded h-5 w-5"
+          className="text-foreground hover:bg-destructive hover:text-destructive-foreground rounded h-5 w-5"
           onClick={hideMainWindow}
           aria-label={t('common.close')}
         >
@@ -190,7 +215,7 @@ function App() {
           ) : (
             <div className="flex flex-col items-center">
               <Download className="h-5 w-5" />
-              <span className="text-[8px]">{t('app.dropHere')}</span>
+              <span className="text-[10px]">{t('app.dropHere')}</span>
             </div>
           )}
         </div>

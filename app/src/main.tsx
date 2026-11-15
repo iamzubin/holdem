@@ -33,7 +33,7 @@ i18nInitialization
   .then(() => {
     ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <React.StrictMode>
-        <div className="border-2 border-zinc-800 h-screen w-screen">
+        <div className="h-screen w-screen border border-border">
           <Main />
         </div>
       </React.StrictMode>

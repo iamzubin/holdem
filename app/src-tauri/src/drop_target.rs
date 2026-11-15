@@ -4,7 +4,7 @@ use std::os::windows::ffi::OsStringExt;
 use std::path::PathBuf;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter, Manager};
 use tracing::{error, info, warn};
 use windows::core::{implement, w, BOOL};
 use windows::Win32::Foundation::{HWND, LPARAM, POINTL};
@@ -329,6 +329,7 @@ impl IDropTarget_Impl for HoldemDropTarget_Impl {
         if let Some(drag_state) = self.app_handle.try_state::<Arc<DragState>>() {
             drag_state.drag_started.store(true, Ordering::Relaxed);
         }
+        set_drop_hover(&self.app_handle, true);
         unsafe {
             if !pdweffect.is_null() {
                 *pdweffect = DROPEFFECT_COPY;
@@ -355,6 +356,7 @@ impl IDropTarget_Impl for HoldemDropTarget_Impl {
         if let Some(drag_state) = self.app_handle.try_state::<Arc<DragState>>() {
             drag_state.drag_started.store(false, Ordering::Relaxed);
         }
+        set_drop_hover(&self.app_handle, false);
         Ok(())
     }
 
@@ -365,6 +367,7 @@ impl IDropTarget_Impl for HoldemDropTarget_Impl {
         _pt: &POINTL,
         pdweffect: *mut DROPEFFECT,
     ) -> windows::core::Result<()> {
+        set_drop_hover(&self.app_handle, false);
         unsafe {
             if !pdweffect.is_null() {
                 *pdweffect = DROPEFFECT_COPY;
@@ -496,6 +499,15 @@ impl IDropTarget_Impl for HoldemDropTarget_Impl {
             }
         }
         Ok(())
+    }
+}
+
+/// Tells the shelf whether something is being dragged over it, so it can
+/// highlight. The native drop target replaces WebView2's, so the page never
+/// sees HTML drag events itself.
+fn set_drop_hover(app_handle: &AppHandle, hovering: bool) {
+    if let Err(e) = app_handle.emit_to("main", "drop-hover", hovering) {
+        warn!("Failed to emit drop-hover: {}", e);
     }
 }
 

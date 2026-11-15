@@ -9,7 +9,7 @@
     "files_other": "{{count}} files",
     "files_plural": "{{count}} files",
     "clear": "Clear",
-    "contextMenuTitle": "Context Menu"
+    "contextMenuTitle": "Shelf actions"
   },
   "popup": {
     "itemsSelected": "{{count}} items selected",
@@ -18,7 +18,7 @@
     "list": "List",
     "grid": "Grid",
     "viewMode": "View mode",
-    "removeSelected": "Remove Selected Files",
+    "removeSelected": "Remove from shelf",
     "files": "Shelf files",
     "folder": "Folder"
   },
@@ -53,18 +53,18 @@
       "needsModifier": "Add Ctrl, Alt, Shift or Win. Only F1–F24 work on their own."
     },
     "dragDrop": {
-      "dragToCopy": "Copy files to destination",
+      "dragToCopy": "Drag files out to copy them",
       "shiftToMove": "Hold Shift while dropping to move files"
     },
     "mouse": {
       "title": "Mouse Monitor",
       "description": "Fine-tune shake detection sensitivity",
       "requiredShakes": "Required Shakes",
-      "shakeThreshold": "Shake Threshold",
+      "shakeThreshold": "Shake distance (px)",
       "timeLimit": "Time Limit (ms)",
-      "closeDelay": "Close Delay (ms)",
+      "closeDelay": "Hide unused shelf after (ms)",
       "whitelistTitle": "Whitelisted Apps",
-      "whitelistDesc": "Shake detection will only be active when one of these apps is focused. Accepts process names (e.g. brave, brave.exe). Case-insensitive.",
+      "whitelistDesc": "Shaking opens the shelf only while one of these apps is in front. Accepts process names (e.g. brave, brave.exe), case-insensitive. Leave the list empty to allow every app.",
       "addPlaceholder": "Add process name...",
       "add": "Add",
       "removeApp": "Remove {{app}}"
@@ -100,7 +100,9 @@
       "Your browsing history"
     ],
     "decline": "Decline",
-    "accept": "Accept"
+    "accept": "Accept",
+    "changeLater": "You can change this at any time in Settings.",
+    "summonTip": "To bring the shelf back after hiding it, shake the mouse left and right while dragging a file, or set a hotkey in Settings."
   },
   "updater": {
     "title": "Software Updates",
@@ -120,6 +122,8 @@
     "waiting": "Waiting to check for updates...",
     "restartWarning": "Holdem will restart to finish the update. Files on the shelf will be cleared.",
     "installNow": "Install now",
-    "later": "Later"
+    "later": "Later",
+    "retry": "Try again",
+    "downloadErrorTitle": "Couldn't download the update"
   }
 }

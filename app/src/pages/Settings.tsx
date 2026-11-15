@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { setLanguage, supportedLanguages } from '@/i18n';
 import { closeCurrentWindow } from '@/lib/windowUtils';
 import { invoke } from '@tauri-apps/api/core';
-import { Keyboard, Monitor, Moon, Palette, Settings, Sun, X } from 'lucide-react';
+import { Keyboard, Languages, Monitor, Moon, Mouse, Settings, Sun, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -280,7 +280,7 @@ export default function SettingsPage() {
 
           <section className="space-y-3">
             <SectionTitle
-              icon={<Palette />}
+              icon={<Languages />}
               title={t('settings.language.title')}
               description={t('settings.language.description')}
             />
@@ -308,9 +308,13 @@ export default function SettingsPage() {
               description={t('settings.shortcuts.description')}
             />
             <div className="rounded-lg border bg-card p-4">
-              <Label>{t('settings.shortcuts.showHotkey')}</Label>
+              <Label id="hotkey-label">{t('settings.shortcuts.showHotkey')}</Label>
               <div className="mt-2 flex gap-2">
-                <div className="flex h-9 min-w-0 flex-1 items-center rounded-md border bg-background px-3 font-mono text-sm">
+                <div
+                  role="status"
+                  aria-labelledby="hotkey-label"
+                  className="flex h-9 min-w-0 flex-1 items-center rounded-md border bg-background px-3 font-mono text-sm"
+                >
                   {listening
                     ? currentHotkey || t('settings.shortcuts.pressKeys')
                     : config.hotkey || t('settings.shortcuts.noneSet')}
@@ -345,7 +349,7 @@ export default function SettingsPage() {
 
           <section className="space-y-3">
             <SectionTitle
-              icon={<Monitor />}
+              icon={<Mouse />}
               title={t('settings.mouse.title')}
               description={t('settings.mouse.description')}
             />
@@ -435,6 +439,7 @@ export default function SettingsPage() {
                   key={option}
                   size="sm"
                   variant={theme === option ? 'default' : 'ghost'}
+                  aria-pressed={theme === option}
                   className="flex-1 capitalize"
                   onClick={() => setTheme(option)}
                 >

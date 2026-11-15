@@ -82,7 +82,11 @@ export default function Consent() {
                 ))}
               </ul>
             </div>
+            <p>{t("consent.changeLater")}</p>
           </div>
+          {/* This is the first-run window, so say how to get the shelf back
+              once it is hidden: shaking only works while dragging. */}
+          <p className="rounded-md bg-muted p-3 text-sm">{t("consent.summonTip")}</p>
           <div className="flex gap-3 pt-4">
             <Button 
               variant="outline" 

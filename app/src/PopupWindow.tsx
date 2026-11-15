@@ -22,7 +22,10 @@ const PopupWindow: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [lastSelectedFile, setLastSelectedFile] = useState<string | null>(null);
   const fileRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-  const { beginDrag, handleMouseUp } = useNativeDrag();
+  // Roving tabindex: the list is a single Tab stop; arrows move within it.
+  const [activeIndex, setActiveIndex] = useState(0);
+  const initialFocusDone = useRef(false);
+  const { beginDrag } = useNativeDrag();
 
   // The popup opens unfocused. It closes 3s after the pointer is outside it,
   // unless the user has clicked into it; after that, it closes on blur.
@@ -41,7 +44,9 @@ const PopupWindow: React.FC = () => {
     };
     const handleBlur = () => closeCurrentWindow();
 
-    startCloseTimer();
+    // Opened from the keyboard, the popup starts focused (see App.openPopup).
+    if (document.hasFocus()) handleFocus();
+    else startCloseTimer();
     root.addEventListener('mouseenter', stopCloseTimer);
     root.addEventListener('mouseleave', startCloseTimer);
     window.addEventListener('focus', handleFocus);
@@ -100,10 +105,9 @@ const PopupWindow: React.FC = () => {
   );
 
   const locale = i18n.resolvedLanguage;
-  const totalSize = formatFileSize(
-    files.reduce((acc, file) => acc + file.size, 0),
-    locale,
-  );
+  const totalBytes = files.reduce((acc, file) => acc + file.size, 0);
+  // Folder sizes are not computed, so a shelf of folders has no meaningful total.
+  const totalSize = totalBytes > 0 ? formatFileSize(totalBytes, locale) : null;
   const sizeLabel = (file: FilePreview) =>
     isFolder(file) ? t('popup.folder') : formatFileSize(file.size, locale);
 
@@ -121,6 +125,8 @@ const PopupWindow: React.FC = () => {
   const handleRowKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, index: number) => {
     const fileId = files[index].id.toString();
     const step = isList ? 1 : 2; // grid has two columns
+    // In right-to-left languages the grid's columns are mirrored.
+    const forward = document.documentElement.dir === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
     switch (event.key) {
       case 'ArrowDown':
         focusRow(index + step);
@@ -129,10 +135,8 @@ const PopupWindow: React.FC = () => {
         focusRow(index - step);
         break;
       case 'ArrowRight':
-        if (!isList) focusRow(index + 1);
-        break;
       case 'ArrowLeft':
-        if (!isList) focusRow(index - 1);
+        if (!isList) focusRow(event.key === forward ? index + 1 : index - 1);
         break;
       case 'Home':
         focusRow(0);
@@ -153,8 +157,9 @@ const PopupWindow: React.FC = () => {
         handleRemoveSelectedFiles();
         break;
       case 'Escape':
-        if (selectedFiles.size === 0) return;
-        setSelectedFiles(new Set());
+        // First Esc clears the selection, the next one closes the popup.
+        if (selectedFiles.size > 0) setSelectedFiles(new Set());
+        else closeCurrentWindow();
         break;
       default:
         return;
@@ -185,11 +190,21 @@ const PopupWindow: React.FC = () => {
     });
   }, [files]);
 
+  // Keep the Tab stop on an existing row as files come and go, and put focus
+  // in the list when the popup was opened focused (from the keyboard).
+  useEffect(() => {
+    if (activeIndex >= files.length && files.length > 0) setActiveIndex(files.length - 1);
+    if (!initialFocusDone.current && files.length > 0 && document.hasFocus()) {
+      initialFocusDone.current = true;
+      fileRefs.current[files[0].id]?.focus();
+    }
+  }, [files, activeIndex]);
+
   const isList = viewMode === 'list';
 
   return (
     <div
-      className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2 rounded border border-border"
+      className="fixed inset-0 flex flex-col overflow-hidden bg-background p-2"
       onContextMenu={(event) => event.preventDefault()}
     >
       <div className="flex shrink-0 justify-between items-center mb-2">
@@ -201,7 +216,7 @@ const PopupWindow: React.FC = () => {
                   ? t('popup.itemsSelected', { count: selectedFiles.size })
                   : t('app.files', { count: files.length })}
               </span>
-              <span className="text-xs text-primary">{totalSize}</span>
+              {totalSize && <span className="text-xs text-primary">{totalSize}</span>}
             </>
           )}
         </div>
@@ -246,18 +261,18 @@ const PopupWindow: React.FC = () => {
                     }}
                     role="option"
                     aria-selected={selectedFiles.has(file.id.toString())}
-                    tabIndex={0}
+                    tabIndex={index === activeIndex ? 0 : -1}
                     className={cn(
                       'p-1 rounded cursor-grab active:cursor-grabbing outline-none focus-visible:ring-2 focus-visible:ring-ring',
                       isList ? 'flex items-center gap-2' : 'flex flex-col items-center',
-                      selectedFiles.has(file.id.toString()) && 'bg-accent/50',
+                      selectedFiles.has(file.id.toString()) &&
+                        'bg-primary/15 ring-1 ring-inset ring-primary/40',
                     )}
+                    onFocus={() => setActiveIndex(index)}
                     onClick={(e) => handleFileClick(file.id.toString(), e)}
                     onContextMenu={() => handleRowContextMenu(file.id.toString())}
                     onKeyDown={(e) => handleRowKeyDown(e, index)}
                     onMouseDown={(e) => handleMouseDown(e, file)}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseUp}
                   >
                     <div
                       className={
@@ -287,13 +302,16 @@ const PopupWindow: React.FC = () => {
                   </div>
                 ))}
               </div>
+              {files.length === 0 && (
+                <p className="py-8 text-center text-xs text-muted-foreground">{t('app.dropHere')}</p>
+              )}
             </ContextMenu.Trigger>
             <ContextMenu.Portal>
-              <ContextMenu.Content className="min-w-[200px] bg-background rounded-md overflow-hidden p-1">
+              <ContextMenu.Content className="min-w-[200px] overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md">
                 <ContextMenu.Item
                   onClick={handleRemoveSelectedFiles}
                   disabled={selectedFiles.size === 0}
-                  className="text-xs text-primary rounded px-2 py-1.5 cursor-pointer hover:bg-secondary focus:bg-secondary outline-none disabled:cursor-not-allowed disabled:opacity-40"
+                  className="cursor-pointer rounded px-2 py-1.5 text-xs outline-none data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-40"
                 >
                   {t('popup.removeSelected')}
                 </ContextMenu.Item>

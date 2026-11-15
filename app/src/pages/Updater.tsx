@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useTranslation } from "react-i18next";
+import { CircleCheck, CircleX, X } from "lucide-react";
 
 interface UpdateInfo {
   version: string;
@@ -22,6 +23,8 @@ const Updater: React.FC = () => {
   const [status, setStatus] = useState<UpdateStatus>("idle");
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  // Which step failed, so the title is accurate and Retry repeats that step.
+  const [failedStep, setFailedStep] = useState<"check" | "download">("check");
   const updateRef = useRef<Update | null>(null);
 
   useEffect(() => {
@@ -47,6 +50,7 @@ const Updater: React.FC = () => {
         setStatus("no_update");
       }
     } catch (error) {
+      setFailedStep("check");
       setStatus("error");
       setErrorMessage(error instanceof Error ? error.message : String(error));
     }
@@ -85,6 +89,7 @@ const Updater: React.FC = () => {
         await relaunch();
       }, 1000);
     } catch (error) {
+      setFailedStep("download");
       setStatus("error");
       setErrorMessage(t("updater.downloadError", { error: error instanceof Error ? error.message : String(error) }));
     }
@@ -105,7 +110,11 @@ const Updater: React.FC = () => {
         return (
           <Card>
             <CardContent className="py-8">
-              <Progress value={progress ?? 0} className="mb-4" />
+              <Progress
+                value={progress ?? 0}
+                className="mb-4"
+                aria-label={t("updater.downloading")}
+              />
               {progress !== null && <div className="text-center text-sm mb-2">{progress}%</div>}
               <span className="text-muted-foreground">{t("updater.downloading")}</span>
             </CardContent>
@@ -115,7 +124,7 @@ const Updater: React.FC = () => {
         return (
           <Card>
             <CardContent className="flex flex-col items-center py-8">
-              <div className="text-green-600 text-4xl mb-3">✓</div>
+              <CircleCheck className="mb-3 h-10 w-10 text-primary" aria-hidden />
               <span className="font-medium">{t("updater.downloadedTitle")}</span>
               <span className="text-muted-foreground mt-2">{t("updater.downloadedDesc")}</span>
             </CardContent>
@@ -144,7 +153,7 @@ const Updater: React.FC = () => {
                   </div>
                   <Alert className="mb-4">
                     <AlertTitle>{t("updater.releaseNotes")}</AlertTitle>
-                    <AlertDescription className="whitespace-pre-line">
+                    <AlertDescription className="max-h-28 overflow-y-auto whitespace-pre-line">
                       {updateInfo.notes}
                     </AlertDescription>
                   </Alert>
@@ -166,7 +175,7 @@ const Updater: React.FC = () => {
         return (
           <Card>
             <CardContent className="flex flex-col items-center py-8">
-              <div className="text-green-600 text-4xl mb-3">✓</div>
+              <CircleCheck className="mb-3 h-10 w-10 text-primary" aria-hidden />
               <span className="font-medium">{t("updater.latest")}</span>
             </CardContent>
           </Card>
@@ -175,9 +184,18 @@ const Updater: React.FC = () => {
         return (
           <Card>
             <CardContent className="flex flex-col items-center py-8">
-              <div className="text-destructive text-4xl mb-3">✗</div>
-              <span className="font-medium">{t("updater.errorTitle")}</span>
-              <span className="text-destructive mt-2">{errorMessage}</span>
+              <CircleX className="mb-3 h-10 w-10 text-destructive" aria-hidden />
+              <span className="font-medium">
+                {t(failedStep === "download" ? "updater.downloadErrorTitle" : "updater.errorTitle")}
+              </span>
+              <span className="mt-2 text-sm text-destructive">{errorMessage}</span>
+              <Button
+                className="mt-4"
+                variant="outline"
+                onClick={failedStep === "download" ? downloadAndInstallUpdate : checkForUpdates}
+              >
+                {t("updater.retry")}
+              </Button>
             </CardContent>
           </Card>
         );
@@ -194,22 +212,20 @@ const Updater: React.FC = () => {
 
   return (
 
-    <Card className="relative w-full h-full" data-tauri-drag-region>
+    <Card className="relative w-full h-full overflow-y-auto" data-tauri-drag-region>
       <Button
         variant="ghost"
         size="icon"
-        className="absolute top-2 right-2"
+        className="absolute top-2 end-2"
         onClick={closeCurrentWindow}
         aria-label={t("updater.close")}
       >
-        <svg className="w-6 h-6" fill="none" stroke="#ff0000" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <X className="h-5 w-5" />
       </Button>
       <CardHeader data-tauri-drag-region>
         <CardTitle data-tauri-drag-region className="text-center">{t("updater.title")}</CardTitle>
       </CardHeader>
-      <CardContent>{renderContent()}</CardContent>
+      <CardContent aria-live="polite">{renderContent()}</CardContent>
     </Card>
   );
 };

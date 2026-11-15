@@ -20,8 +20,16 @@ fn url_with_theme(base: &str, theme: Option<String>) -> String {
     }
 }
 
+/// Toggles the file popup. It normally opens unfocused so the shelf keeps
+/// focus; `focus` (set when opened from the keyboard) focuses it instead so
+/// the file list can be used without a mouse.
 #[tauri::command]
-pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), String> {
+pub fn open_popup_window(
+    app: AppHandle,
+    theme: Option<String>,
+    focus: Option<bool>,
+) -> Result<(), String> {
+    let focus = focus.unwrap_or(false);
     // Get the main window
     let main_window = app
         .get_webview_window("main")
@@ -77,7 +85,7 @@ pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), St
             .inner_size(popup_width, popup_height)
             .position(popup_x, popup_y)
             .always_on_top(true)
-            .focused(false)
+            .focused(focus)
             .accept_first_mouse(true)
             .visible_on_all_workspaces(true)
             .build();
@@ -109,7 +117,11 @@ pub fn open_settings_window(app: AppHandle, theme: Option<String>) -> Result<(),
     let settings_height = 600.0;
 
     if let Some(settings_window) = app.get_webview_window("settings") {
-        settings_window.close().map_err(|e| e.to_string())?;
+        // Bring it back rather than closing it: the shelf is always on top,
+        // so Settings is often just hidden behind it, and closing would
+        // throw away unsaved edits.
+        settings_window.unminimize().map_err(|e| e.to_string())?;
+        settings_window.set_focus().map_err(|e| e.to_string())?;
     } else {
         // Create the settings window
         let app_clone = app.clone();

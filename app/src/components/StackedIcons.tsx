@@ -9,7 +9,7 @@ interface StackedIconsProps {
 
 export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { beginDrag, handleMouseUp } = useNativeDrag();
+  const { beginDrag } = useNativeDrag();
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
@@ -42,8 +42,6 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
       ref={containerRef}
       className="relative w-full h-full cursor-grab active:cursor-grabbing"
       onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
     >
       {stackedIcons}
     </div>

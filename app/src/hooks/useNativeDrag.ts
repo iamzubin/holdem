@@ -7,8 +7,9 @@ const DRAG_DELAY_MS = 150;
 /**
  * Canonical native-drag sequence shared by PopupWindow (per-file rows) and
  * StackedIcons (whole stack). `beginDrag` captures the drag image from
- * `element` then starts the OS drag after a short delay; `cancelDrag`
- * aborts a pending drag on mouse-up / unmount.
+ * `element` then starts the OS drag after a short delay; releasing the mouse
+ * anywhere (or unmounting) before then cancels it. Leaving the element does
+ * not cancel: a quick flick off a small row or the stack is a real drag.
  */
 export const useNativeDrag = () => {
   const isMouseDownRef = useRef(false);
@@ -16,6 +17,7 @@ export const useNativeDrag = () => {
 
   const cancelDrag = useCallback(() => {
     isMouseDownRef.current = false;
+    window.removeEventListener('mouseup', cancelDrag);
     if (dragTimeoutRef.current !== null) {
       clearTimeout(dragTimeoutRef.current);
       dragTimeoutRef.current = null;
@@ -25,6 +27,7 @@ export const useNativeDrag = () => {
   const beginDrag = useCallback(
     (filesToDrag: FilePreview[], element: HTMLElement | null) => {
       isMouseDownRef.current = true;
+      window.addEventListener('mouseup', cancelDrag);
       setPendingFiles(filesToDrag);
 
       const schedule = () => {
@@ -42,10 +45,10 @@ export const useNativeDrag = () => {
         schedule();
       }
     },
-    [],
+    [cancelDrag],
   );
 
   useEffect(() => cancelDrag, [cancelDrag]);
 
-  return { beginDrag, cancelDrag, handleMouseUp: cancelDrag };
+  return { beginDrag, cancelDrag };
 };
