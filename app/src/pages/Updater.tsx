@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { check } from '@tauri-apps/plugin-updater';
+import React, { useEffect, useRef, useState } from "react";
+import { check, type DownloadEvent, type Update } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { closeCurrentWindow } from "@/lib/windowUtils";
 import { Button } from "@/components/ui/button";
@@ -17,10 +17,12 @@ type UpdateStatus = "idle" | "checking" | "available" | "no_update" | "error" | 
 
 const Updater: React.FC = () => {
   const { t } = useTranslation();
-  const [progress, setProgress] = useState<number>(0);
+  // null while the download size is unknown (no Content-Length header).
+  const [progress, setProgress] = useState<number | null>(null);
   const [status, setStatus] = useState<UpdateStatus>("idle");
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const updateRef = useRef<Update | null>(null);
 
   useEffect(() => {
     checkForUpdates();
@@ -33,16 +35,14 @@ const Updater: React.FC = () => {
       const update = await check();
 
       if (update) {
+        updateRef.current = update;
         setUpdateInfo({
           version: update.version,
           notes: update.body || t("updater.noNotes")
         });
+        // Wait for the user: installing relaunches the app, which clears the
+        // in-memory shelf.
         setStatus("available");
-
-        // Start download after a short delay
-        setTimeout(() => {
-          downloadAndInstallUpdate(update);
-        }, 3000);
       } else {
         setStatus("no_update");
       }
@@ -52,21 +52,25 @@ const Updater: React.FC = () => {
     }
   };
 
-  const downloadAndInstallUpdate = async (update: any) => {
+  const downloadAndInstallUpdate = async () => {
+    const update = updateRef.current;
+    if (!update) return;
     try {
       setStatus("downloading");
+      setProgress(null);
       let downloaded = 0;
       let contentLength = 0;
 
-      await update.downloadAndInstall((event: any) => {
+      await update.downloadAndInstall((event: DownloadEvent) => {
         switch (event.event) {
           case 'Started':
-            contentLength = event.data.contentLength;
+            contentLength = event.data.contentLength ?? 0;
             break;
           case 'Progress':
             downloaded += event.data.chunkLength;
-            const percentage = Math.min(Math.round((downloaded / contentLength) * 100), 100);
-            setProgress(percentage);
+            if (contentLength > 0) {
+              setProgress(Math.min(Math.round((downloaded / contentLength) * 100), 100));
+            }
             break;
           case 'Finished':
             setStatus("downloaded");
@@ -101,8 +105,8 @@ const Updater: React.FC = () => {
         return (
           <Card>
             <CardContent className="py-8">
-              <Progress value={progress} className="mb-4" />
-              <div className="text-center text-sm mb-2">{progress}%</div>
+              <Progress value={progress ?? 0} className="mb-4" />
+              {progress !== null && <div className="text-center text-sm mb-2">{progress}%</div>}
               <span className="text-muted-foreground">{t("updater.downloading")}</span>
             </CardContent>
           </Card>
@@ -144,7 +148,15 @@ const Updater: React.FC = () => {
                       {updateInfo.notes}
                     </AlertDescription>
                   </Alert>
-                  <span className="text-muted-foreground">{t("updater.autoDownload")}</span>
+                  <p className="text-sm text-muted-foreground mb-4">{t("updater.restartWarning")}</p>
+                  <div className="flex gap-2">
+                    <Button className="flex-1" onClick={downloadAndInstallUpdate}>
+                      {t("updater.installNow")}
+                    </Button>
+                    <Button className="flex-1" variant="outline" onClick={closeCurrentWindow}>
+                      {t("updater.later")}
+                    </Button>
+                  </div>
                 </>
               )}
             </CardContent>

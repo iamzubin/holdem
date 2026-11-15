@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { supportedLanguages } from '@/i18n';
+import { setLanguage, supportedLanguages } from '@/i18n';
 import { closeCurrentWindow } from '@/lib/windowUtils';
 import { invoke } from '@tauri-apps/api/core';
 import { Keyboard, Monitor, Moon, Palette, Settings, Sun, X } from 'lucide-react';
@@ -43,6 +43,10 @@ const defaults: AppConfig = {
 
 const MODIFIER_KEYS = ['Control', 'Alt', 'Shift', 'Meta'];
 
+// Matches the backend rule: a key with no modifier would be swallowed in
+// every app, so only F1-F24 may stand alone.
+const FUNCTION_KEY = /^F([1-9]|1[0-9]|2[0-4])$/;
+
 const buildHotkey = (event: KeyboardEvent): string => {
   const parts = [
     event.ctrlKey && 'Ctrl',
@@ -73,6 +77,7 @@ export default function SettingsPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
   const [currentHotkey, setCurrentHotkey] = useState('');
+  const [hotkeyHint, setHotkeyHint] = useState(false);
   const [newApp, setNewApp] = useState('');
   const hotkeyHandlerRef = useRef<((event: KeyboardEvent) => void) | null>(null);
   // Hotkey as saved on disk, so an unchanged hotkey never blocks saving
@@ -124,7 +129,14 @@ export default function SettingsPage() {
       await invoke('save_config', { newConfig: config });
       savedHotkeyRef.current = config.hotkey;
       hotkeyRegistered = false;
-      await invoke('set_autostart', { enabled: config.autostart });
+      try {
+        await invoke('set_autostart', { enabled: config.autostart });
+      } catch (error) {
+        // The config is already saved; only the startup entry failed.
+        console.error('Failed to update autostart:', error);
+        setSaveError(`${t('settings.footer.autostartFailed')}: ${String(error)}`);
+        return;
+      }
       // An unchanged hotkey can still be inactive if its registration failed
       // at startup (another app held the combo, or an old saved string).
       // Retry it after saving so a bad hotkey never blocks other settings.
@@ -157,6 +169,7 @@ export default function SettingsPage() {
 
   const stopHotkeyListening = useCallback(() => {
     setListening(false);
+    setHotkeyHint(false);
     if (hotkeyHandlerRef.current) {
       window.removeEventListener('keydown', hotkeyHandlerRef.current, true);
       hotkeyHandlerRef.current = null;
@@ -165,14 +178,26 @@ export default function SettingsPage() {
 
   const startHotkeyListening = () => {
     setListening(true);
+    setCurrentHotkey('');
+    setHotkeyHint(false);
     const handler = (event: KeyboardEvent) => {
       event.preventDefault();
+      const hasModifier = event.ctrlKey || event.altKey || event.shiftKey || event.metaKey;
+      if (event.key === 'Escape' && !hasModifier) {
+        // Cancel and keep the current hotkey.
+        stopHotkeyListening();
+        return;
+      }
       const value = buildHotkey(event);
       setCurrentHotkey(value);
-      if (!MODIFIER_KEYS.includes(event.key)) {
-        setConfig((current) => (current ? { ...current, hotkey: value } : current));
-        stopHotkeyListening();
+      if (MODIFIER_KEYS.includes(event.key)) return;
+      if (!hasModifier && !FUNCTION_KEY.test(event.code)) {
+        // Keep listening for a combination instead of taking a bare key.
+        setHotkeyHint(true);
+        return;
       }
+      setConfig((current) => (current ? { ...current, hotkey: value } : current));
+      stopHotkeyListening();
     };
     hotkeyHandlerRef.current = handler;
     window.addEventListener('keydown', handler, true);
@@ -230,6 +255,7 @@ export default function SettingsPage() {
               >
                 <Switch
                   id="startup"
+                  label={t('settings.general.startup')}
                   checked={config.autostart}
                   onChange={() => setConfig({ ...config, autostart: !config.autostart })}
                 />
@@ -240,6 +266,7 @@ export default function SettingsPage() {
               >
                 <Switch
                   id="analytics"
+                  label={t('settings.general.analytics')}
                   checked={config.analytics_enabled}
                   onChange={() =>
                     setConfig({ ...config, analytics_enabled: !config.analytics_enabled })
@@ -260,8 +287,8 @@ export default function SettingsPage() {
               <select
                 id="language"
                 className="mt-2 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                value={i18n.language}
-                onChange={(event) => i18n.changeLanguage(event.target.value)}
+                value={i18n.resolvedLanguage ?? i18n.language}
+                onChange={(event) => setLanguage(event.target.value)}
               >
                 {supportedLanguages.map((language) => (
                   <option key={language.code} value={language.code}>
@@ -301,6 +328,16 @@ export default function SettingsPage() {
                   {t('settings.shortcuts.clear')}
                 </Button>
               </div>
+              {listening && (
+                <p
+                  aria-live="polite"
+                  className={
+                    hotkeyHint ? 'mt-2 text-xs text-destructive' : 'mt-2 text-xs text-muted-foreground'
+                  }
+                >
+                  {t(hotkeyHint ? 'settings.shortcuts.needsModifier' : 'settings.shortcuts.escToCancel')}
+                </p>
+              )}
             </div>
           </section>
 
@@ -367,6 +404,7 @@ export default function SettingsPage() {
                     <button
                       key={app}
                       type="button"
+                      aria-label={t('settings.mouse.removeApp', { app })}
                       className="rounded-md bg-muted px-2 py-1 font-mono text-xs hover:bg-destructive/10"
                       onClick={() =>
                         updateMouse(

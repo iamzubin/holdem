@@ -1,6 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
+import { emit, listen } from "@tauri-apps/api/event";
 
 // Auto-load every locale file dropped into ./locales (e.g. by translators
 // or a Crowdin sync). Filename (without .json) is the language code.
@@ -14,13 +15,22 @@ for (const [path, mod] of Object.entries(localeModules)) {
   resources[code] = { translation: mod.default };
 }
 
-// Backwards-compat aliases for preferences stored before regional codes
-// existed (Settings used to offer short codes `zh` / `es`), as well as
-// base-language fallbacks for browser detectors (pt -> pt-BR, sv -> sv-SE).
-if (resources["zh-CN"]) resources["zh"] = resources["zh-CN"];
-if (resources["es-ES"]) resources["es"] = resources["es-ES"];
-if (resources["pt-BR"]) resources["pt"] = resources["pt-BR"];
-if (resources["sv-SE"]) resources["sv"] = resources["sv-SE"];
+// Codes that are not offered in Settings but can still arrive: preferences
+// stored before regional codes existed (`zh` / `es`), and base or variant
+// codes from browser detection (pt, sv, and Windows' Norwegian `nb` / `nn`).
+// They resolve to a listed code so the Settings dropdown shows the language
+// actually in use.
+const languageAliases: Record<string, string> = {
+  zh: "zh-CN",
+  es: "es-ES",
+  pt: "pt-BR",
+  sv: "sv-SE",
+  nb: "no",
+  nn: "no",
+};
+for (const [alias, target] of Object.entries(languageAliases)) {
+  if (resources[target]) resources[alias] = resources[target];
+}
 
 export const supportedLanguages = [
   { code: "en", label: "English", nativeLabel: "English" },
@@ -87,9 +97,26 @@ export const i18nInitialization = i18n
   })
   .then(() => {
     syncDocumentAttrs(i18n.language);
+    const canonical = languageAliases[i18n.language];
+    if (canonical) return i18n.changeLanguage(canonical);
   });
-export const setLanguage = (lng: string) => {
-  return i18n.changeLanguage(lng);
+
+/** Cross-window broadcast, mirroring the theme provider: every Tauri window
+ * runs its own i18next instance, so a change in Settings must be pushed to
+ * the shelf and popup. */
+const LANGUAGE_CHANGED_EVENT = "language-changed";
+
+listen<string>(LANGUAGE_CHANGED_EVENT, (event) => {
+  // Apply without re-emitting, so there is no event loop.
+  if (event.payload !== i18n.resolvedLanguage) i18n.changeLanguage(event.payload);
+}).catch(() => {
+  // Not running inside Tauri (plain browser dev): nothing to sync.
+});
+
+/** Changes the language in this window and every other open window. */
+export const setLanguage = async (lng: string) => {
+  await i18n.changeLanguage(lng);
+  await emit(LANGUAGE_CHANGED_EVENT, lng).catch(() => {});
 };
 
 export default i18n;

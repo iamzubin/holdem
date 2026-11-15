@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,18 +40,40 @@ interface NumberFieldProps {
   onChange: (value: number) => void;
 }
 
-export const NumberField: React.FC<NumberFieldProps> = ({ id, label, value, min, max, onChange }) => (
-  <div className="space-y-1.5">
-    <Label htmlFor={id}>{label}</Label>
-    <Input
-      id={id}
-      type="number"
-      min={min}
-      max={max}
-      value={value}
-      onChange={(event) =>
-        onChange(Math.min(max, Math.max(min, Number(event.target.value) || min)))
-      }
-    />
-  </div>
-);
+// Keeps the typed text as a draft and clamps only on blur, so typing "2000"
+// into a field with min 100 isn't turned into 100 at the first keystroke.
+export const NumberField: React.FC<NumberFieldProps> = ({ id, label, value, min, max, onChange }) => {
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => setDraft(String(value)), [value]);
+
+  const commit = () => {
+    const parsed = Number(draft);
+    const next = draft.trim() === '' || Number.isNaN(parsed) ? value : Math.min(max, Math.max(min, parsed));
+    setDraft(String(next));
+    if (next !== value) onChange(next);
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        type="number"
+        min={min}
+        max={max}
+        value={draft}
+        onChange={(event) => {
+          setDraft(event.target.value);
+          const parsed = Number(event.target.value);
+          // Apply in-range values right away so Save never misses them.
+          if (event.target.value.trim() !== '' && parsed >= min && parsed <= max) onChange(parsed);
+        }}
+        onBlur={commit}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') commit();
+        }}
+      />
+    </div>
+  );
+};

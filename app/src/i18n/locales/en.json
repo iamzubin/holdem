@@ -45,7 +45,9 @@
       "set": "Set",
       "stop": "Stop",
       "clear": "Clear",
-      "noneSet": "None set"
+      "noneSet": "None set",
+      "escToCancel": "Press a key combination, or Esc to cancel",
+      "needsModifier": "Add Ctrl, Alt, Shift or Win. Only F1–F24 work on their own."
     },
     "dragDrop": {
       "dragToCopy": "Copy files to destination",
@@ -61,7 +63,8 @@
       "whitelistTitle": "Whitelisted Apps",
       "whitelistDesc": "Shake detection will only be active when one of these apps is focused. Accepts process names (e.g. brave, brave.exe). Case-insensitive.",
       "addPlaceholder": "Add process name...",
-      "add": "Add"
+      "add": "Add",
+      "removeApp": "Remove {{app}}"
     },
     "appearance": {
       "title": "Appearance",
@@ -74,16 +77,25 @@
       "save": "Save Settings",
       "saving": "Saving...",
       "saveFailed": "Couldn't save settings",
-      "hotkeyFailed": "Settings saved, but the hotkey couldn't be registered"
+      "hotkeyFailed": "Settings saved, but the hotkey couldn't be registered",
+      "autostartFailed": "Settings saved, but the startup setting couldn't be changed"
     }
   },
   "consent": {
     "title": "Help us improve Holdem",
     "description": "We'd like to collect anonymous usage data to improve your experience",
     "collectTitle": "We collect:",
-    "collectItems": ["App launch events", "File drag and drop usage", "Basic app performance metrics"],
+    "collectItems": [
+      "App launch events",
+      "File drag and drop usage",
+      "Basic app performance metrics"
+    ],
     "notCollectTitle": "We do NOT collect:",
-    "notCollectItems": ["Personal information", "File contents or names", "Your browsing history"],
+    "notCollectItems": [
+      "Personal information",
+      "File contents or names",
+      "Your browsing history"
+    ],
     "decline": "Decline",
     "accept": "Accept"
   },
@@ -99,10 +111,12 @@
     "version": "Version {{version}}",
     "noNotes": "No release notes available",
     "releaseNotes": "Release Notes",
-    "autoDownload": "Download will start automatically...",
     "latest": "You're running the latest version!",
     "errorTitle": "Error checking for updates",
     "downloadError": "Failed to download and install update: {{error}}",
-    "waiting": "Waiting to check for updates..."
+    "waiting": "Waiting to check for updates...",
+    "restartWarning": "Holdem will restart to finish the update. Files on the shelf will be cleared.",
+    "installNow": "Install now",
+    "later": "Later"
   }
 }
