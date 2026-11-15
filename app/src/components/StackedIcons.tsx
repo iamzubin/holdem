@@ -31,7 +31,7 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
             zIndex,
           }}
         >
-          <FileThumb file={file} className="w-full h-full object-cover" />
+          <FileThumb file={file} />
         </div>
       );
     });

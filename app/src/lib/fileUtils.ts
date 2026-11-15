@@ -103,11 +103,6 @@ export const setPendingFiles = (files: FilePreview[]): void => {
   pendingFiles = files;
 };
 
-export const clearPendingFiles = (): void => {
-  pendingFiles = [];
-  pendingDragImage = null;
-};
-
 /**
  * Trigger native drag for the pending files.
  * Call this synchronously from mousedown to avoid browser drag conflicts.

@@ -2,23 +2,20 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useFileManagement } from '@/hooks/useFileManagement';
 import { hideMainWindow } from '@/lib/windowUtils';
-import { FileWithPath } from '@/types';
 import { invoke } from '@tauri-apps/api/core';
 import { ChevronDown, Download, Settings, X } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StackedIcons } from './components/StackedIcons';
-import { useNavigate } from 'react-router-dom';
-import { listen } from '@tauri-apps/api/event';
 import { useTheme } from '@/components/theme-provider';
+
+const MAX_FALLBACK_DROP_BYTES = 64 * 1024 * 1024;
 
 function App() {
   const { t } = useTranslation();
   const { theme } = useTheme();
-  const listenerSetup = useRef(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { files, clearFiles, refreshFiles } = useFileManagement();
-  const navigate = useNavigate();
 
   // Check analytics consent on mount
   useEffect(() => {
@@ -28,8 +25,10 @@ function App() {
 
         if (!configExists) {
           // Add a small delay to ensure main window is fully loaded
-          setTimeout(async () => {
-            await invoke('open_consent_window');
+          setTimeout(() => {
+            invoke('open_consent_window').catch((error) =>
+              console.error('Failed to open consent window:', error),
+            );
           }, 500);
         }
       } catch (error) {
@@ -40,43 +39,6 @@ function App() {
 
     checkConsent();
   }, []);
-
-  useEffect(() => {
-    if (listenerSetup.current) return;
-    listenerSetup.current = true;
-    let cancelled = false;
-    let unlistenNavigate: (() => void) | undefined;
-
-    // Drops are owned by the native HoldemDropTarget (see
-    // src-tauri/src/drop_target.rs). The frontend only forwards blob-backed
-    // virtual files that the backend can never resolve (blob: URLs are
-    // opaque to reqwest by design). Everything else — real paths, HTML,
-    // URLs, plain text, bitmaps, FileGroupDescriptor virtual files — is
-    // handled natively and arrives via the `files_updated` event.
-
-    // Set up navigation event listener
-    const unlisten = listen<string>('navigate_to', (event) => {
-      if (event.payload) {
-        navigate(event.payload);
-      }
-    });
-    unlisten.then((fn) => {
-      if (cancelled) {
-        fn();
-      } else {
-        unlistenNavigate = fn;
-      }
-    });
-
-    return () => {
-      cancelled = true;
-      unlisten.then((fn) => fn());
-      if (unlistenNavigate) unlistenNavigate();
-      // Reset the guard so a re-run (e.g. StrictMode remount) re-registers
-      // listeners instead of exiting early while they stay removed.
-      listenerSetup.current = false;
-    };
-  }, [navigate]);
 
   const preventDefault = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -91,28 +53,27 @@ function App() {
     [preventDefault],
   );
 
-  // Thin forwarder only: backend owns all drops EXCEPT blob-backed virtual
-  // files (browser canvas / Discord / blob:<uuid>), which reqwest can never
-  // resolve. Those arrive here as File objects WITHOUT a .path — read them
-  // via FileReader and hand the bytes to the backend. Everything else
-  // returns early so the same physical drop is never processed twice.
+  // Fallback only. Drops are owned by the native HoldemDropTarget
+  // (src-tauri/src/drop_target.rs), which replaces WebView2's drop target, so
+  // these HTML drop events normally never fire. They do if that registration
+  // failed or WebView2 recreated its window; then every file arrives here as
+  // a plain File (no filesystem path), so copy its bytes into the shelf.
   const handleDrop = useCallback(
     async (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
 
       const dropped = Array.from(e.dataTransfer.files);
-      const virtualFiles = dropped.filter((f) => !(f as FileWithPath).path);
-
-      if (virtualFiles.length === 0) {
-        // Real files, HTML, URLs, text, bitmaps, FileGroupDescriptor drops:
-        // the native drop target already shelved them. Just refresh.
-        refreshFiles();
-        return;
+      // Same per-file cap as native virtual files; reading a huge file into
+      // a data URL would exhaust the webview's memory.
+      const copyable = dropped.filter((file) => file.size <= MAX_FALLBACK_DROP_BYTES);
+      if (copyable.length < dropped.length) {
+        console.warn(`Skipped ${dropped.length - copyable.length} dropped file(s) over 64 MB`);
       }
+      if (copyable.length === 0) return;
 
       invoke('mark_drop_received').catch(() => {});
-      for (const file of virtualFiles) {
+      for (const file of copyable) {
         const reader = new FileReader();
         const done = new Promise<void>((resolve) => {
           reader.onload = async () => {
@@ -133,12 +94,13 @@ function App() {
               await invoke('add_files', { files: [path] });
               refreshFiles();
             } catch (err) {
-              console.error('Failed to save dropped virtual (blob) file', err);
+              console.error('Failed to save dropped file', err);
             }
             resolve();
           };
           reader.onerror = () => {
-            console.error('Failed to read dropped virtual file', reader.error);
+            // Folders cannot be read as files and end up here.
+            console.error('Failed to read dropped file', reader.error);
             resolve();
           };
         });
@@ -153,10 +115,14 @@ function App() {
     invoke('open_popup_window', { theme }).catch((err) => console.error(err));
   };
 
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsModalOpen(true);
-  }, []);
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      // The menu's only action is Clear, so there is nothing to show when empty.
+      if (files.length > 0) setIsModalOpen(true);
+    },
+    [files.length],
+  );
 
   const openSettings = () => {
     invoke('open_settings_window', { theme }).catch((err) => console.error(err));
@@ -193,6 +159,7 @@ function App() {
           size="icon"
           className="text-foreground hover:bg-gray-500 hover:text-background rounded h-5 w-5"
           onClick={openSettings}
+          aria-label={t('settings.title')}
         >
           <Settings className="h-4 w-4" />
         </Button>
@@ -201,6 +168,7 @@ function App() {
           size="icon"
           className="text-foreground hover:bg-red-500 hover:text-background rounded h-5 w-5"
           onClick={hideMainWindow}
+          aria-label={t('common.close')}
         >
           <X className="h-4 w-4" />
         </Button>

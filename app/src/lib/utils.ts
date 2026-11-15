@@ -5,10 +5,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const formatFileSize = (bytes: number): string => {
-  if (!Number.isFinite(bytes) || bytes <= 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(k)));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+const SIZE_UNITS = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte'] as const;
+
+/** Human-readable size with localized units (e.g. "1.5 MB", "1,5 Mo"). */
+export const formatFileSize = (bytes: number, locale?: string): string => {
+  const value = Number.isFinite(bytes) && bytes > 0 ? bytes : 0;
+  const i =
+    value === 0 ? 0 : Math.min(SIZE_UNITS.length - 1, Math.floor(Math.log(value) / Math.log(1024)));
+  return new Intl.NumberFormat(locale, {
+    style: 'unit',
+    unit: SIZE_UNITS[i],
+    unitDisplay: 'short',
+    maximumFractionDigits: 1,
+  }).format(value / Math.pow(1024, i));
 };

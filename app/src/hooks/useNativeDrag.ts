@@ -47,14 +47,5 @@ export const useNativeDrag = () => {
 
   useEffect(() => cancelDrag, [cancelDrag]);
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent, filesToDrag: FilePreview[], element: HTMLElement | null) => {
-      if (e.button !== 0) return;
-      e.stopPropagation();
-      beginDrag(filesToDrag, element);
-    },
-    [beginDrag],
-  );
-
-  return { beginDrag, cancelDrag, handleMouseDown, handleMouseUp: cancelDrag };
+  return { beginDrag, cancelDrag, handleMouseUp: cancelDrag };
 };

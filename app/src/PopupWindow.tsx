@@ -2,9 +2,9 @@ import { FileThumb } from '@/components/FileThumb';
 import { Button } from '@/components/ui/button';
 import { useFileManagement } from '@/hooks/useFileManagement';
 import { useNativeDrag } from '@/hooks/useNativeDrag';
-import { formatFileSize } from '@/lib/utils';
+import { cn, formatFileSize } from '@/lib/utils';
 import { closeCurrentWindow } from '@/lib/windowUtils';
-import { FilePreview } from '@/types';
+import { FilePreview, isFolder } from '@/types';
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { invoke } from '@tauri-apps/api/core';
 import { Grid as GridIcon, List as ListIcon } from 'lucide-react';
@@ -16,7 +16,7 @@ import 'simplebar-react/dist/simplebar.min.css';
 type ViewMode = 'list' | 'grid';
 
 const PopupWindow: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { files } = useFileManagement();
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -53,15 +53,18 @@ const PopupWindow: React.FC = () => {
     (e: React.MouseEvent<HTMLDivElement>, file: FilePreview) => {
       if (e.button !== 0) return;
       e.stopPropagation();
-      const filesToDrag =
-        selectedFiles.size > 0 ? files.filter((f) => selectedFiles.has(f.id.toString())) : [file];
+      // Drag the selection only when grabbing one of its rows; grabbing any
+      // other row drags just that file, as in Explorer.
+      const filesToDrag = selectedFiles.has(file.id.toString())
+        ? files.filter((f) => selectedFiles.has(f.id.toString()))
+        : [file];
       beginDrag(filesToDrag, fileRefs.current[file.id]);
     },
     [files, selectedFiles, beginDrag],
   );
 
   const handleFileClick = useCallback(
-    (fileId: string, event: React.MouseEvent) => {
+    (fileId: string, event: Pick<React.MouseEvent, 'shiftKey' | 'ctrlKey' | 'metaKey'>) => {
       setSelectedFiles((prev) => {
         const newSet = new Set(prev);
         if (event.shiftKey && lastSelectedFile) {
@@ -89,7 +92,68 @@ const PopupWindow: React.FC = () => {
     [files, lastSelectedFile],
   );
 
-  const totalSize = formatFileSize(files.reduce((acc, file) => acc + file.size, 0));
+  const locale = i18n.resolvedLanguage;
+  const totalSize = formatFileSize(
+    files.reduce((acc, file) => acc + file.size, 0),
+    locale,
+  );
+  const sizeLabel = (file: FilePreview) =>
+    isFolder(file) ? t('popup.folder') : formatFileSize(file.size, locale);
+
+  // Right-clicking a row outside the selection acts on that row, as in Explorer.
+  const handleRowContextMenu = useCallback((fileId: string) => {
+    setSelectedFiles((prev) => (prev.has(fileId) ? prev : new Set([fileId])));
+    setLastSelectedFile(fileId);
+  }, []);
+
+  const focusRow = (index: number) => {
+    const file = files[Math.max(0, Math.min(files.length - 1, index))];
+    if (file) fileRefs.current[file.id]?.focus();
+  };
+
+  const handleRowKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, index: number) => {
+    const fileId = files[index].id.toString();
+    const step = isList ? 1 : 2; // grid has two columns
+    switch (event.key) {
+      case 'ArrowDown':
+        focusRow(index + step);
+        break;
+      case 'ArrowUp':
+        focusRow(index - step);
+        break;
+      case 'ArrowRight':
+        if (!isList) focusRow(index + 1);
+        break;
+      case 'ArrowLeft':
+        if (!isList) focusRow(index - 1);
+        break;
+      case 'Home':
+        focusRow(0);
+        break;
+      case 'End':
+        focusRow(files.length - 1);
+        break;
+      case ' ':
+      case 'Enter':
+        handleFileClick(fileId, event);
+        break;
+      case 'a':
+        if (!(event.ctrlKey || event.metaKey)) return;
+        setSelectedFiles(new Set(files.map((f) => f.id.toString())));
+        break;
+      case 'Delete':
+        if (selectedFiles.size === 0) return;
+        handleRemoveSelectedFiles();
+        break;
+      case 'Escape':
+        if (selectedFiles.size === 0) return;
+        setSelectedFiles(new Set());
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+  };
 
   const handleRemoveSelectedFiles = useCallback(() => {
     const fileIds = Array.from(selectedFiles)
@@ -125,8 +189,10 @@ const PopupWindow: React.FC = () => {
         <div className="flex items-center gap-2">
           {files.length > 0 && (
             <>
-              <span className="text-xs text-primary">
-                {t('popup.itemsSelected', { count: files.length })}
+              <span className="text-xs text-primary" aria-live="polite">
+                {selectedFiles.size > 0
+                  ? t('popup.itemsSelected', { count: selectedFiles.size })
+                  : t('app.files', { count: files.length })}
               </span>
               <span className="text-xs text-primary">{totalSize}</span>
             </>
@@ -159,19 +225,29 @@ const PopupWindow: React.FC = () => {
         <div className="flex min-h-0 flex-col pb-1">
           <ContextMenu.Root>
             <ContextMenu.Trigger>
-              <div className={isList ? 'space-y-1 pb-1' : 'grid grid-cols-2 gap-1 pb-1'}>
-                {files.map((file) => (
+              <div
+                role="listbox"
+                aria-multiselectable
+                aria-label={t('popup.files')}
+                className={isList ? 'space-y-1 pb-1' : 'grid grid-cols-2 gap-1 pb-1'}
+              >
+                {files.map((file, index) => (
                   <div
                     key={file.id}
                     ref={(el) => {
                       fileRefs.current[file.id] = el;
                     }}
-                    className={
-                      isList
-                        ? `flex items-center gap-2 p-1 rounded cursor-grab active:cursor-grabbing${selectedFiles.has(file.id.toString()) ? ' bg-accent/50' : ''}`
-                        : `flex flex-col items-center p-1 rounded cursor-grab active:cursor-grabbing${selectedFiles.has(file.id.toString()) ? ' bg-accent/50' : ''}`
-                    }
+                    role="option"
+                    aria-selected={selectedFiles.has(file.id.toString())}
+                    tabIndex={0}
+                    className={cn(
+                      'p-1 rounded cursor-grab active:cursor-grabbing outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      isList ? 'flex items-center gap-2' : 'flex flex-col items-center',
+                      selectedFiles.has(file.id.toString()) && 'bg-accent/50',
+                    )}
                     onClick={(e) => handleFileClick(file.id.toString(), e)}
+                    onContextMenu={() => handleRowContextMenu(file.id.toString())}
+                    onKeyDown={(e) => handleRowKeyDown(e, index)}
                     onMouseDown={(e) => handleMouseDown(e, file)}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
@@ -193,14 +269,12 @@ const PopupWindow: React.FC = () => {
                         {file.name}
                       </p>
                       {!isList && (
-                        <span className="text-[10px] text-primary">
-                          {formatFileSize(file.size)}
-                        </span>
+                        <span className="text-[10px] text-primary">{sizeLabel(file)}</span>
                       )}
                     </div>
                     {isList && (
                       <span className="text-[10px] text-primary flex-shrink-0">
-                        {formatFileSize(file.size)}
+                        {sizeLabel(file)}
                       </span>
                     )}
                   </div>

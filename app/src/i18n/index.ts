@@ -60,7 +60,6 @@ export const supportedLanguages = [
   { code: "zh-TW", label: "Chinese (Traditional)", nativeLabel: "中文（繁體）" },
 ] as const;
 
-export type SupportedLanguageCode = (typeof supportedLanguages)[number]["code"];
 
 // Keep <html lang>/<html dir> in sync so RTL languages (ar, he)
 // lay out correctly.

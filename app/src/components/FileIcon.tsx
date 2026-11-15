@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FileIcon } from 'lucide-react';
-import { FilePreview } from '@/types';
+import { FileIcon, Folder } from 'lucide-react';
+import { FilePreview, isFolder } from '@/types';
 import { getFileIconBase64 } from '@/lib/fileIcon';
 
 interface DynamicFileIconProps {
@@ -41,12 +41,15 @@ export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file }) => {
     };
   }, [isVisible, file.path]);
 
+  // Decorative: the file name is always shown next to the icon.
   return (
     <div ref={iconRef}>
       {iconBase64 ? (
-        <img className="h-full w-full" src={`data:image/png;base64,${iconBase64}`} alt="File icon" />
+        <img className="h-full w-full" src={`data:image/png;base64,${iconBase64}`} alt="" />
+      ) : isFolder(file) ? (
+        <Folder className="h-6 w-6 text-blue-500" aria-hidden />
       ) : (
-        <FileIcon className="h-6 w-6 text-blue-500" />
+        <FileIcon className="h-6 w-6 text-blue-500" aria-hidden />
       )}
     </div>
   );
