@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "已选择 {{count}} 项",
-    "list": "列表",
-    "grid": "网格",
-    "removeSelected": "删除选中的文件",
     "itemsSelected_one": "已选择 {{count}} 项",
     "itemsSelected_other": "已选择 {{count}} 项",
-    "viewMode": "View mode"
+    "list": "列表",
+    "grid": "网格",
+    "viewMode": "视图模式",
+    "removeSelected": "删除选中的文件",
+    "files": "暂存架上的文件",
+    "folder": "文件夹"
   },
   "settings": {
     "title": "设置",
@@ -45,7 +47,9 @@
       "set": "设置",
       "stop": "停止",
       "clear": "清空",
-      "noneSet": "未设置"
+      "noneSet": "未设置",
+      "escToCancel": "请按下组合键，或按 Esc 取消",
+      "needsModifier": "请加上 Ctrl、Alt、Shift 或 Win。只有 F1–F24 可单独使用。"
     },
     "dragDrop": {
       "dragToCopy": "复制文件到目标",
@@ -61,18 +65,22 @@
       "whitelistTitle": "白名单应用",
       "whitelistDesc": "晃动检测仅在这些应用处于焦点状态时激活。接受进程名称（例如 brave、brave.exe）。不区分大小写。",
       "addPlaceholder": "添加流程名称...",
-      "add": "添加"
+      "add": "添加",
+      "removeApp": "移除 {{app}}"
+    },
+    "appearance": {
+      "title": "外观",
+      "description": "选择 Holdem 的外观。",
+      "system": "跟随系统",
+      "light": "浅色",
+      "dark": "深色"
     },
     "footer": {
       "save": "保存设置",
-      "saving": "保存中..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "保存中...",
+      "saveFailed": "无法保存设置",
+      "hotkeyFailed": "设置已保存，但无法注册热键",
+      "autostartFailed": "设置已保存，但无法更改开机启动设置"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "版本 {{version}}",
     "noNotes": "没有可用的发行备注",
     "releaseNotes": "发布说明",
-    "autoDownload": "下载将自动开始...",
     "latest": "您正在运行最新版本！",
     "errorTitle": "检查更新时出错",
     "downloadError": "下载并安装更新失败：{{error}}",
-    "waiting": "正在等待检查更新..."
+    "waiting": "正在等待检查更新...",
+    "restartWarning": "Holdem 将重启以完成更新，暂存架上的文件将被清空。",
+    "installNow": "立即安装",
+    "later": "稍后"
   }
 }

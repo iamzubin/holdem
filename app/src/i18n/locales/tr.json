@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} öğe seçildi",
-    "list": "Liste",
-    "grid": "Izgara",
-    "removeSelected": "Seçili Dosyaları Kaldır",
     "itemsSelected_one": "{{count}} öğe seçildi",
     "itemsSelected_other": "{{count}} öğe seçildi",
-    "viewMode": "View mode"
+    "list": "Liste",
+    "grid": "Izgara",
+    "viewMode": "Görüntüleme modu",
+    "removeSelected": "Seçili Dosyaları Kaldır",
+    "files": "Raftaki dosyalar",
+    "folder": "Klasör"
   },
   "settings": {
     "title": "Ayarlar",
@@ -45,7 +47,9 @@
       "set": "Ayarla",
       "stop": "Durdur",
       "clear": "Temizle",
-      "noneSet": "Belirtilmedi"
+      "noneSet": "Belirtilmedi",
+      "escToCancel": "Bir tuş kombinasyonuna basın veya iptal etmek için Esc'ye basın",
+      "needsModifier": "Ctrl, Alt, Shift veya Win ekleyin. Yalnızca F1–F24 tek başına çalışır."
     },
     "dragDrop": {
       "dragToCopy": "Dosyaları hedefe kopyala",
@@ -61,18 +65,22 @@
       "whitelistTitle": "İzin Verilen Uygulamalar",
       "whitelistDesc": "Sarsıntı algılama yalnızca bu uygulamalardan birine odaklanıldığında etkin olur. İşlem adlarını kabul eder (örn. brave, brave.exe). Büyük/küçük harf duyarsızdır.",
       "addPlaceholder": "İşlem adı ekleyin...",
-      "add": "Ekle"
+      "add": "Ekle",
+      "removeApp": "Kaldır: {{app}}"
+    },
+    "appearance": {
+      "title": "Görünüm",
+      "description": "Holdem'in nasıl görüneceğini seçin.",
+      "system": "Sistem",
+      "light": "Açık",
+      "dark": "Koyu"
     },
     "footer": {
       "save": "Ayarları Kaydet",
-      "saving": "Kaydediliyor..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Kaydediliyor...",
+      "saveFailed": "Ayarlar kaydedilemedi",
+      "hotkeyFailed": "Ayarlar kaydedildi, ancak kısayol tuşu atanamadı",
+      "autostartFailed": "Ayarlar kaydedildi, ancak başlangıç ayarı değiştirilemedi"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Sürüm {{version}}",
     "noNotes": "Sürüm notu yok",
     "releaseNotes": "Sürüm Notları",
-    "autoDownload": "İndirme otomatik olarak başlayacak...",
     "latest": "En son sürümü kullanıyorsunuz!",
     "errorTitle": "Güncellemeler denetlenirken hata",
     "downloadError": "Güncelleme indirilemedi ve kurulamadı: {{error}}",
-    "waiting": "Güncellemelerin denetlenmesi bekleniyor..."
+    "waiting": "Güncellemelerin denetlenmesi bekleniyor...",
+    "restartWarning": "Holdem, güncellemeyi tamamlamak için yeniden başlatılacak. Raftaki dosyalar temizlenecek.",
+    "installNow": "Şimdi kur",
+    "later": "Daha sonra"
   }
 }

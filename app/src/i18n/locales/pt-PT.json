@@ -1,6 +1,6 @@
 {
   "common": {
-    "close": "FECHAR"
+    "close": "Fechar"
   },
   "app": {
     "dropHere": "Solte aqui",
@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} itens selecionados",
-    "list": "Lista",
-    "grid": "Grade",
-    "removeSelected": "Remover Ficheiros Selecionados",
     "itemsSelected_one": "{{count}} item selecionado",
     "itemsSelected_other": "{{count}} itens selecionados",
-    "viewMode": "View mode"
+    "list": "Lista",
+    "grid": "Grade",
+    "viewMode": "Modo de visualização",
+    "removeSelected": "Remover Ficheiros Selecionados",
+    "files": "Ficheiros na prateleira",
+    "folder": "Pasta"
   },
   "settings": {
     "title": "Definições",
@@ -34,7 +36,7 @@
     },
     "language": {
       "title": "IDIOMA",
-      "description": "Escolha o idioma de sua preferência",
+      "description": "Escolha o idioma da sua preferência",
       "label": "Exibir idioma"
     },
     "shortcuts": {
@@ -45,34 +47,40 @@
       "set": "Definir",
       "stop": "Interromper",
       "clear": "Limpar",
-      "noneSet": "Nenhum definido"
+      "noneSet": "Nenhum definido",
+      "escToCancel": "Prima uma combinação de teclas ou Esc para cancelar",
+      "needsModifier": "Adicione Ctrl, Alt, Shift ou Win. Apenas F1–F24 funcionam sozinhas."
     },
     "dragDrop": {
       "dragToCopy": "Copiar arquivos para o destino",
       "shiftToMove": "Segure Shift enquanto solta para mover arquivos"
     },
     "mouse": {
-      "title": "Monitor de Mouse",
+      "title": "Monitor do rato",
       "description": "Ajustar sensibilidade de detecção de agitação",
       "requiredShakes": "Agitações necessárias",
       "shakeThreshold": "Limite de Agitação",
       "timeLimit": "Limite de Tempo (ms)",
       "closeDelay": "Atraso de encerramento (ms)",
-      "whitelistTitle": "Aplicativos permitidos",
+      "whitelistTitle": "Aplicações permitidas",
       "whitelistDesc": "A deteção de agitação só estará ativa quando uma destas aplicações estiver em primeiro plano. Aceita nomes de processos (por exemplo, brave, brave.exe). Não sensível a maiúsculas/minúsculas.",
       "addPlaceholder": "Adicionar nome do processo...",
-      "add": "Adicionar"
+      "add": "Adicionar",
+      "removeApp": "Remover {{app}}"
+    },
+    "appearance": {
+      "title": "Aspeto",
+      "description": "Escolha o aspeto do Holdem.",
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Escuro"
     },
     "footer": {
       "save": "Guardar Definições",
-      "saving": "A guardar..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "A guardar...",
+      "saveFailed": "Não foi possível guardar as definições",
+      "hotkeyFailed": "Definições guardadas, mas não foi possível registar o atalho",
+      "autostartFailed": "Definições guardadas, mas não foi possível alterar o arranque automático"
     }
   },
   "consent": {
@@ -80,9 +88,9 @@
     "description": "Gostaríamos de coletar dados de uso anônimos para melhorar sua experiência",
     "collectTitle": "Nós coletamos:",
     "collectItems": [
-      "Eventos de lançamento do aplicativo",
+      "Eventos de abertura da aplicação",
       "Uso de arquivos para arrastar e soltar",
-      "Métricas de desempenho básicas de aplicativos"
+      "Métricas de desempenho básicas da aplicação"
     ],
     "notCollectTitle": "Nós NÃO coletamos:",
     "notCollectItems": [
@@ -95,7 +103,7 @@
   },
   "updater": {
     "title": "Atualizações do Software",
-    "close": "FECHAR",
+    "close": "Fechar",
     "checking": "Verificando atualizações...",
     "downloading": "A transferir atualização...",
     "downloadedTitle": "Download concluído!",
@@ -105,10 +113,12 @@
     "version": "Versão {{version}}",
     "noNotes": "Não há notas de lançamento disponíveis",
     "releaseNotes": "Notas de Versão",
-    "autoDownload": "O download iniciará automaticamente...",
     "latest": "Você está executando a versão mais recente!",
     "errorTitle": "Erro ao verificar se há atualizações",
     "downloadError": "Falha ao transferir e instalar a atualização: {{error}}",
-    "waiting": "Esperando por atualizações..."
+    "waiting": "Esperando por atualizações...",
+    "restartWarning": "O Holdem será reiniciado para concluir a atualização. A prateleira será esvaziada.",
+    "installNow": "Instalar agora",
+    "later": "Mais tarde"
   }
 }

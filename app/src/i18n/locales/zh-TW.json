@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "已選取 {{count}} 個項目",
-    "list": "列表",
-    "grid": "網格",
-    "removeSelected": "刪除所選檔案",
     "itemsSelected_one": "已選取 {{count}} 個項目",
     "itemsSelected_other": "已選取 {{count}} 個項目",
-    "viewMode": "View mode"
+    "list": "列表",
+    "grid": "網格",
+    "viewMode": "檢視模式",
+    "removeSelected": "刪除所選檔案",
+    "files": "暫存架上的檔案",
+    "folder": "資料夾"
   },
   "settings": {
     "title": "設定",
@@ -45,7 +47,9 @@
       "set": "設定",
       "stop": "停止",
       "clear": "清除",
-      "noneSet": "未設定"
+      "noneSet": "未設定",
+      "escToCancel": "請按下按鍵組合，或按 Esc 取消",
+      "needsModifier": "請加上 Ctrl、Alt、Shift 或 Win。只有 F1–F24 可單獨使用。"
     },
     "dragDrop": {
       "dragToCopy": "複製檔案到目的地",
@@ -61,18 +65,22 @@
       "whitelistTitle": "白名單應用程式",
       "whitelistDesc": "僅在白名單中的應用程式為使用中時，才會啟用晃動偵測。接受處理程序名稱（例如 brave、brave.exe），不分大小寫。",
       "addPlaceholder": "新增處理程序名稱...",
-      "add": "新增"
+      "add": "新增",
+      "removeApp": "移除 {{app}}"
+    },
+    "appearance": {
+      "title": "外觀",
+      "description": "選擇 Holdem 的外觀。",
+      "system": "跟隨系統",
+      "light": "淺色",
+      "dark": "深色"
     },
     "footer": {
       "save": "儲存設定",
-      "saving": "儲存中..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "儲存中...",
+      "saveFailed": "無法儲存設定",
+      "hotkeyFailed": "設定已儲存，但無法註冊快速鍵",
+      "autostartFailed": "設定已儲存，但無法變更開機啟動設定"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "版本 {{version}}",
     "noNotes": "尚無發行說明",
     "releaseNotes": "發行說明",
-    "autoDownload": "下載將自動開始...",
     "latest": "您正在使用最新版本！",
     "errorTitle": "檢查更新時發生錯誤",
     "downloadError": "下載並安裝更新失敗：{{error}}",
-    "waiting": "等待檢查更新..."
+    "waiting": "等待檢查更新...",
+    "restartWarning": "Holdem 將重新啟動以完成更新，暫存架上的檔案將被清除。",
+    "installNow": "立即安裝",
+    "later": "稍後"
   }
 }

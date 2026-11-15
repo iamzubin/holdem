@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} elementer valgt",
-    "list": "Liste",
-    "grid": "Gitter",
-    "removeSelected": "Fjern Valgte Filer",
     "itemsSelected_one": "{{count}} element valgt",
     "itemsSelected_other": "{{count}} elementer valgt",
-    "viewMode": "View mode"
+    "list": "Liste",
+    "grid": "Gitter",
+    "viewMode": "Visningstilstand",
+    "removeSelected": "Fjern Valgte Filer",
+    "files": "Filer på hylden",
+    "folder": "Mappe"
   },
   "settings": {
     "title": "Indstillinger",
@@ -45,7 +47,9 @@
       "set": "Indstil",
       "stop": "Stop",
       "clear": "Ryd",
-      "noneSet": "Ingen angivet"
+      "noneSet": "Ingen angivet",
+      "escToCancel": "Tryk på en tastekombination, eller Esc for at annullere",
+      "needsModifier": "Tilføj Ctrl, Alt, Shift eller Win. Kun F1–F24 virker alene."
     },
     "dragDrop": {
       "dragToCopy": "Kopier filer til destination",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Hvidlistede Apps",
       "whitelistDesc": "Rystedetektering vil kun være aktiv, når en af disse apps har fokus. Accepterer procesnavne (f.eks. brave, brave.exe). Skelner ikke mellem store og små bogstaver.",
       "addPlaceholder": "Tilføj procesnavn...",
-      "add": "Tilføj"
+      "add": "Tilføj",
+      "removeApp": "Fjern {{app}}"
+    },
+    "appearance": {
+      "title": "Udseende",
+      "description": "Vælg, hvordan Holdem ser ud.",
+      "system": "System",
+      "light": "Lys",
+      "dark": "Mørk"
     },
     "footer": {
       "save": "Gem Indstillinger",
-      "saving": "Gemmer..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Gemmer...",
+      "saveFailed": "Indstillingerne kunne ikke gemmes",
+      "hotkeyFailed": "Indstillingerne er gemt, men genvejstasten kunne ikke registreres",
+      "autostartFailed": "Indstillingerne er gemt, men opstartsindstillingen kunne ikke ændres"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Version {{version}}",
     "noNotes": "Ingen udgivelsesnoter tilgængelige",
     "releaseNotes": "Udgivelsesnoter",
-    "autoDownload": "Download vil starte automatisk...",
     "latest": "Du kører den seneste version!",
     "errorTitle": "Fejl under søgning efter opdateringer",
     "downloadError": "Kunne ikke downloade og installere opdateringen: {{error}}",
-    "waiting": "Venter på at søge efter opdateringer..."
+    "waiting": "Venter på at søge efter opdateringer...",
+    "restartWarning": "Holdem genstarter for at fuldføre opdateringen. Hylden bliver tømt.",
+    "installNow": "Installer nu",
+    "later": "Senere"
   }
 }

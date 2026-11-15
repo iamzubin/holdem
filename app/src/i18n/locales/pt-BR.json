@@ -1,6 +1,6 @@
 {
   "common": {
-    "close": "FECHAR"
+    "close": "Fechar"
   },
   "app": {
     "dropHere": "Solte aqui",
@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} itens selecionados",
-    "list": "Lista",
-    "grid": "Grade",
-    "removeSelected": "Remover Arquivos Selecionados",
     "itemsSelected_one": "{{count}} item selecionado",
     "itemsSelected_other": "{{count}} itens selecionados",
-    "viewMode": "View mode"
+    "list": "Lista",
+    "grid": "Grade",
+    "viewMode": "Modo de visualização",
+    "removeSelected": "Remover Arquivos Selecionados",
+    "files": "Arquivos na prateleira",
+    "folder": "Pasta"
   },
   "settings": {
     "title": "Configurações",
@@ -45,7 +47,9 @@
       "set": "Definir",
       "stop": "Interromper",
       "clear": "Limpar",
-      "noneSet": "Nenhum definido"
+      "noneSet": "Nenhum definido",
+      "escToCancel": "Pressione uma combinação de teclas ou Esc para cancelar",
+      "needsModifier": "Adicione Ctrl, Alt, Shift ou Win. Apenas F1–F24 funcionam sozinhas."
     },
     "dragDrop": {
       "dragToCopy": "Copiar arquivos para o destino",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Aplicativos permitidos",
       "whitelistDesc": "A detecção de agitação só estará ativa quando um desses aplicativos estiver em primeiro plano. Aceita nomes de processos (ex.: brave, brave.exe). Não diferencia maiúsculas de minúsculas.",
       "addPlaceholder": "Adicionar nome do processo...",
-      "add": "Adicionar"
+      "add": "Adicionar",
+      "removeApp": "Remover {{app}}"
+    },
+    "appearance": {
+      "title": "Aparência",
+      "description": "Escolha a aparência do Holdem.",
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Escuro"
     },
     "footer": {
       "save": "Salvar Configurações",
-      "saving": "Salvando..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Salvando...",
+      "saveFailed": "Não foi possível salvar as configurações",
+      "hotkeyFailed": "Configurações salvas, mas não foi possível registrar o atalho",
+      "autostartFailed": "Configurações salvas, mas não foi possível alterar a inicialização automática"
     }
   },
   "consent": {
@@ -95,7 +103,7 @@
   },
   "updater": {
     "title": "Atualizações do Software",
-    "close": "FECHAR",
+    "close": "Fechar",
     "checking": "Verificando atualizações...",
     "downloading": "Baixando atualização...",
     "downloadedTitle": "Download concluído!",
@@ -105,10 +113,12 @@
     "version": "Versão {{version}}",
     "noNotes": "Não há notas de lançamento disponíveis",
     "releaseNotes": "Notas de Versão",
-    "autoDownload": "O download iniciará automaticamente...",
     "latest": "Você está executando a versão mais recente!",
     "errorTitle": "Erro ao verificar se há atualizações",
     "downloadError": "Falha ao baixar e instalar a atualização: {{error}}",
-    "waiting": "Esperando por atualizações..."
+    "waiting": "Esperando por atualizações...",
+    "restartWarning": "O Holdem será reiniciado para concluir a atualização. A prateleira será esvaziada.",
+    "installNow": "Instalar agora",
+    "later": "Mais tarde"
   }
 }

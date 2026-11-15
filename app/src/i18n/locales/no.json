@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} elementer valgt",
-    "list": "Liste",
-    "grid": "Rutenett",
-    "removeSelected": "Fjern valgte filer",
     "itemsSelected_one": "{{count}} element valgt",
     "itemsSelected_other": "{{count}} elementer valgt",
-    "viewMode": "View mode"
+    "list": "Liste",
+    "grid": "Rutenett",
+    "viewMode": "Visningsmodus",
+    "removeSelected": "Fjern valgte filer",
+    "files": "Filer på hyllen",
+    "folder": "Mappe"
   },
   "settings": {
     "title": "Innstillinger",
@@ -45,7 +47,9 @@
       "set": "Angi",
       "stop": "Stopp",
       "clear": "Tøm",
-      "noneSet": "Ingen angitt"
+      "noneSet": "Ingen angitt",
+      "escToCancel": "Trykk på en tastekombinasjon, eller Esc for å avbryte",
+      "needsModifier": "Legg til Ctrl, Alt, Shift eller Win. Bare F1–F24 fungerer alene."
     },
     "dragDrop": {
       "dragToCopy": "Kopier filer til destinasjon",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Hvitelistede apper",
       "whitelistDesc": "Ristedeteksjon vil bare være aktiv når en av disse appene har fokus. Godtar prosessnavn (f.eks. brave, brave.exe). Skiller ikke mellom store og små bokstaver.",
       "addPlaceholder": "Legg til prosessnavn...",
-      "add": "Legg til"
+      "add": "Legg til",
+      "removeApp": "Fjern {{app}}"
+    },
+    "appearance": {
+      "title": "Utseende",
+      "description": "Velg hvordan Holdem ser ut.",
+      "system": "System",
+      "light": "Lys",
+      "dark": "Mørk"
     },
     "footer": {
       "save": "Lagre innstillinger",
-      "saving": "Lagrer..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Lagrer...",
+      "saveFailed": "Kunne ikke lagre innstillingene",
+      "hotkeyFailed": "Innstillingene er lagret, men hurtigtasten kunne ikke registreres",
+      "autostartFailed": "Innstillingene er lagret, men oppstartsinnstillingen kunne ikke endres"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Versjon {{version}}",
     "noNotes": "Ingen utgivelsesnotater tilgjengelig",
     "releaseNotes": "Utgivelsesnotater",
-    "autoDownload": "Nedlasting vil starte automatisk...",
     "latest": "Du kjører den nyeste versjonen!",
     "errorTitle": "Feil under søk etter oppdateringer",
     "downloadError": "Kunne ikke laste ned og installere oppdateringen: {{error}}",
-    "waiting": "Venter på å se etter oppdateringer..."
+    "waiting": "Venter på å se etter oppdateringer...",
+    "restartWarning": "Holdem starter på nytt for å fullføre oppdateringen. Hyllen blir tømt.",
+    "installNow": "Installer nå",
+    "later": "Senere"
   }
 }

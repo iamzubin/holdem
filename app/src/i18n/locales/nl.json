@@ -1,6 +1,6 @@
 {
   "common": {
-    "close": "Afsluiten"
+    "close": "Sluiten"
   },
   "app": {
     "dropHere": "Hier neerzetten",
@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} items geselecteerd",
-    "list": "Lijst",
-    "grid": "Rooster",
-    "removeSelected": "Geselecteerde bestanden verwijderen",
     "itemsSelected_one": "{{count}} item geselecteerd",
     "itemsSelected_other": "{{count}} items geselecteerd",
-    "viewMode": "View mode"
+    "list": "Lijst",
+    "grid": "Rooster",
+    "viewMode": "Weergavemodus",
+    "removeSelected": "Geselecteerde bestanden verwijderen",
+    "files": "Bestanden op de plank",
+    "folder": "Map"
   },
   "settings": {
     "title": "Instellingen",
@@ -45,7 +47,9 @@
       "set": "Instellen",
       "stop": "Stoppen",
       "clear": "Verwijderen",
-      "noneSet": "Niet ingesteld"
+      "noneSet": "Niet ingesteld",
+      "escToCancel": "Druk op een toetscombinatie, of op Esc om te annuleren",
+      "needsModifier": "Voeg Ctrl, Alt, Shift of Win toe. Alleen F1–F24 werken zonder extra toets."
     },
     "dragDrop": {
       "dragToCopy": "Bestanden kopiëren naar bestemming",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Toegestane Apps",
       "whitelistDesc": "Schuddetectie is alleen actief wanneer een van deze apps de focus heeft. Accepteert procesnamen (bijv. brave, brave.exe). Niet hoofdlettergevoelig.",
       "addPlaceholder": "Voeg procesnaam toe...",
-      "add": "Toevoegen"
+      "add": "Toevoegen",
+      "removeApp": "{{app}} verwijderen"
+    },
+    "appearance": {
+      "title": "Weergave",
+      "description": "Kies hoe Holdem eruitziet.",
+      "system": "Systeem",
+      "light": "Licht",
+      "dark": "Donker"
     },
     "footer": {
       "save": "Instellingen opslaan",
-      "saving": "Opslaan..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Opslaan...",
+      "saveFailed": "Instellingen konden niet worden opgeslagen",
+      "hotkeyFailed": "Instellingen opgeslagen, maar de sneltoets kon niet worden geregistreerd",
+      "autostartFailed": "Instellingen opgeslagen, maar de opstartinstelling kon niet worden gewijzigd"
     }
   },
   "consent": {
@@ -95,7 +103,7 @@
   },
   "updater": {
     "title": "Software-updates",
-    "close": "Afsluiten",
+    "close": "Sluiten",
     "checking": "Controleren op updates...",
     "downloading": "Update downloaden...",
     "downloadedTitle": "Download voltooid!",
@@ -105,10 +113,12 @@
     "version": "Versie {{version}}",
     "noNotes": "Geen release notities beschikbaar",
     "releaseNotes": "Release opmerkingen",
-    "autoDownload": "Download zal automatisch starten...",
     "latest": "Je gebruikt de nieuwste versie!",
     "errorTitle": "Fout bij het controleren op updates",
     "downloadError": "Downloaden en installeren van de update is mislukt: {{error}}",
-    "waiting": "Wachten om te controleren op updates..."
+    "waiting": "Wachten om te controleren op updates...",
+    "restartWarning": "Holdem wordt opnieuw gestart om de update te voltooien. De plank wordt leeggemaakt.",
+    "installNow": "Nu installeren",
+    "later": "Later"
   }
 }

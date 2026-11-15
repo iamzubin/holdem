@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "Đã chọn {{count}} mục",
-    "list": "Danh sách",
-    "grid": "Lưới",
-    "removeSelected": "Xóa các tệp đã chọn",
     "itemsSelected_one": "Đã chọn {{count}} mục",
     "itemsSelected_other": "Đã chọn {{count}} mục",
-    "viewMode": "View mode"
+    "list": "Danh sách",
+    "grid": "Lưới",
+    "viewMode": "Chế độ xem",
+    "removeSelected": "Xóa các tệp đã chọn",
+    "files": "Tệp trên kệ",
+    "folder": "Thư mục"
   },
   "settings": {
     "title": "Cài đặt",
@@ -45,7 +47,9 @@
       "set": "Đặt",
       "stop": "Dừng",
       "clear": "Xóa",
-      "noneSet": "Chưa đặt"
+      "noneSet": "Chưa đặt",
+      "escToCancel": "Nhấn một tổ hợp phím, hoặc Esc để hủy",
+      "needsModifier": "Thêm Ctrl, Alt, Shift hoặc Win. Chỉ F1–F24 mới dùng được riêng lẻ."
     },
     "dragDrop": {
       "dragToCopy": "Sao chép tệp đến đích",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Ứng dụng được phép",
       "whitelistDesc": "Tính năng phát hiện lắc chỉ hoạt động khi một trong các ứng dụng này được chọn. Chấp nhận tên tiến trình (ví dụ: brave, brave.exe). Không phân biệt chữ hoa/thường.",
       "addPlaceholder": "Thêm tên tiến trình...",
-      "add": "Thêm"
+      "add": "Thêm",
+      "removeApp": "Xóa {{app}}"
+    },
+    "appearance": {
+      "title": "Giao diện",
+      "description": "Chọn giao diện cho Holdem.",
+      "system": "Hệ thống",
+      "light": "Sáng",
+      "dark": "Tối"
     },
     "footer": {
       "save": "Lưu cài đặt",
-      "saving": "Đang lưu..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Đang lưu...",
+      "saveFailed": "Không lưu được cài đặt",
+      "hotkeyFailed": "Đã lưu cài đặt, nhưng không đăng ký được phím tắt",
+      "autostartFailed": "Đã lưu cài đặt, nhưng không thay đổi được cài đặt khởi động"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Phiên bản {{version}}",
     "noNotes": "Không có ghi chú phát hành",
     "releaseNotes": "Ghi chú phát hành",
-    "autoDownload": "Quá trình tải xuống sẽ tự động bắt đầu...",
     "latest": "Bạn đang dùng phiên bản mới nhất!",
     "errorTitle": "Lỗi khi kiểm tra cập nhật",
     "downloadError": "Không tải xuống và cài đặt được bản cập nhật: {{error}}",
-    "waiting": "Đang chờ kiểm tra cập nhật..."
+    "waiting": "Đang chờ kiểm tra cập nhật...",
+    "restartWarning": "Holdem sẽ khởi động lại để hoàn tất cập nhật. Các tệp trên kệ sẽ bị xóa.",
+    "installNow": "Cài đặt ngay",
+    "later": "Để sau"
   }
 }

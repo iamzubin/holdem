@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} elementos seleccionados",
-    "list": "Lista",
-    "grid": "Rejilla",
-    "removeSelected": "Eliminar archivos seleccionados",
     "itemsSelected_one": "{{count}} elemento seleccionado",
     "itemsSelected_other": "{{count}} elementos seleccionados",
-    "viewMode": "View mode"
+    "list": "Lista",
+    "grid": "Rejilla",
+    "viewMode": "Modo de vista",
+    "removeSelected": "Eliminar archivos seleccionados",
+    "files": "Archivos del estante",
+    "folder": "Carpeta"
   },
   "settings": {
     "title": "Ajustes",
@@ -45,7 +47,9 @@
       "set": "Fijar",
       "stop": "Parar",
       "clear": "Limpiar",
-      "noneSet": "Ninguno establecido"
+      "noneSet": "Ninguno establecido",
+      "escToCancel": "Pulsa una combinación de teclas o Esc para cancelar",
+      "needsModifier": "Añade Ctrl, Alt, Shift o Win. Solo F1–F24 funcionan por sí solas."
     },
     "dragDrop": {
       "dragToCopy": "Copiar archivos al destino",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Aplicaciones en la lista blanca",
       "whitelistDesc": "La detección de sacudidas solo se activará cuando una de estas aplicaciones esté en primer plano. Acepta nombres de procesos (p. ej., brave, brave.exe). Insensible a mayúsculas y minúsculas.",
       "addPlaceholder": "Añadir nombre de proceso...",
-      "add": "Añadir"
+      "add": "Añadir",
+      "removeApp": "Eliminar {{app}}"
+    },
+    "appearance": {
+      "title": "Apariencia",
+      "description": "Elige el aspecto de Holdem.",
+      "system": "Sistema",
+      "light": "Claro",
+      "dark": "Oscuro"
     },
     "footer": {
       "save": "Guardar ajustes",
-      "saving": "Guardando..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Guardando...",
+      "saveFailed": "No se pudieron guardar los ajustes",
+      "hotkeyFailed": "Ajustes guardados, pero no se pudo registrar el atajo de teclado",
+      "autostartFailed": "Ajustes guardados, pero no se pudo cambiar el inicio automático"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Versión {{version}}",
     "noNotes": "No hay notas disponibles",
     "releaseNotes": "Notas de la versión",
-    "autoDownload": "La descarga comenzará automáticamente...",
     "latest": "¡Estás ejecutando la última versión!",
     "errorTitle": "Error comprobando actualizaciones",
     "downloadError": "No se pudo descargar e instalar la actualización: {{error}}",
-    "waiting": "Esperando para buscar actualizaciones..."
+    "waiting": "Esperando para buscar actualizaciones...",
+    "restartWarning": "Holdem se reiniciará para completar la actualización. El estante se vaciará.",
+    "installNow": "Instalar ahora",
+    "later": "Más tarde"
   }
 }

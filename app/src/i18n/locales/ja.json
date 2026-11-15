@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} 個の項目を選択中",
-    "list": "リスト",
-    "grid": "グリッド",
-    "removeSelected": "選択したファイルを削除",
     "itemsSelected_one": "{{count}} 個の項目を選択中",
     "itemsSelected_other": "{{count}} 個の項目を選択中",
-    "viewMode": "View mode"
+    "list": "リスト",
+    "grid": "グリッド",
+    "viewMode": "表示モード",
+    "removeSelected": "選択したファイルを削除",
+    "files": "シェルフ上のファイル",
+    "folder": "フォルダー"
   },
   "settings": {
     "title": "設定",
@@ -45,7 +47,9 @@
       "set": "設定",
       "stop": "停止",
       "clear": "クリア",
-      "noneSet": "未設定"
+      "noneSet": "未設定",
+      "escToCancel": "キーの組み合わせを押すか、Esc でキャンセルします",
+      "needsModifier": "Ctrl、Alt、Shift、Win のいずれかを追加してください。単独で使えるのは F1–F24 のみです。"
     },
     "dragDrop": {
       "dragToCopy": "コピー先にファイルをコピー",
@@ -61,18 +65,22 @@
       "whitelistTitle": "ホワイトリストに登録されたアプリ",
       "whitelistDesc": "シェイク検出は、これらのアプリのいずれかにフォーカスがある場合にのみ有効になります。プロセス名（例: brave、brave.exe）を入力できます。大文字と小文字は区別されません。",
       "addPlaceholder": "プロセス名を追加...",
-      "add": "追加"
+      "add": "追加",
+      "removeApp": "{{app}} を削除"
+    },
+    "appearance": {
+      "title": "外観",
+      "description": "Holdem の外観を選択します。",
+      "system": "システム",
+      "light": "ライト",
+      "dark": "ダーク"
     },
     "footer": {
       "save": "設定を保存",
-      "saving": "保存中..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "保存中...",
+      "saveFailed": "設定を保存できませんでした",
+      "hotkeyFailed": "設定は保存されましたが、ホットキーを登録できませんでした",
+      "autostartFailed": "設定は保存されましたが、自動起動の設定を変更できませんでした"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "バージョン {{version}}",
     "noNotes": "リリースノートがありません",
     "releaseNotes": "リリースノート",
-    "autoDownload": "ダウンロードが自動的に開始されます...",
     "latest": "最新バージョンを実行しています！",
     "errorTitle": "アップデートの確認エラー",
     "downloadError": "アップデートのダウンロードとインストールに失敗しました: {{error}}",
-    "waiting": "更新の確認を待っています..."
+    "waiting": "更新の確認を待っています...",
+    "restartWarning": "アップデートを完了するために Holdem が再起動します。シェルフ上のファイルはクリアされます。",
+    "installNow": "今すぐインストール",
+    "later": "後で"
   }
 }

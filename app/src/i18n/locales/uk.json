@@ -6,23 +6,25 @@
     "dropHere": "Перетягніть сюди",
     "files": "{{count}} файл",
     "files_one": "{{count}} файл",
+    "files_few": "{{count}} файли",
+    "files_many": "{{count}} файлів",
     "files_other": "{{count}} файлів",
     "files_plural": "{{count}} файлів",
     "clear": "Очистити",
-    "contextMenuTitle": "Контекстне меню",
-    "files_few": "{{count}} файли",
-    "files_many": "{{count}} файлів"
+    "contextMenuTitle": "Контекстне меню"
   },
   "popup": {
     "itemsSelected": "Вибрано {{count}} елементів",
-    "list": "Список",
-    "grid": "Сітка",
-    "removeSelected": "Видалити вибрані файли",
     "itemsSelected_one": "Вибрано {{count}} елемент",
     "itemsSelected_few": "Вибрано {{count}} елементи",
     "itemsSelected_many": "Вибрано {{count}} елементів",
     "itemsSelected_other": "Вибрано {{count}} елементів",
-    "viewMode": "View mode"
+    "list": "Список",
+    "grid": "Сітка",
+    "viewMode": "Режим перегляду",
+    "removeSelected": "Видалити вибрані файли",
+    "files": "Файли на полиці",
+    "folder": "Папка"
   },
   "settings": {
     "title": "Налаштування",
@@ -46,10 +48,12 @@
       "description": "Налаштувати взаємодію з додатком",
       "showHotkey": "Показувати комбінацію клавіш",
       "pressKeys": "Натисніть клавіші...",
-      "set": "Сет",
+      "set": "Задати",
       "stop": "Зупинити",
       "clear": "Очистити",
-      "noneSet": "Не встановлено"
+      "noneSet": "Не встановлено",
+      "escToCancel": "Натисніть комбінацію клавіш або Esc, щоб скасувати",
+      "needsModifier": "Додайте Ctrl, Alt, Shift або Win. Без модифікаторів працюють лише F1–F24."
     },
     "dragDrop": {
       "dragToCopy": "Копіювати файли в місце призначення",
@@ -65,18 +69,22 @@
       "whitelistTitle": "Дозволені додатки",
       "whitelistDesc": "Виявлення струшування курсора буде активним, лише коли одна з цих програм у фокусі. Приймає назви процесів (наприклад, brave, brave.exe). Без урахування регістру.",
       "addPlaceholder": "Додати назву процесу...",
-      "add": "Додати"
+      "add": "Додати",
+      "removeApp": "Видалити {{app}}"
+    },
+    "appearance": {
+      "title": "Вигляд",
+      "description": "Виберіть, як виглядає Holdem.",
+      "system": "Системна",
+      "light": "Світла",
+      "dark": "Темна"
     },
     "footer": {
       "save": "Зберегти Налаштування",
-      "saving": "Збереження..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Збереження...",
+      "saveFailed": "Не вдалося зберегти налаштування",
+      "hotkeyFailed": "Налаштування збережено, але не вдалося зареєструвати комбінацію клавіш",
+      "autostartFailed": "Налаштування збережено, але не вдалося змінити параметр автозапуску"
     }
   },
   "consent": {
@@ -109,10 +117,12 @@
     "version": "Версія {{version}}",
     "noNotes": "Немає доступних нотаток до випуску",
     "releaseNotes": "Примітки до релізу",
-    "autoDownload": "Завантаження почнеться автоматично...",
     "latest": "Ви використовуєте останню версію!",
     "errorTitle": "Помилка перевірки оновлень",
     "downloadError": "Не вдалося завантажити й установити оновлення: {{error}}",
-    "waiting": "Очікування перевірки оновлень..."
+    "waiting": "Очікування перевірки оновлень...",
+    "restartWarning": "Holdem перезапуститься, щоб завершити оновлення. Полицю буде очищено.",
+    "installNow": "Встановити зараз",
+    "later": "Пізніше"
   }
 }

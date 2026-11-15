@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} éléments sélectionnés",
-    "list": "Liste",
-    "grid": "Grille",
-    "removeSelected": "Supprimer les fichiers sélectionnés",
     "itemsSelected_one": "{{count}} élément sélectionné",
     "itemsSelected_other": "{{count}} éléments sélectionnés",
-    "viewMode": "View mode"
+    "list": "Liste",
+    "grid": "Grille",
+    "viewMode": "Mode d'affichage",
+    "removeSelected": "Supprimer les fichiers sélectionnés",
+    "files": "Fichiers de l'étagère",
+    "folder": "Dossier"
   },
   "settings": {
     "title": "Réglages",
@@ -45,7 +47,9 @@
       "set": "Régler",
       "stop": "Arrêter",
       "clear": "Effacer",
-      "noneSet": "Non défini"
+      "noneSet": "Non défini",
+      "escToCancel": "Appuyez sur une combinaison de touches, ou sur Esc pour annuler",
+      "needsModifier": "Ajoutez Ctrl, Alt, Shift ou Win. Seules les touches F1–F24 fonctionnent sans modificateur."
     },
     "dragDrop": {
       "dragToCopy": "Copier les fichiers vers la destination",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Applications en liste blanche",
       "whitelistDesc": "La détection d'agitation ne sera active que lorsque l'une de ces applications est au premier plan. Accepte les noms de processus (ex. brave, brave.exe). Insensible à la casse.",
       "addPlaceholder": "Ajouter un nom de processus...",
-      "add": "Ajouter"
+      "add": "Ajouter",
+      "removeApp": "Supprimer {{app}}"
+    },
+    "appearance": {
+      "title": "Apparence",
+      "description": "Choisissez l'apparence de Holdem.",
+      "system": "Système",
+      "light": "Clair",
+      "dark": "Sombre"
     },
     "footer": {
       "save": "Enregistrer les paramètres",
-      "saving": "Sauvegarde en cours..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Sauvegarde en cours...",
+      "saveFailed": "Impossible d'enregistrer les paramètres",
+      "hotkeyFailed": "Paramètres enregistrés, mais le raccourci clavier n'a pas pu être activé",
+      "autostartFailed": "Paramètres enregistrés, mais le lancement au démarrage n'a pas pu être modifié"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Version {{version}}",
     "noNotes": "Aucune note de version disponible",
     "releaseNotes": "Notes de version",
-    "autoDownload": "Le téléchargement va démarrer automatiquement...",
     "latest": "Vous utilisez la dernière version !",
     "errorTitle": "Erreur lors de la vérification des mises à jour",
     "downloadError": "Échec du téléchargement et de l'installation de la mise à jour : {{error}}",
-    "waiting": "En attente de vérification des mises à jour..."
+    "waiting": "En attente de vérification des mises à jour...",
+    "restartWarning": "Holdem va redémarrer pour terminer la mise à jour. L'étagère sera vidée.",
+    "installNow": "Installer maintenant",
+    "later": "Plus tard"
   }
 }

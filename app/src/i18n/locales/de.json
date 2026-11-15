@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} Elemente ausgewählt",
-    "list": "Liste",
-    "grid": "Raster",
-    "removeSelected": "Ausgewählte Dateien entfernen",
     "itemsSelected_one": "{{count}} Element ausgewählt",
     "itemsSelected_other": "{{count}} Elemente ausgewählt",
-    "viewMode": "View mode"
+    "list": "Liste",
+    "grid": "Raster",
+    "viewMode": "Ansichtsmodus",
+    "removeSelected": "Ausgewählte Dateien entfernen",
+    "files": "Dateien in der Ablage",
+    "folder": "Ordner"
   },
   "settings": {
     "title": "Einstellungen",
@@ -45,7 +47,9 @@
       "set": "Setzen",
       "stop": "Stoppen",
       "clear": "Leeren",
-      "noneSet": "Nicht festgelegt"
+      "noneSet": "Nicht festgelegt",
+      "escToCancel": "Tastenkombination drücken oder Esc zum Abbrechen",
+      "needsModifier": "Fügen Sie Ctrl, Alt, Shift oder Win hinzu. Nur F1–F24 funktionieren allein."
     },
     "dragDrop": {
       "dragToCopy": "Dateien in das Ziel kopieren",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Apps auf der Whitelist",
       "whitelistDesc": "Die Schüttelerkennung ist nur aktiv, wenn eine dieser Apps im Fokus ist. Akzeptiert Prozessnamen (z. B. brave, brave.exe). Groß-/Kleinschreibung ignorieren.",
       "addPlaceholder": "Prozessname hinzufügen...",
-      "add": "Neu"
+      "add": "Hinzufügen",
+      "removeApp": "{{app}} entfernen"
+    },
+    "appearance": {
+      "title": "Darstellung",
+      "description": "Wählen Sie, wie Holdem aussieht.",
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
     },
     "footer": {
       "save": "Einstellungen speichern",
-      "saving": "Speichern..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Speichern...",
+      "saveFailed": "Einstellungen konnten nicht gespeichert werden",
+      "hotkeyFailed": "Einstellungen gespeichert, aber der Hotkey konnte nicht registriert werden",
+      "autostartFailed": "Einstellungen gespeichert, aber der Autostart konnte nicht geändert werden"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Version {{version}}",
     "noNotes": "Keine Versionshinweise verfügbar",
     "releaseNotes": "Versionshinweise",
-    "autoDownload": "Download wird automatisch gestartet...",
     "latest": "Sie verwenden die neueste Version!",
     "errorTitle": "Fehler bei der Suche nach Updates",
     "downloadError": "Update konnte nicht heruntergeladen und installiert werden: {{error}}",
-    "waiting": "Warte auf Updates..."
+    "waiting": "Warte auf Updates...",
+    "restartWarning": "Holdem wird neu gestartet, um das Update abzuschließen. Die Ablage wird geleert.",
+    "installNow": "Jetzt installieren",
+    "later": "Später"
   }
 }

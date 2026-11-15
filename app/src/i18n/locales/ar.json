@@ -5,28 +5,30 @@
   "app": {
     "dropHere": "إسقاط هنا",
     "files": "{{count}} ملف",
+    "files_zero": "لا توجد ملفات",
     "files_one": "ملف واحد",
+    "files_two": "ملفان",
+    "files_few": "{{count}} ملفات",
+    "files_many": "{{count}} ملفًا",
     "files_other": "{{count}} ملف",
     "files_plural": "{{count}} ملفات",
     "clear": "مسح",
-    "contextMenuTitle": "قائمة السياق",
-    "files_zero": "لا توجد ملفات",
-    "files_two": "ملفان",
-    "files_few": "{{count}} ملفات",
-    "files_many": "{{count}} ملفًا"
+    "contextMenuTitle": "قائمة السياق"
   },
   "popup": {
     "itemsSelected": "تم تحديد {{count}} عنصر",
-    "list": "قائمة",
-    "grid": "الشبكة",
-    "removeSelected": "إزالة الملفات المحددة",
     "itemsSelected_zero": "لم يتم تحديد أي عنصر",
     "itemsSelected_one": "تم تحديد عنصر واحد",
     "itemsSelected_two": "تم تحديد عنصرين",
     "itemsSelected_few": "تم تحديد {{count}} عناصر",
     "itemsSelected_many": "تم تحديد {{count}} عنصرًا",
     "itemsSelected_other": "تم تحديد {{count}} عنصر",
-    "viewMode": "View mode"
+    "list": "قائمة",
+    "grid": "الشبكة",
+    "viewMode": "وضع العرض",
+    "removeSelected": "إزالة الملفات المحددة",
+    "files": "ملفات الرف",
+    "folder": "مجلد"
   },
   "settings": {
     "title": "الإعدادات",
@@ -53,7 +55,9 @@
       "set": "تعيين",
       "stop": "توقف",
       "clear": "مسح",
-      "noneSet": "لم يتم التعيين"
+      "noneSet": "لم يتم التعيين",
+      "escToCancel": "اضغط على مجموعة مفاتيح، أو Esc للإلغاء",
+      "needsModifier": "أضف Ctrl أو Alt أو Shift أو Win. وحدها المفاتيح F1–F24 تعمل بمفردها."
     },
     "dragDrop": {
       "dragToCopy": "نسخ الملفات إلى الوجهة",
@@ -69,18 +73,22 @@
       "whitelistTitle": "تطبيقات القائمة البيضاء",
       "whitelistDesc": "سيتم تفعيل اكتشاف اهتزاز المؤشر فقط عندما يكون أحد هذه التطبيقات قيد التركيز. يقبل أسماء العمليات (مثل brave وbrave.exe). غير حساس لحالة الأحرف.",
       "addPlaceholder": "إضافة اسم العملية...",
-      "add": "إضافة"
+      "add": "إضافة",
+      "removeApp": "إزالة {{app}}"
+    },
+    "appearance": {
+      "title": "المظهر",
+      "description": "اختر مظهر Holdem.",
+      "system": "النظام",
+      "light": "فاتح",
+      "dark": "داكن"
     },
     "footer": {
       "save": "حفظ الإعدادات",
-      "saving": "حفظ..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "حفظ...",
+      "saveFailed": "تعذر حفظ الإعدادات",
+      "hotkeyFailed": "تم حفظ الإعدادات، لكن تعذر تسجيل مفتاح الاختصار",
+      "autostartFailed": "تم حفظ الإعدادات، لكن تعذر تغيير إعداد بدء التشغيل"
     }
   },
   "consent": {
@@ -113,10 +121,12 @@
     "version": "الإصدار {{version}}",
     "noNotes": "لا تتوفر ملاحظات الإصدار",
     "releaseNotes": "ملاحظات الإصدار",
-    "autoDownload": "سيبدأ التحميل تلقائياً...",
     "latest": "أنت تقوم بتشغيل أحدث إصدار!",
     "errorTitle": "خطأ في التحقق من وجود تحديثات",
     "downloadError": "تعذر تنزيل التحديث وتثبيته: {{error}}",
-    "waiting": "في انتظار التحقق من وجود تحديثات..."
+    "waiting": "في انتظار التحقق من وجود تحديثات...",
+    "restartWarning": "سيُعاد تشغيل Holdem لإكمال التحديث. سيتم إفراغ الرف.",
+    "installNow": "التثبيت الآن",
+    "later": "لاحقًا"
   }
 }

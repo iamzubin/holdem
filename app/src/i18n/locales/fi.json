@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} kohdetta valittu",
-    "list": "Lista",
-    "grid": "Ruudukko",
-    "removeSelected": "Poista Valitut Tiedostot",
     "itemsSelected_one": "{{count}} kohde valittu",
     "itemsSelected_other": "{{count}} kohdetta valittu",
-    "viewMode": "View mode"
+    "list": "Lista",
+    "grid": "Ruudukko",
+    "viewMode": "Näkymätila",
+    "removeSelected": "Poista Valitut Tiedostot",
+    "files": "Hyllyn tiedostot",
+    "folder": "Kansio"
   },
   "settings": {
     "title": "Asetukset",
@@ -45,7 +47,9 @@
       "set": "Aseta",
       "stop": "Pysäytä",
       "clear": "Tyhjennä",
-      "noneSet": "Ei asetettu"
+      "noneSet": "Ei asetettu",
+      "escToCancel": "Paina näppäinyhdistelmää tai peruuta painamalla Esc",
+      "needsModifier": "Lisää Ctrl, Alt, Shift tai Win. Vain F1–F24 toimivat yksinään."
     },
     "dragDrop": {
       "dragToCopy": "Kopioi tiedostoja määränpäähän",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Sallitut Sovellukset",
       "whitelistDesc": "Ravistuksen tunnistus on aktiivinen vain, kun jokin näistä sovelluksista on aktiivisena. Hyväksyy prosessien nimet (esim. brave, brave.exe). Ei kirjainkoosta riippuvainen.",
       "addPlaceholder": "Lisää prosessin nimi...",
-      "add": "Lisää"
+      "add": "Lisää",
+      "removeApp": "Poista {{app}}"
+    },
+    "appearance": {
+      "title": "Ulkoasu",
+      "description": "Valitse, miltä Holdem näyttää.",
+      "system": "Järjestelmä",
+      "light": "Vaalea",
+      "dark": "Tumma"
     },
     "footer": {
       "save": "Tallenna Asetukset",
-      "saving": "Tallennetaan..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Tallennetaan...",
+      "saveFailed": "Asetusten tallentaminen epäonnistui",
+      "hotkeyFailed": "Asetukset tallennettiin, mutta pikanäppäintä ei voitu rekisteröidä",
+      "autostartFailed": "Asetukset tallennettiin, mutta käynnistysasetusta ei voitu muuttaa"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Versio {{version}}",
     "noNotes": "Julkaisutietoja ei saatavilla",
     "releaseNotes": "Julkaisutiedot",
-    "autoDownload": "Lataus alkaa automaattisesti...",
     "latest": "Käytössäsi on uusin versio!",
     "errorTitle": "Virhe päivitysten tarkistuksessa",
     "downloadError": "Päivityksen lataaminen ja asentaminen epäonnistui: {{error}}",
-    "waiting": "Odotetaan päivitysten tarkistamista..."
+    "waiting": "Odotetaan päivitysten tarkistamista...",
+    "restartWarning": "Holdem käynnistyy uudelleen päivityksen viimeistelemiseksi. Hylly tyhjennetään.",
+    "installNow": "Asenna nyt",
+    "later": "Myöhemmin"
   }
 }

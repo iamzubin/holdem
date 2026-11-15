@@ -6,23 +6,25 @@
     "dropHere": "Přetáhněte sem",
     "files": "{{count}} soubor",
     "files_one": "{{count}} soubor",
+    "files_few": "{{count}} soubory",
+    "files_many": "{{count}} souborů",
     "files_other": "{{count}} souborů",
     "files_plural": "{{count}} souborů",
     "clear": "Vyčistit",
-    "contextMenuTitle": "Kontextové menu",
-    "files_few": "{{count}} soubory",
-    "files_many": "{{count}} souborů"
+    "contextMenuTitle": "Kontextové menu"
   },
   "popup": {
     "itemsSelected": "Vybráno {{count}} položek",
-    "list": "Seznam",
-    "grid": "Mřížka",
-    "removeSelected": "Odstranit vybrané soubory",
     "itemsSelected_one": "Vybrána {{count}} položka",
     "itemsSelected_few": "Vybrány {{count}} položky",
     "itemsSelected_many": "Vybráno {{count}} položek",
     "itemsSelected_other": "Vybráno {{count}} položek",
-    "viewMode": "View mode"
+    "list": "Seznam",
+    "grid": "Mřížka",
+    "viewMode": "Režim zobrazení",
+    "removeSelected": "Odstranit vybrané soubory",
+    "files": "Soubory v poličce",
+    "folder": "Složka"
   },
   "settings": {
     "title": "Nastavení",
@@ -49,7 +51,9 @@
       "set": "Nastavit",
       "stop": "Zastavit",
       "clear": "Vyčistit",
-      "noneSet": "Nenastaveno"
+      "noneSet": "Nenastaveno",
+      "escToCancel": "Stiskněte kombinaci kláves, nebo Esc pro zrušení",
+      "needsModifier": "Přidejte Ctrl, Alt, Shift nebo Win. Samostatně fungují jen F1–F24."
     },
     "dragDrop": {
       "dragToCopy": "Kopírovat soubory do cíle",
@@ -65,18 +69,22 @@
       "whitelistTitle": "Povolené aplikace",
       "whitelistDesc": "Detekce zatřesení bude aktivní pouze v případě, že je aktivní jedna z těchto aplikací. Přijímá názvy procesů (např. brave, brave.exe). Nerozlišuje velká a malá písmena.",
       "addPlaceholder": "Přidat název procesu...",
-      "add": "Přidat"
+      "add": "Přidat",
+      "removeApp": "Odebrat {{app}}"
+    },
+    "appearance": {
+      "title": "Vzhled",
+      "description": "Zvolte, jak bude Holdem vypadat.",
+      "system": "Systém",
+      "light": "Světlý",
+      "dark": "Tmavý"
     },
     "footer": {
       "save": "Uložit nastavení",
-      "saving": "Ukládání..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Ukládání...",
+      "saveFailed": "Nastavení se nepodařilo uložit",
+      "hotkeyFailed": "Nastavení bylo uloženo, ale klávesovou zkratku se nepodařilo zaregistrovat",
+      "autostartFailed": "Nastavení bylo uloženo, ale nastavení spuštění se nepodařilo změnit"
     }
   },
   "consent": {
@@ -109,10 +117,12 @@
     "version": "Verze {{version}}",
     "noNotes": "Žádné poznámky k verzi nejsou k dispozici",
     "releaseNotes": "Poznámky k vydání",
-    "autoDownload": "Stahování bude spuštěno automaticky...",
     "latest": "Používáte nejnovější verzi!",
     "errorTitle": "Chyba při kontrole aktualizací",
     "downloadError": "Aktualizaci se nepodařilo stáhnout a nainstalovat: {{error}}",
-    "waiting": "Čeká se na kontrolu aktualizací..."
+    "waiting": "Čeká se na kontrolu aktualizací...",
+    "restartWarning": "Holdem se restartuje, aby dokončil aktualizaci. Polička bude vyprázdněna.",
+    "installNow": "Nainstalovat nyní",
+    "later": "Později"
   }
 }

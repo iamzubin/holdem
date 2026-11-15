@@ -6,21 +6,23 @@
     "dropHere": "Plasează aici",
     "files": "{{count}} fișier",
     "files_one": "{{count}} fișier",
+    "files_few": "{{count}} fișiere",
     "files_other": "{{count}} de fișiere",
     "files_plural": "{{count}} de fișiere",
     "clear": "Curăță",
-    "contextMenuTitle": "Meniu contextual",
-    "files_few": "{{count}} fișiere"
+    "contextMenuTitle": "Meniu contextual"
   },
   "popup": {
     "itemsSelected": "{{count}} elemente selectate",
-    "list": "Listă",
-    "grid": "Grilă",
-    "removeSelected": "Elimină fişierele selectate",
     "itemsSelected_one": "{{count}} element selectat",
     "itemsSelected_few": "{{count}} elemente selectate",
     "itemsSelected_other": "{{count}} de elemente selectate",
-    "viewMode": "View mode"
+    "list": "Listă",
+    "grid": "Grilă",
+    "viewMode": "Mod de vizualizare",
+    "removeSelected": "Elimină fişierele selectate",
+    "files": "Fișiere pe raft",
+    "folder": "Folder"
   },
   "settings": {
     "title": "Setări",
@@ -47,7 +49,9 @@
       "set": "Setează",
       "stop": "Oprește",
       "clear": "Curăță",
-      "noneSet": "Niciuna setată"
+      "noneSet": "Niciuna setată",
+      "escToCancel": "Apăsați o combinație de taste sau Esc pentru a anula",
+      "needsModifier": "Adăugați Ctrl, Alt, Shift sau Win. Doar F1–F24 funcționează singure."
     },
     "dragDrop": {
       "dragToCopy": "Copiază fișierele la destinație",
@@ -63,18 +67,22 @@
       "whitelistTitle": "Aplicații permise",
       "whitelistDesc": "Detectarea mișcării va fi activă doar atunci când una dintre aceste aplicații este în prim-plan. Acceptă nume de procese (de ex. brave, brave.exe). Insensibil la majuscule și minuscule.",
       "addPlaceholder": "Adaugă numele procesului...",
-      "add": "Adăugare"
+      "add": "Adăugare",
+      "removeApp": "Elimină {{app}}"
+    },
+    "appearance": {
+      "title": "Aspect",
+      "description": "Alegeți cum arată Holdem.",
+      "system": "Sistem",
+      "light": "Luminos",
+      "dark": "Întunecat"
     },
     "footer": {
       "save": "Salvează setările",
-      "saving": "Salvare..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Salvare...",
+      "saveFailed": "Setările nu au putut fi salvate",
+      "hotkeyFailed": "Setările au fost salvate, dar comanda rapidă nu a putut fi înregistrată",
+      "autostartFailed": "Setările au fost salvate, dar setarea de pornire nu a putut fi modificată"
     }
   },
   "consent": {
@@ -107,10 +115,12 @@
     "version": "{{version}} versiune",
     "noNotes": "Nici o notă de lansare disponibilă",
     "releaseNotes": "Note de lansare",
-    "autoDownload": "Descărcarea va începe automat...",
     "latest": "Executați cea mai recentă versiune!",
     "errorTitle": "Eroare la verificarea actualizărilor",
     "downloadError": "Descărcarea și instalarea actualizării a eșuat: {{error}}",
-    "waiting": "Se așteaptă să se verifice actualizările..."
+    "waiting": "Se așteaptă să se verifice actualizările...",
+    "restartWarning": "Holdem va reporni pentru a finaliza actualizarea. Raftul va fi golit.",
+    "installNow": "Instalează acum",
+    "later": "Mai târziu"
   }
 }

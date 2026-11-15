@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} markerade objekt",
-    "list": "Lista",
-    "grid": "Rutnät",
-    "removeSelected": "Ta bort markerade filer",
     "itemsSelected_one": "{{count}} markerat objekt",
     "itemsSelected_other": "{{count}} markerade objekt",
-    "viewMode": "View mode"
+    "list": "Lista",
+    "grid": "Rutnät",
+    "viewMode": "Visningsläge",
+    "removeSelected": "Ta bort markerade filer",
+    "files": "Filer på hyllan",
+    "folder": "Mapp"
   },
   "settings": {
     "title": "Inställningar",
@@ -45,7 +47,9 @@
       "set": "Ange",
       "stop": "Stoppa",
       "clear": "Rensa",
-      "noneSet": "Inte inställd"
+      "noneSet": "Inte inställd",
+      "escToCancel": "Tryck på en tangentkombination, eller Esc för att avbryta",
+      "needsModifier": "Lägg till Ctrl, Alt, Shift eller Win. Endast F1–F24 fungerar ensamma."
     },
     "dragDrop": {
       "dragToCopy": "Kopiera filer till destination",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Vitlistade appar",
       "whitelistDesc": "Skakningsdetektering är endast aktiv när en av dessa appar är i fokus. Accepterar processnamn (t.ex. brave, brave.exe). Skiftlägesokänslig.",
       "addPlaceholder": "Lägg till processnamn...",
-      "add": "Lägg till"
+      "add": "Lägg till",
+      "removeApp": "Ta bort {{app}}"
+    },
+    "appearance": {
+      "title": "Utseende",
+      "description": "Välj hur Holdem ser ut.",
+      "system": "System",
+      "light": "Ljust",
+      "dark": "Mörkt"
     },
     "footer": {
       "save": "Spara inställningar",
-      "saving": "Sparar..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Sparar...",
+      "saveFailed": "Det gick inte att spara inställningarna",
+      "hotkeyFailed": "Inställningarna sparades, men snabbtangenten kunde inte registreras",
+      "autostartFailed": "Inställningarna sparades, men startinställningen kunde inte ändras"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Version {{version}}",
     "noNotes": "Inga versionsfakta tillgängliga",
     "releaseNotes": "Kommentarer till utgåvan",
-    "autoDownload": "Nedladdningen startar automatiskt...",
     "latest": "Du kör den senaste versionen!",
     "errorTitle": "Fel vid sökning efter uppdateringar",
     "downloadError": "Det gick inte att ladda ner och installera uppdateringen: {{error}}",
-    "waiting": "Väntar på att söka efter uppdateringar..."
+    "waiting": "Väntar på att söka efter uppdateringar...",
+    "restartWarning": "Holdem startas om för att slutföra uppdateringen. Hyllan töms.",
+    "installNow": "Installera nu",
+    "later": "Senare"
   }
 }

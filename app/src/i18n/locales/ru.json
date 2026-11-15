@@ -6,23 +6,25 @@
     "dropHere": "Перетащите сюда",
     "files": "{{count}} файл",
     "files_one": "{{count}} файл",
+    "files_few": "{{count}} файла",
+    "files_many": "{{count}} файлов",
     "files_other": "{{count}} файлов",
     "files_plural": "{{count}} файлов",
     "clear": "Очистить",
-    "contextMenuTitle": "Контекстное меню",
-    "files_few": "{{count}} файла",
-    "files_many": "{{count}} файлов"
+    "contextMenuTitle": "Контекстное меню"
   },
   "popup": {
     "itemsSelected": "Выбрано {{count}} элементов",
-    "list": "Список",
-    "grid": "Сетка",
-    "removeSelected": "Удалить выбранные файлы",
     "itemsSelected_one": "Выбран {{count}} элемент",
     "itemsSelected_few": "Выбрано {{count}} элемента",
     "itemsSelected_many": "Выбрано {{count}} элементов",
     "itemsSelected_other": "Выбрано {{count}} элементов",
-    "viewMode": "View mode"
+    "list": "Список",
+    "grid": "Сетка",
+    "viewMode": "Режим просмотра",
+    "removeSelected": "Удалить выбранные файлы",
+    "files": "Файлы на полке",
+    "folder": "Папка"
   },
   "settings": {
     "title": "Настройки",
@@ -49,7 +51,9 @@
       "set": "Задать",
       "stop": "Остановить",
       "clear": "Очистить",
-      "noneSet": "Не задано"
+      "noneSet": "Не задано",
+      "escToCancel": "Нажмите сочетание клавиш или Esc для отмены",
+      "needsModifier": "Добавьте Ctrl, Alt, Shift или Win. Без модификаторов работают только F1–F24."
     },
     "dragDrop": {
       "dragToCopy": "Копировать файлы в место назначения",
@@ -65,18 +69,22 @@
       "whitelistTitle": "Белый список приложений",
       "whitelistDesc": "Обнаружение встряхивания активно только тогда, когда одно из этих приложений находится в фокусе. Принимает имена процессов (например, brave, brave.exe). Без учёта регистра.",
       "addPlaceholder": "Добавить имя процесса...",
-      "add": "Добавить"
+      "add": "Добавить",
+      "removeApp": "Удалить {{app}}"
+    },
+    "appearance": {
+      "title": "Оформление",
+      "description": "Выберите, как выглядит Holdem.",
+      "system": "Системная",
+      "light": "Светлая",
+      "dark": "Тёмная"
     },
     "footer": {
       "save": "Сохранить настройки",
-      "saving": "Сохранение..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Сохранение...",
+      "saveFailed": "Не удалось сохранить настройки",
+      "hotkeyFailed": "Настройки сохранены, но не удалось зарегистрировать горячую клавишу",
+      "autostartFailed": "Настройки сохранены, но не удалось изменить параметр автозапуска"
     }
   },
   "consent": {
@@ -109,10 +117,12 @@
     "version": "Версия {{version}}",
     "noNotes": "Заметки о выпуске недоступны",
     "releaseNotes": "Примечания к выпуску",
-    "autoDownload": "Загрузка начнется автоматически...",
     "latest": "Вы используете последнюю версию!",
     "errorTitle": "Ошибка проверки обновлений",
     "downloadError": "Не удалось скачать и установить обновление: {{error}}",
-    "waiting": "Ожидание проверки обновлений..."
+    "waiting": "Ожидание проверки обновлений...",
+    "restartWarning": "Holdem перезапустится, чтобы завершить обновление. Полка будет очищена.",
+    "installNow": "Установить сейчас",
+    "later": "Позже"
   }
 }

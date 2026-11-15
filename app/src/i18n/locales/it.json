@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}} elementi selezionati",
-    "list": "Elenco",
-    "grid": "Griglia",
-    "removeSelected": "Rimuovi File Selezionati",
     "itemsSelected_one": "{{count}} elemento selezionato",
     "itemsSelected_other": "{{count}} elementi selezionati",
-    "viewMode": "View mode"
+    "list": "Elenco",
+    "grid": "Griglia",
+    "viewMode": "Modalità di visualizzazione",
+    "removeSelected": "Rimuovi File Selezionati",
+    "files": "File sulla mensola",
+    "folder": "Cartella"
   },
   "settings": {
     "title": "Impostazioni",
@@ -45,7 +47,9 @@
       "set": "Imposta",
       "stop": "Ferma",
       "clear": "Pulisci",
-      "noneSet": "Nessuno impostato"
+      "noneSet": "Nessuno impostato",
+      "escToCancel": "Premi una combinazione di tasti o Esc per annullare",
+      "needsModifier": "Aggiungi Ctrl, Alt, Shift o Win. Solo F1–F24 funzionano da soli."
     },
     "dragDrop": {
       "dragToCopy": "Copia i file nella destinazione",
@@ -61,18 +65,22 @@
       "whitelistTitle": "Applicazioni Whitelisted",
       "whitelistDesc": "Il rilevamento dell'agitazione sarà attivo solo quando una di queste app è in primo piano. Accetta nomi di processi (ad es. brave, brave.exe). Non distingue tra maiuscole e minuscole.",
       "addPlaceholder": "Aggiungi nome processo...",
-      "add": "Aggiungi"
+      "add": "Aggiungi",
+      "removeApp": "Rimuovi {{app}}"
+    },
+    "appearance": {
+      "title": "Aspetto",
+      "description": "Scegli l'aspetto di Holdem.",
+      "system": "Sistema",
+      "light": "Chiaro",
+      "dark": "Scuro"
     },
     "footer": {
       "save": "Salva Impostazioni",
-      "saving": "Salvataggio..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "Salvataggio...",
+      "saveFailed": "Impossibile salvare le impostazioni",
+      "hotkeyFailed": "Impostazioni salvate, ma non è stato possibile registrare la scorciatoia",
+      "autostartFailed": "Impostazioni salvate, ma non è stato possibile modificare l'avvio automatico"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "Versione {{version}}",
     "noNotes": "Nessuna nota di rilascio disponibile",
     "releaseNotes": "Note Di Rilascio",
-    "autoDownload": "Il download inizierà automaticamente...",
     "latest": "Stai eseguendo l'ultima versione!",
     "errorTitle": "Errore nel controllo degli aggiornamenti",
     "downloadError": "Download e installazione dell'aggiornamento non riusciti: {{error}}",
-    "waiting": "In attesa di controllare gli aggiornamenti..."
+    "waiting": "In attesa di controllare gli aggiornamenti...",
+    "restartWarning": "Holdem verrà riavviato per completare l'aggiornamento. La mensola verrà svuotata.",
+    "installNow": "Installa ora",
+    "later": "Più tardi"
   }
 }

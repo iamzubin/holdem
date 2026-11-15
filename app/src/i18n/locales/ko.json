@@ -13,12 +13,14 @@
   },
   "popup": {
     "itemsSelected": "{{count}}개 항목 선택됨",
-    "list": "목록",
-    "grid": "그리드",
-    "removeSelected": "선택한 파일 삭제",
     "itemsSelected_one": "{{count}}개 항목 선택됨",
     "itemsSelected_other": "{{count}}개 항목 선택됨",
-    "viewMode": "View mode"
+    "list": "목록",
+    "grid": "그리드",
+    "viewMode": "보기 모드",
+    "removeSelected": "선택한 파일 삭제",
+    "files": "선반의 파일",
+    "folder": "폴더"
   },
   "settings": {
     "title": "설정",
@@ -45,7 +47,9 @@
       "set": "설정",
       "stop": "중지",
       "clear": "지우기",
-      "noneSet": "설정되지 않음"
+      "noneSet": "설정되지 않음",
+      "escToCancel": "키 조합을 누르거나 Esc를 눌러 취소하세요",
+      "needsModifier": "Ctrl, Alt, Shift 또는 Win을 함께 누르세요. F1–F24만 단독으로 사용할 수 있습니다."
     },
     "dragDrop": {
       "dragToCopy": "파일을 대상에 복사",
@@ -61,18 +65,22 @@
       "whitelistTitle": "허용된 앱",
       "whitelistDesc": "이러한 앱 중 하나에 포커스가 있을 때만 흔들기 감지가 활성화됩니다. 프로세스 이름(예: brave, brave.exe)을 입력하세요. 대소문자를 구분하지 않습니다.",
       "addPlaceholder": "프로세스 이름 추가...",
-      "add": "추가"
+      "add": "추가",
+      "removeApp": "{{app}} 제거"
+    },
+    "appearance": {
+      "title": "모양",
+      "description": "Holdem의 모양을 선택하세요.",
+      "system": "시스템",
+      "light": "라이트",
+      "dark": "다크"
     },
     "footer": {
       "save": "설정 저장",
-      "saving": "저장 중..."
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Choose how Holdem looks.",
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
+      "saving": "저장 중...",
+      "saveFailed": "설정을 저장하지 못했습니다",
+      "hotkeyFailed": "설정이 저장되었지만 단축키를 등록하지 못했습니다",
+      "autostartFailed": "설정이 저장되었지만 시작 설정을 변경하지 못했습니다"
     }
   },
   "consent": {
@@ -105,10 +113,12 @@
     "version": "버전 {{version}}",
     "noNotes": "릴리스 노트가 없습니다",
     "releaseNotes": "릴리스 노트",
-    "autoDownload": "다운로드가 자동으로 시작됩니다...",
     "latest": "최신 버전을 실행 중입니다!",
     "errorTitle": "업데이트 확인 중 오류",
     "downloadError": "업데이트를 다운로드하고 설치하지 못했습니다: {{error}}",
-    "waiting": "업데이트 확인을 기다리는 중..."
+    "waiting": "업데이트 확인을 기다리는 중...",
+    "restartWarning": "업데이트를 완료하기 위해 Holdem이 다시 시작됩니다. 선반의 파일은 지워집니다.",
+    "installNow": "지금 설치",
+    "later": "나중에"
   }
 }
