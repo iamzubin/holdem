@@ -28,7 +28,7 @@ tauri-plugin-process = "2.4.0"
 drag = { path = "drag-patch" }
 image = "0.25.10"
 reqwest = { version = "0.13.5", features = ["json", "stream"] }
-posthog-rs = { version = "0.27.0", default-features = false, features = ["async-client"] }
+posthog-rs = { version = "0.33.1", default-features = false, features = ["async-client"] }
 tokio = "1.53.3"
 uuid = { version = "1.28.0", features = ["v4"] }
 thiserror = "2.0.21"
