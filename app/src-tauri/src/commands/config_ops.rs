@@ -42,16 +42,6 @@ pub fn save_config(
 }
 
 #[tauri::command]
-pub fn restart_app(app: AppHandle) -> Result<(), String> {
-    let app_clone = app.clone();
-    tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_analytics_event(&app_clone, "app_restarted", None).await;
-    });
-
-    app.restart();
-}
-
-#[tauri::command]
 pub fn set_autostart(app_handle: AppHandle, enabled: bool) -> Result<(), String> {
     let autostart_manager = app_handle.autolaunch();
 
@@ -287,14 +277,6 @@ pub fn decline_analytics_consent(
     persist_analytics_consent(&config, &app_handle, false)?;
     info!("Analytics consent declined");
     Ok(())
-}
-
-#[tauri::command]
-pub fn check_analytics_consent(config: State<Arc<Mutex<AppConfig>>>) -> Result<bool, String> {
-    config
-        .lock()
-        .map_err(|e| format!("Failed to lock config: {}", e))
-        .map(|c| c.analytics_enabled)
 }
 
 #[tauri::command]

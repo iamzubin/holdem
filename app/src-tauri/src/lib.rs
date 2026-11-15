@@ -1,11 +1,10 @@
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 use std::sync::Mutex;
-use tauri::{Manager, PhysicalPosition};
+use tauri::Manager;
 use tauri_plugin_updater::UpdaterExt;
 use tracing::{error, info, warn};
-use windows::Win32::Foundation::{POINT, WAIT_OBJECT_0};
-use windows::Win32::System::Threading::{CreateMutexW, ReleaseMutex, WaitForSingleObject};
+use windows::Win32::Foundation::POINT;
 use windows::Win32::UI::WindowsAndMessaging::GetCursorPos;
 
 pub(crate) struct DragState {
@@ -33,9 +32,18 @@ pub(crate) type FileList = Arc<Mutex<Vec<file::FileMetadata>>>;
 
 fn build_app() -> tauri::Builder<tauri::Wry> {
     let mut builder = tauri::Builder::default()
+        // Must be registered first. Launching Holdem again (Start menu,
+        // shortcut) shows the running shelf instead of starting a second
+        // copy. The lock is per user session, so other Windows users on the
+        // same machine can run their own instance.
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            info!("Second launch detected, showing the existing shelf");
+            if let Err(e) = commands::window_ops::reveal_main_window(app) {
+                warn!("Failed to show the existing shelf: {}", e);
+            }
+        }))
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(
             tauri_plugin_autostart::Builder::new()
@@ -51,19 +59,12 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                     match event.state() {
                         tauri_plugin_global_shortcut::ShortcutState::Pressed => {
                             let mut cursor_pos = POINT { x: 0, y: 0 };
-                            let _ = unsafe { GetCursorPos(&mut cursor_pos) };
-                            let margin = 200.0;
-
-                            if let Ok(bounds) = crate::utils::ScreenBounds::from_window(&window) {
-                                let (window_x, window_y) = bounds.constrain_position(
-                                    cursor_pos.x as f64,
-                                    cursor_pos.y as f64,
-                                    margin,
+                            if unsafe { GetCursorPos(&mut cursor_pos) }.is_ok() {
+                                crate::utils::move_window_to_cursor(
+                                    &window,
+                                    cursor_pos.x,
+                                    cursor_pos.y,
                                 );
-                                let _ = window.set_position(PhysicalPosition {
-                                    x: window_x as i32,
-                                    y: window_y as i32,
-                                });
                             }
 
                             let _ = commands::window_ops::reveal_main_window(app);
@@ -80,31 +81,22 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             start_multi_drag,
             start_text_drag,
             open_popup_window,
-            close_popup_window,
             open_consent_window,
-            close_consent_window,
             add_files,
-            save_pasted_text,
             save_pasted_data_base64,
-            download_image_to_shelf,
             remove_files,
             get_files,
-            rename_file,
             get_file_icon_base64,
             clear_files,
             refresh_file_list,
             get_config,
             save_config,
             open_settings_window,
-            close_settings_window,
-            restart_app,
             set_autostart,
             register_hotkey,
             is_hotkey_active,
-            show_main_window,
             accept_analytics_consent,
             decline_analytics_consent,
-            check_analytics_consent,
             check_config_exists,
             mark_drop_received,
         ])
@@ -240,24 +232,7 @@ pub fn run() {
     logging::setup_logging();
     tracing::info!("Starting holdem application");
 
-    // Check for existing instance
-    unsafe {
-        let mutex_name = windows::core::w!(r"Global\HoldemAppMutex");
-        let mutex = CreateMutexW(None, true, mutex_name);
-
-        if let Ok(mutex) = mutex {
-            if WaitForSingleObject(mutex, 0) == WAIT_OBJECT_0 {
-                build_app()
-                    .run(tauri::generate_context!())
-                    .expect("error while running tauri application");
-
-                // Clean up the mutex
-                let _ = ReleaseMutex(mutex);
-            } else {
-                // Another instance is already running
-                info!("Another instance of the application is already running");
-                std::process::exit(0);
-            }
-        }
-    }
+    build_app()
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }

@@ -193,8 +193,10 @@ mod tests {
         let dir = std::env::temp_dir().join(format!("holdem-config-test-{}", Uuid::new_v4()));
         let path = dir.join("config.json");
 
-        let mut config = AppConfig::default();
-        config.hotkey = "Ctrl+1".to_string();
+        let mut config = AppConfig {
+            hotkey: "Ctrl+1".to_string(),
+            ..Default::default()
+        };
         config.write_to(&path).unwrap();
         config.hotkey = "Ctrl+2".to_string();
         config.write_to(&path).unwrap();

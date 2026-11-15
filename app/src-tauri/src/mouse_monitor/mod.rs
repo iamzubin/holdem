@@ -4,7 +4,7 @@ use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, Instant};
-use tauri::{AppHandle, Manager, PhysicalPosition, State};
+use tauri::{AppHandle, Manager, State};
 use tracing::info;
 use windows::Win32::Foundation::POINT;
 use windows::Win32::System::Threading::{
@@ -12,8 +12,7 @@ use windows::Win32::System::Threading::{
 };
 use windows::Win32::UI::Input::KeyboardAndMouse::{GetAsyncKeyState, VK_LBUTTON};
 use windows::Win32::UI::WindowsAndMessaging::{
-    GetCursorPos, GetForegroundWindow, GetSystemMetrics, GetWindowThreadProcessId, SM_CXSCREEN,
-    SM_CYSCREEN,
+    GetCursorPos, GetForegroundWindow, GetWindowThreadProcessId,
 };
 
 fn get_mouse_pos() -> POINT {
@@ -93,31 +92,11 @@ fn hide_main_window_after_delay(app_handle: AppHandle, drag_state: Arc<DragState
     });
 }
 
-fn show_main_window(app: &AppHandle, pos: POINT, config: &MouseMonitorConfig) {
-    let screen_w = unsafe { GetSystemMetrics(SM_CXSCREEN) } as f64;
-    let screen_h = unsafe { GetSystemMetrics(SM_CYSCREEN) } as f64;
-
-    let margin = config.shake_threshold as f64;
-    let mut x = pos.x as f64;
-    let mut y = pos.y as f64;
-
-    if x + margin > screen_w {
-        x = pos.x as f64 - margin;
-    }
-    if y + margin > screen_h {
-        y = pos.y as f64 - margin;
-    }
-
+fn show_main_window(app: &AppHandle, pos: POINT) {
     if let Some(window) = app.get_webview_window("main") {
-        let _ = window.set_position(PhysicalPosition {
-            x: x as i32,
-            y: y as i32,
-        });
+        crate::utils::move_window_to_cursor(&window, pos.x, pos.y);
         let _ = window.show();
-        info!(
-            "Opened main window at position ({}, {})",
-            x as i32, y as i32
-        );
+        info!("Opened main window near cursor ({}, {})", pos.x, pos.y);
     }
 }
 
@@ -220,7 +199,7 @@ pub fn start_mouse_monitor(
 
                 if is_whitelisted {
                     drag_state.successful_drop.store(false, Ordering::Relaxed);
-                    show_main_window(&app_handle, current_pos, &config);
+                    show_main_window(&app_handle, current_pos);
                     window_opened_by_shake = true;
                 }
 

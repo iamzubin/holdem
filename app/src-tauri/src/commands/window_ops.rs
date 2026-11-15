@@ -87,7 +87,6 @@ pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), St
     Ok(())
 }
 
-#[tauri::command]
 pub fn close_popup_window(app: AppHandle) -> Result<(), String> {
     let popup_window = app
         .get_webview_window("popup")
@@ -128,17 +127,9 @@ pub fn open_settings_window(app: AppHandle, theme: Option<String>) -> Result<(),
     Ok(())
 }
 
-#[tauri::command]
-pub fn close_settings_window(app: AppHandle) -> Result<(), String> {
-    if let Some(settings_window) = app.get_webview_window("settings") {
-        settings_window.close().map_err(|e| e.to_string())?;
-    }
-    Ok(())
-}
-
 /// Canonical "bring the main window back": show + unminimize + focus.
-/// Used by the hotkey handler, tray click, shortcut callback, and the
-/// `show_main_window` command so the sequence can't drift again.
+/// Used by the hotkey handler, tray click and second-launch callback so the
+/// sequence can't drift again.
 pub(crate) fn reveal_main_window<R: Runtime>(app: &AppHandle<R>) -> Result<(), String> {
     if let Some(window) = app.get_webview_window("main") {
         window.show().map_err(|e| e.to_string())?;
@@ -146,11 +137,6 @@ pub(crate) fn reveal_main_window<R: Runtime>(app: &AppHandle<R>) -> Result<(), S
         window.set_focus().map_err(|e| e.to_string())?;
     }
     Ok(())
-}
-
-#[tauri::command]
-pub fn show_main_window(app_handle: AppHandle) -> Result<(), String> {
-    reveal_main_window(&app_handle)
 }
 
 /// Show the updater window, building it on first use.
@@ -193,14 +179,6 @@ pub fn open_consent_window(app: AppHandle) -> Result<(), String> {
                 .map_err(|e: tauri::Error| e.to_string())?;
             Ok::<(), String>(())
         });
-    }
-    Ok(())
-}
-
-#[tauri::command]
-pub fn close_consent_window(app: AppHandle) -> Result<(), String> {
-    if let Some(consent_window) = app.get_webview_window("consent") {
-        consent_window.close().map_err(|e| e.to_string())?;
     }
     Ok(())
 }
