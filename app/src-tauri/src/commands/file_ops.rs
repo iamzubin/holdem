@@ -174,7 +174,20 @@ pub fn ext_from_image_mime(fragment: &str) -> Option<&'static str> {
 /// as a tiny `.url` placeholder so the drop is never silently lost.
 pub fn save_url_placeholder(url: &str) -> Result<String, String> {
     let body = format!("[InternetShortcut]\nURL={}\n", url);
-    save_bytes_to_drop_folder(body.as_bytes(), "link", "url")
+    save_bytes_to_drop_folder(body.as_bytes(), &placeholder_name(url), "url")
+}
+
+/// Names a link file after its site (`github.com.url`), so several dropped
+/// links are told apart on the shelf; `link.url` when there is no host.
+fn placeholder_name(url: &str) -> String {
+    let host = url::Url::parse(url)
+        .ok()
+        .and_then(|u| u.host_str().map(|h| h.trim_start_matches("www.").to_string()))
+        .filter(|h| !h.is_empty());
+    match host {
+        Some(host) => format!("{}.url", sanitize_filename(&host)),
+        None => "link.url".to_string(),
+    }
 }
 
 /// Resolve the suggested filename for pasted content: an explicit
@@ -306,13 +319,8 @@ pub async fn download_image_to_shelf(
         .and_then(|v| v.to_str().ok())
         .unwrap_or("")
         .to_string();
-    let mut bytes = Vec::new();
-    while let Some(chunk) = response.chunk().await.map_err(|e| e.to_string())? {
-        bytes.extend_from_slice(&chunk);
-        if bytes.len() > MAX_BYTES {
-            return Err("Downloaded file exceeds 25 MB limit".to_string());
-        }
-    }
+    // Decide from the headers, before reading the body, so dropping a link to
+    // a web page saves a shortcut without downloading the page.
     let ext: &str = match ext_from_image_mime(&content_type) {
         Some(known) => known,
         None if content_type.starts_with("image/") => content_type
@@ -331,10 +339,18 @@ pub async fn download_image_to_shelf(
                 .unwrap_or("png")
         }
         None => {
-            // HTML login wall etc. — don't save corrupt file.
+            // A web page, HTML login wall etc. — keep the link instead.
             return save_url_placeholder(&url);
         }
     };
+
+    let mut bytes = Vec::new();
+    while let Some(chunk) = response.chunk().await.map_err(|e| e.to_string())? {
+        bytes.extend_from_slice(&chunk);
+        if bytes.len() > MAX_BYTES {
+            return Err("Downloaded file exceeds 25 MB limit".to_string());
+        }
+    }
 
     save_bytes_to_drop_folder(&bytes, &suggested, ext)
 }
@@ -397,35 +413,6 @@ pub fn get_files(file_list: State<'_, FileList>) -> Result<Vec<FileMetadata>, St
 }
 
 #[tauri::command]
-pub fn rename_file(
-    app_handle: AppHandle,
-    file_list: State<'_, FileList>,
-    file_id: u64,
-    new_name: String,
-) -> Result<(), String> {
-    let mut list = file_list
-        .lock()
-        .map_err(|_| "Failed to acquire lock".to_string())?;
-    if let Some(file) = list.iter_mut().find(|f| f.id == file_id) {
-        file.name = new_name.clone();
-
-        // Send analytics event for file rename (fire and forget)
-        let app_handle_clone = app_handle.clone();
-        tauri::async_runtime::spawn(async move {
-            let _ =
-                analytics::send_analytics_event(&app_handle_clone, "file_renamed", None).await;
-        });
-
-        app_handle
-            .emit("files_updated", ())
-            .map_err(|e| e.to_string())?;
-        Ok(())
-    } else {
-        Err("File not found".to_string())
-    }
-}
-
-#[tauri::command]
 pub fn clear_files(app_handle: AppHandle, file_list: State<'_, FileList>) -> Result<(), String> {
     let mut list = file_list
         .lock()
@@ -485,7 +472,28 @@ pub fn refresh_file_list(
     Ok(())
 }
 
+/// Async so it runs off the main thread: a sync command would block every
+/// window (and any drag in progress) while Windows renders thumbnails for
+/// videos or PDFs. The shell call itself is blocking, so it gets a blocking
+/// worker; `generate_thumbnail` initialises COM per call on that thread.
 #[tauri::command]
-pub fn get_file_icon_base64(file_path: &str) -> Result<String, String> {
-    get_thumbnail_base64(std::path::Path::new(file_path)).map_err(|e| e.to_string())
+pub async fn get_file_icon_base64(file_path: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        get_thumbnail_base64(std::path::Path::new(&file_path))
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn link_files_are_named_after_the_site() {
+        assert_eq!(placeholder_name("https://www.github.com/a/b?q=1"), "github.com.url");
+        assert_eq!(placeholder_name("http://localhost:3000/"), "localhost.url");
+        assert_eq!(placeholder_name("blob:https://discord.com/1234"), "link.url");
+        assert_eq!(placeholder_name("not a url"), "link.url");
+    }
 }

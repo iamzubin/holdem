@@ -22,6 +22,11 @@ use windows::Win32::System::SystemServices::MODIFIERKEYS_FLAGS;
 use windows::Win32::UI::Shell::{DragQueryFileW, HDROP};
 use windows::Win32::UI::WindowsAndMessaging::EnumChildWindows;
 
+/// Total bytes accepted from one virtual-file drop. Each file is already
+/// capped at 64 MB while reading; this stops a multi-file drop (up to 64
+/// files) from buffering gigabytes on the UI thread.
+const MAX_VIRTUAL_DROP_BYTES: usize = 256 * 1024 * 1024;
+
 #[implement(IDropTarget)]
 pub struct HoldemDropTarget {
     app_handle: AppHandle,
@@ -158,6 +163,7 @@ impl HoldemDropTarget {
         let id = match name {
             "HTML Format" => RegisterClipboardFormatW(w!("HTML Format")),
             "FileGroupDescriptorW" => RegisterClipboardFormatW(w!("FileGroupDescriptorW")),
+            "FileGroupDescriptor" => RegisterClipboardFormatW(w!("FileGroupDescriptor")),
             "FileContents" => RegisterClipboardFormatW(w!("FileContents")),
             "UniformResourceLocatorW" => {
                 RegisterClipboardFormatW(w!("UniformResourceLocatorW"))
@@ -261,71 +267,47 @@ impl HoldemDropTarget {
         None
     }
 
-    /// Virtual files: Outlook attachments, Discord/Slack, ZIP folders, FTP —
-    /// exposed as FileGroupDescriptorW + FileContents (per-file lindex).
+    /// Virtual files: Outlook attachments and messages, Discord/Slack, ZIP
+    /// folders, FTP — exposed as FileGroupDescriptor(W) + FileContents
+    /// (per-file lindex). Older apps only offer the ANSI descriptor.
     unsafe fn extract_virtual_files(
         &self,
         data_obj: &IDataObject,
     ) -> Option<Vec<(String, Vec<u8>)>> {
-        let cf_desc = self.clipboard_format("FileGroupDescriptorW")?;
         let cf_contents = self.clipboard_format("FileContents")?;
-        let desc_bytes = self.get_data_bytes(data_obj, cf_desc, -1)?;
-        if desc_bytes.len() < 4 {
-            return None;
-        }
-        let count = u32::from_le_bytes([
-            desc_bytes[0],
-            desc_bytes[1],
-            desc_bytes[2],
-            desc_bytes[3],
-        ]) as usize;
-        if count == 0 || count > 512 {
-            return None;
-        }
-        let count = count.min(64);
-        // FILEGROUPDESCRIPTORW is packed(1): never take field references
-        // (E0793 unaligned). Parse by byte offsets instead:
-        //   dwFlags(4) + clsid(16) + sizel(8) + pointl(8) + dwFileAttributes(4)
-        //   + 3xFILETIME(24) + nFileSizeHigh(4) + nFileSizeLow(4) = 72,
-        //   then cFileName[260] as UTF-16LE (520 bytes) => 592 per entry.
-        const NAME_OFFSET: usize = 72;
-        const NAME_LEN_U16: usize = 260;
-        const FD_SIZE: usize = 72 + 260 * 2;
-        if desc_bytes.len() < 4 + count * FD_SIZE {
-            return None;
-        }
+        let entries = [("FileGroupDescriptorW", true), ("FileGroupDescriptor", false)]
+            .into_iter()
+            .find_map(|(format, wide)| {
+                let cf = self.clipboard_format(format)?;
+                let bytes = self.get_data_bytes(data_obj, cf, -1)?;
+                let entries = parse_file_group_descriptor(&bytes, wide);
+                (!entries.is_empty()).then_some(entries)
+            })?;
+
         let mut out = Vec::new();
-        for i in 0..count {
-            let base = 4 + i * FD_SIZE;
-            let attr = u32::from_le_bytes([
-                desc_bytes[base + 36],
-                desc_bytes[base + 37],
-                desc_bytes[base + 38],
-                desc_bytes[base + 39],
-            ]);
-            // Skip directories (FILE_ATTRIBUTE_DIRECTORY = 0x10).
-            if attr & 0x10 != 0 {
+        let mut total = 0usize;
+        for entry in entries {
+            // FileContents per lindex: try IStream then HGLOBAL.
+            let Some(mut bytes) = self.get_data_bytes(data_obj, cf_contents, entry.index as i32)
+            else {
+                warn!("No contents for dropped virtual file {}", entry.name);
                 continue;
-            }
-            let name_off = base + NAME_OFFSET;
-            let mut wide = Vec::with_capacity(NAME_LEN_U16);
-            for k in 0..NAME_LEN_U16 {
-                let o = name_off + k * 2;
-                let c = u16::from_le_bytes([desc_bytes[o], desc_bytes[o + 1]]);
-                if c == 0 {
-                    break;
+            };
+            // HGLOBAL blocks can be larger than the file; trust the declared size.
+            if let Some(size) = entry.size {
+                if (size as usize) < bytes.len() {
+                    bytes.truncate(size as usize);
                 }
-                wide.push(c);
             }
-            let name = String::from_utf16_lossy(&wide);
-            let name = name.trim().to_string();
-            if name.is_empty() {
-                continue;
+            total += bytes.len();
+            if total > MAX_VIRTUAL_DROP_BYTES {
+                warn!(
+                    "Virtual drop exceeds {} MB in total, skipping the remaining files",
+                    MAX_VIRTUAL_DROP_BYTES / (1024 * 1024)
+                );
+                break;
             }
-            // FileContents per lindex=i: try IStream then HGLOBAL.
-            if let Some(bytes) = self.get_data_bytes(data_obj, cf_contents, i as i32) {
-                out.push((name, bytes));
-            }
+            out.push((entry.name, bytes));
         }
         if out.is_empty() {
             None
@@ -560,6 +542,77 @@ pub fn register_main_drop_target(app_handle: &AppHandle, hwnd: HWND) {
     for child in children {
         register_on_hwnd(app_handle, child);
     }
+}
+
+// --- FILEGROUPDESCRIPTOR ----------------------------------------------------
+
+/// One file listed in a FILEGROUPDESCRIPTOR(W/A).
+#[derive(Debug, PartialEq, Eq)]
+struct DescriptorEntry {
+    /// Position in the descriptor, which is the `lindex` for FileContents.
+    index: usize,
+    name: String,
+    /// Declared size, when the source set FD_FILESIZE.
+    size: Option<u64>,
+}
+
+/// Parses a FILEGROUPDESCRIPTORW (`wide`) or FILEGROUPDESCRIPTORA blob,
+/// skipping directories and nameless entries. At most 64 files are returned.
+///
+/// The structs are packed(1), so fields are read by byte offset:
+/// `dwFlags(4) + clsid(16) + sizel(8) + pointl(8) + dwFileAttributes(4)
+/// + 3xFILETIME(24) + nFileSizeHigh(4) + nFileSizeLow(4) = 72`, then
+/// `cFileName[260]`: UTF-16LE (520 bytes) or ANSI (260 bytes).
+fn parse_file_group_descriptor(bytes: &[u8], wide: bool) -> Vec<DescriptorEntry> {
+    const FD_FILESIZE: u32 = 0x40;
+    const FILE_ATTRIBUTE_DIRECTORY: u32 = 0x10;
+    const NAME_OFFSET: usize = 72;
+    const NAME_CHARS: usize = 260;
+    let entry_size = NAME_OFFSET + NAME_CHARS * if wide { 2 } else { 1 };
+    let read_u32 = |o: usize| u32::from_le_bytes([bytes[o], bytes[o + 1], bytes[o + 2], bytes[o + 3]]);
+
+    if bytes.len() < 4 {
+        return Vec::new();
+    }
+    let count = read_u32(0) as usize;
+    if count == 0 || count > 512 {
+        return Vec::new();
+    }
+    let count = count.min(64);
+    if bytes.len() < 4 + count * entry_size {
+        return Vec::new();
+    }
+
+    let mut entries = Vec::new();
+    for index in 0..count {
+        let base = 4 + index * entry_size;
+        let flags = read_u32(base);
+        if read_u32(base + 36) & FILE_ATTRIBUTE_DIRECTORY != 0 {
+            continue;
+        }
+        let name_bytes = &bytes[base + NAME_OFFSET..base + entry_size];
+        let name = if wide {
+            let units: Vec<u16> = name_bytes
+                .chunks_exact(2)
+                .map(|c| u16::from_le_bytes([c[0], c[1]]))
+                .take_while(|&c| c != 0)
+                .collect();
+            String::from_utf16_lossy(&units)
+        } else {
+            // ANSI names are in the system code page; non-ASCII characters
+            // may not survive, but the file contents are unaffected.
+            let end = name_bytes.iter().position(|&c| c == 0).unwrap_or(name_bytes.len());
+            String::from_utf8_lossy(&name_bytes[..end]).into_owned()
+        };
+        let name = name.trim().to_string();
+        if name.is_empty() {
+            continue;
+        }
+        let size = (flags & FD_FILESIZE != 0)
+            .then(|| (u64::from(read_u32(base + 64)) << 32) | u64::from(read_u32(base + 68)));
+        entries.push(DescriptorEntry { index, name, size });
+    }
+    entries
 }
 
 // --- HTML parsing -----------------------------------------------------------
@@ -811,13 +864,21 @@ fn handle_image_srcs(srcs: Vec<String>, referer: Option<String>, app_handle: App
                 }
             } else if src.starts_with("http://") || src.starts_with("https://") {
                 match crate::commands::file_ops::download_image_to_shelf(
-                    src,
+                    src.clone(),
                     referer.clone(),
                 )
                 .await
                 {
                     Ok(p) => paths.push(PathBuf::from(p)),
-                    Err(e) => error!("Failed to download dropped web image: {}", e),
+                    Err(e) => {
+                        // Offline, timed out or too large: keep the link so
+                        // the drop is never silently lost.
+                        warn!("Failed to download dropped URL, saving a link instead: {}", e);
+                        match crate::commands::file_ops::save_url_placeholder(&src) {
+                            Ok(p) => paths.push(PathBuf::from(p)),
+                            Err(e) => error!("Failed to save link placeholder: {}", e),
+                        }
+                    }
                 }
             } else {
                 warn!("Ignoring unsupported dropped image src");
@@ -837,15 +898,17 @@ fn handle_image_srcs(srcs: Vec<String>, referer: Option<String>, app_handle: App
 
 fn handle_text_drop(text: String, app_handle: AppHandle) {
     tauri::async_runtime::spawn(async move {
-        if let Ok(path) = crate::commands::file_ops::save_pasted_text(text, "txt".to_string(), None)
-        {
-            if let Some(file_list) = app_handle.try_state::<FileList>() {
-                crate::file_drop::handle_file_drop_from_paths(
-                    vec![PathBuf::from(path)],
-                    file_list.inner().clone(),
-                    app_handle,
-                );
+        match crate::commands::file_ops::save_pasted_text(text, "txt".to_string(), None) {
+            Ok(path) => {
+                if let Some(file_list) = app_handle.try_state::<FileList>() {
+                    crate::file_drop::handle_file_drop_from_paths(
+                        vec![PathBuf::from(path)],
+                        file_list.inner().clone(),
+                        app_handle,
+                    );
+                }
             }
+            Err(e) => error!("Failed to save dropped text: {}", e),
         }
     });
 }
@@ -892,8 +955,11 @@ fn dib_bytes_to_png(dib: &[u8]) -> Option<Vec<u8>> {
         return None;
     }
 
-    // For BI_BITFIELDS with 16/32bpp there are 3 color masks after the header.
-    let masks_len = if compression == 3 && (bit_count == 16 || bit_count == 32) {
+    // For BI_BITFIELDS with 16/32bpp there are 3 color masks after a plain
+    // BITMAPINFOHEADER. V4/V5 headers (108/124 bytes) hold the masks inside
+    // the header, so nothing extra follows them.
+    let masks_len = if header_size == 40 && compression == 3 && (bit_count == 16 || bit_count == 32)
+    {
         12
     } else {
         0
@@ -1017,6 +1083,107 @@ mod tests {
         );
         let (srcs, _) = parse_html_images(&evil);
         assert!(srcs.len() <= 1);
+    }
+
+    /// Builds a FILEGROUPDESCRIPTOR(W/A) blob from (name, attributes, size).
+    fn descriptor(wide: bool, files: &[(&str, u32, Option<u64>)]) -> Vec<u8> {
+        let entry_size = 72 + 260 * if wide { 2 } else { 1 };
+        let mut out = (files.len() as u32).to_le_bytes().to_vec();
+        for (name, attrs, size) in files {
+            let mut entry = vec![0u8; entry_size];
+            let mut flags = 0x4u32; // FD_ATTRIBUTES
+            if let Some(size) = size {
+                flags |= 0x40; // FD_FILESIZE
+                entry[64..68].copy_from_slice(&((size >> 32) as u32).to_le_bytes());
+                entry[68..72].copy_from_slice(&(*size as u32).to_le_bytes());
+            }
+            entry[0..4].copy_from_slice(&flags.to_le_bytes());
+            entry[36..40].copy_from_slice(&attrs.to_le_bytes());
+            if wide {
+                for (i, unit) in name.encode_utf16().enumerate() {
+                    entry[72 + i * 2..74 + i * 2].copy_from_slice(&unit.to_le_bytes());
+                }
+            } else {
+                entry[72..72 + name.len()].copy_from_slice(name.as_bytes());
+            }
+            out.extend_from_slice(&entry);
+        }
+        out
+    }
+
+    #[test]
+    fn parses_wide_descriptor_skipping_directories() {
+        let bytes = descriptor(
+            true,
+            &[
+                ("Folder", 0x10, None),
+                ("Folder\\Résumé.pdf", 0x20, Some(5_000_000_000)),
+                ("notes.txt", 0x20, None),
+            ],
+        );
+        let entries = parse_file_group_descriptor(&bytes, true);
+        assert_eq!(
+            entries,
+            vec![
+                DescriptorEntry {
+                    index: 1,
+                    name: "Folder\\Résumé.pdf".to_string(),
+                    size: Some(5_000_000_000),
+                },
+                DescriptorEntry { index: 2, name: "notes.txt".to_string(), size: None },
+            ]
+        );
+    }
+
+    #[test]
+    fn parses_ansi_descriptor() {
+        let bytes = descriptor(false, &[("Meeting notes.msg", 0x20, Some(1234))]);
+        let entries = parse_file_group_descriptor(&bytes, false);
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].name, "Meeting notes.msg");
+        assert_eq!(entries[0].size, Some(1234));
+        // The same bytes are too short to be a wide descriptor.
+        assert!(parse_file_group_descriptor(&bytes, true).is_empty());
+    }
+
+    #[test]
+    fn rejects_truncated_or_empty_descriptors() {
+        assert!(parse_file_group_descriptor(&[], true).is_empty());
+        assert!(parse_file_group_descriptor(&0u32.to_le_bytes(), true).is_empty());
+        let mut bytes = descriptor(true, &[("a.txt", 0, None)]);
+        bytes.truncate(bytes.len() - 1);
+        assert!(parse_file_group_descriptor(&bytes, true).is_empty());
+    }
+
+    /// A 1x1 32bpp BI_BITFIELDS bitmap with the given header size and one
+    /// BGRA pixel; a 40-byte header is followed by the 3 colour masks.
+    fn bitfields_dib(header_size: usize, pixel: [u8; 4]) -> Vec<u8> {
+        let mut dib = vec![0u8; header_size];
+        dib[0..4].copy_from_slice(&(header_size as u32).to_le_bytes());
+        dib[4..8].copy_from_slice(&1i32.to_le_bytes());
+        dib[8..12].copy_from_slice(&1i32.to_le_bytes());
+        dib[12..14].copy_from_slice(&1u16.to_le_bytes());
+        dib[14..16].copy_from_slice(&32u16.to_le_bytes());
+        dib[16..20].copy_from_slice(&3u32.to_le_bytes());
+        if header_size == 40 {
+            dib.extend_from_slice(&[0, 0, 0xFF, 0, 0, 0xFF, 0, 0, 0xFF, 0, 0, 0]);
+        }
+        dib.extend_from_slice(&pixel);
+        dib
+    }
+
+    fn first_pixel(png: &[u8]) -> [u8; 4] {
+        image::load_from_memory(png).unwrap().to_rgba8().get_pixel(0, 0).0
+    }
+
+    #[test]
+    fn dib_bitfields_pixel_offset_depends_on_header_version() {
+        let pixel = [10, 20, 30, 255]; // BGRA
+        for header_size in [40, 124] {
+            let png = dib_bytes_to_png(&bitfields_dib(header_size, pixel))
+                .unwrap_or_else(|| panic!("{header_size}-byte header should decode"));
+            assert_eq!(first_pixel(&png), [30, 20, 10, 255], "header {header_size}");
+        }
     }
 
     #[test]

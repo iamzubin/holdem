@@ -71,8 +71,9 @@ fn generate_thumbnail(file_path: &Path) -> Result<(Vec<u8>, u32, u32), Thumbnail
     })?;
     let wide_path: HSTRING = HSTRING::from(path_str);
 
-    // Required for COM. Per-call init is correct: Tauri runs commands on a
-    // thread pool, so this must not be hoisted to `setup`.
+    // Required for COM. Per-call init is correct: callers run this on
+    // whichever blocking worker thread is free, so it must not be hoisted
+    // to `setup`.
     let hr: windows::core::HRESULT = unsafe { CoInitializeEx(None, COINIT_APARTMENTTHREADED) };
     if hr.is_err() {
         return Err(ThumbnailError::PlatformError(format!(
