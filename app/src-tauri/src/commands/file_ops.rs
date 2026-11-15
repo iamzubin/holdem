@@ -204,7 +204,6 @@ fn paste_suggested_name(
         .to_string()
 }
 
-#[tauri::command]
 pub fn save_pasted_text(
     text: String,
     extension: String,
@@ -253,7 +252,6 @@ pub fn save_pasted_data_base64(
     )
 }
 
-#[tauri::command]
 pub async fn download_image_to_shelf(
     url: String,
     referer: Option<String>,

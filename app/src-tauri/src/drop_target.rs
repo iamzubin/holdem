@@ -479,7 +479,7 @@ impl IDropTarget_Impl for HoldemDropTarget_Impl {
                     let text = text.trim();
                     if !text.is_empty() {
                         mark_drop(&self.app_handle);
-                        if text.starts_with("http://") || text.starts_with("https://") {
+                        if is_single_web_url(text) {
                             info!("HoldemDropTarget detected URL text: {}", text);
                             handle_image_srcs(
                                 vec![text.to_string()],
@@ -896,6 +896,15 @@ fn handle_image_srcs(srcs: Vec<String>, referer: Option<String>, app_handle: App
     });
 }
 
+/// True when dropped text is exactly one http(s) URL. A paragraph that merely
+/// starts with a link stays text, so it lands on the shelf as a note.
+fn is_single_web_url(text: &str) -> bool {
+    !text.contains(char::is_whitespace)
+        && url::Url::parse(text)
+            .map(|u| matches!(u.scheme(), "http" | "https") && u.host().is_some())
+            .unwrap_or(false)
+}
+
 fn handle_text_drop(text: String, app_handle: AppHandle) {
     tauri::async_runtime::spawn(async move {
         match crate::commands::file_ops::save_pasted_text(text, "txt".to_string(), None) {
@@ -1187,10 +1196,19 @@ mod tests {
     }
 
     #[test]
+    fn only_a_lone_url_counts_as_a_link_drop() {
+        assert!(is_single_web_url("https://example.com/a?b=1"));
+        assert!(is_single_web_url("http://localhost:3000"));
+        assert!(!is_single_web_url("https://foo.com is great\nmore text"));
+        assert!(!is_single_web_url("https://a.com https://b.com"));
+        assert!(!is_single_web_url("ftp://example.com/file"));
+        assert!(!is_single_web_url("https://"));
+        assert!(!is_single_web_url("just some notes"));
+    }
+
+    #[test]
     fn dib_rejects_extreme_dimensions_without_panic() {
         // i32::MIN must not panic via abs(); unsigned_abs path rejects it.
-        let h: i32 = i32::MIN;
-        assert!(h.unsigned_abs() > 16384);
         // Minimal DIB with hostile dims returns None instead of allocating.
         let mut dib = vec![0u8; 40];
         dib[0] = 40; // header_size

@@ -10,7 +10,9 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
         MenuItem::with_id(app, "check_update", "Check for Updates", true, None::<&str>)?;
     let menu = Menu::with_items(app, &[&check_update_i, &quit_i])?;
 
-    let _ = TrayIconBuilder::with_id("tray")
+    // The shelf has no taskbar button, so without the tray there is no way to
+    // quit or check for updates: fail startup loudly instead of ignoring it.
+    TrayIconBuilder::with_id("tray")
         .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
         .show_menu_on_left_click(false)
@@ -35,7 +37,7 @@ pub fn create_tray<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<()> {
                 let _ = crate::commands::window_ops::reveal_main_window(app);
             }
         })
-        .build(app);
+        .build(app)?;
 
     Ok(())
 }

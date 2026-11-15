@@ -1,7 +1,7 @@
 [package]
 name = "holdem"
 version = "3.1.1"
-description = "A Tauri App"
+description = "Holdem: a floating file shelf for Windows"
 authors = ["Zubin"]
 edition = "2021"
 

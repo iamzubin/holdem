@@ -2,8 +2,9 @@ use crate::analytics;
 use crate::DragState;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
+use crate::utils::{place_below_or_above, work_area_at, Rect};
 use tauri::{AppHandle, Manager, Runtime, State, WebviewUrl, WebviewWindowBuilder};
-use tracing::info;
+use tracing::{error, info};
 
 fn sanitize_theme(theme: Option<String>) -> Option<String> {
     match theme.as_deref() {
@@ -26,31 +27,36 @@ pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), St
         .get_webview_window("main")
         .ok_or("Main window not found")?;
 
-    // Get the scale factor to convert between physical and logical pixels
-    let scale_factor = main_window.scale_factor().map_err(|e| e.to_string())?;
-
-    // Get the position and size of the main window (physical pixels)
-    let position = main_window.inner_position().map_err(|e| e.to_string())?;
-    let size = main_window.inner_size().map_err(|e| e.to_string())?;
-
-    // Convert to logical pixels for positioning
-    let logical_x = (position.x as f64 / scale_factor) as i32;
-    let logical_y = (position.y as f64 / scale_factor) as i32;
-    let logical_width = (size.width as f64 / scale_factor) as i32;
-    let logical_height = (size.height as f64 / scale_factor) as i32;
-
-    // Define popup window dimensions (logical pixels)
+    // Popup size in logical pixels; placement is computed in physical pixels.
     let popup_width = 450.0;
     let popup_height = 350.0;
-
-    // Calculate centered position below the main window
-    let popup_x = logical_x as f64 + (logical_width as f64 - popup_width) / 2.0;
-    let popup_y = logical_y as f64 + logical_height as f64 + 5.0;
-
-    info!(
-        "Opening popup window - scale_factor={}, main_window: pos=({}, {}), size=({}, {}), logical=({}, {}, {}), popup_pos=({}, {}), popup_size=({}, {})",
-        scale_factor, position.x, position.y, size.width, size.height, logical_x, logical_y, logical_height, popup_x, popup_y, popup_width, popup_height
+    let scale_factor = main_window.scale_factor().map_err(|e| e.to_string())?;
+    let position = main_window.outer_position().map_err(|e| e.to_string())?;
+    let size = main_window.outer_size().map_err(|e| e.to_string())?;
+    let shelf = Rect {
+        x: position.x,
+        y: position.y,
+        width: size.width as i32,
+        height: size.height as i32,
+    };
+    let popup_size = (
+        (popup_width * scale_factor) as i32,
+        (popup_height * scale_factor) as i32,
     );
+    let gap = (5.0 * scale_factor) as i32;
+
+    // Centred under the shelf, flipped above it near the bottom of the
+    // screen, and always kept inside the work area.
+    let (x, y) = match work_area_at(&main_window, shelf.x + shelf.width / 2, shelf.y) {
+        Some(area) => place_below_or_above(shelf, popup_size, area, gap),
+        None => (
+            shelf.x + (shelf.width - popup_size.0) / 2,
+            shelf.y + shelf.height + gap,
+        ),
+    };
+    let popup_x = x as f64 / scale_factor;
+    let popup_y = y as f64 / scale_factor;
+    info!("Opening popup window at logical ({}, {})", popup_x, popup_y);
 
     if let Some(popup_window) = app.get_webview_window("popup") {
         popup_window.close().map_err(|e| e.to_string())?;
@@ -59,7 +65,7 @@ pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), St
         let app_clone = app.clone();
         let popup_url = url_with_theme("popup", theme);
         tauri::async_runtime::spawn(async move {
-            WebviewWindowBuilder::new(
+            let built = WebviewWindowBuilder::new(
                 &app,
                 "popup",                           // Window label
                 WebviewUrl::App(popup_url.into()), // Same frontend build, themed via `?theme=`
@@ -74,14 +80,15 @@ pub fn open_popup_window(app: AppHandle, theme: Option<String>) -> Result<(), St
             .focused(false)
             .accept_first_mouse(true)
             .visible_on_all_workspaces(true)
-            .build()
-            .map_err(|e: tauri::Error| e.to_string())?;
+            .build();
+            if let Err(e) = built {
+                error!("Failed to open popup window: {}", e);
+                return;
+            }
 
             // Send analytics event (fire and forget)
             let _ =
                 analytics::send_analytics_event(&app_clone, "popup_window_opened", None).await;
-
-            Ok::<(), String>(())
         });
     }
     Ok(())
@@ -108,20 +115,22 @@ pub fn open_settings_window(app: AppHandle, theme: Option<String>) -> Result<(),
         let app_clone = app.clone();
         let settings_url = url_with_theme("settings", theme);
         tauri::async_runtime::spawn(async move {
-            WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App(settings_url.into()))
-                .title("Settings")
-                .decorations(false)
-                .shadow(false)
-                .inner_size(settings_width, settings_height)
-                .focused(true)
-                .visible_on_all_workspaces(true)
-                .build()
-                .map_err(|e: tauri::Error| e.to_string())?;
+            let built =
+                WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App(settings_url.into()))
+                    .title("Settings")
+                    .decorations(false)
+                    .shadow(false)
+                    .inner_size(settings_width, settings_height)
+                    .focused(true)
+                    .visible_on_all_workspaces(true)
+                    .build();
+            if let Err(e) = built {
+                error!("Failed to open settings window: {}", e);
+                return;
+            }
 
             // Send analytics event (fire and forget)
             let _ = analytics::send_analytics_event(&app_clone, "settings_opened", None).await;
-
-            Ok::<(), String>(())
         });
     }
     Ok(())
@@ -164,20 +173,22 @@ pub fn open_consent_window(app: AppHandle) -> Result<(), String> {
         // Create the consent window
         let app_clone = app.clone();
         tauri::async_runtime::spawn(async move {
-            WebviewWindowBuilder::new(&app_clone, "consent", WebviewUrl::App("/consent".into()))
-                .title("Analytics Consent")
-                .decorations(false)
-                .shadow(true)
-                .inner_size(450.0, 500.0)
-                .center()
-                .focused(true)
-                .always_on_top(true)
-                .skip_taskbar(true)
-                .resizable(false)
-                .visible_on_all_workspaces(true)
-                .build()
-                .map_err(|e: tauri::Error| e.to_string())?;
-            Ok::<(), String>(())
+            let built =
+                WebviewWindowBuilder::new(&app_clone, "consent", WebviewUrl::App("/consent".into()))
+                    .title("Analytics Consent")
+                    .decorations(false)
+                    .shadow(true)
+                    .inner_size(450.0, 500.0)
+                    .center()
+                    .focused(true)
+                    .always_on_top(true)
+                    .skip_taskbar(true)
+                    .resizable(false)
+                    .visible_on_all_workspaces(true)
+                    .build();
+            if let Err(e) = built {
+                error!("Failed to open consent window: {}", e);
+            }
         });
     }
     Ok(())

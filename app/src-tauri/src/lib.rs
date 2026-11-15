@@ -101,20 +101,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             mark_drop_received,
         ])
         .setup(|app| {
-            // Ensure config directory exists first
-            let config_dir = app.handle().path().app_config_dir().unwrap_or_else(|_| {
-                error!("Failed to get app config directory");
-                std::process::exit(1);
-            });
-            if !config_dir.exists() {
-                info!("Creating app config directory at {:?}", config_dir);
-                if let Err(e) = std::fs::create_dir_all(&config_dir) {
-                    error!("Failed to create app config directory: {}", e);
-                    return Err(format!("Failed to create app config directory: {}", e).into());
-                }
-            }
-
-            // Load configuration once
+            // Load configuration once. Saving creates the config directory.
             let config = config::AppConfig::load(app.handle());
             app.manage(Arc::new(Mutex::new(config.clone())));
 
@@ -151,31 +138,21 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 if let Ok(updater) = app_handle.updater() {
-                    if let Ok(Some(_update)) = updater.check().await {
-                        // Send analytics event for update available (fire and forget)
-                        let _ = analytics::send_analytics_event(
-                            &app_handle,
-                            "update_checked",
-                            Some(vec![(
-                                "update_available",
-                                serde_json::Value::Bool(true),
-                            )]),
-                        )
-                        .await;
-
-                        // Open the updater window if an update is available
-                        let _ = commands::window_ops::open_updater_window(&app_handle);
-                    } else {
-                        // Send analytics event for no update available (fire and forget)
-                        let _ = analytics::send_analytics_event(
-                            &app_handle,
-                            "update_checked",
-                            Some(vec![(
-                                "update_available",
-                                serde_json::Value::Bool(false),
-                            )]),
-                        )
-                        .await;
+                    let update_available = matches!(updater.check().await, Ok(Some(_)));
+                    let _ = analytics::send_analytics_event(
+                        &app_handle,
+                        "update_checked",
+                        Some(vec![(
+                            "update_available",
+                            serde_json::Value::Bool(update_available),
+                        )]),
+                    )
+                    .await;
+                    // The updater window asks before installing anything.
+                    if update_available {
+                        if let Err(e) = commands::window_ops::open_updater_window(&app_handle) {
+                            error!("Failed to open updater window: {}", e);
+                        }
                     }
                 }
             });
@@ -183,8 +160,6 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             // Register hotkey if configured
             if !config.hotkey.is_empty() {
                 info!("Registering startup hotkey");
-                // Wait a bit before registering the hotkey
-                std::thread::sleep(std::time::Duration::from_millis(100));
                 if let Err(e) = register_hotkey(app.handle().clone(), config.hotkey.clone()) {
                     warn!("Failed to register startup hotkey: {}", e);
                 } else {
@@ -198,15 +173,9 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 tray::create_tray(handle)?;
             }
 
-            // Start the mouse monitor with configuration
-            let app_handle = app.handle().clone();
-            let config_state = app.state::<Arc<Mutex<config::AppConfig>>>();
-            let config_guard = config_state
-                .lock()
-                .map_err(|e| format!("Failed to lock config: {}", e))?;
             mouse_monitor::start_mouse_monitor(
-                config_guard.mouse_monitor.clone(),
-                app_handle.clone(),
+                config.mouse_monitor.clone(),
+                app.handle().clone(),
                 drag_state.clone(),
             );
 

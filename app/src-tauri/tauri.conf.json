@@ -45,16 +45,11 @@
   },
   "plugins": {
     "updater": {
-      "active": true,
       "endpoints": [
         "https://holdem.iamzub.in/update.json",
         "https://github.com/iamzubin/holdem/releases/latest/download/latest.json"
       ],
-      "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc4MkQ4QUJCQThFRTJBMTgKUldRWUt1Nm91NG90ZUwwMDB3a01jSnF5NGJuTUsrczFXdjJoSjJZcHE3U2RSV2lyeW16bXlZSnUK"
-    },
-    "process": {
-      "active": true
     }
   }
 }
