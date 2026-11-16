@@ -1,7 +1,7 @@
 # AGENTS.md
 
 Three projects in this repo:
-1. **app/** - Tauri desktop app (React + TypeScript + Vite + Tailwind 3.x, Windows-only)
+1. **app/** - Tauri desktop app (React + TypeScript + Vite + Tailwind 4.x, Windows-only)
 2. **holdem_website/** - Next.js marketing site (Next.js 15 + React 19 + Tailwind 4.x)
 3. **thumb-rs** - Git submodule, reference only; `app/` uses its own port in `src-tauri/src/thumbnail.rs`
 
@@ -44,4 +44,4 @@ holdem_website/{app,components,hooks}
 
 - Do not push unless explicitly asked to.
 - Desktop app is Windows-only (Tauri 2.x).
-- Tailwind versions differ: 3.x in `app/`, 4.x (CSS-based config) in `holdem_website/`.
+- Both projects use Tailwind 4.x with CSS-based config (no `tailwind.config.js`): `app/` via `@tailwindcss/vite` with theme tokens in `src/global.css` and animations from `tw-animate-css`; `holdem_website/` via PostCSS.

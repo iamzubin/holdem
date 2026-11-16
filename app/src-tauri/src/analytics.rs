@@ -3,45 +3,38 @@ use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, Manager};
 use tracing::{error, info, warn};
 
+#[derive(Debug, thiserror::Error)]
+pub enum AnalyticsError {
+    #[error("Analytics service not found")]
+    NotFound,
+    #[error("Failed to lock analytics service: {0}")]
+    Lock(String),
+}
+
 #[derive(Clone)]
 pub struct AnalyticsService {
     pub client: Option<Arc<Client>>,
     pub enabled: bool,
     pub uuid: String,
+    /// Sent with every event, so problems can be traced to a release.
+    pub app_version: String,
+    /// Serialises PostHog client creation so concurrent [`ensure_client`]
+    /// calls build exactly one client and all wait for it.
+    init_lock: Arc<tauri::async_runtime::Mutex<()>>,
 }
 
 impl AnalyticsService {
-    pub fn new() -> Self {
+    /// Creates the service with the user's current consent. The PostHog
+    /// client is created lazily (see [`ensure_client`]) and only once consent
+    /// has been given.
+    pub fn new(enabled: bool, uuid: String, app_version: String) -> Self {
         Self {
             client: None,
-            enabled: false,
-            uuid: String::new(),
+            enabled,
+            uuid,
+            app_version,
+            init_lock: Arc::new(tauri::async_runtime::Mutex::new(())),
         }
-    }
-
-    pub async fn initialize(
-        &mut self,
-        analytics_enabled: bool,
-        uuid: String,
-    ) -> Result<(), String> {
-        self.enabled = analytics_enabled;
-        self.uuid = uuid;
-
-        if !self.enabled {
-            info!("Analytics disabled; skipping initialization");
-            return Ok(());
-        }
-
-        // Use compile-time environment variable
-        if let Some(posthog_key) = option_env!("POSTHOG_KEY") {
-            info!("Initializing PostHog client");
-            let client = client(posthog_key).await;
-            self.client = Some(Arc::new(client));
-            info!("PostHog client initialized successfully");
-        } else {
-            warn!("POSTHOG_KEY is not set; analytics will remain disabled");
-        }
-        Ok(())
     }
 
     pub async fn send_event(
@@ -55,6 +48,11 @@ impl AnalyticsService {
 
         if let Some(client) = &self.client {
             let mut event = PostHogEvent::new(event_name, &self.uuid);
+            // No IP-based location lookup and no person profile: events stay
+            // tied only to the random install id.
+            let _ = event.insert_prop("$geoip_disable", true);
+            let _ = event.insert_prop("$process_person_profile", false);
+            let _ = event.insert_prop("app_version", self.app_version.as_str());
 
             if let Some(props) = properties {
                 for (key, value) in props {
@@ -62,7 +60,7 @@ impl AnalyticsService {
                 }
             }
 
-            match client.capture(event).await {
+            match client.capture_immediate(event).await {
                 Ok(_) => {
                     info!("Analytics event sent: {}", event_name);
                     Ok(())
@@ -75,95 +73,6 @@ impl AnalyticsService {
         } else {
             Err("Analytics client not initialized".to_string())
         }
-    }
-
-    #[allow(dead_code)]
-    pub async fn send_app_started(&self) -> Result<(), String> {
-        self.send_event("app_started", None).await
-    }
-
-    #[allow(dead_code)]
-    pub async fn send_consent_accepted(&self) -> Result<(), String> {
-        self.send_event("consent_accepted", None).await
-    }
-
-    pub async fn send_consent_declined(&self) -> Result<(), String> {
-        self.send_event("consent_declined", None).await
-    }
-
-    #[allow(dead_code)]
-    pub async fn send_files_dropped(&self, num_files: usize) -> Result<(), String> {
-        let properties = vec![(
-            "num_files",
-            serde_json::Value::Number((num_files as i64).into()),
-        )];
-        self.send_event("files_dropped", Some(properties)).await
-    }
-
-    #[allow(dead_code)]
-    pub async fn send_window_opened(&self, window_type: &str) -> Result<(), String> {
-        let properties = vec![(
-            "window_type",
-            serde_json::Value::String(window_type.to_string()),
-        )];
-        self.send_event("window_opened", Some(properties)).await
-    }
-
-    pub async fn send_hotkey_registered(&self, hotkey: &str) -> Result<(), String> {
-        let properties = vec![("hotkey", serde_json::Value::String(hotkey.to_string()))];
-        self.send_event("hotkey_registered", Some(properties)).await
-    }
-
-    pub async fn send_autostart_toggled(&self, enabled: bool) -> Result<(), String> {
-        let properties = vec![("enabled", serde_json::Value::Bool(enabled))];
-        self.send_event("autostart_toggled", Some(properties)).await
-    }
-
-    pub async fn send_settings_opened(&self) -> Result<(), String> {
-        self.send_event("settings_opened", None).await
-    }
-
-    #[allow(dead_code)]
-    pub async fn send_mouse_shake_detected(&self, shake_count: u32) -> Result<(), String> {
-        let properties = vec![(
-            "shake_count",
-            serde_json::Value::Number((shake_count as i64).into()),
-        )];
-        self.send_event("mouse_shake_detected", Some(properties))
-            .await
-    }
-
-    pub async fn send_file_renamed(&self) -> Result<(), String> {
-        self.send_event("file_renamed", None).await
-    }
-
-    pub async fn send_file_removed(&self) -> Result<(), String> {
-        self.send_event("file_removed", None).await
-    }
-
-    pub async fn send_files_cleared(&self, num_files: usize) -> Result<(), String> {
-        let properties = vec![(
-            "num_files",
-            serde_json::Value::Number((num_files as i64).into()),
-        )];
-        self.send_event("files_cleared", Some(properties)).await
-    }
-
-    pub async fn send_app_restarted(&self) -> Result<(), String> {
-        self.send_event("app_restarted", None).await
-    }
-
-    pub async fn send_update_checked(&self, update_available: bool) -> Result<(), String> {
-        let properties = vec![(
-            "update_available",
-            serde_json::Value::Bool(update_available),
-        )];
-        self.send_event("update_checked", Some(properties)).await
-    }
-
-    #[allow(dead_code)]
-    pub fn is_enabled(&self) -> bool {
-        self.enabled
     }
 }
 
@@ -178,6 +87,95 @@ pub fn get_analytics_service(app_handle: &AppHandle) -> Result<AnalyticsState, S
         .ok_or_else(|| "Analytics service not found".to_string())
 }
 
+fn analytics_state(app_handle: &AppHandle) -> Result<AnalyticsState, AnalyticsError> {
+    app_handle
+        .try_state::<AnalyticsState>()
+        .map(|state| state.inner().clone())
+        .ok_or(AnalyticsError::NotFound)
+}
+
+fn lock_service(
+    state: &AnalyticsState,
+) -> Result<std::sync::MutexGuard<'_, AnalyticsService>, AnalyticsError> {
+    state.lock().map_err(|e| AnalyticsError::Lock(e.to_string()))
+}
+
+/// Creates the PostHog client if analytics is enabled and no client exists
+/// yet. Safe to call repeatedly and concurrently; a no-op when disabled or
+/// already initialised.
+pub async fn ensure_client(state: &AnalyticsState) -> Result<(), AnalyticsError> {
+    let init_lock = lock_service(state)?.init_lock.clone();
+    // Held across the await so a concurrent caller waits for this client
+    // instead of building its own.
+    let _init = init_lock.lock().await;
+
+    let needs_client = {
+        let guard = lock_service(state)?;
+        guard.enabled && guard.client.is_none()
+    };
+    if !needs_client {
+        return Ok(());
+    }
+
+    let Some(posthog_key) = option_env!("POSTHOG_KEY") else {
+        warn!("POSTHOG_KEY is not set; analytics will remain disabled");
+        return Ok(());
+    };
+
+    info!("Initializing PostHog client");
+    let new_client = Arc::new(client(posthog_key).await);
+    lock_service(state)?.client = Some(new_client);
+    info!("PostHog client initialized successfully");
+    Ok(())
+}
+
+/// Applies the user's analytics consent to the running service immediately.
+///
+/// Disabling takes effect synchronously: every event dispatched after this
+/// returns is dropped. Returns `true` when the enabled state actually changed.
+pub fn set_analytics_enabled(app_handle: &AppHandle, enabled: bool) -> Result<bool, AnalyticsError> {
+    let state = analytics_state(app_handle)?;
+    let changed = {
+        let mut guard = lock_service(&state)?;
+        let changed = guard.enabled != enabled;
+        guard.enabled = enabled;
+        changed
+    };
+
+    if changed {
+        info!(
+            "Analytics {} at runtime",
+            if enabled { "enabled" } else { "disabled" }
+        );
+    }
+
+    Ok(changed)
+}
+
+/// Pushes the consent choice into the running analytics service. Opting out
+/// takes effect before this returns and sends nothing; opting in lazily
+/// creates the PostHog client and records `consent_accepted` once per
+/// transition.
+pub fn apply_consent(app_handle: &AppHandle, enabled: bool) -> Result<(), AnalyticsError> {
+    let changed = set_analytics_enabled(app_handle, enabled)?;
+    if !enabled {
+        return Ok(());
+    }
+
+    let state = analytics_state(app_handle)?;
+    let app_handle = app_handle.clone();
+    tauri::async_runtime::spawn(async move {
+        if let Err(e) = ensure_client(&state).await {
+            warn!("Failed to initialize analytics: {}", e);
+            return;
+        }
+        if changed {
+            let _ = send_analytics_event(&app_handle, "consent_accepted", None).await;
+        }
+    });
+    Ok(())
+}
+
 // Helper function to send event using app handle
 pub async fn send_analytics_event(
     app_handle: &AppHandle,
@@ -189,136 +187,19 @@ pub async fn send_analytics_event(
         let guard = analytics_service
             .lock()
             .map_err(|e| format!("Failed to lock analytics service: {}", e))?;
+        if !guard.enabled {
+            return Ok(());
+        }
         guard.clone()
     };
     service.send_event(event_name, properties).await
 }
 
-// Convenience functions for common analytics events
-#[allow(dead_code)]
-pub async fn send_window_opened_event(
-    app_handle: &AppHandle,
-    window_type: &str,
-) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_window_opened(window_type).await
-}
-
-pub async fn send_popup_window_opened_event(app_handle: &AppHandle) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_event("popup_window_opened", None).await
-}
-
-pub async fn send_hotkey_registered_event(
-    app_handle: &AppHandle,
-    hotkey: &str,
-) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_hotkey_registered(hotkey).await
-}
-
-pub async fn send_autostart_toggled_event(
-    app_handle: &AppHandle,
-    enabled: bool,
-) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_autostart_toggled(enabled).await
-}
-
-pub async fn send_settings_opened_event(app_handle: &AppHandle) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_settings_opened().await
-}
-
-#[allow(dead_code)]
-pub async fn send_mouse_shake_detected_event(
-    app_handle: &AppHandle,
-    shake_count: u32,
-) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_mouse_shake_detected(shake_count).await
-}
-
-pub async fn send_file_renamed_event(app_handle: &AppHandle) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_file_renamed().await
-}
-
-pub async fn send_file_removed_event(app_handle: &AppHandle) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_file_removed().await
-}
-
-pub async fn send_files_cleared_event(
-    app_handle: &AppHandle,
-    num_files: usize,
-) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_files_cleared(num_files).await
-}
-
-pub async fn send_app_restarted_event(app_handle: &AppHandle) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_app_restarted().await
-}
-
-pub async fn send_update_checked_event(
-    app_handle: &AppHandle,
-    update_available: bool,
-) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_update_checked(update_available).await
-}
-
-pub async fn send_consent_declined_event(app_handle: &AppHandle) -> Result<(), String> {
-    let analytics_service = get_analytics_service(app_handle)?;
-    let service = analytics_service
-        .lock()
-        .map_err(|e| format!("Failed to lock analytics service: {}", e))?
-        .clone();
-    service.send_consent_declined().await
+/// Fire-and-forget event; a no-op when analytics is off.
+pub fn track(app_handle: &AppHandle, event: &'static str, props: Vec<(&'static str, serde_json::Value)>) {
+    let app_handle = app_handle.clone();
+    tauri::async_runtime::spawn(async move {
+        let props = (!props.is_empty()).then_some(props);
+        let _ = send_analytics_event(&app_handle, event, props).await;
+    });
 }

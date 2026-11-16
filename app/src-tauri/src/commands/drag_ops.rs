@@ -1,18 +1,130 @@
-use crate::config::AppConfig;
-use crate::file::FileMetadata;
-use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, Manager, State};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::Duration;
+use tauri::{AppHandle, Manager};
 use tracing::{error, info, warn};
 
-type FileList = Arc<Mutex<Vec<FileMetadata>>>;
+/// Decode the frontend-provided drag image (`data:...;base64,...` or raw
+/// base64), falling back to a generated badge image for `fallback_count`.
+fn resolve_drag_image(drag_image: Option<String>, fallback_count: usize) -> drag::Image {
+    if let Some(base64_data) = drag_image {
+        // Remove data URL prefix if present (e.g., "data:image/png;base64,")
+        let base64_str = if let Some(comma_pos) = base64_data.find(',') {
+            &base64_data[comma_pos + 1..]
+        } else {
+            &base64_data
+        };
+
+        match base64::Engine::decode(&base64::engine::general_purpose::STANDARD, base64_str) {
+            Ok(bytes) => {
+                info!("Using frontend-provided drag image ({} bytes)", bytes.len());
+                return drag::Image::Raw(bytes);
+            }
+            Err(e) => {
+                warn!(
+                    "Failed to decode drag image, falling back to generated image: {}",
+                    e
+                );
+            }
+        }
+    }
+    generate_drag_image(fallback_count)
+}
+
+/// After a successful native drop the popup gets out of the way. The shelf
+/// itself stays where it is: its files are still there (drag-out copies), and
+/// hiding it would leave no visible way back to them.
+fn on_drop_close_popup(app: &AppHandle, result: drag::DragResult) {
+    if matches!(result, drag::DragResult::Cancel) {
+        return;
+    }
+    super::window_ops::hide_popup(app);
+}
+
+/// Set while Holdem itself is dragging items out, so its own windows don't
+/// take them back in (see drop_target.rs).
+pub static OUTGOING_DRAG: AtomicBool = AtomicBool::new(false);
+
+/// After a drop, check the shelf again: a Shift-drop moved the files away,
+/// and those entries must leave the shelf. Explorer finishes a move on its
+/// own thread after the drop, so look twice.
+fn refresh_after_drop(app: &AppHandle) {
+    super::file_ops::expect_moved_out(Duration::from_secs(5));
+    let app = app.clone();
+    std::thread::spawn(move || {
+        for wait in [Duration::from_millis(500), Duration::from_secs(3)] {
+            std::thread::sleep(wait);
+            let check = super::file_ops::refresh_shelf(app.clone());
+            if let Err(e) = tauri::async_runtime::block_on(check) {
+                warn!("Shelf check after a drop failed: {}", e);
+            }
+        }
+    });
+}
+
+fn launch_drag(
+    app: &AppHandle,
+    item: drag::DragItem,
+    image: drag::Image,
+    count: usize,
+    mouse: bool,
+) -> Result<(), String> {
+    // Released while the drag was being prepared: starting now would drop
+    // the items at once wherever the pointer is. (Only checkable for the
+    // mouse: pen and touch contacts don't show as a held button.)
+    if mouse && !crate::mouse_monitor::is_mouse_button_down() {
+        return Err("The button was released before the drag started".to_string());
+    }
+    let window = app
+        .get_webview_window("main")
+        .ok_or("Main window not found")?;
+
+    let app_clone = app.clone();
+    let on_drop_callback = move |result: drag::DragResult, _: drag::CursorPosition| {
+        OUTGOING_DRAG.store(false, Ordering::SeqCst);
+        let dropped = !matches!(result, drag::DragResult::Cancel);
+        if dropped {
+            refresh_after_drop(&app_clone);
+        }
+        crate::analytics::track(
+            &app_clone,
+            "drag_out",
+            vec![
+                ("count", count.into()),
+                ("dropped", dropped.into()),
+            ],
+        );
+        on_drop_close_popup(&app_clone, result);
+    };
+
+    OUTGOING_DRAG.store(true, Ordering::SeqCst);
+    match drag::start_drag(
+        &window,
+        item,
+        image,
+        on_drop_callback,
+        drag::Options {
+            skip_animatation_on_cancel_or_failure: true,
+            mode: drag::DragMode::CopyOrMove,
+        },
+    ) {
+        Ok(_) => {
+            info!("Native drag started successfully");
+            Ok(())
+        }
+        Err(e) => {
+            OUTGOING_DRAG.store(false, Ordering::SeqCst);
+            error!("Failed to start native drag: {:?}", e);
+            Err(format!("Failed to start drag operation: {:?}", e))
+        }
+    }
+}
 
 #[tauri::command]
 pub fn start_multi_drag(
     app: AppHandle,
-    _file_list: State<'_, FileList>,
-    _config: State<'_, Arc<Mutex<AppConfig>>>,
     file_paths: Vec<String>,
     drag_image: Option<String>,
+    mouse: Option<bool>,
 ) -> Result<(), String> {
     info!("Starting native drag for {} file(s)", file_paths.len());
 
@@ -37,88 +149,12 @@ pub fn start_multi_drag(
         return Err("No valid files to drag".to_string());
     }
 
-    // Use the drag image from the frontend if provided, otherwise generate one
-    let image = if let Some(base64_data) = drag_image {
-        // Remove data URL prefix if present (e.g., "data:image/png;base64,")
-        let base64_str = if let Some(comma_pos) = base64_data.find(',') {
-            &base64_data[comma_pos + 1..]
-        } else {
-            &base64_data
-        };
+    let count = valid_paths.len();
+    let image = resolve_drag_image(drag_image, count);
+    info!("Prepared drag item with {} valid file(s)", count);
+    let item = drag::DragItem::Files(valid_paths);
 
-        match base64::Engine::decode(&base64::engine::general_purpose::STANDARD, base64_str) {
-            Ok(bytes) => {
-                info!("Using frontend-provided drag image ({} bytes)", bytes.len());
-                drag::Image::Raw(bytes)
-            }
-            Err(e) => {
-                warn!(
-                    "Failed to decode drag image, falling back to generated image: {}",
-                    e
-                );
-                generate_drag_image(valid_paths.len())
-            }
-        }
-    } else {
-        generate_drag_image(valid_paths.len())
-    };
-
-    let item = drag::DragItem::Files(valid_paths.clone());
-    info!(
-        "Prepared drag item with {} valid file(s)",
-        valid_paths.len()
-    );
-
-    let window = app
-        .get_webview_window("main")
-        .ok_or("Main window not found")?;
-
-
-
-    let app_clone = app.clone();
-
-    let on_drop_callback = move |result: drag::DragResult, _: drag::CursorPosition| {
-        if matches!(result, drag::DragResult::Cancel) {
-            return;
-        }
-
-        // check if the popup window is open
-        if app_clone.get_webview_window("popup").is_some() {
-            if let Err(e) = super::window_ops::close_popup_window(app_clone.clone()) {
-                error!("Failed to close popup window after drag: {}", e);
-            }
-        }
-        if let Some(main_window) = app_clone.get_webview_window("main") {
-            if let Err(e) = main_window.hide() {
-                error!("Failed to hide main window after drag: {}", e);
-            }
-        }
-    };
-
-    let mode = drag::DragMode::CopyOrMove;
-
-    match drag::start_drag(
-        &window,
-        item,
-        image,
-        on_drop_callback,
-        drag::Options {
-            skip_animatation_on_cancel_or_failure: true,
-            mode,
-        },
-    ) {
-        Ok(_) => {
-            info!("Native drag started successfully");
-            Ok(())
-        }
-        Err(e) => {
-            error!("Failed to start native drag: {:?}", e);
-            Err(format!(
-                "Failed to start multi-file drag operation: {:?}",
-                e
-            ))
-        }
-    }
+    launch_drag(&app, item, image, count, mouse.unwrap_or(true))
 }
 
 /// Generate a simple drag image with file count badge using the `image` crate.
@@ -178,13 +214,14 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
         }
     }
 
-    // If multiple files, draw a badge circle with count
+    // If multiple files, draw a badge circle. The badge alone signals
+    // "multiple" — the `image` crate has no text rasterization, so no count
+    // is drawn inside it.
     if file_count > 1 {
         let badge_radius = 18i32;
         let badge_cx = (size - margin) as i32;
         let badge_cy = (size - margin) as i32;
         let badge_color = Rgba([59, 130, 246, 255]); // Blue
-        let _badge_text_color = Rgba([255, 255, 255, 255]);
 
         // Draw badge circle
         for y in 0..size as i32 {
@@ -196,18 +233,6 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
                 }
             }
         }
-
-        // Draw count number (simple pixel art for single/double digit)
-        let count_str = if file_count > 99 {
-            "99+".to_string()
-        } else {
-            file_count.to_string()
-        };
-        // For simplicity, just draw a small dot pattern - the badge itself is informative
-        let _ = count_str; // Count shown by badge presence; actual text rendering is complex with `image` crate
-
-        // Draw a simple "+" or number shape in the badge center
-        // For now, just the badge alone indicates multiple files
     }
 
     // Encode to PNG
@@ -224,32 +249,15 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
     drag::Image::Raw(png_bytes)
 }
 
-#[tauri::command]
-pub fn start_text_drag(
+fn start_text_drag(
     app: AppHandle,
     text: String,
     drag_image: Option<String>,
+    mouse: bool,
 ) -> Result<(), String> {
     info!("Starting text drag");
 
-    // Use the drag image from the frontend if provided, otherwise generate one
-    let image = if let Some(base64_data) = drag_image {
-        let base64_str = if let Some(comma_pos) = base64_data.find(',') {
-            &base64_data[comma_pos + 1..]
-        } else {
-            &base64_data
-        };
-
-        match base64::Engine::decode(&base64::engine::general_purpose::STANDARD, base64_str) {
-            Ok(bytes) => drag::Image::Raw(bytes),
-            Err(e) => {
-                warn!("Failed to decode drag image, falling back: {}", e);
-                generate_drag_image(1)
-            }
-        }
-    } else {
-        generate_drag_image(1)
-    };
+    let image = resolve_drag_image(drag_image, 1);
 
     let text_clone = text.clone();
     let provider: drag::DataProvider = Box::new(move |format: &str| -> Option<Vec<u8>> {
@@ -265,48 +273,53 @@ pub fn start_text_drag(
         types: vec!["text/plain".to_string()],
     };
 
-    let window = app
-        .get_webview_window("main")
-        .ok_or("Main window not found")?;
+    launch_drag(&app, item, image, 1, mouse)
+}
 
-
-
-    let app_clone = app.clone();
-    let on_drop_callback = move |result: drag::DragResult, _: drag::CursorPosition| {
-        if matches!(result, drag::DragResult::Cancel) {
-            return;
-        }
-        if app_clone.get_webview_window("popup").is_some() {
-            if let Err(e) = super::window_ops::close_popup_window(app_clone.clone()) {
-                error!("Failed to close popup window after drag: {}", e);
-            }
-        }
-        if let Some(main_window) = app_clone.get_webview_window("main") {
-            if let Err(e) = main_window.hide() {
-                error!("Failed to hide main window after drag: {}", e);
-            }
-        }
+/// Drags a saved text snippet out as text. Reads the file here, by shelf id,
+/// so the page needs no file-system access.
+#[tauri::command]
+pub fn start_note_drag(
+    app: AppHandle,
+    file_list: tauri::State<'_, crate::FileList>,
+    id: u64,
+    drag_image: Option<String>,
+    mouse: Option<bool>,
+) -> Result<(), String> {
+    const MAX_NOTE_BYTES: u64 = 4 * 1024 * 1024;
+    let path = {
+        let list = file_list.lock().map_err(|_| "Failed to acquire lock".to_string())?;
+        let file = list
+            .iter()
+            .find(|f| f.id == id && f.kind == "note")
+            .ok_or_else(|| format!("No text snippet with ID {} on the shelf", id))?;
+        file.path.clone()
     };
+    let size = std::fs::metadata(&path).map_err(|e| e.to_string())?.len();
+    if size > MAX_NOTE_BYTES {
+        return Err("Text snippet is too large to drag as text".to_string());
+    }
+    let text = std::fs::read_to_string(&path).map_err(|e| e.to_string())?;
+    start_text_drag(app, text, drag_image, mouse.unwrap_or(true))
+}
 
-    let mode = drag::DragMode::CopyOrMove;
-
-    match drag::start_drag(
-        &window,
-        item,
-        image,
-        on_drop_callback,
-        drag::Options {
-            skip_animatation_on_cancel_or_failure: true,
-            mode,
-        },
-    ) {
-        Ok(_) => {
-            info!("Native text drag started successfully");
-            Ok(())
-        }
-        Err(e) => {
-            error!("Failed to start native text drag: {:?}", e);
-            Err(format!("Failed to start text drag operation: {:?}", e))
-        }
+/// How far, in physical pixels, the pointer must move with the button held
+/// before a press becomes a drag: the user's Windows setting
+/// (SM_CXDRAG/SM_CYDRAG), at the DPI of the calling window.
+#[tauri::command]
+pub fn drag_threshold(window: tauri::WebviewWindow) -> (i32, i32) {
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::UI::HiDpi::{GetDpiForWindow, GetSystemMetricsForDpi};
+    use windows::Win32::UI::WindowsAndMessaging::{SM_CXDRAG, SM_CYDRAG};
+    let dpi = window
+        .hwnd()
+        .map(|h| unsafe { GetDpiForWindow(HWND(h.0 as _)) })
+        .unwrap_or(96)
+        .max(96);
+    unsafe {
+        (
+            GetSystemMetricsForDpi(SM_CXDRAG, dpi).max(1),
+            GetSystemMetricsForDpi(SM_CYDRAG, dpi).max(1),
+        )
     }
 }

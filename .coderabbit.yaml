@@ -5,3 +5,30 @@
 reviews:
   auto_review:
     enabled: false
+  # Translations are generated from en.json, and reviewing them pushes large
+  # PRs past CodeRabbit's 100-file limit. en.json stays in review.
+  path_filters:
+    - "!app/src/i18n/locales/ar.json"
+    - "!app/src/i18n/locales/cs.json"
+    - "!app/src/i18n/locales/da.json"
+    - "!app/src/i18n/locales/de.json"
+    - "!app/src/i18n/locales/el.json"
+    - "!app/src/i18n/locales/es-ES.json"
+    - "!app/src/i18n/locales/fi.json"
+    - "!app/src/i18n/locales/fr.json"
+    - "!app/src/i18n/locales/it.json"
+    - "!app/src/i18n/locales/ja.json"
+    - "!app/src/i18n/locales/ko.json"
+    - "!app/src/i18n/locales/nl.json"
+    - "!app/src/i18n/locales/no.json"
+    - "!app/src/i18n/locales/pl.json"
+    - "!app/src/i18n/locales/pt-BR.json"
+    - "!app/src/i18n/locales/pt-PT.json"
+    - "!app/src/i18n/locales/ro.json"
+    - "!app/src/i18n/locales/ru.json"
+    - "!app/src/i18n/locales/sv-SE.json"
+    - "!app/src/i18n/locales/tr.json"
+    - "!app/src/i18n/locales/uk.json"
+    - "!app/src/i18n/locales/vi.json"
+    - "!app/src/i18n/locales/zh-CN.json"
+    - "!app/src/i18n/locales/zh-TW.json"

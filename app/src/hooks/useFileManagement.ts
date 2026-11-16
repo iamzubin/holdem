@@ -1,115 +1,78 @@
-import { useState, useCallback, useEffect } from 'react';
-import { FilePreview } from '../types.ts';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { FilePreview, ShelfSet } from '../types.ts';
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 
-export const useFileManagement = () => {
-  const [files, setFiles] = useState<FilePreview[]>([]);
-  const [isWindowVisible, setIsWindowVisible] = useState(true);
+const NO_SHELVES: ShelfSet = { shelves: [], active: 0, closed: [] };
 
-  const fetchFiles = useCallback(async () => {
+/**
+ * The shelf's items and the list of shelves. `files` holds the active
+ * shelf's items only; `allFiles` holds every shelf's.
+ */
+export const useFileManagement = () => {
+  const [allFiles, setAllFiles] = useState<FilePreview[]>([]);
+  const [shelfSet, setShelfSet] = useState<ShelfSet>(NO_SHELVES);
+
+  const refreshFiles = useCallback(async () => {
     try {
-      const fetchedFiles: FilePreview[] = await invoke('get_files');
-      setFiles(fetchedFiles);
+      const [fetchedFiles, fetchedShelves] = await Promise.all([
+        invoke<FilePreview[]>('get_files'),
+        invoke<ShelfSet>('get_shelves'),
+      ]);
+      setAllFiles(fetchedFiles);
+      setShelfSet(fetchedShelves);
+      // Then re-check the items in the background (deleted ones leave,
+      // offline ones grey out). It can wait seconds on a dead network share,
+      // so it is not awaited; any change arrives as `files_updated`. No
+      // polling: this runs on mount, on `files_updated` and on refreshes.
+      invoke('refresh_file_list').catch(() => {});
     } catch (error) {
       console.error('Error fetching files:', error);
     }
   }, []);
 
-  const refreshFiles = useCallback(async () => {
-    if (isWindowVisible) {
-      try {
-        await invoke('refresh_file_list');
-      } catch (error) {
-        console.error('Error refreshing files:', error);
-      }
-    }
-  }, [isWindowVisible]);
-
   useEffect(() => {
-    fetchFiles();
+    refreshFiles();
 
-    // Initialize listeners
-    const setupListeners = async () => {
-      const unlistenUpdated = await listen('files_updated', () => {
-        fetchFiles();
-      });
-
-      return () => {
-        unlistenUpdated();
-      };
-    };
-
-    let cleanupListeners: (() => void) | undefined;
-    setupListeners().then(cleanup => {
-      cleanupListeners = cleanup;
+    let unlisten: (() => void) | undefined;
+    let cancelled = false;
+    listen('files_updated', () => {
+      refreshFiles();
+    }).then((fn) => {
+      if (cancelled) fn();
+      else unlisten = fn;
     });
 
-    // Set up visibility change listener
-    const handleVisibilityChange = () => {
-      setIsWindowVisible(document.visibilityState === 'visible');
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Set up periodic refresh
-    const refreshInterval = setInterval(refreshFiles, 1000);
-
     return () => {
-      if (cleanupListeners) cleanupListeners();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      clearInterval(refreshInterval);
+      cancelled = true;
+      unlisten?.();
     };
-  }, [fetchFiles, refreshFiles]);
+  }, [refreshFiles]);
 
-  const addFiles = useCallback(async (newFiles: FilePreview[]) => {
-    const paths = newFiles.map(file => file.path);
+  /** Empties the active shelf (pinned items stay); resolves to how many left. */
+  const clearFiles = useCallback(async (): Promise<number> => {
     try {
-      await invoke('add_files', { files: paths });
-      // The backend will emit a 'file_added' event, so we don't need to update the state here
+      return await invoke<number>('clear_files');
     } catch (error) {
-      console.error('Error adding files:', error);
+      console.error('Error clearing files:', error);
+      return 0;
     }
   }, []);
 
-  const remove_files = useCallback(async (ids: number[]) => {
-    try {
-      await invoke('remove_files', { fileIds: ids });
-      // The backend will emit a 'file_removed' event, so we don't need to update the state here
-    } catch (error) {
-      console.error('Error removing files:', error);
-    }
-  }, []);
+  // The same array until the items or the shelf change, so effects that
+  // depend on it don't run on every render.
+  const files = useMemo(
+    () => allFiles.filter((file) => file.shelf === shelfSet.active),
+    [allFiles, shelfSet.active],
+  );
 
-  const clearFiles = useCallback(async (ids: number[]) => {
-    try {
-      await invoke('clear_files');
-    } catch (error) {
-      console.error('Error removing files:', error);
-    }
-  }, []);
-
-  const droppedFiles = useCallback(async () => {
-    fetchFiles();
-  }, []);
-
-  const renameFile = useCallback(async (id: number, newName: string) => {
-    try {
-      await invoke('rename_file', { fileId: id, newName });
-      // The backend will emit a 'file_renamed' event, so we don't need to update the state here
-    } catch (error) {
-      console.error('Error renaming file:', error);
-    }
-  }, []);
-
-  const getFileIcon = useCallback(async (filePath: string): Promise<string> => {
-    try {
-      const iconBase64: string = await invoke('get_file_icon_base64', { filePath });
-      return iconBase64;
-    } catch (error) {
-      console.error('Error fetching file icon:', error);
-      throw error;
-    }
-  }, []);
-
-  return { files, addFiles, remove_files, renameFile, getFileIcon, clearFiles, droppedFiles };
+  return {
+    files,
+    allFiles,
+    shelves: shelfSet.shelves,
+    activeShelf: shelfSet.active,
+    closedShelves: shelfSet.closed ?? [],
+    refreshFiles,
+    clearFiles,
+  };
 };

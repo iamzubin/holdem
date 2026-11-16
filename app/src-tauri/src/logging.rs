@@ -17,7 +17,20 @@ pub fn setup_logging() {
         eprintln!("Failed to create log directory: {}", e);
     }
 
-    let file_appender = RollingFileAppender::new(Rotation::DAILY, &log_dir, "holdem.log");
+    // A week of daily logs; older ones are deleted.
+    let file_appender = match RollingFileAppender::builder()
+        .rotation(Rotation::DAILY)
+        .filename_prefix("holdem")
+        .filename_suffix("log")
+        .max_log_files(7)
+        .build(&log_dir)
+    {
+        Ok(appender) => appender,
+        Err(e) => {
+            eprintln!("Failed to set up rotating logs: {}", e);
+            RollingFileAppender::new(Rotation::DAILY, &log_dir, "holdem.log")
+        }
+    };
 
     let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
     let _ = LOG_GUARD.set(guard);

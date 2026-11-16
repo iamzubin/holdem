@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { FileIcon } from 'lucide-react';
-import { useFileManagement } from '../hooks/useFileManagement';
-import { FilePreview } from '@/types';
+import React, { useState, useEffect, useRef } from 'react';
+import { FileIcon, Folder } from 'lucide-react';
+import { FilePreview, isFolder } from '@/types';
+import { getFileIconBase64 } from '@/lib/fileIcon';
 
 interface DynamicFileIconProps {
-  file: FilePreview
+  file: FilePreview;
 }
 
-export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file, ...props }) => {
+export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file }) => {
   const [iconBase64, setIconBase64] = useState<string | null>(null);
-  const { getFileIcon } = useFileManagement();
   const [isVisible, setIsVisible] = useState(false);
-  const iconRef = React.useRef<HTMLDivElement>(null);
+  const iconRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const target = iconRef.current;
+    if (!target) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -21,39 +22,36 @@ export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file, ...props
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
-
-    if (iconRef.current) {
-      observer.observe(iconRef.current);
-    }
-
-    return () => {
-      observer.disconnect();
-    };
+    observer.observe(target);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    if (isVisible) {
-      const fetchIcon = async () => {
-        try {
-          const base64Icon = await getFileIcon(file.path);
-          setIconBase64(base64Icon);
-        } catch (error) {
-          console.error('Error fetching file icon:', error);
-        }
-      };
+    // Offline items have no reachable file to read an icon from; the
+    // generic icon stays until the location is back.
+    if (!isVisible || !file.available) return;
+    let cancelled = false;
+    getFileIconBase64(file.path)
+      .then((base64Icon) => {
+        if (!cancelled) setIconBase64(base64Icon);
+      })
+      .catch((error) => console.error('Error fetching file icon:', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [isVisible, file.path, file.available]);
 
-      fetchIcon();
-    }
-  }, [isVisible, file.path, getFileIcon]);
-
+  // Decorative: the file name is always shown next to the icon.
   return (
-    <div ref={iconRef} {...props}>
+    <div ref={iconRef}>
       {iconBase64 ? (
-        <img className="h-full w-full" src={`data:image/png;base64,${iconBase64}`} alt="File icon" />
+        <img className="h-full w-full" src={`data:image/png;base64,${iconBase64}`} alt="" />
+      ) : isFolder(file) ? (
+        <Folder className="h-6 w-6 text-blue-500" aria-hidden />
       ) : (
-        <FileIcon className="h-6 w-6 text-blue-500" />
+        <FileIcon className="h-6 w-6 text-blue-500" aria-hidden />
       )}
     </div>
   );

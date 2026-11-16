@@ -10,8 +10,10 @@ import { ThemeProvider } from "./components/theme-provider";
 import SettingsWindow from "./pages/Settings";
 import Updater from "./pages/Updater";
 import Consent from "./pages/Consent";
+import { useWindowStyle } from "./hooks/useWindowStyle";
 
 const Main =  () => {
+  useWindowStyle();
   return( 
     <ThemeProvider
       defaultTheme={"system"}
@@ -33,7 +35,7 @@ i18nInitialization
   .then(() => {
     ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <React.StrictMode>
-        <div className="border-2 border-zinc-800 h-screen w-screen">
+        <div className="h-screen w-screen border border-border">
           <Main />
         </div>
       </React.StrictMode>

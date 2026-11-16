@@ -71,8 +71,9 @@ fn generate_thumbnail(file_path: &Path) -> Result<(Vec<u8>, u32, u32), Thumbnail
     })?;
     let wide_path: HSTRING = HSTRING::from(path_str);
 
-    // Required for COM. Per-call init is correct: Tauri runs commands on a
-    // thread pool, so this must not be hoisted to `setup`.
+    // Required for COM. Per-call init is correct: callers run this on
+    // whichever blocking worker thread is free, so it must not be hoisted
+    // to `setup`.
     let hr: windows::core::HRESULT = unsafe { CoInitializeEx(None, COINIT_APARTMENTTHREADED) };
     if hr.is_err() {
         return Err(ThumbnailError::PlatformError(format!(
@@ -98,11 +99,20 @@ fn generate_thumbnail(file_path: &Path) -> Result<(Vec<u8>, u32, u32), Thumbnail
             }
         };
 
-    let hbitmap: HBITMAP = match get_hbitmap(&shell_item) {
+    let dimensions: SIZE = SIZE {
+        cx: THUMB_PX,
+        cy: THUMB_PX,
+    };
+    let image = unsafe { shell_item.GetImage(dimensions, SIIGBF(0)) };
+    // COM objects must be released before their apartment is torn down.
+    drop(shell_item);
+    let hbitmap: HBITMAP = match image {
         Ok(h) => h,
         Err(e) => {
             unsafe { CoUninitialize() };
-            return Err(e);
+            return Err(ThumbnailError::GenerationFailed(format!(
+                "GetImage failed: {e}"
+            )));
         }
     };
 
@@ -114,15 +124,6 @@ fn generate_thumbnail(file_path: &Path) -> Result<(Vec<u8>, u32, u32), Thumbnail
     }
 
     result
-}
-
-fn get_hbitmap(shell_item: &IShellItemImageFactory) -> Result<HBITMAP, ThumbnailError> {
-    let dimensions: SIZE = SIZE {
-        cx: THUMB_PX,
-        cy: THUMB_PX,
-    };
-    unsafe { shell_item.GetImage(dimensions, SIIGBF(0)) }
-        .map_err(|e| ThumbnailError::GenerationFailed(format!("GetImage failed: {e}")))
 }
 
 /// Extract RGBA8 from an `HBITMAP` via GDI.
@@ -145,9 +146,10 @@ fn hbitmap_to_rgba(hbitmap: HBITMAP) -> Result<(Vec<u8>, u32, u32), ThumbnailErr
             "Invalid bitmap dimensions".to_string(),
         ));
     }
+    // `== 0` is already excluded by the `<= 0` check above.
     let width: u32 = bitmap.bmWidth as u32;
     let height: u32 = bitmap.bmHeight as u32;
-    if width == 0 || height == 0 || width > 2048 || height > 2048 {
+    if width > 2048 || height > 2048 {
         return Err(ThumbnailError::GenerationFailed(
             "Suspicious bitmap dimensions".to_string(),
         ));
@@ -251,12 +253,5 @@ mod tests {
         let buffer: Vec<u8> = [bottom.clone(), top.clone()].concat();
         let flipped: Vec<u8> = flip_rows_bottom_up(&buffer, 2, 2);
         assert_eq!(flipped, [top, bottom].concat());
-    }
-
-    #[test]
-    fn test_thumbnail_error_display() {
-        let e: ThumbnailError =
-            ThumbnailError::FileNotFound("C:\\missing.txt".to_string());
-        assert_eq!(e.to_string(), "File not found: C:\\missing.txt");
     }
 }

@@ -1,13 +1,13 @@
 use crate::analytics;
 use crate::config::AppConfig;
 use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, State};
 use tauri_plugin_autostart::ManagerExt;
-use tracing::{error, info, warn};
+use tracing::{info, warn};
+
+use thiserror::Error;
 
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
-
-
 
 #[tauri::command]
 pub fn get_config(config: State<Arc<Mutex<AppConfig>>>) -> Result<AppConfig, String> {
@@ -23,21 +23,23 @@ pub fn save_config(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
-    let mut config = config
-        .lock()
-        .map_err(|e| format!("Failed to lock config: {}", e))?;
-    *config = new_config;
-    config.save(&app_handle)
-}
-
-#[tauri::command]
-pub fn restart_app(app: AppHandle) -> Result<(), String> {
-    let app_clone = app.clone();
-    tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_app_restarted_event(&app_clone).await;
-    });
-
-    app.restart();
+    let new_config = new_config.clamped();
+    let analytics_enabled = new_config.analytics_enabled;
+    if !analytics_enabled {
+        analytics::apply_consent(&app_handle, false).map_err(|e| e.to_string())?;
+    }
+    {
+        let mut config = config
+            .lock()
+            .map_err(|e| format!("Failed to lock config: {}", e))?;
+        // Write first so a failed save leaves memory matching the disk.
+        new_config.save(&app_handle)?;
+        *config = new_config;
+    }
+    if analytics_enabled {
+        analytics::apply_consent(&app_handle, true).map_err(|e| e.to_string())?;
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -51,185 +53,212 @@ pub fn set_autostart(app_handle: AppHandle, enabled: bool) -> Result<(), String>
     }
 
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_autostart_toggled_event(&app_handle, enabled).await;
+        let _ = analytics::send_analytics_event(
+            &app_handle,
+            "autostart_toggled",
+            Some(vec![("enabled", serde_json::Value::Bool(enabled))]),
+        )
+        .await;
     });
 
     Ok(())
 }
 
-#[cfg(target_os = "macos")]
-fn parse_keycode(key: &str) -> Option<i64> {
-    let key_upper = key.to_uppercase();
-    match key_upper.as_str() {
-        "A" => Some(0),
-        "B" => Some(1),
-        "C" => Some(2),
-        "D" => Some(3),
-        "E" => Some(4),
-        "F" => Some(5),
-        "G" => Some(6),
-        "H" => Some(7),
-        "I" => Some(8),
-        "J" => Some(9),
-        "K" => Some(10),
-        "L" => Some(11),
-        "M" => Some(12),
-        "N" => Some(13),
-        "O" => Some(14),
-        "P" => Some(15),
-        "Q" => Some(16),
-        "R" => Some(17),
-        "S" => Some(18),
-        "T" => Some(19),
-        "U" => Some(20),
-        "V" => Some(21),
-        "W" => Some(22),
-        "X" => Some(23),
-        "Y" => Some(24),
-        "Z" => Some(25),
-        "SPACE" | "SPACEBAR" => Some(49),
-        "RETURN" | "ENTER" => Some(36),
-        "TAB" => Some(48),
-        "DELETE" => Some(51),
-        "ESCAPE" | "ESC" => Some(53),
-        "F1" => Some(122),
-        "F2" => Some(120),
-        "F3" => Some(99),
-        "F4" => Some(118),
-        "F5" => Some(96),
-        "F6" => Some(97),
-        "F7" => Some(98),
-        "F8" => Some(100),
-        "F9" => Some(101),
-        "F10" => Some(109),
-        "F11" => Some(103),
-        "F12" => Some(111),
-        "UP" | "ARROWUP" => Some(126),
-        "DOWN" | "ARROWDOWN" => Some(125),
-        "LEFT" | "ARROWLEFT" => Some(123),
-        "RIGHT" | "ARROWRIGHT" => Some(124),
-        _ => None,
-    }
+#[derive(Debug, Error, PartialEq, Eq)]
+pub enum HotkeyError {
+    #[error("Hotkey \"{0}\" has no key; add a key such as \"Ctrl+Shift+N\"")]
+    MissingKey(String),
+    #[error("Hotkey \"{0}\" contains an empty part")]
+    EmptyPart(String),
+    #[error("Hotkey \"{0}\" has more than one non-modifier key")]
+    MultipleKeys(String),
+    #[error("Unsupported hotkey key \"{0}\"")]
+    UnsupportedKey(String),
+    #[error("Hotkey \"{0}\" needs Ctrl, Alt, Shift or Win; only F1-F24 work alone")]
+    MissingModifier(String),
 }
 
-#[cfg(target_os = "windows")]
-fn parse_windows_code(key: &str) -> Option<tauri_plugin_global_shortcut::Code> {
-    let key_upper = key.to_uppercase();
-    match key_upper.as_str() {
-        "A" => Some(Code::KeyA),
-        "B" => Some(Code::KeyB),
-        "C" => Some(Code::KeyC),
-        "D" => Some(Code::KeyD),
-        "E" => Some(Code::KeyE),
-        "F" => Some(Code::KeyF),
-        "G" => Some(Code::KeyG),
-        "H" => Some(Code::KeyH),
-        "I" => Some(Code::KeyI),
-        "J" => Some(Code::KeyJ),
-        "K" => Some(Code::KeyK),
-        "L" => Some(Code::KeyL),
-        "M" => Some(Code::KeyM),
-        "N" => Some(Code::KeyN),
-        "O" => Some(Code::KeyO),
-        "P" => Some(Code::KeyP),
-        "Q" => Some(Code::KeyQ),
-        "R" => Some(Code::KeyR),
-        "S" => Some(Code::KeyS),
-        "T" => Some(Code::KeyT),
-        "U" => Some(Code::KeyU),
-        "V" => Some(Code::KeyV),
-        "W" => Some(Code::KeyW),
-        "X" => Some(Code::KeyX),
-        "Y" => Some(Code::KeyY),
-        "Z" => Some(Code::KeyZ),
-        "SPACE" => Some(Code::Space),
-        "RETURN" | "ENTER" => Some(Code::Enter),
-        "TAB" => Some(Code::Tab),
-        "ESCAPE" | "ESC" => Some(Code::Escape),
-        "F1" => Some(Code::F1),
-        "F2" => Some(Code::F2),
-        "F3" => Some(Code::F3),
-        "F4" => Some(Code::F4),
-        "F5" => Some(Code::F5),
-        "F6" => Some(Code::F6),
-        "F7" => Some(Code::F7),
-        "F8" => Some(Code::F8),
-        "F9" => Some(Code::F9),
-        "F10" => Some(Code::F10),
-        "F11" => Some(Code::F11),
-        "F12" => Some(Code::F12),
-        _ => key_upper.parse::<Code>().ok(),
-    }
+/// F1-F24 are rarely typed, so they may be a hotkey on their own. Any other
+/// bare key would be swallowed system-wide and break typing in every app.
+fn is_function_key(code: Code) -> bool {
+    matches!(
+        code,
+        Code::F1
+            | Code::F2
+            | Code::F3
+            | Code::F4
+            | Code::F5
+            | Code::F6
+            | Code::F7
+            | Code::F8
+            | Code::F9
+            | Code::F10
+            | Code::F11
+            | Code::F12
+            | Code::F13
+            | Code::F14
+            | Code::F15
+            | Code::F16
+            | Code::F17
+            | Code::F18
+            | Code::F19
+            | Code::F20
+            | Code::F21
+            | Code::F22
+            | Code::F23
+            | Code::F24
+    )
 }
 
-#[tauri::command]
-pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
-    if shortcut_str.is_empty() {
-        return Ok(());
-    }
-
-    register_hotkey_windows(app_handle, shortcut_str)
+/// Resolves a single non-modifier key name (e.g. `N`, `1`, `Space`,
+/// `ArrowUp`, `F5`, `Comma`, `Numpad1`) to a [`Code`]. Delegates to
+/// global-hotkey's key table, which accepts both `KeyboardEvent.code` names
+/// and common short aliases, case-insensitively.
+fn parse_key_code(key: &str) -> Result<Code, HotkeyError> {
+    key.parse::<Shortcut>()
+        .map(|shortcut| shortcut.key)
+        .map_err(|_| HotkeyError::UnsupportedKey(key.to_string()))
 }
 
-fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
-    let app_handle_clone = app_handle.clone();
-    info!("Registering Windows hotkey: {}", shortcut_str);
-
+/// Parses a `Mod+Mod+Key` string into a [`Shortcut`]. Exactly one
+/// non-modifier key is required, plus at least one modifier unless the key is
+/// F1-F24; unknown keys are an error rather than being silently replaced.
+/// Also accepts the `KeyboardEvent.key` strings older
+/// builds saved (e.g. `Ctrl+,`, `Ctrl+ArrowUp`, and `Ctrl+ ` for Space).
+pub fn parse_hotkey(shortcut_str: &str) -> Result<Shortcut, HotkeyError> {
     let mut modifiers = Modifiers::empty();
-    let mut code = Code::KeyN;
+    let mut code: Option<Code> = None;
 
-    for part in shortcut_str.split('+') {
-        let part = part.trim();
+    for raw in shortcut_str.split('+') {
+        let part = raw.trim();
+        // Older builds saved `KeyboardEvent.key`, which is " " for Space.
+        let part = if part.is_empty() && !raw.is_empty() {
+            "Space"
+        } else {
+            part
+        };
+        if part.is_empty() {
+            return Err(HotkeyError::EmptyPart(shortcut_str.to_string()));
+        }
         match part.to_uppercase().as_str() {
             "CTRL" | "CONTROL" => modifiers |= Modifiers::CONTROL,
             "SHIFT" => modifiers |= Modifiers::SHIFT,
-            "ALT" => modifiers |= Modifiers::ALT,
-            "META" | "WIN" | "COMMAND" => modifiers |= Modifiers::META,
-            key => {
-                if let Some(parsed_code) = parse_windows_code(key) {
-                    code = parsed_code;
-                } else {
-                    warn!("Failed to parse Windows hotkey key: {}", key);
+            "ALT" | "OPTION" => modifiers |= Modifiers::ALT,
+            "META" | "WIN" | "SUPER" | "COMMAND" | "CMD" => modifiers |= Modifiers::META,
+            _ => {
+                if code.is_some() {
+                    return Err(HotkeyError::MultipleKeys(shortcut_str.to_string()));
                 }
+                code = Some(parse_key_code(part)?);
             }
         }
     }
 
-    let shortcut = Shortcut::new(Some(modifiers), code);
+    let code = code.ok_or_else(|| HotkeyError::MissingKey(shortcut_str.to_string()))?;
+    if modifiers.is_empty() && !is_function_key(code) {
+        return Err(HotkeyError::MissingModifier(shortcut_str.to_string()));
+    }
+    Ok(Shortcut::new(Some(modifiers), code))
+}
+
+/// The shortcut currently registered by [`register_hotkey`], kept so a failed
+/// registration can restore it.
+static ACTIVE_HOTKEY: Mutex<Option<Shortcut>> = Mutex::new(None);
+
+/// True when `shortcut_str` is the hotkey currently registered. Lets Settings
+/// retry a saved hotkey whose registration failed (e.g. at startup).
+#[tauri::command]
+pub fn is_hotkey_active(shortcut_str: String) -> Result<bool, String> {
+    let active = ACTIVE_HOTKEY
+        .lock()
+        .map_err(|e| format!("Failed to lock hotkey state: {}", e))?;
+    Ok(match parse_hotkey(&shortcut_str) {
+        Ok(shortcut) => *active == Some(shortcut),
+        Err(_) => false,
+    })
+}
+
+#[tauri::command]
+pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<(), String> {
+    let mut active = ACTIVE_HOTKEY
+        .lock()
+        .map_err(|e| format!("Failed to lock hotkey state: {}", e))?;
+
+    if shortcut_str.trim().is_empty() {
+        // Clearing the hotkey must also drop the currently registered one.
+        app_handle
+            .global_shortcut()
+            .unregister_all()
+            .map_err(|e| format!("Failed to unregister hotkey: {}", e))?;
+        *active = None;
+        info!("Hotkey cleared");
+        return Ok(());
+    }
+
+    // Parse before touching the existing registration so an invalid hotkey
+    // leaves the previous one working.
+    let shortcut = parse_hotkey(&shortcut_str).map_err(|e| e.to_string())?;
+    if *active == Some(shortcut) {
+        return Ok(());
+    }
+
+    info!("Registering Windows hotkey: {}", shortcut_str);
 
     if let Err(e) = app_handle.global_shortcut().unregister_all() {
         warn!("Failed to unregister existing hotkeys: {}", e);
     }
 
-    app_handle
-        .global_shortcut()
-        .register(shortcut)
-        .map_err(|e| format!("Failed to register shortcut: {}", e))?;
-
-    app_handle
-        .global_shortcut()
-        .on_shortcut(shortcut, move |_app, _shortcut, _event| {
-            if let Some(window) = app_handle_clone.get_webview_window("main") {
-                if let Err(e) = window.show() {
-                    error!("Failed to show window after hotkey press: {}", e);
-                    return;
-                }
-                if let Err(e) = window.set_focus() {
-                    error!("Failed to focus window after hotkey press: {}", e);
-                }
+    // Presses are handled by the plugin-wide handler in lib.rs, so only the
+    // registration is needed here.
+    if let Err(e) = app_handle.global_shortcut().register(shortcut) {
+        // e.g. another app owns the combo: keep the previous hotkey working.
+        if let Some(previous) = *active {
+            if let Err(restore) = app_handle.global_shortcut().register(previous) {
+                warn!("Failed to restore previous hotkey: {}", restore);
+                *active = None;
             }
-        })
-        .map_err(|e| format!("Failed to set shortcut callback: {}", e))?;
+        }
+        return Err(format!("Failed to register shortcut: {}", e));
+    }
+    *active = Some(shortcut);
+    drop(active);
 
     info!("Windows hotkey registered successfully");
 
+    // Only that a hotkey was set, never which keys.
     let app_handle_clone = app_handle.clone();
-    let shortcut_str_clone = shortcut_str.clone();
     tauri::async_runtime::spawn(async move {
-        let _ =
-            analytics::send_hotkey_registered_event(&app_handle_clone, &shortcut_str_clone).await;
+        let _ = analytics::send_analytics_event(&app_handle_clone, "hotkey_registered", None).await;
     });
 
+    Ok(())
+}
+
+/// Saves the first-run choices: analytics consent, and (when given) whether
+/// Holdem starts on login, which also updates the Windows startup entry.
+fn persist_analytics_consent(
+    config: &Mutex<AppConfig>,
+    app_handle: &AppHandle,
+    enabled: bool,
+    start_on_login: Option<bool>,
+) -> Result<(), String> {
+    let mut config = config
+        .lock()
+        .map_err(|e| format!("Failed to lock config: {}", e))?;
+    let mut updated = config.clone();
+    updated.analytics_enabled = enabled;
+    if let Some(start) = start_on_login {
+        // Compare with the real startup entry, not the stored flag: the
+        // default is "on" but nothing is registered until this choice.
+        let manager = app_handle.autolaunch();
+        if manager.is_enabled().unwrap_or(!start) != start {
+            let result = if start { manager.enable() } else { manager.disable() };
+            result.map_err(|e| e.to_string())?;
+        }
+        updated.autostart = start;
+    }
+    updated.save(app_handle)?;
+    *config = updated;
     Ok(())
 }
 
@@ -237,61 +266,182 @@ fn register_hotkey_windows(app_handle: AppHandle, shortcut_str: String) -> Resul
 pub fn accept_analytics_consent(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
+    start_on_login: Option<bool>,
 ) -> Result<(), String> {
-    let mut config = config
-        .lock()
-        .map_err(|e| format!("Failed to lock config: {}", e))?;
-    config.analytics_enabled = true;
-    config.save(&app_handle)?;
-
+    persist_analytics_consent(&config, &app_handle, true, start_on_login)?;
     info!("Analytics consent accepted");
-
-    tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_analytics_event(&app_handle, "consent_accepted", None).await;
-    });
-
-    Ok(())
+    analytics::apply_consent(&app_handle, true).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
 pub fn decline_analytics_consent(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
+    start_on_login: Option<bool>,
 ) -> Result<(), String> {
-    let mut config = config
-        .lock()
-        .map_err(|e| format!("Failed to lock config: {}", e))?;
-    config.analytics_enabled = false;
-    config.save(&app_handle)?;
-
+    // Stop the live service first so nothing is sent even if persisting fails.
+    // No "consent_declined" event is sent: opting out means no further events.
+    analytics::apply_consent(&app_handle, false).map_err(|e| e.to_string())?;
+    persist_analytics_consent(&config, &app_handle, false, start_on_login)?;
     info!("Analytics consent declined");
-
-    tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_consent_declined_event(&app_handle).await;
-    });
-
     Ok(())
-}
-
-#[tauri::command]
-pub fn check_analytics_consent(config: State<Arc<Mutex<AppConfig>>>) -> Result<bool, String> {
-    config
-        .lock()
-        .map_err(|e| format!("Failed to lock config: {}", e))
-        .map(|c| c.analytics_enabled)
 }
 
 #[tauri::command]
 pub fn check_config_exists(app_handle: AppHandle) -> bool {
-    AppConfig::config_exists(&app_handle)
+    AppConfig::get_config_path(&app_handle)
+        .map(|p| p.exists())
+        .unwrap_or(false)
 }
 
-#[tauri::command]
-pub fn check_input_monitoring_permission(_app_handle: AppHandle) -> Result<bool, String> {
-    Ok(true)
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[tauri::command]
-pub fn open_input_monitoring_settings(_app_handle: AppHandle) -> Result<(), String> {
-    Ok(())
+    fn shortcut(mods: Modifiers, code: Code) -> Shortcut {
+        Shortcut::new(Some(mods), code)
+    }
+
+    #[test]
+    fn parses_letters_and_modifiers() {
+        assert_eq!(
+            parse_hotkey("Ctrl+Shift+N"),
+            Ok(shortcut(Modifiers::CONTROL | Modifiers::SHIFT, Code::KeyN))
+        );
+        assert_eq!(
+            parse_hotkey("control + alt + q"),
+            Ok(shortcut(Modifiers::CONTROL | Modifiers::ALT, Code::KeyQ))
+        );
+        assert_eq!(
+            parse_hotkey("Win+E"),
+            Ok(shortcut(Modifiers::META, Code::KeyE))
+        );
+    }
+
+    #[test]
+    fn parses_digits() {
+        assert_eq!(
+            parse_hotkey("Ctrl+1"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Digit1))
+        );
+        assert_eq!(
+            parse_hotkey("Alt+0"),
+            Ok(shortcut(Modifiers::ALT, Code::Digit0))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+Digit9"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Digit9))
+        );
+    }
+
+    #[test]
+    fn parses_space_arrows_and_function_keys() {
+        assert_eq!(
+            parse_hotkey("Ctrl+Space"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Space))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+ArrowUp"),
+            Ok(shortcut(Modifiers::CONTROL, Code::ArrowUp))
+        );
+        assert_eq!(
+            parse_hotkey("Alt+Left"),
+            Ok(shortcut(Modifiers::ALT, Code::ArrowLeft))
+        );
+        assert_eq!(
+            parse_hotkey("F5"),
+            Ok(shortcut(Modifiers::empty(), Code::F5))
+        );
+        assert_eq!(
+            parse_hotkey("Shift+F12"),
+            Ok(shortcut(Modifiers::SHIFT, Code::F12))
+        );
+    }
+
+    #[test]
+    fn parses_punctuation_and_numpad_codes() {
+        assert_eq!(
+            parse_hotkey("Ctrl+Comma"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Comma))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+/"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Slash))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+Numpad1"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Numpad1))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+Escape"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Escape))
+        );
+    }
+
+    #[test]
+    fn rejects_unknown_keys_instead_of_falling_back() {
+        assert_eq!(
+            parse_hotkey("Ctrl+Foo"),
+            Err(HotkeyError::UnsupportedKey("Foo".to_string()))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+IntlBackslash"),
+            Err(HotkeyError::UnsupportedKey("IntlBackslash".to_string()))
+        );
+    }
+
+    #[test]
+    fn rejects_malformed_hotkeys() {
+        assert_eq!(
+            parse_hotkey("Ctrl+Shift"),
+            Err(HotkeyError::MissingKey("Ctrl+Shift".to_string()))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+"),
+            Err(HotkeyError::EmptyPart("Ctrl+".to_string()))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl++N"),
+            Err(HotkeyError::EmptyPart("Ctrl++N".to_string()))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+A+B"),
+            Err(HotkeyError::MultipleKeys("Ctrl+A+B".to_string()))
+        );
+    }
+
+    #[test]
+    fn rejects_bare_keys_except_function_keys() {
+        for bare in ["N", "Escape", "Tab", "Space", "1", "ArrowUp"] {
+            assert_eq!(
+                parse_hotkey(bare),
+                Err(HotkeyError::MissingModifier(bare.to_string()))
+            );
+        }
+        assert_eq!(
+            parse_hotkey("F24"),
+            Ok(shortcut(Modifiers::empty(), Code::F24))
+        );
+    }
+
+    #[test]
+    fn parses_legacy_event_key_strings() {
+        // Older builds saved `KeyboardEvent.key` for non-letter, non-digit keys.
+        assert_eq!(
+            parse_hotkey("Ctrl+ "),
+            Ok(shortcut(Modifiers::CONTROL, Code::Space))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+Shift+,"),
+            Ok(shortcut(Modifiers::CONTROL | Modifiers::SHIFT, Code::Comma))
+        );
+        assert_eq!(
+            parse_hotkey("Alt+ArrowUp"),
+            Ok(shortcut(Modifiers::ALT, Code::ArrowUp))
+        );
+        assert_eq!(
+            parse_hotkey("Ctrl+Enter"),
+            Ok(shortcut(Modifiers::CONTROL, Code::Enter))
+        );
+    }
 }
