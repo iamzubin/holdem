@@ -164,6 +164,92 @@
     "next": "Nästa",
     "hotkeyActive": "Tryck på {{hotkey}} (du kan ändra den i Inställningar)"
   },
+  "whatsNew": {
+    "title": "Nyheter i Holdem {{version}}",
+    "description": "Här ser du vad som har ändrats och var du hittar det.",
+    "changesTitle": "Det här fungerar annorlunda",
+    "changes": [
+      {
+        "name": "Dra ut objekt.",
+        "text": "En dragning börjar så fort du flyttar pekaren, som i Utforskaren. Om du håller ned knappen utan att flytta pekaren börjar ingen dragning längre."
+      },
+      {
+        "name": "Objektlistan stängs när du är klar.",
+        "text": "Den stängs när du byter till en annan app, inte efter 3 sekunder."
+      },
+      {
+        "name": "Misslyckade släpp visar varför.",
+        "text": "När något inte kan läggas till visar hyllan orsaken. Klicka på Detaljer i meddelandet för mer information."
+      },
+      {
+        "name": "Alternativet för skärmkanten är borttaget.",
+        "text": "Holdem 3.2.0 kunde öppna hyllan när du höll en dragning mot en skärmkant. Det alternativet är borttaget, så skaka medan du drar eller tryck på din snabbtangent i stället."
+      }
+    ],
+    "shakeName": "Skakning fungerar i fler appar.",
+    "shakeText": "När du skakar medan du drar öppnas hyllan nu i alla appar utom rit-, 3D- och CAD-verktyg. Om du vill stänga av det för en annan app lägger du till den i {{path}}. Om du tidigare valde vissa appar behåller Holdem den listan tills du väljer Tillåt i alla appar där.",
+    "shelvesTitle": "Hyllor",
+    "shelves": [
+      {
+        "name": "Flera hyllor.",
+        "text": "Öppna objektlistan genom att klicka på antalet objekt längst ned på hyllan, till exempel ”3 objekt”. Flikarna i listan är dina hyllor: klicka på + för att lägga till en och dubbelklicka på en flik för att byta namn på den. Byt hylla genom att klicka på hyllans namn högst upp på den, eller tryck på Ctrl+Tab på hyllan eller i objektlistan. På en tom hylla högerklickar du på hyllan och väljer Ny hylla."
+      },
+      {
+        "name": "Stänga och öppna hyllor igen.",
+        "text": "Högerklicka på en flik och välj Stäng hylla. Stängda hyllor sparas i 7 dagar. Öppna den senast stängda igen genom att trycka på Ctrl+Shift+T på hyllan eller i objektlistan, eller högerklicka på en flik och välj Öppna stängd hylla igen."
+      },
+      {
+        "name": "Objekten finns kvar efter en omstart.",
+        "text": "Hyllan behåller sina objekt när Holdem eller Windows startas om. Objekt på en enhet som inte är ansluten markeras som Frånkopplad tills enheten är ansluten igen."
+      }
+    ],
+    "itemsTitle": "Arbeta med objekt",
+    "items": [
+      {
+        "name": "Förhandsgranska.",
+        "text": "Klicka på ett objekt i objektlistan och tryck på Blanksteg. Med piltangenterna går du mellan objekten, och Blanksteg eller Esc stänger förhandsgranskningen."
+      },
+      {
+        "name": "Byt namn.",
+        "text": "Markera ett objekt och tryck på F2, eller högerklicka på det och välj Byt namn. Det fungerar för objekt som Holdem själv har sparat, till exempel skärmbilder, anteckningar och bilagor."
+      },
+      {
+        "name": "Ändra storlek på och konvertera bilder.",
+        "text": "Högerklicka på en bild i objektlistan och välj Bild för att ändra storlek på den eller konvertera den till PNG eller JPEG. Originalet ändras inte."
+      },
+      {
+        "name": "Kopiera till en mapp eller en ZIP-fil.",
+        "text": "Högerklicka på objekt i objektlistan och välj Kopiera till mapp eller Komprimera till ZIP."
+      },
+      {
+        "name": "Klistra in.",
+        "text": "Klicka på hyllan och tryck på Ctrl+V för att lägga till det du har kopierat: filer, bilder, länkar eller text."
+      }
+    ],
+    "fixesTitle": "Korrigeringar",
+    "fixes": [
+      {
+        "name": "Släpp från fler appar.",
+        "text": "Stora e-postbilagor, e-postmeddelanden från klassiska Outlook (som .msg-filer) och filer från ZIP-mappar, 7-Zip och WinRAR läggs till på ett tillförlitligt sätt."
+      },
+      {
+        "name": "Borttagna objekt.",
+        "text": "Skärmbilder, anteckningar och bilagor som du tar bort sparas i 7 dagar och flyttas sedan till Papperskorgen."
+      }
+    ],
+    "settingTitle": "En inställning du kanske vill ändra",
+    "micaName": "Genomskinliga fönster.",
+    "micaText": "I Windows 11 visar Holdems fönster nu en suddig bild av det som finns bakom dem. Om du vill stänga av det går du till {{path}}.",
+    "openSetting": "Öppna inställningen",
+    "dismiss": "Uppfattat",
+    "linksLabel": "Holdem-länkar, öppnas i webbläsaren",
+    "donate": "Bjud mig på en kaffe",
+    "featureRequest": "Föreslå en funktion",
+    "reportProblem": "Rapportera ett problem",
+    "changelog": "Fullständig ändringslogg",
+    "linkFailed": "Det gick inte att öppna länken. Kontrollera att Windows har en standardwebbläsare.",
+    "settingFailed": "Det gick inte att öppna Inställningar. Öppna dem via Holdem-ikonen i meddelandefältet."
+  },
   "updater": {
     "title": "Programuppdateringar",
     "close": "Stäng",

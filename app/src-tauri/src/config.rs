@@ -19,7 +19,25 @@ pub struct AppConfig {
     pub analytics_uuid: String,
     /// Windows 11 Mica backdrop behind Holdem's windows.
     pub mica: bool,
+    /// The app version that was running when the user last closed the
+    /// "what's new" window. Configs from 3.2.0 and earlier don't have it,
+    /// which is how an upgrade is told apart from a fresh install: a missing
+    /// field reads as `None`, while a fresh install starts from `Default`.
+    ///
+    /// The field-level `#[serde(default)]` is what makes a missing field
+    /// `None`. Without it, the struct-level default would fill in
+    /// `Default`'s current version and no upgrader would see the window.
+    #[serde(default)]
+    pub last_seen_version: Option<String>,
 }
+
+/// The running version, from Cargo.toml.
+pub const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
+
+/// The release the "what's new" window describes. Users whose
+/// `last_seen_version` is older (or missing) see the window once. Raise it
+/// together with the window's text when a later release needs one.
+pub const WHATS_NEW_RELEASE: &str = "3.2.0";
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(default)]
@@ -101,8 +119,22 @@ impl Default for AppConfig {
             analytics_enabled: false,
             analytics_uuid: Uuid::new_v4().to_string(),
             mica: true,
+            // A fresh install, or a config that failed to load, has nothing
+            // to compare with, so it counts as already seen.
+            last_seen_version: Some(APP_VERSION.to_string()),
         }
     }
+}
+
+/// `major.minor.patch` as numbers; missing or non-numeric parts read as 0,
+/// and anything after the digits ("3.2.0-beta") is ignored.
+fn version_key(version: &str) -> [u64; 3] {
+    let mut key = [0; 3];
+    for (slot, part) in key.iter_mut().zip(version.trim().split('.')) {
+        let digits: String = part.chars().take_while(char::is_ascii_digit).collect();
+        *slot = digits.parse().unwrap_or(0);
+    }
+    key
 }
 
 impl AppConfig {
@@ -116,6 +148,23 @@ impl AppConfig {
         m.shake_time_limit = m.shake_time_limit.clamp(300, 10_000);
         m.window_close_delay = m.window_close_delay.clamp(500, 30_000);
         self
+    }
+
+    /// Settings sends back a copy of the config it loaded earlier. Fields the
+    /// app keeps for itself, rather than settings, come from `current`, so
+    /// that copy can't undo them.
+    pub fn keeping_app_state(mut self, current: &AppConfig) -> Self {
+        self.last_seen_version = current.last_seen_version.clone();
+        self
+    }
+
+    /// True when the user updated from a version older than
+    /// [`WHATS_NEW_RELEASE`] and hasn't closed the "what's new" window since.
+    pub fn needs_whats_new(&self) -> bool {
+        match &self.last_seen_version {
+            None => true,
+            Some(seen) => version_key(seen) < version_key(WHATS_NEW_RELEASE),
+        }
     }
 
     /// Parses config.json contents. Missing fields take their defaults; an
@@ -147,10 +196,15 @@ impl AppConfig {
                 return Self::default();
             }
         };
+        Self::load_from(&config_path)
+    }
 
+    /// Reads `config_path`. A missing, unreadable or unparseable file gives
+    /// `Default` (and an unparseable one is backed up first).
+    fn load_from(config_path: &Path) -> Self {
         info!("Loading config from {:?}", config_path);
 
-        let contents = match fs::read_to_string(&config_path) {
+        let contents = match fs::read_to_string(config_path) {
             Ok(contents) => contents,
             Err(e) => {
                 warn!("Config file not found or unreadable: {}", e);
@@ -165,7 +219,7 @@ impl AppConfig {
                 // The next save overwrites config.json, so keep the unreadable
                 // file for recovery instead of losing the user's settings.
                 let backup = config_path.with_extension("json.bak");
-                match fs::copy(&config_path, &backup) {
+                match fs::copy(config_path, &backup) {
                     Ok(_) => warn!("Backed up unreadable config to {:?}", backup),
                     Err(e) => error!("Failed to back up unreadable config: {}", e),
                 }
@@ -306,6 +360,89 @@ mod migration_tests {
             AppConfig::from_json(custom).unwrap().mouse_monitor.whitelist,
             vec!["explorer.exe", "dopus.exe"]
         );
+    }
+}
+
+#[cfg(test)]
+mod whats_new_tests {
+    use super::*;
+
+    #[test]
+    fn config_from_before_the_field_is_an_upgrade() {
+        // A 3.1.x config: the field doesn't exist yet.
+        let config = AppConfig::from_json(r#"{"hotkey": "Win+Shift+H", "autostart": true}"#).unwrap();
+        assert_eq!(config.last_seen_version, None);
+        assert!(config.needs_whats_new());
+    }
+
+    #[test]
+    fn fresh_install_and_failed_load_skip_it() {
+        // `load` falls back to `Default` for a missing or unreadable file.
+        assert!(!AppConfig::default().needs_whats_new());
+    }
+
+    #[test]
+    fn shown_only_for_versions_older_than_the_release() {
+        let seen = |v: &str| AppConfig {
+            last_seen_version: Some(v.to_string()),
+            ..Default::default()
+        };
+        assert!(seen("3.1.1").needs_whats_new());
+        assert!(seen("2.9.10").needs_whats_new());
+        assert!(!seen(WHATS_NEW_RELEASE).needs_whats_new());
+        assert!(!seen("3.2.1").needs_whats_new());
+        assert!(!seen("3.10.0").needs_whats_new());
+    }
+
+    #[test]
+    fn seen_version_survives_a_save() {
+        let config = AppConfig {
+            last_seen_version: Some("3.2.0".to_string()),
+            ..Default::default()
+        };
+        let json = serde_json::to_string(&config).unwrap();
+        assert_eq!(AppConfig::from_json(&json).unwrap().last_seen_version.as_deref(), Some("3.2.0"));
+    }
+
+    #[test]
+    fn settings_copy_cannot_reset_the_seen_version() {
+        // Settings loaded its copy before the window was closed.
+        let stale = AppConfig { last_seen_version: None, mica: false, ..Default::default() };
+        let current = AppConfig { last_seen_version: Some("3.2.1".to_string()), ..Default::default() };
+        let saved = stale.keeping_app_state(&current);
+        assert_eq!(saved.last_seen_version.as_deref(), Some("3.2.1"));
+        assert!(!saved.mica, "the user's settings still come from the copy");
+    }
+
+    #[test]
+    fn missing_config_file_skips_the_window() {
+        let path = std::env::temp_dir().join(format!("holdem-absent-{}.json", Uuid::new_v4()));
+        assert!(!AppConfig::load_from(&path).needs_whats_new());
+    }
+
+    #[test]
+    fn null_seen_version_is_an_upgrade() {
+        let config = AppConfig::from_json(r#"{"last_seen_version": null}"#).unwrap();
+        assert!(config.needs_whats_new());
+    }
+
+    #[test]
+    fn unparseable_config_file_skips_the_window() {
+        let dir = std::env::temp_dir().join(format!("holdem-config-test-{}", Uuid::new_v4()));
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("config.json");
+        fs::write(&path, "{ not json").unwrap();
+        let config = AppConfig::load_from(&path);
+        assert!(!config.needs_whats_new());
+        assert!(path.with_extension("json.bak").exists());
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn version_key_reads_partial_and_suffixed_versions() {
+        assert_eq!(version_key("3.2"), [3, 2, 0]);
+        assert_eq!(version_key("3.2.0-beta.1"), [3, 2, 0]);
+        assert_eq!(version_key(""), [0, 0, 0]);
     }
 }
 

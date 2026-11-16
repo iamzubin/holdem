@@ -10,6 +10,7 @@ import { ThemeProvider } from "./components/theme-provider";
 import SettingsWindow from "./pages/Settings";
 import Updater from "./pages/Updater";
 import Consent from "./pages/Consent";
+import WhatsNew from "./pages/WhatsNew";
 import { useWindowStyle } from "./hooks/useWindowStyle";
 
 const Main =  () => {
@@ -25,6 +26,7 @@ const Main =  () => {
           <Route path="/settings" element={<SettingsWindow />} />
           <Route path="/updater" element={<Updater />} />
           <Route path="/consent" element={<Consent />} />
+          <Route path="/whats-new" element={<WhatsNew />} />
         </Routes>
       </Router>
     </ThemeProvider>

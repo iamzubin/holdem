@@ -164,6 +164,92 @@
     "next": "Volgende",
     "hotkeyActive": "Druk op {{hotkey}} (je kunt dit wijzigen bij Instellingen)"
   },
+  "whatsNew": {
+    "title": "Nieuw in Holdem {{version}}",
+    "description": "Dit is er veranderd en hier vind je het.",
+    "changesTitle": "Wat anders werkt",
+    "changes": [
+      {
+        "name": "Items eruit slepen.",
+        "text": "Slepen begint zodra je de aanwijzer beweegt, net als in Verkenner. De knop ingedrukt houden zonder te bewegen start het slepen niet meer."
+      },
+      {
+        "name": "De itemlijst sluit als je klaar bent.",
+        "text": "De lijst sluit als je naar een andere app gaat, niet meer na 3 seconden."
+      },
+      {
+        "name": "Bij mislukt neerzetten zie je waarom.",
+        "text": "Als iets niet kan worden toegevoegd, toont de plank de reden. Klik op Details in het bericht voor meer informatie."
+      },
+      {
+        "name": "De optie voor de schermrand is verdwenen.",
+        "text": "Holdem 3.2.0 kon de plank openen als je tijdens het slepen tegen een schermrand bleef drukken. Die optie is verwijderd, dus schud tijdens het slepen of druk in plaats daarvan op je sneltoets."
+      }
+    ],
+    "shakeName": "Schudden werkt in meer apps.",
+    "shakeText": "Schudden tijdens het slepen opent de plank nu in elke app behalve teken-, 3D- en CAD-programma's. Wil je het uitzetten voor een andere app, voeg die app dan toe bij {{path}}. Als je eerder specifieke apps had gekozen, bewaart Holdem die lijst totdat je daar Toestaan in alle apps kiest.",
+    "shelvesTitle": "Planken",
+    "shelves": [
+      {
+        "name": "Meerdere planken.",
+        "text": "Open de itemlijst door onderaan de plank op het aantal items te klikken, bijvoorbeeld „3 items”. De tabbladen zijn je planken: klik op + om er een toe te voegen en dubbelklik op een tabblad om de naam te wijzigen. Om te wisselen klik je bovenaan de plank op de naam, of druk je op Ctrl+Tab in de plank of de itemlijst. Op een lege plank klik je met rechts op de plank en kies je Nieuwe plank."
+      },
+      {
+        "name": "Planken sluiten en heropenen.",
+        "text": "Klik met rechts op een tabblad en kies Plank sluiten. Gesloten planken worden 7 dagen bewaard. Om de laatste te heropenen druk je op Ctrl+Shift+T in de plank of de itemlijst, of klik je met rechts op een tabblad en kies je Gesloten plank heropenen."
+      },
+      {
+        "name": "Items blijven na een herstart.",
+        "text": "De plank behoudt zijn items als Holdem of Windows opnieuw opstart. Items op een station dat niet verbonden is, worden als Offline gemarkeerd totdat het station weer verbonden is."
+      }
+    ],
+    "itemsTitle": "Werken met items",
+    "items": [
+      {
+        "name": "Voorbeeld.",
+        "text": "Klik op een item in de itemlijst en druk op Spatie. Met de pijltoetsen ga je naar een ander item, en Spatie of Esc sluit het voorbeeld."
+      },
+      {
+        "name": "Naam wijzigen.",
+        "text": "Selecteer een item en druk op F2, of klik er met rechts op en kies Naam wijzigen. Dit werkt voor items die Holdem zelf heeft opgeslagen, zoals schermafbeeldingen, notities en bijlagen."
+      },
+      {
+        "name": "Formaat van afbeeldingen wijzigen en afbeeldingen converteren.",
+        "text": "Klik met rechts op een afbeelding in de itemlijst en kies Afbeelding om het formaat te wijzigen of de afbeelding om te zetten naar PNG of JPEG. Het origineel blijft ongewijzigd."
+      },
+      {
+        "name": "Kopiëren naar een map of ZIP-bestand.",
+        "text": "Klik met rechts op items in de itemlijst en kies Kopiëren naar map of Comprimeren naar ZIP."
+      },
+      {
+        "name": "Plakken.",
+        "text": "Klik op de plank en druk op Ctrl+V om toe te voegen wat je hebt gekopieerd: bestanden, afbeeldingen, links of tekst."
+      }
+    ],
+    "fixesTitle": "Opgeloste problemen",
+    "fixes": [
+      {
+        "name": "Neerzetten vanuit meer apps.",
+        "text": "Grote e-mailbijlagen, e-mails uit klassieke Outlook (als .msg-bestanden) en bestanden uit ZIP-mappen, 7-Zip en WinRAR worden betrouwbaar toegevoegd."
+      },
+      {
+        "name": "Items die je van de plank haalt.",
+        "text": "Schermafbeeldingen, notities en bijlagen die je van de plank haalt, worden 7 dagen bewaard en gaan daarna naar de Prullenbak."
+      }
+    ],
+    "settingTitle": "Een instelling die je misschien wilt wijzigen",
+    "micaName": "Doorschijnende vensters.",
+    "micaText": "Op Windows 11 laten de vensters van Holdem nu vervaagd zien wat erachter staat. Ga naar {{path}} om dit uit te zetten.",
+    "openSetting": "Deze instelling openen",
+    "dismiss": "Begrepen",
+    "linksLabel": "Holdem-links, openen in je browser",
+    "donate": "Trakteer me op een koffie",
+    "featureRequest": "Een functie aanvragen",
+    "reportProblem": "Een probleem melden",
+    "changelog": "Volledige wijzigingslog",
+    "linkFailed": "Kan de link niet openen. Controleer of Windows een standaardwebbrowser heeft.",
+    "settingFailed": "Kan Instellingen niet openen. Open ze via het Holdem-pictogram in het systeemvak."
+  },
   "updater": {
     "title": "Software-updates",
     "close": "Sluiten",

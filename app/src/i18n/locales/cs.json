@@ -182,6 +182,92 @@
     "next": "Další",
     "hotkeyActive": "Stiskněte {{hotkey}} (změníte ji v Nastavení)"
   },
+  "whatsNew": {
+    "title": "Novinky v Holdem {{version}}",
+    "description": "Co se změnilo a kde to najdete.",
+    "changesTitle": "Co funguje jinak",
+    "changes": [
+      {
+        "name": "Přetahování položek ven.",
+        "text": "Přetahování začne, jakmile pohnete ukazatelem, stejně jako v Průzkumníku souborů. Podržení tlačítka bez pohybu ho už nespustí."
+      },
+      {
+        "name": "Seznam položek se zavře, když skončíte.",
+        "text": "Zavře se, když přepnete do jiné aplikace, a ne po 3 sekundách."
+      },
+      {
+        "name": "Neúspěšné přetažení uvede důvod.",
+        "text": "Když něco nejde přidat, polička zobrazí důvod. Další informace zobrazíte kliknutím na Podrobnosti ve zprávě."
+      },
+      {
+        "name": "Možnost okraje obrazovky byla odebrána.",
+        "text": "Holdem 3.2.0 uměl otevřít poličku, když jste při přetahování drželi ukazatel u okraje obrazovky. Tato možnost byla odebrána, proto při přetahování zatřeste myší nebo stiskněte svou klávesovou zkratku."
+      }
+    ],
+    "shakeName": "Zatřesení funguje ve více aplikacích.",
+    "shakeText": "Zatřesení při přetahování teď otevře poličku v jakékoli aplikaci kromě kreslicích, 3D a CAD nástrojů. Pokud ho chcete vypnout pro další aplikaci, přidejte ji v části {{path}}. Pokud jste dříve vybrali konkrétní aplikace, Holdem tento seznam ponechá, dokud tam nezvolíte Povolit ve všech aplikacích.",
+    "shelvesTitle": "Poličky",
+    "shelves": [
+      {
+        "name": "Více poliček.",
+        "text": "Seznam položek otevřete kliknutím na počet položek v dolní části poličky, například „3 položky“. Karty v něm jsou vaše poličky. Kliknutím na + přidáte novou a dvojitým kliknutím na kartu ji přejmenujete. Mezi poličkami přepnete kliknutím na název poličky v její horní části nebo stisknutím Ctrl+Tab v poličce či v seznamu položek. Na prázdné poličce na ni klikněte pravým tlačítkem a zvolte Nová polička."
+      },
+      {
+        "name": "Zavírání a opětovné otevírání poliček.",
+        "text": "Klikněte pravým tlačítkem na kartu a zvolte Zavřít poličku. Zavřené poličky se uchovávají 7 dní. Poslední z nich znovu otevřete stisknutím Ctrl+Shift+T v poličce nebo v seznamu položek, nebo kliknutím pravým tlačítkem na kartu a volbou Znovu otevřít zavřenou poličku."
+      },
+      {
+        "name": "Položky zůstanou i po restartu.",
+        "text": "Polička si ponechá své položky, když se Holdem nebo Windows restartuje. Položky na nepřipojené jednotce jsou označené jako Offline, dokud se jednotka znovu nepřipojí."
+      }
+    ],
+    "itemsTitle": "Práce s položkami",
+    "items": [
+      {
+        "name": "Náhled.",
+        "text": "Klikněte na položku v seznamu položek a stiskněte Mezerník. Šipkami přecházíte mezi položkami a Mezerník nebo Esc náhled zavře."
+      },
+      {
+        "name": "Přejmenování.",
+        "text": "Vyberte položku a stiskněte F2, nebo na ni klikněte pravým tlačítkem a zvolte Přejmenovat. Funguje to u položek, které uložil sám Holdem, například u snímků obrazovky, poznámek a příloh."
+      },
+      {
+        "name": "Změna velikosti a převod obrázků.",
+        "text": "V seznamu položek klikněte pravým tlačítkem na obrázek a zvolte Obrázek. Můžete mu změnit velikost nebo ho převést na PNG či JPEG. Původní soubor zůstane beze změny."
+      },
+      {
+        "name": "Kopírování do složky nebo souboru ZIP.",
+        "text": "V seznamu položek klikněte pravým tlačítkem na položky a zvolte Kopírovat do složky nebo Komprimovat do ZIP."
+      },
+      {
+        "name": "Vložení.",
+        "text": "Klikněte na poličku a stisknutím Ctrl+V přidejte, co jste zkopírovali: soubory, obrázky, odkazy nebo text."
+      }
+    ],
+    "fixesTitle": "Opravy",
+    "fixes": [
+      {
+        "name": "Přetahování z více aplikací.",
+        "text": "Velké přílohy e-mailů, e-maily z klasické aplikace Outlook (jako soubory .msg) a soubory ze složek ZIP, 7-Zip a WinRAR se přidávají spolehlivě."
+      },
+      {
+        "name": "Odebrané položky.",
+        "text": "Snímky obrazovky, poznámky a přílohy, které odeberete, se uchovávají 7 dní a pak se přesunou do Koše."
+      }
+    ],
+    "settingTitle": "Nastavení, které možná budete chtít změnit",
+    "micaName": "Průsvitná okna.",
+    "micaText": "Okna Holdem teď ve Windows 11 zobrazují rozostřený obsah, který je za nimi. Vypnout to můžete v části {{path}}.",
+    "openSetting": "Otevřít toto nastavení",
+    "dismiss": "Rozumím",
+    "linksLabel": "Odkazy Holdem, otevřou se v prohlížeči",
+    "donate": "Kupte mi kávu",
+    "featureRequest": "Navrhnout funkci",
+    "reportProblem": "Nahlásit problém",
+    "changelog": "Úplný seznam změn",
+    "linkFailed": "Odkaz se nepodařilo otevřít. Zkontrolujte, zda má Windows nastavený výchozí webový prohlížeč.",
+    "settingFailed": "Nastavení se nepodařilo otevřít. Otevřete ho z ikony Holdem v oznamovací oblasti."
+  },
   "updater": {
     "title": "Aktualizace softwaru",
     "close": "Zavřít",

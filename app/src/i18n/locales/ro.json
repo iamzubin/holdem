@@ -173,6 +173,92 @@
     "next": "Înainte",
     "hotkeyActive": "Apăsați {{hotkey}} (o puteți schimba din Setări)"
   },
+  "whatsNew": {
+    "title": "Noutăți în Holdem {{version}}",
+    "description": "Iată ce s-a schimbat și unde găsiți noutățile.",
+    "changesTitle": "Ce funcționează diferit",
+    "changes": [
+      {
+        "name": "Tragerea elementelor în afară.",
+        "text": "Tragerea începe imediat ce mișcați indicatorul, ca în Explorer. Dacă țineți apăsat butonul fără să mișcați indicatorul, tragerea nu mai începe."
+      },
+      {
+        "name": "Lista de elemente se închide când ați terminat.",
+        "text": "Se închide când comutați la altă aplicație, nu după 3 secunde."
+      },
+      {
+        "name": "Plasările eșuate își arată motivul.",
+        "text": "Când ceva nu poate fi adăugat, raftul afișează motivul. Faceți clic pe Detalii în mesaj pentru mai multe informații."
+      },
+      {
+        "name": "Opțiunea pentru marginea ecranului a fost eliminată.",
+        "text": "Holdem 3.2.0 putea deschide raftul când țineați un element tras lângă marginea ecranului. Opțiunea a fost eliminată, așa că scuturați în timp ce trageți sau apăsați tasta rapidă."
+      }
+    ],
+    "shakeName": "Scuturarea funcționează în mai multe aplicații.",
+    "shakeText": "Scuturarea în timpul tragerii deschide acum raftul în orice aplicație, cu excepția instrumentelor de desen, 3D și CAD. Pentru a o dezactiva într-o altă aplicație, adăugați aplicația în {{path}}. Dacă ați ales anterior anumite aplicații, Holdem păstrează lista până când alegeți acolo Permite în toate aplicațiile.",
+    "shelvesTitle": "Rafturi",
+    "shelves": [
+      {
+        "name": "Mai multe rafturi.",
+        "text": "Deschideți lista de elemente făcând clic pe numărul de elemente din partea de jos a raftului, de exemplu „3 elemente”. Filele ei sunt rafturile dvs.: faceți clic pe + pentru a adăuga unul și faceți dublu clic pe o filă pentru a o redenumi. Pentru a comuta, faceți clic pe numele raftului din partea de sus sau apăsați Ctrl+Tab pe raft sau în lista de elemente. Pe un raft gol, faceți clic dreapta pe el și alegeți Raft nou."
+      },
+      {
+        "name": "Închiderea și redeschiderea rafturilor.",
+        "text": "Faceți clic dreapta pe o filă și alegeți Închide raftul. Rafturile închise sunt păstrate 7 zile. Pentru a-l redeschide pe ultimul, apăsați Ctrl+Shift+T pe raft sau în lista de elemente ori faceți clic dreapta pe o filă și alegeți Redeschide raftul închis."
+      },
+      {
+        "name": "Elementele rămân după repornire.",
+        "text": "Raftul își păstrează elementele când Holdem sau Windows repornește. Elementele de pe o unitate care nu este conectată sunt marcate ca Deconectat până când unitatea se reconectează."
+      }
+    ],
+    "itemsTitle": "Lucrul cu elementele",
+    "items": [
+      {
+        "name": "Previzualizare.",
+        "text": "Faceți clic pe un element din lista de elemente și apăsați Spațiu. Tastele săgeți trec de la un element la altul, iar Spațiu sau Esc închide previzualizarea."
+      },
+      {
+        "name": "Redenumire.",
+        "text": "Selectați un element și apăsați F2 sau faceți clic dreapta pe el și alegeți Redenumește. Funcționează pentru elementele salvate chiar de Holdem, cum ar fi capturile de ecran, notele și atașamentele."
+      },
+      {
+        "name": "Redimensionarea și conversia imaginilor.",
+        "text": "Faceți clic dreapta pe o imagine din lista de elemente și alegeți Imagine pentru a o redimensiona sau a o converti în PNG sau JPEG. Originalul nu se modifică."
+      },
+      {
+        "name": "Copiere într-un folder sau într-un fișier ZIP.",
+        "text": "Faceți clic dreapta pe elementele din lista de elemente și alegeți Copiază în folder sau Comprimă în ZIP."
+      },
+      {
+        "name": "Lipire.",
+        "text": "Faceți clic pe raft și apăsați Ctrl+V pentru a adăuga ce ați copiat: fișiere, imagini, linkuri sau text."
+      }
+    ],
+    "fixesTitle": "Remedieri",
+    "fixes": [
+      {
+        "name": "Plasări din mai multe aplicații.",
+        "text": "Atașamentele mari din e-mailuri, e-mailurile din Outlook clasic (ca fișiere .msg) și fișierele din foldere ZIP, 7-Zip și WinRAR sunt acum adăugate în mod fiabil."
+      },
+      {
+        "name": "Elemente eliminate.",
+        "text": "Capturile de ecran, notele și atașamentele pe care le eliminați sunt păstrate 7 zile, apoi ajung în Coșul de reciclare."
+      }
+    ],
+    "settingTitle": "O setare pe care poate doriți să o modificați",
+    "micaName": "Ferestre translucide.",
+    "micaText": "În Windows 11, ferestrele Holdem estompează acum ce se află în spatele lor. Pentru a dezactiva această opțiune, accesați {{path}}.",
+    "openSetting": "Deschide această setare",
+    "dismiss": "Am înțeles",
+    "linksLabel": "Linkuri Holdem, se deschid în browser",
+    "donate": "Cumpără-mi o cafea",
+    "featureRequest": "Solicită o funcție",
+    "reportProblem": "Raportează o problemă",
+    "changelog": "Lista completă a modificărilor",
+    "linkFailed": "Linkul nu a putut fi deschis. Verificați dacă Windows are un browser web implicit.",
+    "settingFailed": "Setările nu au putut fi deschise. Deschideți-le din pictograma Holdem din zona de notificare."
+  },
   "updater": {
     "title": "Actualizări software",
     "close": "Inchide",

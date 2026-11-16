@@ -164,6 +164,92 @@
     "next": "İleri",
     "hotkeyActive": "{{hotkey}} tuşlarına basın (Ayarlar'dan değiştirebilirsiniz)"
   },
+  "whatsNew": {
+    "title": "Holdem {{version}} sürümündeki yenilikler",
+    "description": "Nelerin değiştiği ve bunları nerede bulacağınız aşağıda.",
+    "changesTitle": "Farklı çalışanlar",
+    "changes": [
+      {
+        "name": "Öğeleri dışarı sürükleme.",
+        "text": "Dosya Gezgini'nde olduğu gibi, işaretçiyi hareket ettirdiğiniz anda sürükleme başlar. Düğmeyi hareket ettirmeden basılı tutmak artık sürüklemeyi başlatmaz."
+      },
+      {
+        "name": "Öğe listesi işiniz bitince kapanır.",
+        "text": "3 saniye sonra değil, başka bir uygulamaya geçtiğinizde kapanır."
+      },
+      {
+        "name": "Başarısız bırakmalar nedenini gösterir.",
+        "text": "Bir şey eklenemediğinde raf nedenini gösterir. Daha fazla bilgi için iletideki “Ayrıntılar” düğmesine tıklayın."
+      },
+      {
+        "name": "Ekran kenarı seçeneği kaldırıldı.",
+        "text": "Holdem 3.2.0, sürüklerken işaretçiyi ekran kenarında tuttuğunuzda rafı açabiliyordu. Bu seçenek kaldırıldı; bunun yerine sürüklerken sallayın veya kısayol tuşunuza basın."
+      }
+    ],
+    "shakeName": "Sallama daha fazla uygulamada çalışır.",
+    "shakeText": "Sürüklerken sallamak artık çizim, 3D ve CAD araçları dışındaki tüm uygulamalarda rafı açar. Başka bir uygulamada kapatmak için o uygulamayı {{path}} bölümüne ekleyin. Daha önce belirli uygulamaları seçtiyseniz Holdem, siz orada “Tüm uygulamalarda izin ver” seçeneğini belirleyene kadar o listeyi korur.",
+    "shelvesTitle": "Raflar",
+    "shelves": [
+      {
+        "name": "Birden fazla raf.",
+        "text": "Rafın altındaki “3 öğe” gibi öğe sayısına tıklayarak öğe listesini açın. Listedeki sekmeler raflarınızdır. Raf eklemek için + düğmesine tıklayın, bir sekmeyi yeniden adlandırmak için sekmeye çift tıklayın. Raflar arasında geçiş yapmak için rafın üstündeki adına tıklayın veya rafta ya da öğe listesinde Ctrl+Tab tuşlarına basın. Boş bir rafta, rafa sağ tıklayıp “Yeni raf” seçeneğini belirleyin."
+      },
+      {
+        "name": "Rafları kapatma ve yeniden açma.",
+        "text": "Bir sekmeye sağ tıklayıp “Rafı kapat” seçeneğini belirleyin. Kapatılan raflar 7 gün saklanır. Sonuncusunu yeniden açmak için rafta veya öğe listesinde Ctrl+Shift+T tuşlarına basın ya da bir sekmeye sağ tıklayıp “Kapatılan rafı yeniden aç” seçeneğini belirleyin."
+      },
+      {
+        "name": "Öğeler yeniden başlatmadan sonra kalır.",
+        "text": "Holdem veya Windows yeniden başladığında raf öğelerini korur. Bağlı olmayan bir sürücüdeki öğeler, sürücü yeniden bağlanana kadar “Çevrimdışı” olarak işaretlenir."
+      }
+    ],
+    "itemsTitle": "Öğelerle çalışma",
+    "items": [
+      {
+        "name": "Önizleme.",
+        "text": "Öğe listesinde bir öğeye tıklayın ve Boşluk tuşuna basın. Ok tuşlarıyla öğeler arasında geçiş yapabilirsiniz; Boşluk veya Esc önizlemeyi kapatır."
+      },
+      {
+        "name": "Yeniden adlandırma.",
+        "text": "Bir öğe seçip F2'ye basın veya öğeye sağ tıklayıp “Yeniden adlandır” seçeneğini belirleyin. Bu, ekran görüntüleri, notlar ve ekler gibi Holdem'in kendi kaydettiği öğelerde çalışır."
+      },
+      {
+        "name": "Görüntüleri yeniden boyutlandırma ve dönüştürme.",
+        "text": "Öğe listesinde bir görüntüye sağ tıklayın ve “Görüntü” menüsünden boyutunu değiştirin veya PNG ya da JPEG'e dönüştürün. Orijinal dosya değişmez."
+      },
+      {
+        "name": "Klasöre veya ZIP dosyasına kopyalama.",
+        "text": "Öğe listesinde öğelere sağ tıklayıp “Klasöre kopyala” veya “ZIP olarak sıkıştır” seçeneğini belirleyin."
+      },
+      {
+        "name": "Yapıştırma.",
+        "text": "Kopyaladığınız şeyi eklemek için rafa tıklayıp Ctrl+V tuşlarına basın: dosyalar, resimler, bağlantılar veya metin."
+      }
+    ],
+    "fixesTitle": "Düzeltmeler",
+    "fixes": [
+      {
+        "name": "Daha fazla uygulamadan bırakma.",
+        "text": "Büyük e-posta ekleri, klasik Outlook'tan e-postalar (.msg dosyaları olarak) ve ZIP klasörlerinden, 7-Zip'ten ve WinRAR'dan dosyalar güvenilir şekilde eklenir."
+      },
+      {
+        "name": "Kaldırılan öğeler.",
+        "text": "Kaldırdığınız ekran görüntüleri, notlar ve ekler 7 gün saklanır, ardından Geri Dönüşüm Kutusu'na taşınır."
+      }
+    ],
+    "settingTitle": "Değiştirmek isteyebileceğiniz bir ayar",
+    "micaName": "Yarı saydam pencereler.",
+    "micaText": "Holdem pencereleri artık Windows 11'de arkalarındaki içeriği bulanık olarak gösterir. Kapatmak için {{path}} bölümüne gidin.",
+    "openSetting": "Bu ayarı aç",
+    "dismiss": "Anladım",
+    "linksLabel": "Holdem bağlantıları, tarayıcınızda açılır",
+    "donate": "Bana bir kahve ısmarla",
+    "featureRequest": "Özellik iste",
+    "reportProblem": "Sorun bildir",
+    "changelog": "Tüm değişiklik günlüğü",
+    "linkFailed": "Bağlantı açılamadı. Windows'ta varsayılan bir web tarayıcısı olduğundan emin olun.",
+    "settingFailed": "Ayarlar açılamadı. Bildirim alanındaki Holdem simgesinden açın."
+  },
   "updater": {
     "title": "Yazılım Güncellemeleri",
     "close": "Kapat",

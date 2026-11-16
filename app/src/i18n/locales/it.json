@@ -164,6 +164,92 @@
     "next": "Avanti",
     "hotkeyActive": "Premi {{hotkey}} (puoi cambiarla nelle Impostazioni)"
   },
+  "whatsNew": {
+    "title": "Novità di Holdem {{version}}",
+    "description": "Ecco cosa è cambiato e dove trovarlo.",
+    "changesTitle": "Cosa funziona in modo diverso",
+    "changes": [
+      {
+        "name": "Trascinare fuori gli elementi.",
+        "text": "Il trascinamento inizia appena muovi il puntatore, come in Esplora file. Tenere premuto il pulsante senza muoverlo non lo avvia più."
+      },
+      {
+        "name": "L'elenco degli elementi si chiude quando hai finito.",
+        "text": "Si chiude quando passi a un'altra app, non più dopo 3 secondi."
+      },
+      {
+        "name": "I rilasci non riusciti spiegano il motivo.",
+        "text": "Quando qualcosa non può essere aggiunto, la mensola ne mostra il motivo. Fai clic su Dettagli nel messaggio per saperne di più."
+      },
+      {
+        "name": "L'opzione del bordo dello schermo non c'è più.",
+        "text": "Holdem 3.2.0 poteva aprire la mensola quando tenevi un trascinamento contro un bordo dello schermo. Questa opzione è stata rimossa, quindi scuoti il mouse durante il trascinamento o premi invece la tua scorciatoia."
+      }
+    ],
+    "shakeName": "Lo scuotimento funziona in più app.",
+    "shakeText": "Scuotere il mouse durante il trascinamento ora apre la mensola in qualsiasi app tranne gli strumenti di disegno, 3D e CAD. Per disattivarlo in un'altra app, aggiungila in {{path}}. Se in precedenza avevi scelto app specifiche, Holdem mantiene quell'elenco finché non scegli Consenti in tutte le app nella stessa sezione.",
+    "shelvesTitle": "Mensole",
+    "shelves": [
+      {
+        "name": "Più mensole.",
+        "text": "Apri l'elenco degli elementi facendo clic sul numero di elementi in fondo alla mensola, ad esempio “3 elementi”. Le sue schede sono le tue mensole: fai clic su + per aggiungerne una e fai doppio clic su una scheda per rinominarla. Per cambiare mensola, fai clic sul suo nome in cima alla mensola oppure premi Ctrl+Tab nella mensola o nell'elenco degli elementi. Su una mensola vuota, fai clic destro sulla mensola e scegli Nuova mensola."
+      },
+      {
+        "name": "Chiudere e riaprire le mensole.",
+        "text": "Fai clic destro su una scheda e scegli Chiudi mensola. Le mensole chiuse vengono conservate per 7 giorni. Per riaprire l'ultima, premi Ctrl+Shift+T nella mensola o nell'elenco degli elementi, oppure fai clic destro su una scheda e scegli Riapri mensola chiusa."
+      },
+      {
+        "name": "Gli elementi restano dopo un riavvio.",
+        "text": "La mensola conserva i suoi elementi quando Holdem o Windows si riavviano. Gli elementi su un'unità non connessa sono contrassegnati come Offline finché l'unità non è di nuovo connessa."
+      }
+    ],
+    "itemsTitle": "Lavorare con gli elementi",
+    "items": [
+      {
+        "name": "Anteprima.",
+        "text": "Fai clic su un elemento nell'elenco degli elementi e premi Spazio. Con i tasti freccia passi da un elemento all'altro, e Spazio o Esc chiude l'anteprima."
+      },
+      {
+        "name": "Rinomina.",
+        "text": "Seleziona un elemento e premi F2, oppure fai clic destro su di esso e scegli Rinomina. Funziona con gli elementi salvati da Holdem, come screenshot, note e allegati."
+      },
+      {
+        "name": "Ridimensiona e converti le immagini.",
+        "text": "Fai clic destro su un'immagine nell'elenco degli elementi e scegli Immagine per ridimensionarla o convertirla in PNG o JPEG. L'originale non viene modificato."
+      },
+      {
+        "name": "Copia in una cartella o in un file ZIP.",
+        "text": "Fai clic destro sugli elementi nell'elenco degli elementi e scegli Copia in una cartella o Comprimi in ZIP."
+      },
+      {
+        "name": "Incolla.",
+        "text": "Fai clic sulla mensola e premi Ctrl+V per aggiungere ciò che hai copiato: file, immagini, link o testo."
+      }
+    ],
+    "fixesTitle": "Correzioni",
+    "fixes": [
+      {
+        "name": "Rilasci da più app.",
+        "text": "Gli allegati email di grandi dimensioni, le email da Outlook classico (come file .msg) e i file da cartelle ZIP, 7-Zip e WinRAR vengono aggiunti in modo affidabile."
+      },
+      {
+        "name": "Elementi rimossi.",
+        "text": "Gli screenshot, le note e gli allegati che rimuovi vengono conservati per 7 giorni, poi finiscono nel Cestino."
+      }
+    ],
+    "settingTitle": "Un'impostazione che potresti voler cambiare",
+    "micaName": "Finestre traslucide.",
+    "micaText": "Su Windows 11 le finestre di Holdem ora mostrano sfocato ciò che c'è dietro. Per disattivare questo effetto, apri {{path}}.",
+    "openSetting": "Apri questa impostazione",
+    "dismiss": "Ho capito",
+    "linksLabel": "Link di Holdem, si aprono nel browser",
+    "donate": "Offrimi un caffè",
+    "featureRequest": "Richiedi una funzionalità",
+    "reportProblem": "Segnala un problema",
+    "changelog": "Registro completo delle modifiche",
+    "linkFailed": "Impossibile aprire il link. Verifica che Windows abbia un browser web predefinito.",
+    "settingFailed": "Impossibile aprire le Impostazioni. Aprile dall'icona di Holdem nell'area di notifica."
+  },
   "updater": {
     "title": "Aggiornamenti Software",
     "close": "Chiudi",

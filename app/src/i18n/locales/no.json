@@ -164,6 +164,92 @@
     "next": "Neste",
     "hotkeyActive": "Trykk på {{hotkey}} (du kan endre den i Innstillinger)"
   },
+  "whatsNew": {
+    "title": "Nytt i Holdem {{version}}",
+    "description": "Her er hva som er endret, og hvor du finner det.",
+    "changesTitle": "Dette fungerer annerledes",
+    "changes": [
+      {
+        "name": "Dra elementer ut.",
+        "text": "Draingen starter så snart du flytter pekeren, som i Filutforsker. Å holde nede knappen uten å flytte pekeren starter den ikke lenger."
+      },
+      {
+        "name": "Elementlisten lukkes når du er ferdig.",
+        "text": "Den lukkes når du bytter til en annen app, ikke etter 3 sekunder."
+      },
+      {
+        "name": "Mislykkede slipp viser årsaken.",
+        "text": "Når noe ikke kan legges til, viser hyllen årsaken. Klikk på Detaljer i meldingen for mer informasjon."
+      },
+      {
+        "name": "Alternativet for skjermkanten er fjernet.",
+        "text": "Holdem 3.2.0 kunne åpne hyllen når du holdt et element du dro, mot en skjermkant. Det alternativet er fjernet, så rist mens du drar, eller trykk på hurtigtasten din i stedet."
+      }
+    ],
+    "shakeName": "Risting fungerer i flere apper.",
+    "shakeText": "Når du rister mens du drar, åpnes hyllen nå i alle apper unntatt tegne-, 3D- og CAD-verktøy. Vil du slå det av for en annen app, legger du den til under {{path}}. Hvis du har valgt bestemte apper tidligere, beholder Holdem den listen til du velger Tillat i alle apper der.",
+    "shelvesTitle": "Hyller",
+    "shelves": [
+      {
+        "name": "Flere hyller.",
+        "text": "Åpne elementlisten ved å klikke på antallet elementer nederst på hyllen, for eksempel «3 elementer». Fanene i den er hyllene dine: klikk på + for å legge til en, og dobbeltklikk på en fane for å gi den nytt navn. For å bytte klikker du på hyllens navn øverst på den, eller trykker Ctrl+Tab i hyllen eller elementlisten. På en tom hylle høyreklikker du på den og velger Ny hylle."
+      },
+      {
+        "name": "Lukke og åpne hyller igjen.",
+        "text": "Høyreklikk på en fane og velg Lukk hylle. Lukkede hyller beholdes i 7 dager. For å åpne den siste igjen trykker du Ctrl+Shift+T i hyllen eller elementlisten, eller høyreklikker på en fane og velger Åpne lukket hylle igjen."
+      },
+      {
+        "name": "Elementene blir værende etter omstart.",
+        "text": "Hyllen beholder elementene sine når Holdem eller Windows starter på nytt. Elementer på en stasjon som ikke er tilkoblet, merkes som Frakoblet til den er tilbake."
+      }
+    ],
+    "itemsTitle": "Arbeide med elementer",
+    "items": [
+      {
+        "name": "Forhåndsvisning.",
+        "text": "Klikk på et element i elementlisten og trykk Mellomrom. Piltastene flytter mellom elementene, og Mellomrom eller Esc lukker forhåndsvisningen."
+      },
+      {
+        "name": "Gi nytt navn.",
+        "text": "Merk et element og trykk F2, eller høyreklikk på det og velg Gi nytt navn. Dette fungerer for elementer som Holdem har lagret selv, for eksempel skjermbilder, notater og vedlegg."
+      },
+      {
+        "name": "Endre størrelse på og konvertere bilder.",
+        "text": "Høyreklikk på et bilde i elementlisten og velg Bilde for å endre størrelsen eller konvertere det til PNG eller JPEG. Originalen endres ikke."
+      },
+      {
+        "name": "Kopiere til en mappe eller en ZIP-fil.",
+        "text": "Høyreklikk på elementer i elementlisten og velg Kopier til mappe eller Komprimer til ZIP."
+      },
+      {
+        "name": "Lim inn.",
+        "text": "Klikk på hyllen og trykk Ctrl+V for å legge til det du har kopiert: filer, bilder, lenker eller tekst."
+      }
+    ],
+    "fixesTitle": "Rettelser",
+    "fixes": [
+      {
+        "name": "Slipp fra flere apper.",
+        "text": "Store e-postvedlegg, e-poster fra klassisk Outlook (som .msg-filer) og filer fra ZIP-mapper, 7-Zip og WinRAR legges nå til på en pålitelig måte."
+      },
+      {
+        "name": "Fjernede elementer.",
+        "text": "Skjermbilder, notater og vedlegg du fjerner, beholdes i 7 dager og flyttes deretter til Papirkurv."
+      }
+    ],
+    "settingTitle": "En innstilling du kanskje vil endre",
+    "micaName": "Gjennomskinnelige vinduer.",
+    "micaText": "Holdems vinduer viser nå et uskarpt bilde av det som er bak dem, på Windows 11. Gå til {{path}} for å slå det av.",
+    "openSetting": "Åpne denne innstillingen",
+    "dismiss": "Skjønner",
+    "linksLabel": "Holdem-lenker, åpnes i nettleseren",
+    "donate": "Spander en kaffe",
+    "featureRequest": "Foreslå en funksjon",
+    "reportProblem": "Rapporter et problem",
+    "changelog": "Fullstendig endringslogg",
+    "linkFailed": "Kunne ikke åpne lenken. Sjekk at Windows har en standard nettleser.",
+    "settingFailed": "Kunne ikke åpne Innstillinger. Åpne dem fra Holdem-ikonet i systemstatusfeltet."
+  },
   "updater": {
     "title": "Programvare oppdateringer",
     "close": "Lukk",

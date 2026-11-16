@@ -164,6 +164,92 @@
     "next": "Next",
     "hotkeyActive": "Press {{hotkey}} (you can change it in Settings)"
   },
+  "whatsNew": {
+    "title": "What's new in Holdem {{version}}",
+    "description": "Here is what changed and where to find it.",
+    "changesTitle": "What works differently",
+    "changes": [
+      {
+        "name": "Dragging items out.",
+        "text": "A drag starts as soon as you move the pointer, as in File Explorer. Holding the button without moving no longer starts one."
+      },
+      {
+        "name": "The item list closes when you're done.",
+        "text": "It closes when you switch to another app, not after 3 seconds."
+      },
+      {
+        "name": "Drops that fail say why.",
+        "text": "When something can't be added, the shelf shows the reason. Click Details on the message for more."
+      },
+      {
+        "name": "The screen-edge option is gone.",
+        "text": "Holdem 3.2.0 could open the shelf when you held a drag against a screen edge. That option is removed, so shake while dragging or press your hotkey instead."
+      }
+    ],
+    "shakeName": "Shake works in more apps.",
+    "shakeText": "Shaking while dragging now opens the shelf in any app except drawing, 3D and CAD tools. To turn it off for another app, add it in {{path}}. If you had picked specific apps before, Holdem keeps that list until you choose Allow in all apps there.",
+    "shelvesTitle": "Shelves",
+    "shelves": [
+      {
+        "name": "Several shelves.",
+        "text": "Open the item list by clicking the item count at the bottom of the shelf, such as \"3 items\". Its tabs are your shelves: click + to add one and double-click a tab to rename it. To switch, click the shelf's name at its top, or press Ctrl+Tab in the shelf or the item list. On an empty shelf, right-click it and choose New shelf."
+      },
+      {
+        "name": "Closing and reopening shelves.",
+        "text": "Right-click a tab and choose Close shelf. Closed shelves are kept for 7 days. To reopen the last one, press Ctrl+Shift+T in the shelf or the item list, or right-click a tab and choose Reopen closed shelf."
+      },
+      {
+        "name": "Items stay after a restart.",
+        "text": "The shelf keeps its items when Holdem or Windows restarts. Items on a drive that isn't connected are marked Offline until it's back."
+      }
+    ],
+    "itemsTitle": "Working with items",
+    "items": [
+      {
+        "name": "Preview.",
+        "text": "Click an item in the item list and press Space. The arrow keys move between items, and Space or Esc closes the preview."
+      },
+      {
+        "name": "Rename.",
+        "text": "Select an item and press F2, or right-click it and choose Rename. This works for items Holdem saved itself, such as screenshots, notes and attachments."
+      },
+      {
+        "name": "Resize and convert images.",
+        "text": "Right-click an image in the item list and choose Image to resize it or convert it to PNG or JPEG. The original isn't changed."
+      },
+      {
+        "name": "Copy to a folder or a ZIP file.",
+        "text": "Right-click items in the item list and choose Copy to folder or Compress to ZIP."
+      },
+      {
+        "name": "Paste.",
+        "text": "Click the shelf and press Ctrl+V to add what you copied: files, images, links or text."
+      }
+    ],
+    "fixesTitle": "Fixes",
+    "fixes": [
+      {
+        "name": "Drops from more apps.",
+        "text": "Large email attachments, emails from classic Outlook (as .msg files), and files from ZIP folders, 7-Zip and WinRAR are added reliably."
+      },
+      {
+        "name": "Removed items.",
+        "text": "Screenshots, notes and attachments you remove are kept for 7 days, then go to the Recycle Bin."
+      }
+    ],
+    "settingTitle": "A setting you may want to change",
+    "micaName": "Translucent windows.",
+    "micaText": "Holdem's windows now show a blur of what's behind them on Windows 11. To turn it off, go to {{path}}.",
+    "openSetting": "Open this setting",
+    "dismiss": "Got it",
+    "linksLabel": "Holdem links, open in your browser",
+    "donate": "Buy me a coffee",
+    "featureRequest": "Request a feature",
+    "reportProblem": "Report a problem",
+    "changelog": "Full changelog",
+    "linkFailed": "Couldn't open the link. Check that Windows has a default web browser.",
+    "settingFailed": "Couldn't open Settings. Open it from the Holdem icon in the system tray."
+  },
   "updater": {
     "title": "Software Updates",
     "close": "Close",
