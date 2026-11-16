@@ -9,12 +9,14 @@ interface StackedIconsProps {
 
 export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { beginDrag, handleMouseUp } = useNativeDrag();
+  const { beginDrag } = useNativeDrag();
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     e.stopPropagation();
-    beginDrag(files, containerRef.current);
+    // Items on an offline drive or share can't be dragged anywhere.
+    const reachable = files.filter((file) => file.available);
+    if (reachable.length > 0) beginDrag(reachable, containerRef.current, e);
   };
 
   const stackedIcons = useMemo(() => {
@@ -31,7 +33,7 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
             zIndex,
           }}
         >
-          <FileThumb file={file} className="w-full h-full object-cover" />
+          <FileThumb file={file} />
         </div>
       );
     });
@@ -40,10 +42,12 @@ export const StackedIcons: React.FC<StackedIconsProps> = ({ files }) => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full cursor-grab active:cursor-grabbing"
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      // touch-none: a touch drag is Holdem's drag, not a pan the browser
+      // would take over (and cancel with pointercancel).
+      className="relative w-full h-full cursor-grab touch-none active:cursor-grabbing"
+      onPointerDown={handlePointerDown}
+      // Holdem starts the drag itself; the page's own image drag would compete.
+      onDragStart={(e) => e.preventDefault()}
     >
       {stackedIcons}
     </div>

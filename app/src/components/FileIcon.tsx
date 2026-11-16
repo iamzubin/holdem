@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FileIcon } from 'lucide-react';
-import { FilePreview } from '@/types';
+import { FileIcon, Folder } from 'lucide-react';
+import { FilePreview, isFolder } from '@/types';
 import { getFileIconBase64 } from '@/lib/fileIcon';
 
 interface DynamicFileIconProps {
@@ -29,7 +29,9 @@ export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file }) => {
   }, []);
 
   useEffect(() => {
-    if (!isVisible) return;
+    // Offline items have no reachable file to read an icon from; the
+    // generic icon stays until the location is back.
+    if (!isVisible || !file.available) return;
     let cancelled = false;
     getFileIconBase64(file.path)
       .then((base64Icon) => {
@@ -39,14 +41,17 @@ export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file }) => {
     return () => {
       cancelled = true;
     };
-  }, [isVisible, file.path]);
+  }, [isVisible, file.path, file.available]);
 
+  // Decorative: the file name is always shown next to the icon.
   return (
     <div ref={iconRef}>
       {iconBase64 ? (
-        <img className="h-full w-full" src={`data:image/png;base64,${iconBase64}`} alt="File icon" />
+        <img className="h-full w-full" src={`data:image/png;base64,${iconBase64}`} alt="" />
+      ) : isFolder(file) ? (
+        <Folder className="h-6 w-6 text-blue-500" aria-hidden />
       ) : (
-        <FileIcon className="h-6 w-6 text-blue-500" />
+        <FileIcon className="h-6 w-6 text-blue-500" aria-hidden />
       )}
     </div>
   );

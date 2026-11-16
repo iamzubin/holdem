@@ -1,3 +1,5 @@
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::Duration;
 use tauri::{AppHandle, Manager};
 use tracing::{error, info, warn};
 
@@ -28,36 +30,73 @@ fn resolve_drag_image(drag_image: Option<String>, fallback_count: usize) -> drag
     generate_drag_image(fallback_count)
 }
 
-/// After a successful native drop the shelf UI gets out of the way:
-/// the popup (if open) closes and the main window hides.
-fn on_drop_hide_windows(app: &AppHandle, result: drag::DragResult) {
+/// After a successful native drop the popup gets out of the way. The shelf
+/// itself stays where it is: its files are still there (drag-out copies), and
+/// hiding it would leave no visible way back to them.
+fn on_drop_close_popup(app: &AppHandle, result: drag::DragResult) {
     if matches!(result, drag::DragResult::Cancel) {
         return;
     }
-
-    // check if the popup window is open
-    if app.get_webview_window("popup").is_some() {
-        if let Err(e) = super::window_ops::close_popup_window(app.clone()) {
-            error!("Failed to close popup window after drag: {}", e);
-        }
-    }
-    if let Some(main_window) = app.get_webview_window("main") {
-        if let Err(e) = main_window.hide() {
-            error!("Failed to hide main window after drag: {}", e);
-        }
-    }
+    super::window_ops::hide_popup(app);
 }
 
-fn launch_drag(app: &AppHandle, item: drag::DragItem, image: drag::Image) -> Result<(), String> {
+/// Set while Holdem itself is dragging items out, so its own windows don't
+/// take them back in (see drop_target.rs).
+pub static OUTGOING_DRAG: AtomicBool = AtomicBool::new(false);
+
+/// After a drop, check the shelf again: a Shift-drop moved the files away,
+/// and those entries must leave the shelf. Explorer finishes a move on its
+/// own thread after the drop, so look twice.
+fn refresh_after_drop(app: &AppHandle) {
+    super::file_ops::expect_moved_out(Duration::from_secs(5));
+    let app = app.clone();
+    std::thread::spawn(move || {
+        for wait in [Duration::from_millis(500), Duration::from_secs(3)] {
+            std::thread::sleep(wait);
+            let check = super::file_ops::refresh_shelf(app.clone());
+            if let Err(e) = tauri::async_runtime::block_on(check) {
+                warn!("Shelf check after a drop failed: {}", e);
+            }
+        }
+    });
+}
+
+fn launch_drag(
+    app: &AppHandle,
+    item: drag::DragItem,
+    image: drag::Image,
+    count: usize,
+    mouse: bool,
+) -> Result<(), String> {
+    // Released while the drag was being prepared: starting now would drop
+    // the items at once wherever the pointer is. (Only checkable for the
+    // mouse: pen and touch contacts don't show as a held button.)
+    if mouse && !crate::mouse_monitor::is_mouse_button_down() {
+        return Err("The button was released before the drag started".to_string());
+    }
     let window = app
         .get_webview_window("main")
         .ok_or("Main window not found")?;
 
     let app_clone = app.clone();
     let on_drop_callback = move |result: drag::DragResult, _: drag::CursorPosition| {
-        on_drop_hide_windows(&app_clone, result);
+        OUTGOING_DRAG.store(false, Ordering::SeqCst);
+        let dropped = !matches!(result, drag::DragResult::Cancel);
+        if dropped {
+            refresh_after_drop(&app_clone);
+        }
+        crate::analytics::track(
+            &app_clone,
+            "drag_out",
+            vec![
+                ("count", count.into()),
+                ("dropped", dropped.into()),
+            ],
+        );
+        on_drop_close_popup(&app_clone, result);
     };
 
+    OUTGOING_DRAG.store(true, Ordering::SeqCst);
     match drag::start_drag(
         &window,
         item,
@@ -73,6 +112,7 @@ fn launch_drag(app: &AppHandle, item: drag::DragItem, image: drag::Image) -> Res
             Ok(())
         }
         Err(e) => {
+            OUTGOING_DRAG.store(false, Ordering::SeqCst);
             error!("Failed to start native drag: {:?}", e);
             Err(format!("Failed to start drag operation: {:?}", e))
         }
@@ -84,6 +124,7 @@ pub fn start_multi_drag(
     app: AppHandle,
     file_paths: Vec<String>,
     drag_image: Option<String>,
+    mouse: Option<bool>,
 ) -> Result<(), String> {
     info!("Starting native drag for {} file(s)", file_paths.len());
 
@@ -108,14 +149,12 @@ pub fn start_multi_drag(
         return Err("No valid files to drag".to_string());
     }
 
-    let image = resolve_drag_image(drag_image, valid_paths.len());
-    let item = drag::DragItem::Files(valid_paths.clone());
-    info!(
-        "Prepared drag item with {} valid file(s)",
-        valid_paths.len()
-    );
+    let count = valid_paths.len();
+    let image = resolve_drag_image(drag_image, count);
+    info!("Prepared drag item with {} valid file(s)", count);
+    let item = drag::DragItem::Files(valid_paths);
 
-    launch_drag(&app, item, image)
+    launch_drag(&app, item, image, count, mouse.unwrap_or(true))
 }
 
 /// Generate a simple drag image with file count badge using the `image` crate.
@@ -210,11 +249,11 @@ fn generate_drag_image(file_count: usize) -> drag::Image {
     drag::Image::Raw(png_bytes)
 }
 
-#[tauri::command]
-pub fn start_text_drag(
+fn start_text_drag(
     app: AppHandle,
     text: String,
     drag_image: Option<String>,
+    mouse: bool,
 ) -> Result<(), String> {
     info!("Starting text drag");
 
@@ -234,5 +273,53 @@ pub fn start_text_drag(
         types: vec!["text/plain".to_string()],
     };
 
-    launch_drag(&app, item, image)
+    launch_drag(&app, item, image, 1, mouse)
+}
+
+/// Drags a saved text snippet out as text. Reads the file here, by shelf id,
+/// so the page needs no file-system access.
+#[tauri::command]
+pub fn start_note_drag(
+    app: AppHandle,
+    file_list: tauri::State<'_, crate::FileList>,
+    id: u64,
+    drag_image: Option<String>,
+    mouse: Option<bool>,
+) -> Result<(), String> {
+    const MAX_NOTE_BYTES: u64 = 4 * 1024 * 1024;
+    let path = {
+        let list = file_list.lock().map_err(|_| "Failed to acquire lock".to_string())?;
+        let file = list
+            .iter()
+            .find(|f| f.id == id && f.kind == "note")
+            .ok_or_else(|| format!("No text snippet with ID {} on the shelf", id))?;
+        file.path.clone()
+    };
+    let size = std::fs::metadata(&path).map_err(|e| e.to_string())?.len();
+    if size > MAX_NOTE_BYTES {
+        return Err("Text snippet is too large to drag as text".to_string());
+    }
+    let text = std::fs::read_to_string(&path).map_err(|e| e.to_string())?;
+    start_text_drag(app, text, drag_image, mouse.unwrap_or(true))
+}
+
+/// How far, in physical pixels, the pointer must move with the button held
+/// before a press becomes a drag: the user's Windows setting
+/// (SM_CXDRAG/SM_CYDRAG), at the DPI of the calling window.
+#[tauri::command]
+pub fn drag_threshold(window: tauri::WebviewWindow) -> (i32, i32) {
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::UI::HiDpi::{GetDpiForWindow, GetSystemMetricsForDpi};
+    use windows::Win32::UI::WindowsAndMessaging::{SM_CXDRAG, SM_CYDRAG};
+    let dpi = window
+        .hwnd()
+        .map(|h| unsafe { GetDpiForWindow(HWND(h.0 as _)) })
+        .unwrap_or(96)
+        .max(96);
+    unsafe {
+        (
+            GetSystemMetricsForDpi(SM_CXDRAG, dpi).max(1),
+            GetSystemMetricsForDpi(SM_CYDRAG, dpi).max(1),
+        )
+    }
 }
