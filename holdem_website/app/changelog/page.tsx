@@ -5,7 +5,7 @@ import { GITHUB_REPO } from '@/lib/constants'
 export const metadata: Metadata = {
   title: 'Changelog — Holdem Release Notes',
   description:
-    'Holdem changelog and release notes. Current release v3.1.1. Full version history on GitHub Releases.',
+    'Holdem changelog and release notes. Current release v3.2.0. Full version history on GitHub Releases.',
   alternates: {
     canonical: 'https://holdem.iamzub.in/changelog',
   },
@@ -51,10 +51,36 @@ export default function ChangelogPage() {
       <div className="mt-8 space-y-4">
         <div className="border-hairline bg-surface-1 rounded-xl border p-5">
           <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-xl font-bold">v3.1.1</h2>
+            <h2 className="text-xl font-bold">v3.2.0</h2>
             <span className="bg-success/15 text-success shrink-0 rounded-full px-3 py-1 text-xs font-medium">
               Latest
             </span>
+          </div>
+          <p className="text-ink-subtle mt-1 text-sm">
+            See GitHub Releases for the full notes.
+          </p>
+          <p className="text-ink-muted mt-2">
+            Multiple shelves you can close and reopen, a shelf that remembers
+            its items across restarts, Space to preview, rename, image resize
+            and convert, copy to a folder or ZIP, and pasting with Ctrl+V. Drops
+            that can&apos;t be added now say why. Dragging out starts when you
+            move, as in Explorer, and the item list closes when you switch apps
+            instead of on a timer. Optional: open the shelf at a screen edge,
+            and translucent windows on Windows 11.
+          </p>
+          <a
+            href={`${GITHUB_REPO}/releases/tag/3.2.0`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-block text-sm underline"
+          >
+            View v3.2.0 on GitHub →
+          </a>
+        </div>
+
+        <div className="border-hairline bg-surface-1 rounded-xl border p-5">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="text-xl font-bold">v3.1.1</h2>
           </div>
           <p className="text-ink-subtle mt-1 text-sm">
             See GitHub Releases for the full notes.
