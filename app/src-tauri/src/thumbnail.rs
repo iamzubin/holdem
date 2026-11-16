@@ -216,7 +216,7 @@ fn hbitmap_to_rgba(hbitmap: HBITMAP) -> Result<(Vec<u8>, u32, u32), ThumbnailErr
 
 /// `GetDIBits` returns BGRA; PNG/`image` wants RGBA. Pure for testability.
 fn swap_bgra_to_rgba(buffer: &mut [u8]) {
-    for pixel in buffer.chunks_exact_mut(4) {
+    for pixel in buffer.as_chunks_mut::<4>().0 {
         pixel.swap(0, 2);
     }
 }

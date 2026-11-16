@@ -257,8 +257,10 @@ impl HoldemDropTarget {
         // NOTE: no raw `*const u16` cast — `Vec<u8>` is align-1 and the
         // allocation can be odd-aligned (UB even on x86-64). Decode LE pairs.
         let wide: Vec<u16> = bytes
-            .chunks_exact(2)
-            .map(|c| u16::from_le_bytes([c[0], c[1]]))
+            .as_chunks::<2>()
+            .0
+            .iter()
+            .map(|&pair| u16::from_le_bytes(pair))
             .collect();
         let end = wide.iter().position(|&c| c == 0).unwrap_or(wide.len());
         let s = String::from_utf16_lossy(&wide[..end]);
@@ -927,8 +929,10 @@ fn parse_file_group_descriptor(bytes: &[u8], wide: bool) -> Vec<DescriptorEntry>
         let name_bytes = &bytes[base + NAME_OFFSET..base + entry_size];
         let name = if wide {
             let units: Vec<u16> = name_bytes
-                .chunks_exact(2)
-                .map(|c| u16::from_le_bytes([c[0], c[1]]))
+                .as_chunks::<2>()
+                .0
+                .iter()
+                .map(|&pair| u16::from_le_bytes(pair))
                 .take_while(|&c| c != 0)
                 .collect();
             String::from_utf16_lossy(&units)
