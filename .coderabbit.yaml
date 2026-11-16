@@ -1,7 +1,5 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
-# CodeRabbit is disabled repo-wide. The opencode review workflow
-# (.github/workflows/opencode-review.yml) is the reviewer of record.
-# A review can still be triggered manually with `@coderabbitai review`.
+# Automatic reviews are off. Request one on a PR with `@coderabbitai review`.
 reviews:
   auto_review:
     enabled: false
