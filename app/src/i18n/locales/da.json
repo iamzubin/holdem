@@ -103,17 +103,9 @@
       "add": "Tilføj",
       "removeApp": "Fjern {{app}}",
       "blocklistTitle": "Apps, hvor hylden ikke åbner",
-      "blocklistDesc": "Rystelser eller et træk, der holdes ved skærmkanten, åbner hylden i alle apps undtagen disse og aldrig i apps i fuld skærm, f.eks. spil. Brug procesnavne, f.eks. krita eller krita.exe.",
+      "blocklistDesc": "Rystelser åbner hylden i alle apps undtagen disse og aldrig i apps i fuld skærm, f.eks. spil. Brug procesnavne, f.eks. krita eller krita.exe.",
       "onlyIn": "Hylden åbner i øjeblikket kun i: {{apps}}",
-      "allowAll": "Tillad i alle apps",
-      "screenEdge": "Åbn ved en skærmkant",
-      "screenEdgeDesc": "Hold markøren mod denne kant af skærmen et øjeblik, mens du trækker, for at åbne hylden. Med flere skærme virker kun en yderkant af hele skrivebordet og ikke den kant, hvor proceslinjen er.",
-      "edge": {
-        "off": "Fra",
-        "left": "Venstre kant",
-        "right": "Højre kant",
-        "top": "Øverste kant"
-      }
+      "allowAll": "Tillad i alle apps"
     },
     "appearance": {
       "title": "Udseende",

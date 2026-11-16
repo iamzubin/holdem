@@ -112,17 +112,9 @@
       "add": "Adăugare",
       "removeApp": "Elimină {{app}}",
       "blocklistTitle": "Aplicații în care raftul nu se deschide",
-      "blocklistDesc": "Scuturarea sau ținerea unui element tras la marginea ecranului deschide raftul în orice aplicație, cu excepția acestora, și niciodată în aplicațiile pe ecran complet, cum ar fi jocurile. Folosiți nume de procese, de ex. krita sau krita.exe.",
+      "blocklistDesc": "Scuturarea deschide raftul în orice aplicație, cu excepția acestora, și niciodată în aplicațiile pe ecran complet, cum ar fi jocurile. Folosiți nume de procese, de ex. krita sau krita.exe.",
       "onlyIn": "În prezent, raftul se deschide doar în: {{apps}}",
-      "allowAll": "Permite în toate aplicațiile",
-      "screenEdge": "Deschide la marginea ecranului",
-      "screenEdgeDesc": "În timp ce trageți, țineți cursorul o clipă lipit de această margine a ecranului pentru a deschide raftul. Cu mai multe monitoare, funcționează doar o margine exterioară a întregului desktop și nu marginea pe care se află bara de activități.",
-      "edge": {
-        "off": "Dezactivat",
-        "left": "Marginea din stânga",
-        "right": "Marginea din dreapta",
-        "top": "Marginea de sus"
-      }
+      "allowAll": "Permite în toate aplicațiile"
     },
     "appearance": {
       "title": "Aspect",

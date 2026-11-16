@@ -2,7 +2,7 @@ mod blocked_drag;
 
 pub(crate) use blocked_drag::{holdem_is_elevated, DRAG_ENTERED};
 
-use crate::config::{AppConfig, MouseMonitorConfig, ScreenEdge};
+use crate::config::{AppConfig, MouseMonitorConfig};
 use crate::DragState;
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
@@ -193,8 +193,8 @@ fn gesture_allowed(config: &MouseMonitorConfig) -> bool {
     if crate::commands::drag_ops::OUTGOING_DRAG.load(Ordering::SeqCst) {
         return false;
     }
-    // Cheapest and most selective check first: holding a button at the edge
-    // to scroll text must not look up the app 30 times a second.
+    // Cheapest and most selective check first: holding a button to select
+    // text must not look up the app 30 times a second.
     if !drag_in_progress() {
         return false;
     }
@@ -202,47 +202,6 @@ fn gesture_allowed(config: &MouseMonitorConfig) -> bool {
     (config.whitelist.is_empty() || config.whitelist.iter().any(|app| same_app(app, &active_app)))
         && !config.blocklist.iter().any(|app| same_app(app, &active_app))
         && !foreground_is_fullscreen()
-}
-
-/// How long a drag must rest against the chosen screen edge. Long enough
-/// that dragging past the edge or auto-scrolling a window doesn't count.
-const EDGE_DWELL: Duration = Duration::from_millis(350);
-
-/// True when `pos` is pressed against `edge` of its monitor, and that edge
-/// is an outer edge of the desktop: the pointer passes straight through an
-/// edge shared with another monitor, so it could never rest there.
-fn at_screen_edge(pos: POINT, edge: ScreenEdge) -> bool {
-    use windows::Win32::Graphics::Gdi::{
-        GetMonitorInfoW, MonitorFromPoint, MONITORINFO, MONITOR_DEFAULTTONULL,
-    };
-    let monitor = unsafe { MonitorFromPoint(pos, MONITOR_DEFAULTTONULL) };
-    if monitor.is_invalid() {
-        return false;
-    }
-    let mut info = MONITORINFO { cbSize: std::mem::size_of::<MONITORINFO>() as u32, ..Default::default() };
-    if !unsafe { GetMonitorInfoW(monitor, &mut info) }.as_bool() {
-        return false;
-    }
-    let area = info.rcMonitor;
-    let work = info.rcWork;
-    // The taskbar (or another app bar) sits on this edge: dragging onto its
-    // buttons and waiting is common, and must not open the shelf.
-    let bar = match edge {
-        ScreenEdge::Off => return false,
-        ScreenEdge::Left => work.left != area.left,
-        ScreenEdge::Right => work.right != area.right,
-        ScreenEdge::Top => work.top != area.top,
-    };
-    if bar {
-        return false;
-    }
-    let (at_edge, beyond) = match edge {
-        ScreenEdge::Off => return false,
-        ScreenEdge::Left => (pos.x <= area.left, POINT { x: area.left - 1, y: pos.y }),
-        ScreenEdge::Right => (pos.x >= area.right - 1, POINT { x: area.right, y: pos.y }),
-        ScreenEdge::Top => (pos.y <= area.top, POINT { x: pos.x, y: area.top - 1 }),
-    };
-    at_edge && unsafe { MonitorFromPoint(beyond, MONITOR_DEFAULTTONULL) }.is_invalid()
 }
 
 /// True when a list entry names the running process. Case-insensitive, and
@@ -314,8 +273,6 @@ pub fn start_mouse_monitor(
         let mut window_opened_by_shake = false;
         let mut shake = ShakeDetector::default();
         let mut blocked = blocked_drag::BlockedDragWatch::default();
-        // Since when the drag has rested against the chosen screen edge.
-        let mut at_edge_since: Option<Instant> = None;
 
         loop {
             let check_interval = Duration::from_millis(30);
@@ -324,7 +281,6 @@ pub fn start_mouse_monitor(
             // else, including reading the config, and check less often.
             if !window_opened_by_shake && !is_mouse_button_down() {
                 shake = ShakeDetector::default();
-                at_edge_since = None;
                 thread::sleep(check_interval * 3);
                 continue;
             }
@@ -365,7 +321,6 @@ pub fn start_mouse_monitor(
                 // check less often (saves battery while idle).
                 window_opened_by_shake = false;
                 shake = ShakeDetector::default();
-                at_edge_since = None;
                 thread::sleep(check_interval * 3);
                 continue;
             }
@@ -387,19 +342,6 @@ pub fn start_mouse_monitor(
                 }
 
                 shake = ShakeDetector::default();
-            }
-
-            // A drag pushed against the chosen screen edge, if one is set.
-            // Opened this way, the shelf hides again like a shaken one.
-            if !window_opened_by_shake && at_screen_edge(current_pos, config.screen_edge) {
-                let since = *at_edge_since.get_or_insert_with(Instant::now);
-                if since.elapsed() >= EDGE_DWELL && gesture_allowed(&config) {
-                    drag_state.successful_drop.store(false, Ordering::Relaxed);
-                    show_main_window(&app_handle, current_pos, "edge");
-                    window_opened_by_shake = true;
-                }
-            } else {
-                at_edge_since = None;
             }
 
             thread::sleep(check_interval);

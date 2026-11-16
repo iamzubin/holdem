@@ -121,17 +121,9 @@
       "add": "Přidat",
       "removeApp": "Odebrat {{app}}",
       "blocklistTitle": "Aplikace, ve kterých se polička neotevře",
-      "blocklistDesc": "Zatřesení nebo podržení přetahování u okraje obrazovky otevře poličku v jakékoli aplikaci kromě těchto a nikdy v aplikacích na celou obrazovku, jako jsou hry. Zadávejte názvy procesů, např. krita nebo krita.exe.",
+      "blocklistDesc": "Zatřesení otevře poličku v jakékoli aplikaci kromě těchto a nikdy v aplikacích na celou obrazovku, jako jsou hry. Zadávejte názvy procesů, např. krita nebo krita.exe.",
       "onlyIn": "Polička se teď otevírá jen v těchto aplikacích: {{apps}}",
-      "allowAll": "Povolit ve všech aplikacích",
-      "screenEdge": "Otevřít u okraje obrazovky",
-      "screenEdgeDesc": "Při přetahování chvíli podržte ukazatel u tohoto okraje obrazovky a polička se otevře. Při více monitorech funguje jen vnější okraj celé plochy, a ne okraj, kde je hlavní panel.",
-      "edge": {
-        "off": "Vypnuto",
-        "left": "Levý okraj",
-        "right": "Pravý okraj",
-        "top": "Horní okraj"
-      }
+      "allowAll": "Povolit ve všech aplikacích"
     },
     "appearance": {
       "title": "Vzhled",

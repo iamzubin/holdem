@@ -103,17 +103,9 @@
       "add": "Añadir",
       "removeApp": "Eliminar {{app}}",
       "blocklistTitle": "Aplicaciones en las que el estante no se abre",
-      "blocklistDesc": "Agitar el ratón, o mantener un arrastre en el borde de la pantalla, abre el estante en cualquier aplicación excepto en estas, y nunca en aplicaciones a pantalla completa, como los juegos. Usa nombres de procesos, p. ej., krita o krita.exe.",
+      "blocklistDesc": "Agitar el ratón abre el estante en cualquier aplicación excepto en estas, y nunca en aplicaciones a pantalla completa, como los juegos. Usa nombres de procesos, p. ej., krita o krita.exe.",
       "onlyIn": "Ahora mismo, el estante solo se abre en: {{apps}}",
-      "allowAll": "Permitir en todas las aplicaciones",
-      "screenEdge": "Abrir en un borde de la pantalla",
-      "screenEdgeDesc": "Mientras arrastras, mantén el puntero contra este borde de la pantalla un momento para abrir el estante. Con varios monitores, solo funciona un borde exterior del escritorio completo, y no el borde donde está la barra de tareas.",
-      "edge": {
-        "off": "Desactivado",
-        "left": "Borde izquierdo",
-        "right": "Borde derecho",
-        "top": "Borde superior"
-      }
+      "allowAll": "Permitir en todas las aplicaciones"
     },
     "appearance": {
       "title": "Apariencia",

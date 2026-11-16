@@ -103,17 +103,9 @@
       "add": "Lisää",
       "removeApp": "Poista {{app}}",
       "blocklistTitle": "Sovellukset, joissa hylly ei avaudu",
-      "blocklistDesc": "Ravistus tai vedon pitäminen näytön reunassa avaa hyllyn missä tahansa sovelluksessa paitsi näissä, eikä koskaan koko näytön sovelluksissa, kuten peleissä. Käytä prosessien nimiä, esim. krita tai krita.exe.",
+      "blocklistDesc": "Ravistus avaa hyllyn missä tahansa sovelluksessa paitsi näissä, eikä koskaan koko näytön sovelluksissa, kuten peleissä. Käytä prosessien nimiä, esim. krita tai krita.exe.",
       "onlyIn": "Hylly avautuu tällä hetkellä vain näissä: {{apps}}",
-      "allowAll": "Salli kaikissa sovelluksissa",
-      "screenEdge": "Avaa näytön reunasta",
-      "screenEdgeDesc": "Kun vedät, pidä osoitinta hetki tätä näytön reunaa vasten, niin hylly avautuu. Jos näyttöjä on useita, vain koko työpöydän ulkoreuna toimii, eikä se reuna, jossa tehtäväpalkki on.",
-      "edge": {
-        "off": "Ei käytössä",
-        "left": "Vasen reuna",
-        "right": "Oikea reuna",
-        "top": "Yläreuna"
-      }
+      "allowAll": "Salli kaikissa sovelluksissa"
     },
     "appearance": {
       "title": "Ulkoasu",

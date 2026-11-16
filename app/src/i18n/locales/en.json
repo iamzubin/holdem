@@ -103,17 +103,9 @@
       "add": "Add",
       "removeApp": "Remove {{app}}",
       "blocklistTitle": "Apps where the shelf doesn't open",
-      "blocklistDesc": "Shaking, or holding a drag at the screen edge, opens the shelf in any app except these, and never in full-screen apps such as games. Use process names, e.g. krita or krita.exe.",
+      "blocklistDesc": "Shaking opens the shelf in any app except these, and never in full-screen apps such as games. Use process names, e.g. krita or krita.exe.",
       "onlyIn": "The shelf currently opens only in: {{apps}}",
-      "allowAll": "Allow in all apps",
-      "screenEdge": "Open at a screen edge",
-      "screenEdgeDesc": "While dragging, hold the pointer against this edge of the screen for a moment to open the shelf. With several monitors, only an outer edge of the whole desktop works, and not the edge where the taskbar is.",
-      "edge": {
-        "off": "Off",
-        "left": "Left edge",
-        "right": "Right edge",
-        "top": "Top edge"
-      }
+      "allowAll": "Allow in all apps"
     },
     "appearance": {
       "title": "Appearance",

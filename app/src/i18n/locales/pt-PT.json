@@ -103,17 +103,9 @@
       "add": "Adicionar",
       "removeApp": "Remover {{app}}",
       "blocklistTitle": "Aplicações em que a prateleira não abre",
-      "blocklistDesc": "Abanar o rato, ou manter um item arrastado no limite do ecrã, abre a prateleira em qualquer aplicação, exceto nestas, e nunca em aplicações em ecrã inteiro, como jogos. Utilize nomes de processos, por exemplo, krita ou krita.exe.",
+      "blocklistDesc": "Abanar o rato abre a prateleira em qualquer aplicação, exceto nestas, e nunca em aplicações em ecrã inteiro, como jogos. Utilize nomes de processos, por exemplo, krita ou krita.exe.",
       "onlyIn": "De momento, a prateleira só abre em: {{apps}}",
-      "allowAll": "Permitir em todas as aplicações",
-      "screenEdge": "Abrir num limite do ecrã",
-      "screenEdgeDesc": "Ao arrastar, mantenha o ponteiro encostado a este limite do ecrã durante um momento para abrir a prateleira. Com vários monitores, só funciona um limite exterior do ambiente de trabalho completo, e não o limite onde está a barra de tarefas.",
-      "edge": {
-        "off": "Desativado",
-        "left": "Limite esquerdo",
-        "right": "Limite direito",
-        "top": "Limite superior"
-      }
+      "allowAll": "Permitir em todas as aplicações"
     },
     "appearance": {
       "title": "Aspeto",

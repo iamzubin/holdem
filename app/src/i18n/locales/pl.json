@@ -121,17 +121,9 @@
       "add": "Dodaj",
       "removeApp": "Usuń {{app}}",
       "blocklistTitle": "Aplikacje, w których półka się nie otwiera",
-      "blocklistDesc": "Potrząśnięcie lub przytrzymanie przeciąganego elementu przy krawędzi ekranu otwiera półkę w każdej aplikacji oprócz tych i nigdy w aplikacjach pełnoekranowych, takich jak gry. Używaj nazw procesów, np. krita lub krita.exe.",
+      "blocklistDesc": "Potrząśnięcie otwiera półkę w każdej aplikacji oprócz tych i nigdy w aplikacjach pełnoekranowych, takich jak gry. Używaj nazw procesów, np. krita lub krita.exe.",
       "onlyIn": "Półka otwiera się obecnie tylko w: {{apps}}",
-      "allowAll": "Zezwalaj we wszystkich aplikacjach",
-      "screenEdge": "Otwieraj przy krawędzi ekranu",
-      "screenEdgeDesc": "Podczas przeciągania przytrzymaj przez chwilę wskaźnik przy tej krawędzi ekranu, aby otworzyć półkę. Przy kilku monitorach działa tylko zewnętrzna krawędź całego pulpitu, a nie działa krawędź, przy której jest pasek zadań.",
-      "edge": {
-        "off": "Wyłączone",
-        "left": "Lewa krawędź",
-        "right": "Prawa krawędź",
-        "top": "Górna krawędź"
-      }
+      "allowAll": "Zezwalaj we wszystkich aplikacjach"
     },
     "appearance": {
       "title": "Wygląd",

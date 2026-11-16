@@ -103,17 +103,9 @@
       "add": "Aggiungi",
       "removeApp": "Rimuovi {{app}}",
       "blocklistTitle": "App in cui la mensola non si apre",
-      "blocklistDesc": "Scuotere il mouse, o tenere un trascinamento sul bordo dello schermo, apre la mensola in qualsiasi app tranne queste, e mai nelle app a schermo intero come i giochi. Usa i nomi dei processi, ad es. krita o krita.exe.",
+      "blocklistDesc": "Scuotere il mouse apre la mensola in qualsiasi app tranne queste, e mai nelle app a schermo intero come i giochi. Usa i nomi dei processi, ad es. krita o krita.exe.",
       "onlyIn": "Al momento la mensola si apre solo in: {{apps}}",
-      "allowAll": "Consenti in tutte le app",
-      "screenEdge": "Apri a un bordo dello schermo",
-      "screenEdgeDesc": "Durante il trascinamento, tieni per un attimo il puntatore contro questo bordo dello schermo per aprire la mensola. Con più monitor funziona solo un bordo esterno dell'intero desktop, e non il bordo in cui si trova la barra delle applicazioni.",
-      "edge": {
-        "off": "Disattivato",
-        "left": "Bordo sinistro",
-        "right": "Bordo destro",
-        "top": "Bordo superiore"
-      }
+      "allowAll": "Consenti in tutte le app"
     },
     "appearance": {
       "title": "Aspetto",

@@ -103,17 +103,9 @@
       "add": "Hinzufügen",
       "removeApp": "{{app}} entfernen",
       "blocklistTitle": "Apps, in denen sich die Ablage nicht öffnet",
-      "blocklistDesc": "Schütteln oder ein am Bildschirmrand gehaltenes Ziehen öffnet die Ablage in jeder App außer diesen und nie in Vollbild-Apps wie Spielen. Verwenden Sie Prozessnamen, z. B. krita oder krita.exe.",
+      "blocklistDesc": "Schütteln öffnet die Ablage in jeder App außer diesen und nie in Vollbild-Apps wie Spielen. Verwenden Sie Prozessnamen, z. B. krita oder krita.exe.",
       "onlyIn": "Die Ablage öffnet sich derzeit nur in: {{apps}}",
-      "allowAll": "In allen Apps zulassen",
-      "screenEdge": "Am Bildschirmrand öffnen",
-      "screenEdgeDesc": "Halten Sie den Zeiger beim Ziehen kurz an diesen Bildschirmrand, um die Ablage zu öffnen. Bei mehreren Monitoren funktioniert nur ein Außenrand des gesamten Desktops und nicht der Rand mit der Taskleiste.",
-      "edge": {
-        "off": "Aus",
-        "left": "Linker Rand",
-        "right": "Rechter Rand",
-        "top": "Oberer Rand"
-      }
+      "allowAll": "In allen Apps zulassen"
     },
     "appearance": {
       "title": "Darstellung",

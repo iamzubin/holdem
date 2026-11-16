@@ -96,17 +96,9 @@
       "add": "Thêm",
       "removeApp": "Xóa {{app}}",
       "blocklistTitle": "Ứng dụng không mở kệ",
-      "blocklistDesc": "Lắc chuột hoặc giữ mục đang kéo ở cạnh màn hình sẽ mở kệ trong mọi ứng dụng ngoại trừ các ứng dụng này, và không bao giờ mở trong ứng dụng toàn màn hình như trò chơi. Dùng tên tiến trình, ví dụ: krita hoặc krita.exe.",
+      "blocklistDesc": "Lắc chuột sẽ mở kệ trong mọi ứng dụng ngoại trừ các ứng dụng này, và không bao giờ mở trong ứng dụng toàn màn hình như trò chơi. Dùng tên tiến trình, ví dụ: krita hoặc krita.exe.",
       "onlyIn": "Hiện tại, kệ chỉ mở trong: {{apps}}",
-      "allowAll": "Cho phép trong mọi ứng dụng",
-      "screenEdge": "Mở ở cạnh màn hình",
-      "screenEdgeDesc": "Khi đang kéo, giữ con trỏ sát cạnh này của màn hình một lúc để mở kệ. Nếu dùng nhiều màn hình, chỉ cạnh ngoài của toàn bộ màn hình nền mới hoạt động, còn cạnh có thanh tác vụ thì không.",
-      "edge": {
-        "off": "Tắt",
-        "left": "Cạnh trái",
-        "right": "Cạnh phải",
-        "top": "Cạnh trên"
-      }
+      "allowAll": "Cho phép trong mọi ứng dụng"
     },
     "appearance": {
       "title": "Giao diện",

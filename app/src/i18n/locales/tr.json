@@ -103,17 +103,9 @@
       "add": "Ekle",
       "removeApp": "Kaldır: {{app}}",
       "blocklistTitle": "Rafın açılmadığı uygulamalar",
-      "blocklistDesc": "Sallamak veya sürüklenen öğeyi ekran kenarında tutmak, bunlar dışındaki tüm uygulamalarda rafı açar; oyunlar gibi tam ekran uygulamalarda ise asla açmaz. İşlem adlarını kullanın, örn. krita veya krita.exe.",
+      "blocklistDesc": "Sallamak, bunlar dışındaki tüm uygulamalarda rafı açar; oyunlar gibi tam ekran uygulamalarda ise asla açmaz. İşlem adlarını kullanın, örn. krita veya krita.exe.",
       "onlyIn": "Raf şu anda yalnızca şu uygulamalarda açılıyor: {{apps}}",
-      "allowAll": "Tüm uygulamalarda izin ver",
-      "screenEdge": "Ekran kenarında aç",
-      "screenEdgeDesc": "Sürüklerken rafı açmak için işaretçiyi kısa bir süre ekranın bu kenarında tutun. Birden fazla monitörde yalnızca tüm masaüstünün dış kenarları çalışır; görev çubuğunun bulunduğu kenar çalışmaz.",
-      "edge": {
-        "off": "Kapalı",
-        "left": "Sol kenar",
-        "right": "Sağ kenar",
-        "top": "Üst kenar"
-      }
+      "allowAll": "Tüm uygulamalarda izin ver"
     },
     "appearance": {
       "title": "Görünüm",

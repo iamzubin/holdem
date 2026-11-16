@@ -103,17 +103,9 @@
       "add": "Adicionar",
       "removeApp": "Remover {{app}}",
       "blocklistTitle": "Aplicativos em que a prateleira não abre",
-      "blocklistDesc": "Agitar o mouse, ou manter um item arrastado na borda da tela, abre a prateleira em qualquer aplicativo, exceto nestes, e nunca em aplicativos em tela cheia, como jogos. Use nomes de processos, por exemplo, krita ou krita.exe.",
+      "blocklistDesc": "Agitar o mouse abre a prateleira em qualquer aplicativo, exceto nestes, e nunca em aplicativos em tela cheia, como jogos. Use nomes de processos, por exemplo, krita ou krita.exe.",
       "onlyIn": "No momento, a prateleira só abre em: {{apps}}",
-      "allowAll": "Permitir em todos os aplicativos",
-      "screenEdge": "Abrir na borda da tela",
-      "screenEdgeDesc": "Ao arrastar, mantenha o ponteiro encostado nesta borda da tela por um instante para abrir a prateleira. Com vários monitores, só funciona uma borda externa da área de trabalho como um todo, e não a borda onde fica a barra de tarefas.",
-      "edge": {
-        "off": "Desativado",
-        "left": "Borda esquerda",
-        "right": "Borda direita",
-        "top": "Borda superior"
-      }
+      "allowAll": "Permitir em todos os aplicativos"
     },
     "appearance": {
       "title": "Aparência",

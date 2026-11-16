@@ -32,22 +32,6 @@ pub struct MouseMonitorConfig {
     pub whitelist: Vec<String>,
     /// Apps where shaking never opens the shelf.
     pub blocklist: Vec<String>,
-    /// Screen edge that opens the shelf when a drag rests against it.
-    pub screen_edge: ScreenEdge,
-}
-
-/// Where a drag can be pushed against the screen edge to open the shelf.
-/// Off unless the user turns it on.
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Default)]
-#[serde(rename_all = "lowercase")]
-pub enum ScreenEdge {
-    Left,
-    Right,
-    Top,
-    /// Also what an unknown value (from a newer version) reads as.
-    #[default]
-    #[serde(other)]
-    Off,
 }
 
 pub const DEFAULT_HOTKEY: &str = "Win+Shift+H";
@@ -102,7 +86,6 @@ impl Default for MouseMonitorConfig {
             window_close_delay: 3000,
             whitelist: Vec::new(),
             blocklist: DEFAULT_SHAKE_OFF_APPS.iter().map(|app| app.to_string()).collect(),
-            screen_edge: ScreenEdge::Off,
         }
     }
 }
@@ -234,13 +217,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn unknown_screen_edge_reads_as_off() {
-        let config = AppConfig::from_json(r#"{"mouse_monitor":{"screen_edge":"bottom"}}"#)
-            .expect("parse");
-        assert_eq!(config.mouse_monitor.screen_edge, ScreenEdge::Off);
-        let config = AppConfig::from_json(r#"{"mouse_monitor":{"screen_edge":"right"}}"#)
-            .expect("parse");
-        assert_eq!(config.mouse_monitor.screen_edge, ScreenEdge::Right);
+    fn removed_screen_edge_setting_is_ignored() {
+        // 3.2.0 had a screen-edge trigger; configs that still carry it load.
+        let config = AppConfig::from_json(
+            r#"{"hotkey": "Alt+Q", "mouse_monitor": {"required_shakes": 4, "screen_edge": "right"}}"#,
+        )
+        .expect("parse");
+        assert_eq!(config.hotkey, "Alt+Q");
+        assert_eq!(config.mouse_monitor.required_shakes, 4);
     }
 
     #[test]
