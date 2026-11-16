@@ -5,7 +5,8 @@ use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 use tauri::{
-    AppHandle, Emitter, Manager, Runtime, State, WebviewUrl, WebviewWindow, WebviewWindowBuilder,
+    AppHandle, Emitter, LogicalSize, Manager, Runtime, State, WebviewUrl, WebviewWindow, WebviewWindowBuilder,
+    WindowEvent,
 };
 use tracing::{error, warn};
 use windows::Win32::Foundation::{HWND, POINT, RECT};
@@ -342,11 +343,24 @@ fn accept_drops_on_popup(app: &AppHandle, popup: &WebviewWindow) {
     });
 }
 
+/// Settings fields other windows may point at (the id of the control).
+const SETTINGS_FIELDS: &[&str] = &["mica"];
+
+/// Sent to an open Settings window with the id of the field to show.
+const SETTINGS_FOCUS_EVENT: &str = "settings-focus";
+
+/// Opens Settings, or brings it back. `field`, when it names one of
+/// [`SETTINGS_FIELDS`], is scrolled into view and focused.
 #[tauri::command]
-pub fn open_settings_window(app: AppHandle, theme: Option<String>) -> Result<(), String> {
+pub fn open_settings_window(
+    app: AppHandle,
+    theme: Option<String>,
+    field: Option<String>,
+) -> Result<(), String> {
     // Define settings window dimensions
     let settings_width = 500.0;
     let settings_height = 600.0;
+    let field = field.filter(|f| SETTINGS_FIELDS.contains(&f.as_str()));
 
     if let Some(settings_window) = app.get_webview_window("settings") {
         // Bring it back rather than closing it: the shelf is always on top,
@@ -354,10 +368,17 @@ pub fn open_settings_window(app: AppHandle, theme: Option<String>) -> Result<(),
         // throw away unsaved edits.
         settings_window.unminimize().map_err(|e| e.to_string())?;
         settings_window.set_focus().map_err(|e| e.to_string())?;
+        if let Some(field) = field {
+            let _ = settings_window.emit_to("settings", SETTINGS_FOCUS_EVENT, field);
+        }
     } else {
         // Create the settings window
         let app_clone = app.clone();
-        let settings_url = url_with_theme("settings", theme);
+        let mut settings_url = url_with_theme("settings", theme);
+        if let Some(field) = field {
+            let joiner = if settings_url.contains('?') { '&' } else { '?' };
+            settings_url.push_str(&format!("{joiner}field={field}"));
+        }
         tauri::async_runtime::spawn(async move {
             let built =
                 WebviewWindowBuilder::new(&app, "settings", WebviewUrl::App(settings_url.into()))
@@ -410,6 +431,84 @@ pub(crate) fn open_updater_window<R: Runtime>(app: &AppHandle<R>) -> tauri::Resu
     Ok(())
 }
 
+/// Opens the "what's new" window shown once after an update (see
+/// [`crate::config::AppConfig::needs_whats_new`]). Closing it (its button,
+/// Esc, Alt+F4) records the running version as seen.
+///
+/// It opens even when Holdem started with Windows: the updater restarts the
+/// app with the arguments it had, so the first start of a new version often
+/// carries `--autostart`.
+pub(crate) fn open_whats_new_window(app: &AppHandle) {
+    let app = app.clone();
+    tauri::async_runtime::spawn(async move {
+        let url = format!("/whats-new?release={}", crate::config::WHATS_NEW_RELEASE);
+        let built = WebviewWindowBuilder::new(&app, "whats-new", WebviewUrl::App(url.into()))
+            .title("What's new in Holdem")
+            .decorations(false)
+            .transparent(true)
+            .shadow(true)
+            .inner_size(480.0, 640.0)
+            // On a small screen, shrink to the work area; the text scrolls
+            // and the buttons stay at the bottom.
+            .prevent_overflow_with_margin(LogicalSize::new(16.0, 16.0))
+            .center()
+            .focused(true)
+            .resizable(false)
+            .build();
+        let window = match built {
+            Ok(window) => window,
+            Err(e) => {
+                error!("Failed to open the what's new window: {}", e);
+                return;
+            }
+        };
+        let handle = app.clone();
+        window.on_window_event(move |event| {
+            if let WindowEvent::Destroyed = event {
+                if let Err(e) = crate::commands::config_ops::mark_whats_new_seen(&handle) {
+                    error!("Failed to record the what's new window as seen: {}", e);
+                }
+            }
+        });
+    });
+}
+
+/// Pages the "what's new" window links to. Only these open: the page names
+/// one, never a URL.
+#[derive(Debug, Clone, Copy, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ProjectLink {
+    Donate,
+    FeatureRequest,
+    ReportProblem,
+    Changelog,
+}
+
+impl ProjectLink {
+    fn url(self) -> String {
+        const ISSUES: &str = "https://github.com/iamzubin/holdem/issues/new";
+        match self {
+            Self::Donate => "https://www.buymeacoffee.com/iamzubin".to_string(),
+            Self::FeatureRequest => format!("{ISSUES}?labels=enhancement"),
+            // The version helps triage; the reporter writes the rest.
+            Self::ReportProblem => format!(
+                "{ISSUES}?labels=bug&body=Holdem%20version%3A%20{}%0A%0A",
+                crate::config::APP_VERSION
+            ),
+            Self::Changelog => {
+                "https://github.com/iamzubin/holdem/blob/master/CHANGELOG.md".to_string()
+            }
+        }
+    }
+}
+
+/// Opens one of Holdem's project pages in the default browser.
+#[tauri::command]
+pub fn open_project_link(link: ProjectLink) -> Result<(), String> {
+    crate::utils::shell_open(&windows::core::HSTRING::from(link.url()))
+        .map_err(|code| format!("Windows couldn't open the link (code {})", code))
+}
+
 #[tauri::command]
 pub fn open_consent_window(app: AppHandle) -> Result<(), String> {
     if let Some(consent_window) = app.get_webview_window("consent") {
@@ -446,4 +545,19 @@ pub fn mark_drop_received(drag_state: State<'_, Arc<DragState>>) -> Result<(), S
     drag_state.successful_drop.store(true, Ordering::Relaxed);
     drag_state.drag_started.store(false, Ordering::Relaxed);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::ProjectLink;
+
+    /// The names the what's new page sends (WhatsNew.tsx `LINKS`).
+    #[test]
+    fn project_links_read_the_names_the_page_sends() {
+        for name in ["donate", "featureRequest", "reportProblem", "changelog"] {
+            let json = format!("\"{name}\"");
+            assert!(serde_json::from_str::<ProjectLink>(&json).is_ok(), "{name}");
+        }
+        assert!(serde_json::from_str::<ProjectLink>("\"https://example.com\"").is_err());
+    }
 }

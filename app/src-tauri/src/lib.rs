@@ -129,6 +129,7 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
             close_popup,
             drag_threshold,
             open_consent_window,
+            open_project_link,
             add_files,
             save_pasted_data_base64,
             remove_files,
@@ -236,6 +237,14 @@ fn build_app() -> tauri::Builder<tauri::Wry> {
                 successful_drop: AtomicBool::new(false),
             });
             app.manage(drag_state.clone());
+
+            // First start after updating from an older version. Fresh installs
+            // get the consent window instead (App.tsx), never this one.
+            if config.needs_whats_new() {
+                let seen = config.last_seen_version.as_deref().unwrap_or("3.2.0 or earlier");
+                info!("Updated from {}; showing what's new", seen);
+                commands::window_ops::open_whats_new_window(app.handle());
+            }
 
             // Check for updates on startup
             let app_handle = app.handle().clone();

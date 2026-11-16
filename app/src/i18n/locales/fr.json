@@ -164,6 +164,92 @@
     "next": "Suivant",
     "hotkeyActive": "Appuyez sur {{hotkey}} (vous pouvez le modifier dans les Réglages)"
   },
+  "whatsNew": {
+    "title": "Nouveautés de Holdem {{version}}",
+    "description": "Voici ce qui a changé et où le trouver.",
+    "changesTitle": "Ce qui fonctionne différemment",
+    "changes": [
+      {
+        "name": "Faire glisser des éléments hors de l'étagère.",
+        "text": "Le glissement commence dès que vous déplacez le pointeur, comme dans l'Explorateur de fichiers. Maintenir le bouton enfoncé sans bouger ne le déclenche plus."
+      },
+      {
+        "name": "La liste des éléments se ferme quand vous avez terminé.",
+        "text": "Elle se ferme quand vous passez à une autre application, et non plus au bout de 3 secondes."
+      },
+      {
+        "name": "Un dépôt qui échoue indique pourquoi.",
+        "text": "Quand un élément ne peut pas être ajouté, l'étagère en affiche la raison. Cliquez sur Détails dans le message pour en savoir plus."
+      },
+      {
+        "name": "L'option du bord de l'écran a disparu.",
+        "text": "Holdem 3.2.0 pouvait ouvrir l'étagère quand vous mainteniez un glissement contre un bord de l'écran. Cette option a été supprimée. Secouez plutôt la souris pendant le glissement ou appuyez sur votre raccourci clavier."
+      }
+    ],
+    "shakeName": "Secouer la souris fonctionne dans plus d'applications.",
+    "shakeText": "Secouer la souris pendant un glissement ouvre désormais l'étagère dans toutes les applications, sauf les outils de dessin, de 3D et de CAO. Pour désactiver cette fonction dans une autre application, ajoutez celle-ci dans {{path}}. Si vous aviez choisi des applications précises auparavant, Holdem conserve cette liste jusqu'à ce que vous choisissiez Autoriser dans toutes les applications à cet endroit.",
+    "shelvesTitle": "Étagères",
+    "shelves": [
+      {
+        "name": "Plusieurs étagères.",
+        "text": "Ouvrez la liste des éléments en cliquant sur le nombre d'éléments en bas de l'étagère, par exemple « 3 éléments ». Ses onglets sont vos étagères : cliquez sur + pour en ajouter une et double-cliquez sur un onglet pour la renommer. Pour changer d'étagère, cliquez sur son nom en haut de l'étagère, ou appuyez sur Ctrl+Tab dans l'étagère ou la liste des éléments. Sur une étagère vide, faites un clic droit dessus et choisissez Nouvelle étagère."
+      },
+      {
+        "name": "Fermer et rouvrir des étagères.",
+        "text": "Faites un clic droit sur un onglet et choisissez Fermer l'étagère. Les étagères fermées sont conservées 7 jours. Pour rouvrir la dernière, appuyez sur Ctrl+Shift+T dans l'étagère ou la liste des éléments, ou faites un clic droit sur un onglet et choisissez Rouvrir l'étagère fermée."
+      },
+      {
+        "name": "Les éléments restent après un redémarrage.",
+        "text": "L'étagère conserve ses éléments quand Holdem ou Windows redémarre. Les éléments situés sur un lecteur non connecté sont marqués Hors ligne jusqu'à ce que le lecteur soit reconnecté."
+      }
+    ],
+    "itemsTitle": "Travailler avec les éléments",
+    "items": [
+      {
+        "name": "Aperçu.",
+        "text": "Cliquez sur un élément dans la liste des éléments et appuyez sur Espace. Les touches fléchées permettent de passer d'un élément à l'autre, et Espace ou Esc ferme l'aperçu."
+      },
+      {
+        "name": "Renommer.",
+        "text": "Sélectionnez un élément et appuyez sur F2, ou faites un clic droit dessus et choisissez Renommer. Cela fonctionne pour les éléments enregistrés par Holdem lui-même, comme les captures d'écran, les notes et les pièces jointes."
+      },
+      {
+        "name": "Redimensionner et convertir des images.",
+        "text": "Faites un clic droit sur une image dans la liste des éléments et choisissez Image pour la redimensionner ou la convertir en PNG ou JPEG. L'original n'est pas modifié."
+      },
+      {
+        "name": "Copier dans un dossier ou un fichier ZIP.",
+        "text": "Faites un clic droit sur des éléments dans la liste des éléments et choisissez Copier dans un dossier ou Compresser en ZIP."
+      },
+      {
+        "name": "Coller.",
+        "text": "Cliquez sur l'étagère et appuyez sur Ctrl+V pour ajouter ce que vous avez copié : fichiers, images, liens ou texte."
+      }
+    ],
+    "fixesTitle": "Corrections",
+    "fixes": [
+      {
+        "name": "Dépôts depuis plus d'applications.",
+        "text": "Les pièces jointes volumineuses, les e-mails d'Outlook classique (sous forme de fichiers .msg) et les fichiers provenant de dossiers ZIP, de 7-Zip et de WinRAR sont ajoutés de manière fiable."
+      },
+      {
+        "name": "Éléments retirés.",
+        "text": "Les captures d'écran, notes et pièces jointes que vous retirez sont conservées 7 jours, puis placées dans la Corbeille."
+      }
+    ],
+    "settingTitle": "Un réglage que vous voudrez peut-être modifier",
+    "micaName": "Fenêtres translucides.",
+    "micaText": "Sous Windows 11, les fenêtres de Holdem affichent désormais en flou ce qui se trouve derrière elles. Pour désactiver cet effet, accédez à {{path}}.",
+    "openSetting": "Ouvrir ce réglage",
+    "dismiss": "J'ai compris",
+    "linksLabel": "Liens Holdem, qui s'ouvrent dans votre navigateur",
+    "donate": "M'offrir un café",
+    "featureRequest": "Proposer une fonctionnalité",
+    "reportProblem": "Signaler un problème",
+    "changelog": "Journal des modifications complet",
+    "linkFailed": "Impossible d'ouvrir le lien. Vérifiez que Windows dispose d'un navigateur web par défaut.",
+    "settingFailed": "Impossible d'ouvrir les Réglages. Ouvrez-les depuis l'icône Holdem dans la zone de notification."
+  },
   "updater": {
     "title": "Mises à jour du logiciel",
     "close": "Fermer",

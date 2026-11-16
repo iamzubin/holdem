@@ -164,6 +164,92 @@
     "next": "Avançar",
     "hotkeyActive": "Pressione {{hotkey}} (você pode alterá-la nas Configurações)"
   },
+  "whatsNew": {
+    "title": "Novidades do Holdem {{version}}",
+    "description": "Veja o que mudou e onde encontrar.",
+    "changesTitle": "O que funciona de forma diferente",
+    "changes": [
+      {
+        "name": "Arrastar itens para fora.",
+        "text": "O arrasto começa assim que você move o ponteiro, como no Explorador de Arquivos. Manter o botão pressionado sem mover não inicia mais o arrasto."
+      },
+      {
+        "name": "A lista de itens fecha quando você termina.",
+        "text": "Ela fecha quando você muda para outro aplicativo, e não depois de 3 segundos."
+      },
+      {
+        "name": "Falhas ao soltar mostram o motivo.",
+        "text": "Quando algo não pode ser adicionado, a prateleira mostra o motivo. Clique em Detalhes na mensagem para saber mais."
+      },
+      {
+        "name": "A opção da borda da tela foi removida.",
+        "text": "O Holdem 3.2.0 podia abrir a prateleira quando você segurava um item arrastado contra uma borda da tela. Essa opção foi removida, então agite o mouse enquanto arrasta ou pressione sua tecla de atalho."
+      }
+    ],
+    "shakeName": "Agitar funciona em mais aplicativos.",
+    "shakeText": "Agitar o mouse enquanto arrasta agora abre a prateleira em qualquer aplicativo, exceto ferramentas de desenho, 3D e CAD. Para desativar em outro aplicativo, adicione-o em {{path}}. Se você tinha escolhido aplicativos específicos antes, o Holdem mantém essa lista até você escolher Permitir em todos os aplicativos lá.",
+    "shelvesTitle": "Prateleiras",
+    "shelves": [
+      {
+        "name": "Várias prateleiras.",
+        "text": "Abra a lista de itens clicando na contagem de itens na parte de baixo da prateleira, como “3 itens”. As abas dela são suas prateleiras: clique em + para adicionar uma e clique duas vezes em uma aba para renomeá-la. Para trocar de prateleira, clique no nome dela na parte de cima ou pressione Ctrl+Tab na prateleira ou na lista de itens. Em uma prateleira vazia, clique nela com o botão direito e escolha Nova prateleira."
+      },
+      {
+        "name": "Fechar e reabrir prateleiras.",
+        "text": "Clique com o botão direito em uma aba e escolha Fechar prateleira. As prateleiras fechadas são mantidas por 7 dias. Para reabrir a última, pressione Ctrl+Shift+T na prateleira ou na lista de itens, ou clique com o botão direito em uma aba e escolha Reabrir prateleira fechada."
+      },
+      {
+        "name": "Os itens continuam lá após reiniciar.",
+        "text": "A prateleira mantém seus itens quando o Holdem ou o Windows reinicia. Itens em uma unidade que não está conectada ficam marcados como Offline até ela voltar."
+      }
+    ],
+    "itemsTitle": "Trabalhar com itens",
+    "items": [
+      {
+        "name": "Visualizar.",
+        "text": "Clique em um item na lista de itens e pressione Espaço. As teclas de seta passam de um item para outro, e Espaço ou Esc fecha a visualização."
+      },
+      {
+        "name": "Renomear.",
+        "text": "Selecione um item e pressione F2, ou clique nele com o botão direito e escolha Renomear. Isso funciona para itens que o próprio Holdem salvou, como capturas de tela, notas e anexos."
+      },
+      {
+        "name": "Redimensionar e converter imagens.",
+        "text": "Clique com o botão direito em uma imagem na lista de itens e escolha Imagem para redimensioná-la ou convertê-la em PNG ou JPEG. O original não é alterado."
+      },
+      {
+        "name": "Copiar para uma pasta ou um arquivo ZIP.",
+        "text": "Clique com o botão direito nos itens da lista de itens e escolha Copiar para pasta ou Compactar em ZIP."
+      },
+      {
+        "name": "Colar.",
+        "text": "Clique na prateleira e pressione Ctrl+V para adicionar o que você copiou: arquivos, imagens, links ou texto."
+      }
+    ],
+    "fixesTitle": "Correções",
+    "fixes": [
+      {
+        "name": "Soltar itens de mais aplicativos.",
+        "text": "Anexos de e-mail grandes, e-mails do Outlook clássico (como arquivos .msg) e arquivos de pastas ZIP, 7-Zip e WinRAR agora são adicionados de forma confiável."
+      },
+      {
+        "name": "Itens removidos.",
+        "text": "Capturas de tela, notas e anexos que você remove são mantidos por 7 dias e depois vão para a Lixeira."
+      }
+    ],
+    "settingTitle": "Uma configuração que você talvez queira alterar",
+    "micaName": "Janelas translúcidas.",
+    "micaText": "No Windows 11, as janelas do Holdem agora mostram um desfoque do que está atrás delas. Para desativar, acesse {{path}}.",
+    "openSetting": "Abrir esta configuração",
+    "dismiss": "Entendi",
+    "linksLabel": "Links do Holdem, abrem no navegador",
+    "donate": "Me pague um café",
+    "featureRequest": "Sugerir um recurso",
+    "reportProblem": "Relatar um problema",
+    "changelog": "Histórico completo de alterações",
+    "linkFailed": "Não foi possível abrir o link. Verifique se o Windows tem um navegador padrão.",
+    "settingFailed": "Não foi possível abrir as Configurações. Abra-as pelo ícone do Holdem na área de notificação."
+  },
   "updater": {
     "title": "Atualizações do Software",
     "close": "Fechar",

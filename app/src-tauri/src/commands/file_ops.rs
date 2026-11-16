@@ -784,21 +784,9 @@ fn shelf_path(file_list: &FileList, id: u64) -> Result<PathBuf, String> {
 /// would. Takes an id, not a path, so the page can only open shelf items.
 #[tauri::command]
 pub fn open_shelf_item(file_list: State<'_, FileList>, id: u64) -> Result<(), String> {
-    use windows::core::{HSTRING, PCWSTR};
-    use windows::Win32::UI::Shell::ShellExecuteW;
-    use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
-
     let path = shelf_path(&file_list, id)?;
-    let target = HSTRING::from(path.as_os_str());
-    let verb = HSTRING::from("open");
-    // ShellExecute reports failure as a return value of 32 or less.
-    let result = unsafe {
-        ShellExecuteW(None, &verb, &target, PCWSTR::null(), PCWSTR::null(), SW_SHOWNORMAL)
-    };
-    if result.0 as isize <= 32 {
-        return Err(format!("Windows couldn't open the file (code {})", result.0 as isize));
-    }
-    Ok(())
+    crate::utils::shell_open(&windows::core::HSTRING::from(path.as_os_str()))
+        .map_err(|code| format!("Windows couldn't open the file (code {})", code))
 }
 
 /// Opens Explorer with the shelf item selected.

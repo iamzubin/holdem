@@ -1,7 +1,7 @@
 use crate::analytics;
-use crate::config::AppConfig;
+use crate::config::{AppConfig, APP_VERSION};
 use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_autostart::ManagerExt;
 use tracing::{info, warn};
 
@@ -32,6 +32,7 @@ pub fn save_config(
         let mut config = config
             .lock()
             .map_err(|e| format!("Failed to lock config: {}", e))?;
+        let new_config = new_config.keeping_app_state(&config);
         // Write first so a failed save leaves memory matching the disk.
         new_config.save(&app_handle)?;
         *config = new_config;
@@ -284,6 +285,27 @@ pub fn decline_analytics_consent(
     analytics::apply_consent(&app_handle, false).map_err(|e| e.to_string())?;
     persist_analytics_consent(&config, &app_handle, false, start_on_login)?;
     info!("Analytics consent declined");
+    Ok(())
+}
+
+/// Records the running version as seen, so the "what's new" window doesn't
+/// open again. Saved at once, so it holds even if Holdem is quit right after.
+/// Quitting Holdem while the window is still open doesn't close it in a way
+/// that reaches this (the event loop exits without destroying windows), so
+/// the window shows again on the next start.
+pub(crate) fn mark_whats_new_seen(app_handle: &AppHandle) -> Result<(), String> {
+    let config = app_handle.state::<Arc<Mutex<AppConfig>>>();
+    let mut config = config
+        .lock()
+        .map_err(|e| format!("Failed to lock config: {}", e))?;
+    if config.last_seen_version.as_deref() == Some(APP_VERSION) {
+        return Ok(());
+    }
+    let mut updated = config.clone();
+    updated.last_seen_version = Some(APP_VERSION.to_string());
+    updated.save(app_handle)?;
+    *config = updated;
+    info!("What's new window closed; recorded as seen");
     Ok(())
 }
 

@@ -64,7 +64,7 @@ pub fn create_tray(app: &AppHandle) -> tauri::Result<()> {
             // Show the shelf only when something was added.
             "paste" if crate::drop_target::paste_clipboard(app) => show_shelf(app),
             "settings" => {
-                let _ = crate::commands::window_ops::open_settings_window(app.clone(), None);
+                let _ = crate::commands::window_ops::open_settings_window(app.clone(), None, None);
             }
             "quit" => {
                 app.exit(0);

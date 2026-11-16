@@ -157,6 +157,92 @@
     "next": "Tiếp",
     "hotkeyActive": "Nhấn {{hotkey}} (bạn có thể thay đổi trong Cài đặt)"
   },
+  "whatsNew": {
+    "title": "Có gì mới trong Holdem {{version}}",
+    "description": "Dưới đây là những thay đổi và nơi tìm thấy chúng.",
+    "changesTitle": "Những gì hoạt động khác đi",
+    "changes": [
+      {
+        "name": "Kéo mục ra ngoài.",
+        "text": "Thao tác kéo bắt đầu ngay khi bạn di chuyển con trỏ, giống như trong Trình khám phá tệp. Giữ nút mà không di chuyển sẽ không còn bắt đầu thao tác kéo nữa."
+      },
+      {
+        "name": "Danh sách mục tự đóng khi bạn dùng xong.",
+        "text": "Danh sách đóng khi bạn chuyển sang ứng dụng khác, thay vì sau 3 giây."
+      },
+      {
+        "name": "Thả không thành công sẽ cho biết lý do.",
+        "text": "Khi không thể thêm một thứ gì đó, kệ sẽ hiện lý do. Nhấp vào “Chi tiết” trên thông báo để xem thêm."
+      },
+      {
+        "name": "Tùy chọn cạnh màn hình đã bị gỡ bỏ.",
+        "text": "Holdem 3.2.0 có thể mở kệ khi bạn giữ thao tác kéo sát cạnh màn hình. Tùy chọn đó đã bị gỡ bỏ, vì vậy hãy lắc trong khi kéo hoặc nhấn phím tắt của bạn."
+      }
+    ],
+    "shakeName": "Lắc hoạt động trong nhiều ứng dụng hơn.",
+    "shakeText": "Giờ đây, lắc trong khi kéo sẽ mở kệ trong mọi ứng dụng, trừ các công cụ vẽ, 3D và CAD. Để tắt tính năng này cho một ứng dụng khác, hãy thêm ứng dụng đó trong {{path}}. Nếu trước đây bạn đã chọn một số ứng dụng cụ thể, Holdem sẽ giữ danh sách đó cho đến khi bạn chọn “Cho phép trong mọi ứng dụng” tại đó.",
+    "shelvesTitle": "Các kệ",
+    "shelves": [
+      {
+        "name": "Nhiều kệ.",
+        "text": "Mở danh sách mục bằng cách nhấp vào số lượng mục ở cuối kệ, chẳng hạn “3 mục”. Các tab trong danh sách là các kệ của bạn: nhấp vào + để thêm kệ và nhấp đúp vào một tab để đổi tên kệ. Để chuyển kệ, hãy nhấp vào tên kệ ở trên cùng của kệ, hoặc nhấn Ctrl+Tab trên kệ hoặc trong danh sách mục. Trên một kệ trống, hãy nhấp chuột phải vào kệ và chọn “Kệ mới”."
+      },
+      {
+        "name": "Đóng và mở lại kệ.",
+        "text": "Nhấp chuột phải vào một tab và chọn “Đóng kệ”. Các kệ đã đóng được giữ trong 7 ngày. Để mở lại kệ vừa đóng, hãy nhấn Ctrl+Shift+T trên kệ hoặc trong danh sách mục, hoặc nhấp chuột phải vào một tab và chọn “Mở lại kệ đã đóng”."
+      },
+      {
+        "name": "Các mục vẫn còn sau khi khởi động lại.",
+        "text": "Kệ giữ lại các mục khi Holdem hoặc Windows khởi động lại. Các mục trên ổ đĩa chưa kết nối sẽ được đánh dấu “Ngoại tuyến” cho đến khi ổ đĩa được kết nối lại."
+      }
+    ],
+    "itemsTitle": "Làm việc với các mục",
+    "items": [
+      {
+        "name": "Xem trước.",
+        "text": "Nhấp vào một mục trong danh sách mục và nhấn Space. Các phím mũi tên chuyển giữa các mục, còn Space hoặc Esc sẽ đóng bản xem trước."
+      },
+      {
+        "name": "Đổi tên.",
+        "text": "Chọn một mục và nhấn F2, hoặc nhấp chuột phải vào mục đó và chọn “Đổi tên”. Tính năng này dùng được với các mục do Holdem tự lưu, chẳng hạn ảnh chụp màn hình, ghi chú và tệp đính kèm."
+      },
+      {
+        "name": "Đổi kích thước và chuyển đổi hình ảnh.",
+        "text": "Nhấp chuột phải vào một hình ảnh trong danh sách mục và chọn “Hình ảnh” để đổi kích thước hoặc chuyển sang PNG hoặc JPEG. Ảnh gốc không bị thay đổi."
+      },
+      {
+        "name": "Sao chép vào thư mục hoặc tệp ZIP.",
+        "text": "Nhấp chuột phải vào các mục trong danh sách mục và chọn “Sao chép vào thư mục” hoặc “Nén thành ZIP”."
+      },
+      {
+        "name": "Dán.",
+        "text": "Nhấp vào kệ và nhấn Ctrl+V để thêm nội dung bạn đã sao chép: tệp, hình ảnh, liên kết hoặc văn bản."
+      }
+    ],
+    "fixesTitle": "Các lỗi đã sửa",
+    "fixes": [
+      {
+        "name": "Thả từ nhiều ứng dụng hơn.",
+        "text": "Tệp đính kèm email lớn, email từ Outlook cổ điển (dưới dạng tệp .msg), và tệp từ thư mục ZIP, 7-Zip và WinRAR được thêm vào ổn định."
+      },
+      {
+        "name": "Các mục đã gỡ.",
+        "text": "Ảnh chụp màn hình, ghi chú và tệp đính kèm mà bạn gỡ khỏi kệ được giữ trong 7 ngày, sau đó chuyển vào Thùng rác."
+      }
+    ],
+    "settingTitle": "Một cài đặt bạn có thể muốn thay đổi",
+    "micaName": "Cửa sổ trong mờ.",
+    "micaText": "Trên Windows 11, cửa sổ Holdem giờ hiển thị phần phía sau ở dạng làm mờ. Để tắt, hãy vào {{path}}.",
+    "openSetting": "Mở cài đặt này",
+    "dismiss": "Đã hiểu",
+    "linksLabel": "Liên kết Holdem, mở trong trình duyệt của bạn",
+    "donate": "Mời tôi một ly cà phê",
+    "featureRequest": "Đề xuất tính năng",
+    "reportProblem": "Báo cáo sự cố",
+    "changelog": "Nhật ký thay đổi đầy đủ",
+    "linkFailed": "Không mở được liên kết. Hãy kiểm tra xem Windows đã có trình duyệt web mặc định chưa.",
+    "settingFailed": "Không mở được Cài đặt. Hãy mở từ biểu tượng Holdem trong khu vực thông báo."
+  },
   "updater": {
     "title": "Cập nhật phần mềm",
     "close": "Đóng",

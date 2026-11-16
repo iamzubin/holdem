@@ -164,6 +164,92 @@
     "next": "Weiter",
     "hotkeyActive": "Drücken Sie {{hotkey}} (Sie können ihn in den Einstellungen ändern)"
   },
+  "whatsNew": {
+    "title": "Neu in Holdem {{version}}",
+    "description": "Das hat sich geändert, und hier finden Sie es.",
+    "changesTitle": "Was jetzt anders funktioniert",
+    "changes": [
+      {
+        "name": "Elemente herausziehen.",
+        "text": "Das Ziehen beginnt, sobald Sie den Mauszeiger bewegen, wie im Datei-Explorer. Wenn Sie die Maustaste gedrückt halten, ohne die Maus zu bewegen, beginnt kein Ziehen mehr."
+      },
+      {
+        "name": "Die Elementliste schließt sich, wenn Sie fertig sind.",
+        "text": "Sie schließt sich, wenn Sie zu einer anderen App wechseln, und nicht mehr nach 3 Sekunden."
+      },
+      {
+        "name": "Fehlgeschlagenes Ablegen nennt den Grund.",
+        "text": "Wenn sich etwas nicht hinzufügen lässt, zeigt die Ablage den Grund an. Klicken Sie in der Meldung auf Details, um mehr zu erfahren."
+      },
+      {
+        "name": "Die Option für den Bildschirmrand gibt es nicht mehr.",
+        "text": "Holdem 3.2.0 konnte die Ablage öffnen, wenn Sie beim Ziehen an einem Bildschirmrand verharrten. Diese Option wurde entfernt. Schütteln Sie stattdessen beim Ziehen oder drücken Sie Ihren Hotkey."
+      }
+    ],
+    "shakeName": "Schütteln funktioniert in mehr Apps.",
+    "shakeText": "Schütteln beim Ziehen öffnet die Ablage jetzt in jeder App außer Zeichen-, 3D- und CAD-Programmen. Um es für eine weitere App auszuschalten, fügen Sie sie unter {{path}} hinzu. Wenn Sie zuvor bestimmte Apps ausgewählt hatten, behält Holdem diese Liste, bis Sie dort In allen Apps zulassen wählen.",
+    "shelvesTitle": "Ablagen",
+    "shelves": [
+      {
+        "name": "Mehrere Ablagen.",
+        "text": "Öffnen Sie die Elementliste, indem Sie unten in der Ablage auf die Elementanzahl klicken, z. B. „3 Elemente“. Die Tabs darin sind Ihre Ablagen. Klicken Sie auf +, um eine hinzuzufügen, und doppelklicken Sie auf einen Tab, um ihn umzubenennen. Zum Wechseln klicken Sie oben in der Ablage auf ihren Namen oder drücken in der Ablage oder der Elementliste Strg+Tab. Bei einer leeren Ablage klicken Sie mit der rechten Maustaste darauf und wählen Neue Ablage."
+      },
+      {
+        "name": "Ablagen schließen und wieder öffnen.",
+        "text": "Klicken Sie mit der rechten Maustaste auf einen Tab und wählen Sie Ablage schließen. Geschlossene Ablagen werden 7 Tage lang aufbewahrt. Um die zuletzt geschlossene wieder zu öffnen, drücken Sie in der Ablage oder der Elementliste Strg+Shift+T, oder klicken Sie mit der rechten Maustaste auf einen Tab und wählen Sie Geschlossene Ablage wieder öffnen."
+      },
+      {
+        "name": "Elemente bleiben nach einem Neustart erhalten.",
+        "text": "Die Ablage behält ihre Elemente, wenn Holdem oder Windows neu startet. Elemente auf einem nicht verbundenen Laufwerk sind als Offline markiert, bis es wieder verbunden ist."
+      }
+    ],
+    "itemsTitle": "Mit Elementen arbeiten",
+    "items": [
+      {
+        "name": "Vorschau.",
+        "text": "Klicken Sie in der Elementliste auf ein Element und drücken Sie die Leertaste. Mit den Pfeiltasten wechseln Sie zwischen Elementen, und Leertaste oder Esc schließt die Vorschau."
+      },
+      {
+        "name": "Umbenennen.",
+        "text": "Wählen Sie ein Element aus und drücken Sie F2, oder klicken Sie mit der rechten Maustaste darauf und wählen Sie Umbenennen. Das funktioniert bei Elementen, die Holdem selbst gespeichert hat, etwa Screenshots, Notizen und Anhängen."
+      },
+      {
+        "name": "Bilder skalieren und konvertieren.",
+        "text": "Klicken Sie in der Elementliste mit der rechten Maustaste auf ein Bild und wählen Sie Bild, um es zu skalieren oder in PNG oder JPEG zu konvertieren. Das Original bleibt unverändert."
+      },
+      {
+        "name": "In einen Ordner oder eine ZIP-Datei kopieren.",
+        "text": "Klicken Sie in der Elementliste mit der rechten Maustaste auf Elemente und wählen Sie In Ordner kopieren oder Als ZIP komprimieren."
+      },
+      {
+        "name": "Einfügen.",
+        "text": "Klicken Sie auf die Ablage und drücken Sie Strg+V, um Kopiertes hinzuzufügen: Dateien, Bilder, Links oder Text."
+      }
+    ],
+    "fixesTitle": "Korrekturen",
+    "fixes": [
+      {
+        "name": "Ablegen aus mehr Apps.",
+        "text": "Große E-Mail-Anhänge, E-Mails aus dem klassischen Outlook (als .msg-Dateien) sowie Dateien aus ZIP-Ordnern, 7-Zip und WinRAR werden zuverlässig hinzugefügt."
+      },
+      {
+        "name": "Entfernte Elemente.",
+        "text": "Screenshots, Notizen und Anhänge, die Sie entfernen, werden 7 Tage lang aufbewahrt und kommen dann in den Papierkorb."
+      }
+    ],
+    "settingTitle": "Eine Einstellung, die Sie vielleicht ändern möchten",
+    "micaName": "Durchscheinende Fenster.",
+    "micaText": "Holdem-Fenster zeigen unter Windows 11 jetzt unscharf, was hinter ihnen liegt. Zum Ausschalten öffnen Sie {{path}}.",
+    "openSetting": "Diese Einstellung öffnen",
+    "dismiss": "Verstanden",
+    "linksLabel": "Holdem-Links, werden im Browser geöffnet",
+    "donate": "Buy me a coffee",
+    "featureRequest": "Funktion vorschlagen",
+    "reportProblem": "Problem melden",
+    "changelog": "Vollständiges Änderungsprotokoll",
+    "linkFailed": "Der Link konnte nicht geöffnet werden. Prüfen Sie, ob in Windows ein Standardbrowser festgelegt ist.",
+    "settingFailed": "Die Einstellungen konnten nicht geöffnet werden. Öffnen Sie sie über das Holdem-Symbol im Infobereich."
+  },
   "updater": {
     "title": "Software-Updates",
     "close": "Schließen",

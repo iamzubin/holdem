@@ -182,6 +182,92 @@
     "next": "Dalej",
     "hotkeyActive": "Naciśnij {{hotkey}} (możesz go zmienić w Ustawieniach)"
   },
+  "whatsNew": {
+    "title": "Co nowego w Holdem {{version}}",
+    "description": "Oto co się zmieniło i gdzie to znaleźć.",
+    "changesTitle": "Co działa inaczej",
+    "changes": [
+      {
+        "name": "Przeciąganie elementów na zewnątrz.",
+        "text": "Przeciąganie zaczyna się, gdy tylko poruszysz wskaźnikiem, tak jak w Eksploratorze plików. Przytrzymanie przycisku bez ruchu już go nie rozpoczyna."
+      },
+      {
+        "name": "Lista elementów zamyka się, gdy skończysz.",
+        "text": "Zamyka się po przełączeniu do innej aplikacji, a nie po 3 sekundach."
+      },
+      {
+        "name": "Nieudane upuszczenie pokazuje przyczynę.",
+        "text": "Gdy czegoś nie da się dodać, półka pokazuje przyczynę. Kliknij Szczegóły w komunikacie, aby dowiedzieć się więcej."
+      },
+      {
+        "name": "Opcja krawędzi ekranu została usunięta.",
+        "text": "Holdem 3.2.0 potrafił otworzyć półkę, gdy przeciągany element był przytrzymany przy krawędzi ekranu. Ta opcja została usunięta, więc zamiast tego potrząśnij podczas przeciągania lub naciśnij swój skrót klawiszowy."
+      }
+    ],
+    "shakeName": "Potrząśnięcie działa w większej liczbie aplikacji.",
+    "shakeText": "Potrząśnięcie podczas przeciągania otwiera teraz półkę w każdej aplikacji oprócz programów do rysowania, 3D i CAD. Aby wyłączyć je dla innej aplikacji, dodaj ją w sekcji {{path}}. Jeśli wcześniej były wybrane konkretne aplikacje, Holdem zachowuje tę listę, dopóki nie wybierzesz tam opcji Zezwalaj we wszystkich aplikacjach.",
+    "shelvesTitle": "Półki",
+    "shelves": [
+      {
+        "name": "Kilka półek.",
+        "text": "Otwórz listę elementów, klikając liczbę elementów u dołu półki, np. „3 elementy”. Jej karty to Twoje półki: kliknij +, aby dodać półkę, i kliknij kartę dwukrotnie, aby zmienić jej nazwę. Aby przełączyć półkę, kliknij jej nazwę u góry albo naciśnij Ctrl+Tab na półce lub na liście elementów. Na pustej półce kliknij ją prawym przyciskiem i wybierz Nowa półka."
+      },
+      {
+        "name": "Zamykanie i ponowne otwieranie półek.",
+        "text": "Kliknij kartę prawym przyciskiem i wybierz Zamknij półkę. Zamknięte półki są przechowywane przez 7 dni. Aby ponownie otworzyć ostatnią, naciśnij Ctrl+Shift+T na półce lub na liście elementów albo kliknij kartę prawym przyciskiem i wybierz Otwórz ponownie zamkniętą półkę."
+      },
+      {
+        "name": "Elementy zostają po ponownym uruchomieniu.",
+        "text": "Półka zachowuje swoje elementy po ponownym uruchomieniu Holdem lub Windows. Elementy na niepodłączonym dysku są oznaczone jako Offline, dopóki dysk nie zostanie znów podłączony."
+      }
+    ],
+    "itemsTitle": "Praca z elementami",
+    "items": [
+      {
+        "name": "Podgląd.",
+        "text": "Kliknij element na liście elementów i naciśnij klawisz Spacja. Klawisze strzałek przełączają między elementami, a Spacja lub Esc zamyka podgląd."
+      },
+      {
+        "name": "Zmiana nazwy.",
+        "text": "Zaznacz element i naciśnij F2 albo kliknij go prawym przyciskiem i wybierz Zmień nazwę. Działa to w przypadku elementów zapisanych przez Holdem, takich jak zrzuty ekranu, notatki i załączniki."
+      },
+      {
+        "name": "Zmiana rozmiaru i konwersja obrazów.",
+        "text": "Kliknij obraz na liście elementów prawym przyciskiem i wybierz Obraz, aby zmienić jego rozmiar lub przekonwertować go na PNG albo JPEG. Oryginał pozostaje bez zmian."
+      },
+      {
+        "name": "Kopiowanie do folderu lub pliku ZIP.",
+        "text": "Kliknij elementy na liście elementów prawym przyciskiem i wybierz Kopiuj do folderu lub Kompresuj do ZIP."
+      },
+      {
+        "name": "Wklejanie.",
+        "text": "Kliknij półkę i naciśnij Ctrl+V, aby dodać skopiowaną zawartość: pliki, obrazy, linki lub tekst."
+      }
+    ],
+    "fixesTitle": "Poprawki",
+    "fixes": [
+      {
+        "name": "Upuszczanie z większej liczby aplikacji.",
+        "text": "Duże załączniki e-mail, wiadomości z klasycznej aplikacji Outlook (jako pliki .msg) oraz pliki z folderów ZIP, 7-Zip i WinRAR są teraz niezawodnie dodawane."
+      },
+      {
+        "name": "Usunięte elementy.",
+        "text": "Usunięte zrzuty ekranu, notatki i załączniki są przechowywane przez 7 dni, a potem trafiają do Kosza."
+      }
+    ],
+    "settingTitle": "Ustawienie, które być może zechcesz zmienić",
+    "micaName": "Półprzezroczyste okna.",
+    "micaText": "W systemie Windows 11 okna Holdem pokazują teraz rozmyty widok tego, co jest za nimi. Aby to wyłączyć, otwórz {{path}}.",
+    "openSetting": "Otwórz to ustawienie",
+    "dismiss": "Rozumiem",
+    "linksLabel": "Linki Holdem, otwierane w przeglądarce",
+    "donate": "Postaw mi kawę",
+    "featureRequest": "Zaproponuj funkcję",
+    "reportProblem": "Zgłoś problem",
+    "changelog": "Pełna lista zmian",
+    "linkFailed": "Nie udało się otworzyć linku. Sprawdź, czy w Windows jest ustawiona domyślna przeglądarka.",
+    "settingFailed": "Nie udało się otworzyć Ustawień. Otwórz je z ikony Holdem w obszarze powiadomień."
+  },
   "updater": {
     "title": "Aktualizacje oprogramowania",
     "close": "Zamknij",

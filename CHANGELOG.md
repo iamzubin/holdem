@@ -8,6 +8,12 @@ release — do not hand-edit it.
 
 ## [Unreleased]
 
+### Added
+
+- A "What's new" window on the first start after updating from 3.2.0 or
+  earlier: what changed, where to find it, and links to support Holdem,
+  request a feature or report a problem. New installs don't see it.
+
 ### Removed
 
 - Opening the shelf by holding a drag against a screen edge, added in

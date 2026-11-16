@@ -73,6 +73,24 @@ pub fn move_window_to_cursor(window: &WebviewWindow, cursor_x: i32, cursor_y: i3
     }
 }
 
+/// Opens a file or URL with its default app, as a double-click would.
+/// On failure, returns ShellExecute's code (32 or less).
+pub fn shell_open(target: &windows::core::HSTRING) -> Result<(), isize> {
+    use windows::core::{HSTRING, PCWSTR};
+    use windows::Win32::UI::Shell::ShellExecuteW;
+    use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
+
+    let verb = HSTRING::from("open");
+    let result = unsafe {
+        ShellExecuteW(None, &verb, target, PCWSTR::null(), PCWSTR::null(), SW_SHOWNORMAL)
+    };
+    let code = result.0 as isize;
+    if code <= 32 {
+        return Err(code);
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

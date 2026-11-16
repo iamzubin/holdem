@@ -164,6 +164,92 @@
     "next": "Siguiente",
     "hotkeyActive": "Pulsa {{hotkey}} (puedes cambiarlo en Ajustes)"
   },
+  "whatsNew": {
+    "title": "Novedades de Holdem {{version}}",
+    "description": "Esto es lo que ha cambiado y dónde encontrarlo.",
+    "changesTitle": "Lo que funciona de otra forma",
+    "changes": [
+      {
+        "name": "Arrastrar elementos fuera.",
+        "text": "El arrastre empieza en cuanto mueves el puntero, como en el Explorador de archivos. Mantener pulsado el botón sin mover el ratón ya no lo inicia."
+      },
+      {
+        "name": "La lista de elementos se cierra cuando terminas.",
+        "text": "Se cierra cuando cambias a otra aplicación, no después de 3 segundos."
+      },
+      {
+        "name": "Si algo no se puede soltar, se indica el motivo.",
+        "text": "Cuando algo no se puede añadir, el estante muestra el motivo. Haz clic en Detalles en el mensaje para ver más."
+      },
+      {
+        "name": "La opción del borde de la pantalla ya no existe.",
+        "text": "Holdem 3.2.0 podía abrir el estante si mantenías un arrastre contra un borde de la pantalla. Esa opción se ha eliminado, así que agita el ratón mientras arrastras o pulsa tu atajo de teclado."
+      }
+    ],
+    "shakeName": "Agitar funciona en más aplicaciones.",
+    "shakeText": "Agitar el ratón mientras arrastras ahora abre el estante en cualquier aplicación excepto en herramientas de dibujo, 3D y CAD. Para desactivarlo en otra aplicación, añádela en {{path}}. Si antes habías elegido aplicaciones concretas, Holdem mantiene esa lista hasta que elijas Permitir en todas las aplicaciones allí.",
+    "shelvesTitle": "Estantes",
+    "shelves": [
+      {
+        "name": "Varios estantes.",
+        "text": "Abre la lista de elementos haciendo clic en el número de elementos de la parte inferior del estante, como «3 elementos». Sus pestañas son tus estantes. Haz clic en + para añadir uno y haz doble clic en una pestaña para cambiarle el nombre. Para cambiar de estante, haz clic en su nombre en la parte superior o pulsa Ctrl+Tab en el estante o en la lista de elementos. En un estante vacío, haz clic derecho en él y elige Nuevo estante."
+      },
+      {
+        "name": "Cerrar y volver a abrir estantes.",
+        "text": "Haz clic derecho en una pestaña y elige Cerrar estante. Los estantes cerrados se guardan durante 7 días. Para volver a abrir el último, pulsa Ctrl+Shift+T en el estante o en la lista de elementos, o haz clic derecho en una pestaña y elige Volver a abrir el estante cerrado."
+      },
+      {
+        "name": "Los elementos se conservan al reiniciar.",
+        "text": "El estante conserva sus elementos cuando Holdem o Windows se reinician. Los elementos de una unidad que no está conectada aparecen como Sin conexión hasta que vuelva a estarlo."
+      }
+    ],
+    "itemsTitle": "Trabajar con elementos",
+    "items": [
+      {
+        "name": "Vista previa.",
+        "text": "Haz clic en un elemento de la lista de elementos y pulsa la barra espaciadora. Las flechas pasan de un elemento a otro, y la barra espaciadora o Esc cierran la vista previa."
+      },
+      {
+        "name": "Cambiar nombre.",
+        "text": "Selecciona un elemento y pulsa F2, o haz clic derecho en él y elige Cambiar nombre. Funciona con los elementos que guardó el propio Holdem, como capturas de pantalla, notas y adjuntos."
+      },
+      {
+        "name": "Cambiar el tamaño de imágenes y convertirlas.",
+        "text": "Haz clic derecho en una imagen de la lista de elementos y elige Imagen para cambiar su tamaño o convertirla a PNG o JPEG. El original no cambia."
+      },
+      {
+        "name": "Copiar a una carpeta o a un archivo ZIP.",
+        "text": "Haz clic derecho en elementos de la lista de elementos y elige Copiar a una carpeta o Comprimir en ZIP."
+      },
+      {
+        "name": "Pegar.",
+        "text": "Haz clic en el estante y pulsa Ctrl+V para añadir lo que hayas copiado: archivos, imágenes, enlaces o texto."
+      }
+    ],
+    "fixesTitle": "Correcciones",
+    "fixes": [
+      {
+        "name": "Soltar desde más aplicaciones.",
+        "text": "Los adjuntos de correo grandes, los correos de Outlook clásico (como archivos .msg) y los archivos de carpetas ZIP, 7-Zip y WinRAR se añaden de forma fiable."
+      },
+      {
+        "name": "Elementos quitados.",
+        "text": "Las capturas de pantalla, notas y adjuntos que quitas se guardan durante 7 días y después van a la Papelera de reciclaje."
+      }
+    ],
+    "settingTitle": "Un ajuste que quizá quieras cambiar",
+    "micaName": "Ventanas translúcidas.",
+    "micaText": "En Windows 11, las ventanas de Holdem ahora muestran desenfocado lo que hay detrás. Para desactivarlo, ve a {{path}}.",
+    "openSetting": "Abrir este ajuste",
+    "dismiss": "Entendido",
+    "linksLabel": "Enlaces de Holdem, se abren en tu navegador",
+    "donate": "Invítame a un café",
+    "featureRequest": "Sugerir una función",
+    "reportProblem": "Informar de un problema",
+    "changelog": "Registro de cambios completo",
+    "linkFailed": "No se pudo abrir el enlace. Comprueba que Windows tenga un navegador web predeterminado.",
+    "settingFailed": "No se pudieron abrir los Ajustes. Ábrelos desde el icono de Holdem en el área de notificación."
+  },
   "updater": {
     "title": "Actualizaciones",
     "close": "Cerrar",

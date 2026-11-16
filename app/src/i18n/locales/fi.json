@@ -164,6 +164,92 @@
     "next": "Seuraava",
     "hotkeyActive": "Paina {{hotkey}} (voit vaihtaa sen Asetuksissa)"
   },
+  "whatsNew": {
+    "title": "Uutta Holdemin versiossa {{version}}",
+    "description": "Tässä on, mikä muuttui ja mistä sen löydät.",
+    "changesTitle": "Mikä toimii toisin",
+    "changes": [
+      {
+        "name": "Kohteiden vetäminen ulos.",
+        "text": "Veto alkaa heti, kun liikutat osoitinta, kuten Resurssienhallinnassa. Painikkeen pitäminen pohjassa liikuttamatta ei enää aloita vetoa."
+      },
+      {
+        "name": "Kohdeluettelo sulkeutuu, kun olet valmis.",
+        "text": "Se sulkeutuu, kun siirryt toiseen sovellukseen, eikä enää 3 sekunnin jälkeen."
+      },
+      {
+        "name": "Epäonnistunut pudotus kertoo syyn.",
+        "text": "Kun jotain ei voi lisätä, hylly näyttää syyn. Saat lisätietoja napsauttamalla viestissä Tiedot."
+      },
+      {
+        "name": "Näytön reunan asetus on poistettu.",
+        "text": "Holdem 3.2.0 pystyi avaamaan hyllyn, kun pidit vetoa näytön reunaa vasten. Asetus on poistettu, joten ravista vedon aikana tai paina pikanäppäintäsi."
+      }
+    ],
+    "shakeName": "Ravistus toimii useammissa sovelluksissa.",
+    "shakeText": "Ravistus vedon aikana avaa nyt hyllyn missä tahansa sovelluksessa paitsi piirto-, 3D- ja CAD-työkaluissa. Jos haluat poistaa sen käytöstä jossakin muussa sovelluksessa, lisää sovellus kohdassa {{path}}. Jos olit aiemmin valinnut tietyt sovellukset, Holdem säilyttää luettelon, kunnes valitset siellä Salli kaikissa sovelluksissa.",
+    "shelvesTitle": "Hyllyt",
+    "shelves": [
+      {
+        "name": "Useita hyllyjä.",
+        "text": "Avaa kohdeluettelo napsauttamalla hyllyn alareunassa näkyvää kohteiden määrää, esimerkiksi ”3 kohdetta”. Sen välilehdet ovat hyllysi: lisää hylly napsauttamalla +, ja nimeä välilehti uudelleen kaksoisnapsauttamalla sitä. Vaihda hyllyä napsauttamalla hyllyn nimeä sen yläreunassa tai painamalla Ctrl+Tab hyllyssä tai kohdeluettelossa. Jos hylly on tyhjä, napsauta sitä hiiren kakkospainikkeella ja valitse Uusi hylly."
+      },
+      {
+        "name": "Hyllyjen sulkeminen ja avaaminen uudelleen.",
+        "text": "Napsauta välilehteä hiiren kakkospainikkeella ja valitse Sulje hylly. Suljetut hyllyt säilytetään 7 päivää. Avaa viimeksi suljettu hylly uudelleen painamalla Ctrl+Shift+T hyllyssä tai kohdeluettelossa, tai napsauta välilehteä hiiren kakkospainikkeella ja valitse Avaa suljettu hylly uudelleen."
+      },
+      {
+        "name": "Kohteet säilyvät uudelleenkäynnistyksen jälkeen.",
+        "text": "Hylly säilyttää kohteensa, kun Holdem tai Windows käynnistyy uudelleen. Kohteet, joiden asema ei ole yhdistettynä, näkyvät merkinnällä Ei yhteyttä, kunnes asema on taas käytettävissä."
+      }
+    ],
+    "itemsTitle": "Kohteiden käsittely",
+    "items": [
+      {
+        "name": "Esikatselu.",
+        "text": "Napsauta kohdetta kohdeluettelossa ja paina Välilyönti-näppäintä. Nuolinäppäimillä siirryt kohteesta toiseen, ja Välilyönti tai Esc sulkee esikatselun."
+      },
+      {
+        "name": "Uudelleennimeäminen.",
+        "text": "Valitse kohde ja paina F2, tai napsauta sitä hiiren kakkospainikkeella ja valitse Nimeä uudelleen. Tämä toimii kohteille, jotka Holdem on tallentanut itse, kuten kuvakaappauksille, muistiinpanoille ja liitteille."
+      },
+      {
+        "name": "Kuvien koon muuttaminen ja muuntaminen.",
+        "text": "Napsauta kuvaa kohdeluettelossa hiiren kakkospainikkeella ja valitse Kuva, niin voit muuttaa sen kokoa tai muuntaa sen PNG- tai JPEG-muotoon. Alkuperäinen kuva ei muutu."
+      },
+      {
+        "name": "Kopiointi kansioon tai ZIP-tiedostoon.",
+        "text": "Napsauta kohteita kohdeluettelossa hiiren kakkospainikkeella ja valitse Kopioi kansioon tai Pakkaa ZIP-tiedostoksi."
+      },
+      {
+        "name": "Liittäminen.",
+        "text": "Napsauta hyllyä ja paina Ctrl+V, niin kopioimasi sisältö lisätään hyllyyn: tiedostot, kuvat, linkit tai teksti."
+      }
+    ],
+    "fixesTitle": "Korjaukset",
+    "fixes": [
+      {
+        "name": "Pudotukset useammista sovelluksista.",
+        "text": "Suuret sähköpostiliitteet, sähköpostit perinteisestä Outlookista (.msg-tiedostoina) sekä tiedostot ZIP-kansioista, 7-Zipistä ja WinRARista lisätään luotettavasti."
+      },
+      {
+        "name": "Poistetut kohteet.",
+        "text": "Hyllystä poistamasi kuvakaappaukset, muistiinpanot ja liitteet säilytetään 7 päivää, minkä jälkeen ne siirretään roskakoriin."
+      }
+    ],
+    "settingTitle": "Asetus, jota kannattaa ehkä muuttaa",
+    "micaName": "Läpikuultavat ikkunat.",
+    "micaText": "Windows 11:ssä Holdemin ikkunoiden takana oleva sisältö näkyy nyt niiden läpi sumennettuna. Voit poistaa tämän käytöstä kohdassa {{path}}.",
+    "openSetting": "Avaa tämä asetus",
+    "dismiss": "Selvä",
+    "linksLabel": "Holdemin linkit, jotka avautuvat selaimessa",
+    "donate": "Tarjoa minulle kahvit",
+    "featureRequest": "Ehdota ominaisuutta",
+    "reportProblem": "Ilmoita ongelmasta",
+    "changelog": "Koko muutosloki",
+    "linkFailed": "Linkin avaaminen epäonnistui. Tarkista, että Windowsissa on oletusselain.",
+    "settingFailed": "Asetusten avaaminen epäonnistui. Avaa ne ilmaisinalueen Holdem-kuvakkeesta."
+  },
   "updater": {
     "title": "Ohjelmiston Päivitykset",
     "close": "Sulje",

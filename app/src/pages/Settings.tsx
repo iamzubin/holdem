@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { setLanguage, supportedLanguages } from '@/i18n';
 import { closeCurrentWindow } from '@/lib/windowUtils';
 import { WINDOW_STYLE_EVENT } from '@/hooks/useWindowStyle';
+import { useTauriEvent } from '@/hooks/useTauriEvent';
 import { invoke } from '@tauri-apps/api/core';
 import { emit } from '@tauri-apps/api/event';
 import { Keyboard, Languages, Monitor, Moon, Mouse, Settings, Sun, X } from 'lucide-react';
@@ -89,6 +90,34 @@ export default function SettingsPage() {
   const saveChain = useRef<Promise<void>>(Promise.resolve());
   // False when the saved hotkey couldn't be registered (another app has it).
   const [hotkeyActive, setHotkeyActive] = useState(true);
+
+  // A control another window asked to show: `?field=` when Settings opens,
+  // or a `settings-focus` event when it is already open.
+  // Each request is a new object, so asking for the same field again still
+  // runs the effect below.
+  const [focusRequest, setFocusRequest] = useState<{ field: string } | null>(() => {
+    const field = new URLSearchParams(window.location.search).get('field');
+    return field ? { field } : null;
+  });
+  useTauriEvent<string>('settings-focus', (field) => setFocusRequest({ field }));
+  const loaded = config !== null;
+  useEffect(() => {
+    if (!loaded || !focusRequest) return;
+    const control = document.getElementById(focusRequest.field);
+    if (!control) return;
+    control.scrollIntoView({ block: 'center' });
+    control.focus();
+    // A focus ring may not show after a mouse click elsewhere, so outline
+    // the control's row for a moment.
+    const row = control.parentElement;
+    const highlight = ['ring-2', 'ring-inset', 'ring-ring'];
+    row?.classList.add(...highlight);
+    const timer = window.setTimeout(() => row?.classList.remove(...highlight), 2000);
+    return () => {
+      window.clearTimeout(timer);
+      row?.classList.remove(...highlight);
+    };
+  }, [loaded, focusRequest]);
 
   useEffect(() => {
     invoke<AppConfig>('get_config')
