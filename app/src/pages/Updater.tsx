@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { check, type DownloadEvent, type Update } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
+import { getVersion } from '@tauri-apps/api/app';
 import { closeCurrentWindow } from "@/lib/windowUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,29 @@ interface UpdateInfo {
 
 type UpdateStatus = "idle" | "checking" | "available" | "no_update" | "error" | "downloading" | "downloaded" | "installing";
 
+/** Release notes arrive as plain text, usually "- item" lines: show those
+ *  as a list and everything else as paragraphs. */
+const ReleaseNotes: React.FC<{ text: string }> = ({ text }) => {
+  const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const bullet = /^[-*•]\s+/;
+  if (lines.length > 0 && lines.every((line) => bullet.test(line))) {
+    return (
+      <ul className="list-disc space-y-0.5 ps-4">
+        {lines.map((line, i) => (
+          <li key={i}>{line.replace(bullet, "")}</li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <div className="space-y-1">
+      {lines.map((line, i) => (
+        <p key={i}>{line.replace(bullet, "• ")}</p>
+      ))}
+    </div>
+  );
+};
+
 const Updater: React.FC = () => {
   const { t } = useTranslation();
   // null while the download size is unknown (no Content-Length header).
@@ -26,8 +50,10 @@ const Updater: React.FC = () => {
   // Which step failed, so the title is accurate and Retry repeats that step.
   const [failedStep, setFailedStep] = useState<"check" | "download">("check");
   const updateRef = useRef<Update | null>(null);
+  const [currentVersion, setCurrentVersion] = useState<string>("");
 
   useEffect(() => {
+    getVersion().then(setCurrentVersion).catch(() => {});
     checkForUpdates();
   }, []);
 
@@ -43,8 +69,7 @@ const Updater: React.FC = () => {
           version: update.version,
           notes: update.body || t("updater.noNotes")
         });
-        // Wait for the user: installing relaunches the app, which clears the
-        // in-memory shelf.
+        // Wait for the user: installing relaunches the app.
         setStatus("available");
       } else {
         setStatus("no_update");
@@ -53,6 +78,7 @@ const Updater: React.FC = () => {
       setFailedStep("check");
       setStatus("error");
       setErrorMessage(error instanceof Error ? error.message : String(error));
+      // The raw message stays available under "Details".
     }
   };
 
@@ -91,7 +117,7 @@ const Updater: React.FC = () => {
     } catch (error) {
       setFailedStep("download");
       setStatus("error");
-      setErrorMessage(t("updater.downloadError", { error: error instanceof Error ? error.message : String(error) }));
+      setErrorMessage(error instanceof Error ? error.message : String(error));
     }
   };
 
@@ -153,8 +179,8 @@ const Updater: React.FC = () => {
                   </div>
                   <Alert className="mb-4">
                     <AlertTitle>{t("updater.releaseNotes")}</AlertTitle>
-                    <AlertDescription className="max-h-28 overflow-y-auto whitespace-pre-line">
-                      {updateInfo.notes}
+                    <AlertDescription className="max-h-28 overflow-y-auto">
+                      <ReleaseNotes text={updateInfo.notes} />
                     </AlertDescription>
                   </Alert>
                   <p className="text-sm text-muted-foreground mb-4">{t("updater.restartWarning")}</p>
@@ -176,7 +202,12 @@ const Updater: React.FC = () => {
           <Card>
             <CardContent className="flex flex-col items-center py-8">
               <CircleCheck className="mb-3 h-10 w-10 text-primary" aria-hidden />
-              <span className="font-medium">{t("updater.latest")}</span>
+              <span className="font-medium">
+                {currentVersion ? t("updater.latestVersion", { version: currentVersion }) : t("updater.latest")}
+              </span>
+              <Button className="mt-4" variant="outline" onClick={closeCurrentWindow}>
+                {t("updater.close")}
+              </Button>
             </CardContent>
           </Card>
         );
@@ -188,7 +219,13 @@ const Updater: React.FC = () => {
               <span className="font-medium">
                 {t(failedStep === "download" ? "updater.downloadErrorTitle" : "updater.errorTitle")}
               </span>
-              <span className="mt-2 text-sm text-destructive">{errorMessage}</span>
+              <span className="mt-2 text-center text-sm text-muted-foreground">
+                {t(failedStep === "download" ? "updater.downloadErrorHelp" : "updater.errorHelp")}
+              </span>
+              <details className="mt-2 max-w-full text-xs text-muted-foreground">
+                <summary className="cursor-pointer text-center">{t("common.details")}</summary>
+                <p className="mt-1 break-words">{errorMessage}</p>
+              </details>
               <Button
                 className="mt-4"
                 variant="outline"
@@ -212,7 +249,7 @@ const Updater: React.FC = () => {
 
   return (
 
-    <Card className="relative w-full h-full overflow-y-auto" data-tauri-drag-region>
+    <div className="relative flex h-full w-full flex-col overflow-y-auto bg-background text-foreground" data-tauri-drag-region>
       <Button
         variant="ghost"
         size="icon"
@@ -222,11 +259,11 @@ const Updater: React.FC = () => {
       >
         <X className="h-5 w-5" />
       </Button>
-      <CardHeader data-tauri-drag-region>
-        <CardTitle data-tauri-drag-region className="text-center">{t("updater.title")}</CardTitle>
-      </CardHeader>
-      <CardContent aria-live="polite">{renderContent()}</CardContent>
-    </Card>
+      <header className="px-6 pt-4 pb-2" data-tauri-drag-region>
+        <h1 data-tauri-drag-region className="text-center text-base font-semibold">{t("updater.title")}</h1>
+      </header>
+      <div className="px-4 pb-3" aria-live="polite">{renderContent()}</div>
+    </div>
   );
 };
 

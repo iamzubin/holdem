@@ -10,8 +10,10 @@ import { ThemeProvider } from "./components/theme-provider";
 import SettingsWindow from "./pages/Settings";
 import Updater from "./pages/Updater";
 import Consent from "./pages/Consent";
+import { useWindowStyle } from "./hooks/useWindowStyle";
 
 const Main =  () => {
+  useWindowStyle();
   return( 
     <ThemeProvider
       defaultTheme={"system"}

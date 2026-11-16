@@ -16,6 +16,8 @@ pub struct AnalyticsService {
     pub client: Option<Arc<Client>>,
     pub enabled: bool,
     pub uuid: String,
+    /// Sent with every event, so problems can be traced to a release.
+    pub app_version: String,
     /// Serialises PostHog client creation so concurrent [`ensure_client`]
     /// calls build exactly one client and all wait for it.
     init_lock: Arc<tauri::async_runtime::Mutex<()>>,
@@ -25,11 +27,12 @@ impl AnalyticsService {
     /// Creates the service with the user's current consent. The PostHog
     /// client is created lazily (see [`ensure_client`]) and only once consent
     /// has been given.
-    pub fn new(enabled: bool, uuid: String) -> Self {
+    pub fn new(enabled: bool, uuid: String, app_version: String) -> Self {
         Self {
             client: None,
             enabled,
             uuid,
+            app_version,
             init_lock: Arc::new(tauri::async_runtime::Mutex::new(())),
         }
     }
@@ -45,6 +48,11 @@ impl AnalyticsService {
 
         if let Some(client) = &self.client {
             let mut event = PostHogEvent::new(event_name, &self.uuid);
+            // No IP-based location lookup and no person profile: events stay
+            // tied only to the random install id.
+            let _ = event.insert_prop("$geoip_disable", true);
+            let _ = event.insert_prop("$process_person_profile", false);
+            let _ = event.insert_prop("app_version", self.app_version.as_str());
 
             if let Some(props) = properties {
                 for (key, value) in props {
@@ -187,5 +195,11 @@ pub async fn send_analytics_event(
     service.send_event(event_name, properties).await
 }
 
-// Callers use `send_analytics_event` directly with the event name and
-// optional properties — no per-event wrappers.
+/// Fire-and-forget event; a no-op when analytics is off.
+pub fn track(app_handle: &AppHandle, event: &'static str, props: Vec<(&'static str, serde_json::Value)>) {
+    let app_handle = app_handle.clone();
+    tauri::async_runtime::spawn(async move {
+        let props = (!props.is_empty()).then_some(props);
+        let _ = send_analytics_event(&app_handle, event, props).await;
+    });
+}

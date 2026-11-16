@@ -53,15 +53,24 @@ pub fn move_window_to_cursor(window: &WebviewWindow, cursor_x: i32, cursor_y: i3
     let size = window
         .outer_size()
         .unwrap_or(PhysicalSize { width: 0, height: 0 });
+    // The size it will have there: Windows rescales a window that moves to a
+    // monitor with another scale, so fit that size, not the current one.
+    let from_scale = window.scale_factor().unwrap_or(1.0);
+    let to_scale = window
+        .monitor_from_point(cursor_x as f64, cursor_y as f64)
+        .ok()
+        .flatten()
+        .map_or(from_scale, |m| m.scale_factor());
+    let rescale = |v: u32| (f64::from(v) / from_scale * to_scale).round() as i32;
     let (x, y) = match work_area_at(window, cursor_x, cursor_y) {
-        Some(area) => fit_in_area(
-            (cursor_x, cursor_y),
-            (size.width as i32, size.height as i32),
-            area,
-        ),
+        Some(area) => fit_in_area((cursor_x, cursor_y), (rescale(size.width), rescale(size.height)), area),
         None => (cursor_x, cursor_y),
     };
-    let _ = window.set_position(PhysicalPosition { x, y });
+    // Twice: the first move may cross into another scale and resize the
+    // window around its old anchor; the second puts it where it belongs.
+    for _ in 0..2 {
+        let _ = window.set_position(PhysicalPosition { x, y });
+    }
 }
 
 #[cfg(test)]

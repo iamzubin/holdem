@@ -1,15 +1,23 @@
 {
   "common": {
-    "close": "关闭"
+    "close": "关闭",
+    "details": "详细信息"
   },
   "app": {
     "dropHere": "拖放到这里",
-    "files": "{{count}} 个文件",
-    "files_one": "{{count}} 个文件",
-    "files_other": "{{count}} 个文件",
-    "files_plural": "{{count}} 个文件",
+    "files_other": "{{count}} 项",
     "clear": "清空",
-    "contextMenuTitle": "暂存架操作"
+    "contextMenuTitle": "暂存架操作",
+    "clearShelf": "清空暂存架 ({{count}})",
+    "hide": "隐藏暂存架",
+    "undo": "撤销",
+    "removed_other": "已从暂存架移除 {{count}} 项",
+    "dropFailed_other": "无法添加 {{count}} 项",
+    "tooLarge_other": "已跳过 {{count}} 个超过 64 MB 的文件",
+    "showFiles": "显示项目",
+    "missing_other": "{{count}} 项已被移动或删除，因此已从暂存架中移除",
+    "paste": "从剪贴板粘贴",
+    "copyAll": "复制所有项目"
   },
   "popup": {
     "itemsSelected": "已选择 {{count}} 项",
@@ -20,110 +28,273 @@
     "viewMode": "视图模式",
     "removeSelected": "从暂存架移除",
     "files": "暂存架上的文件",
-    "folder": "文件夹"
+    "folder": "文件夹",
+    "empty": "这里还没有内容。将文件拖放到这里或暂存架上。",
+    "open": "打开",
+    "showInFolder": "在文件夹中显示",
+    "copyPath_other": "复制 {{count}} 个路径",
+    "copied_other": "已复制 {{count}} 个路径",
+    "actionFailed": "操作未成功。文件可能已被移动或删除。",
+    "copy": "复制",
+    "copiedFiles_one": "已复制 {{count}} 项",
+    "copiedFiles_other": "已复制 {{count}} 项",
+    "pin": "固定到暂存架",
+    "unpin": "取消固定",
+    "pinned": "已固定",
+    "offline": "未连接",
+    "offlineHint": "该项目所在的驱动器或网络位置未连接。连接后即可恢复使用。",
+    "rename": "重命名",
+    "renameFailed": "无法重命名该项",
+    "renameOwnFile": "只能重命名 Holdem 自己保存的项目。请在文件资源管理器中重命名您自己的文件。",
+    "renameExists": "已存在同名项目",
+    "renameInUse": "无法重命名：文件已在另一个应用中打开"
   },
   "settings": {
     "title": "设置",
-    "subtitle": "管理您的应用程序首选项",
+    "subtitle": "Holdem 首选项",
     "loading": "正在加载设置...",
-    "loadFailed": "无法加载设置",
+    "loadFailed": "Holdem 无法读取其设置",
     "general": {
-      "title": "常规设置",
-      "description": "配置启动和隐私行为",
-      "startup": "系统启动时启动",
-      "startupDesc": "登录时自动启动应用程序",
-      "analytics": "启用分析",
-      "analyticsDesc": "通过分享匿名使用数据帮助改进 Holdem"
+      "title": "常规",
+      "description": "启动和隐私",
+      "startup": "登录时启动 Holdem",
+      "startupDesc": "在通知区域中静默启动",
+      "analytics": "共享使用数据",
+      "analyticsDesc": "发送少量与随机 ID 关联的使用事件。绝不包括文件名、路径或内容。"
     },
     "language": {
       "title": "语言",
-      "description": "选择您喜欢的语言",
+      "description": "Holdem 使用的语言",
       "label": "显示语言"
     },
     "shortcuts": {
       "title": "快捷键",
-      "description": "自定义您与应用程序的交互方式",
-      "showHotkey": "显示窗口热键",
+      "description": "通过键盘打开暂存架",
+      "showHotkey": "显示暂存架的热键",
       "pressKeys": "按下快捷键...",
       "set": "设置",
       "stop": "停止",
       "clear": "清空",
       "noneSet": "未设置",
       "escToCancel": "请按下组合键，或按 Esc 取消",
-      "needsModifier": "请加上 Ctrl、Alt、Shift 或 Win。只有 F1–F24 可单独使用。"
+      "needsModifier": "请加上 Ctrl、Alt、Shift 或 Win。只有 F1–F24 可单独使用。",
+      "inactive": "此热键无法使用。可能已被其他应用占用，请选择其他热键。",
+      "toggleHint": "再按一次即可隐藏暂存架。"
     },
     "dragDrop": {
       "dragToCopy": "将文件拖出即可复制",
       "shiftToMove": "丢弃时按住 Shift 键移动文件"
     },
     "mouse": {
-      "title": "鼠标监视器",
-      "description": "微调晃动检测灵敏度",
-      "requiredShakes": "所需的晃动",
+      "title": "晃动打开",
+      "description": "拖动时如何识别晃动",
+      "requiredShakes": "所需晃动次数",
       "shakeThreshold": "晃动距离 (px)",
-      "timeLimit": "时间限制 (ms)",
-      "closeDelay": "未使用时隐藏暂存架的延迟 (ms)",
-      "whitelistTitle": "白名单应用",
-      "whitelistDesc": "仅当这些应用之一位于前台时，晃动才会打开暂存架。接受进程名称（例如 brave、brave.exe），不区分大小写。将列表留空可允许所有应用。",
+      "timeLimit": "晃动时限 (秒)",
+      "closeDelay": "未使用时隐藏暂存架的延迟 (秒)",
       "addPlaceholder": "添加流程名称...",
       "add": "添加",
-      "removeApp": "移除 {{app}}"
+      "removeApp": "移除 {{app}}",
+      "blocklistTitle": "不打开暂存架的应用",
+      "blocklistDesc": "晃动鼠标或拖动时在屏幕边缘停留，会在除这些应用以外的任何应用中打开暂存架，但在游戏等全屏应用中始终不会打开。请使用进程名称，例如 krita 或 krita.exe。",
+      "onlyIn": "目前暂存架仅在以下应用中打开：{{apps}}",
+      "allowAll": "在所有应用中允许",
+      "screenEdge": "在屏幕边缘打开",
+      "screenEdgeDesc": "拖动时，将指针在屏幕的这一边缘停留片刻即可打开暂存架。使用多台显示器时，只有整个桌面的外侧边缘有效，任务栏所在的边缘无效。",
+      "edge": {
+        "off": "关",
+        "left": "左边缘",
+        "right": "右边缘",
+        "top": "上边缘"
+      }
     },
     "appearance": {
       "title": "外观",
-      "description": "选择 Holdem 的外观。",
+      "description": "浅色、深色或跟随 Windows",
       "system": "跟随系统",
       "light": "浅色",
-      "dark": "深色"
+      "dark": "深色",
+      "mica": "半透明窗口",
+      "micaDesc": "模糊 Holdem 窗口后面的内容（Windows 11）"
     },
     "footer": {
-      "save": "保存设置",
       "saving": "保存中...",
       "saveFailed": "无法保存设置",
       "hotkeyFailed": "设置已保存，但无法注册热键",
-      "autostartFailed": "设置已保存，但无法更改开机启动设置"
-    }
+      "autostartFailed": "设置已保存，但无法更改开机启动设置",
+      "autoSave": "更改会自动保存",
+      "saved": "所有更改已保存",
+      "hotkeyRefused": "无法使用该热键，因此保留之前的热键"
+    },
+    "loadFailedHelp": "请重启 Holdem 后重试。您的其他设置未被更改。"
   },
   "consent": {
-    "title": "帮助我们改进 Holdem",
-    "description": "我们想收集匿名使用数据以改善您的体验",
-    "collectTitle": "我们收集：",
+    "title": "共享使用数据？",
+    "description": "Holdem 每次启动时都会检查更新。除此之外，只有在您选择共享时才会发送使用事件。",
+    "collectTitle": "如果您选择共享，Holdem 会发送：",
     "collectItems": [
-      "应用启动事件",
-      "文件拖放使用",
-      "基本应用性能指标"
+      "Holdem 的启动时间，以及 Holdem 和 Windows 的版本",
+      "暂存架的打开方式（晃动、热键或通知区域）以及您打开了哪些窗口",
+      "您添加、拖出、移除或清空的项目数量，以及拖放失败的次数（仅计数）",
+      "设置更改：登录时启动的开启或关闭，以及设置了热键这一事实（不包括具体按键）",
+      "是否找到了更新"
     ],
-    "notCollectTitle": "我们不收集：",
+    "notCollectTitle": "绝不发送：",
     "notCollectItems": [
-      "个人信息",
-      "文件内容或名称",
-      "您的浏览历史"
+      "文件名、路径或内容",
+      "您拖放的文本、链接或图片",
+      "您的姓名、电子邮件或账户"
     ],
-    "decline": "拒绝",
-    "accept": "接受",
+    "decline": "不共享",
+    "accept": "共享使用数据",
     "changeLater": "您可以随时在“设置”中更改此选项。",
-    "summonTip": "隐藏暂存架后，如需重新显示，可在拖动文件时左右晃动鼠标，或在“设置”中设置热键。"
+    "privacyNote": "事件会连同在此电脑上生成的随机 ID 一起发送到 PostHog（美国服务器）。应用连接时 PostHog 会看到您的 IP 地址；Holdem 已关闭位置查询。",
+    "startOnLogin": "登录 Windows 时启动 Holdem",
+    "webImages": "从网页拖放图片时，Holdem 会像浏览器一样从该网站下载图片。拖放的链接会保存为快捷方式，不会被打开。"
+  },
+  "welcome": {
+    "title": "欢迎使用 Holdem",
+    "description": "一个用于存放文件、图片、链接和文本的小暂存架。现在把内容拖放到上面，以后再拖到任何需要的地方。",
+    "howTitle": "随时打开暂存架：",
+    "how": [
+      "拖动内容时左右晃动鼠标",
+      "单击通知区域中的 Holdem 图标",
+      "按下热键（可在“设置”中设置）"
+    ],
+    "pasteTip": "复制了内容？单击暂存架并按 Ctrl+V，即可将其保留在暂存架上。",
+    "next": "下一步",
+    "hotkeyActive": "按下 {{hotkey}}（可在“设置”中更改）"
   },
   "updater": {
     "title": "软件更新",
     "close": "关闭",
     "checking": "正在检查更新...",
     "downloading": "正在下载更新...",
-    "downloadedTitle": "下载完成！",
+    "downloadedTitle": "下载完成",
     "downloadedDesc": "正在准备安装...",
     "installing": "正在安装更新并重新启动应用程序...",
-    "availableTitle": "更新可用！",
+    "availableTitle": "有可用更新",
     "version": "版本 {{version}}",
     "noNotes": "没有可用的发行备注",
     "releaseNotes": "发布说明",
-    "latest": "您正在运行最新版本！",
-    "errorTitle": "检查更新时出错",
-    "downloadError": "下载并安装更新失败：{{error}}",
+    "latest": "Holdem 已是最新版本",
+    "errorTitle": "无法检查更新",
     "waiting": "正在等待检查更新...",
-    "restartWarning": "Holdem 将重启以完成更新，暂存架上的文件将被清空。",
+    "restartWarning": "Holdem 将重启以完成更新，暂存架上的文件将保留。",
     "installNow": "立即安装",
     "later": "稍后",
     "retry": "重试",
-    "downloadErrorTitle": "无法下载更新"
+    "downloadErrorTitle": "无法下载更新",
+    "latestVersion": "Holdem {{version}} 已是最新版本",
+    "errorHelp": "请检查您的网络连接，然后重试。",
+    "downloadErrorHelp": "下载未完成。请稍后重试。"
+  },
+  "tray": {
+    "show": "显示暂存架",
+    "paste": "将剪贴板添加到暂存架",
+    "settings": "设置",
+    "checkUpdates": "检查更新",
+    "quit": "退出 Holdem"
+  },
+  "keys": {
+    "enter": "Enter",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "delete": "Del",
+    "space": "空格键",
+    "reopenShelf": "Ctrl+Shift+T"
+  },
+  "shelves": {
+    "default": "暂存架",
+    "newName": "暂存架 {{n}}",
+    "new": "新建暂存架",
+    "title": "暂存架",
+    "switch": "暂存架：{{name}}。切换暂存架",
+    "rename": "重命名",
+    "delete": "关闭暂存架",
+    "tabHint": "双击或按 F2 可重命名，右键单击可查看更多选项。",
+    "moveTo": "移动到暂存架",
+    "newShelfWithItems": "新建暂存架",
+    "moved_other": "已将 {{count}} 项移动到 {{name}}",
+    "deleted_other": "已关闭暂存架及其中的 {{count}} 项",
+    "deletedEmpty": "已关闭暂存架",
+    "reopen": "重新打开已关闭的暂存架"
+  },
+  "preview": {
+    "action": "预览",
+    "title": "{{name}} 的预览",
+    "loading": "正在加载预览…",
+    "failed": "此项没有可用的预览。",
+    "truncated": "仅显示文件的开头部分。",
+    "emptyFolder": "此文件夹为空。",
+    "more_other": "以及另外 {{count}} 项",
+    "position": "{{index}} / {{count}}",
+    "keys": "方向键切换，空格键关闭",
+    "hint": "按空格键预览"
+  },
+  "actions": {
+    "copyToFolder": "复制到文件夹…",
+    "compress": "压缩为 ZIP",
+    "compressing": "正在压缩…",
+    "compressed": "已将 {{name}} 添加到暂存架",
+    "compressFailed": "无法创建 ZIP 文件",
+    "archiveName": "压缩包",
+    "pickFolder": "复制到文件夹",
+    "copiedTo_other": "已将 {{count}} 项复制到 {{folder}}",
+    "copyIncomplete": "部分项未能复制到 {{folder}}"
+  },
+  "image": {
+    "menu": "图片",
+    "toPng": "转换为 PNG",
+    "toJpeg": "转换为 JPEG",
+    "percent": "调整为 {{value}}%",
+    "fit": "缩放至 {{value}} px 以内",
+    "working": "正在转换…",
+    "done_other": "已将 {{count}} 张图片添加到暂存架",
+    "failed_other": "无法转换 {{count}} 张图片",
+    "animated_other": "{{count}} 张动态图片保持原样，因为转换会丢失动画。"
+  },
+  "drop": {
+    "andMore": "{{text}} (+{{count}})",
+    "short": {
+      "unsupported": "无法保留此内容",
+      "dropTooLarge": "单次拖放过大",
+      "readFailed": "无法读取项目",
+      "diskFull": "磁盘已满",
+      "accessDenied": "保存被阻止",
+      "saveFailed": "无法保存",
+      "elevatedSource": "被 Windows 阻止",
+      "holdemElevated": "以管理员身份运行",
+      "clipboardBusy": "剪贴板正忙",
+      "tooLarge_other": "{{count}} 项太大",
+      "noContents_other": "{{count}} 项未收到",
+      "unreadable_other": "{{count}} 项无法打开",
+      "savedAsLink_other": "{{count}} 项存为链接",
+      "alreadyOnShelf_other": "{{count}} 项已在暂存架上"
+    },
+    "full": {
+      "unsupported": "Holdem 无法保留此类内容。",
+      "tooLarge_other": "{{count}} 项超过了 {{limit}} MB 的限制。",
+      "dropTooLarge": "部分项目未添加：单次拖放最多 {{dropLimit}} MB、{{files}} 项。",
+      "noContents_other": "应用未提供 {{count}} 项。如果是云附件，请先下载。",
+      "savedAsLink_other": "无法下载 {{count}} 张图片，因此改为保留其链接。",
+      "unreadable_other": "无法打开 {{count}} 项。可能已被移动，或您没有访问权限。",
+      "alreadyOnShelf_other": "{{count}} 项已在此暂存架上。",
+      "elevatedSource": "Windows 会阻止从以管理员身份运行的应用拖动。请在该应用中复制项目，然后在暂存架上按 Ctrl+V。",
+      "holdemElevated": "Holdem 正以管理员身份运行，因此 Windows 会阻止从其他应用拖放。请以普通方式重新启动 Holdem。",
+      "clipboardBusy": "另一个应用正在使用剪贴板。请稍后重试。",
+      "diskFull_other": "磁盘空间不足，无法保存 {{count}} 项。",
+      "accessDenied_other": "Windows 阻止了保存 {{count}} 项。可能是安全软件拦截了 Holdem。",
+      "saveFailed_other": "无法将 {{count}} 项保存到 Holdem 的文件夹。",
+      "readFailed_other": "应用在传输 {{count}} 项时中途停止。请重试。"
+    },
+    "named": {
+      "tooLarge": "“{{name}}”超过了 {{limit}} MB 的限制。",
+      "noContents": "应用未提供“{{name}}”。如果是云附件，请先下载。",
+      "readFailed": "应用在传输“{{name}}”时中途停止。请重试。",
+      "unreadable": "无法打开“{{name}}”。它可能已被移动，或您没有访问权限。",
+      "alreadyOnShelf": "“{{name}}”已在此暂存架上。"
+    },
+    "addedAnd": "已添加 {{count}} 项 · {{text}}"
   }
 }

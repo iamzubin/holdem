@@ -1,15 +1,28 @@
 {
   "common": {
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "details": "Dettagli"
   },
   "app": {
     "dropHere": "Rilascia qui",
-    "files": "{{count}} file",
-    "files_one": "{{count}} file",
-    "files_other": "{{count}} file",
-    "files_plural": "{{count}} file",
+    "files_one": "{{count}} elemento",
+    "files_other": "{{count}} elementi",
     "clear": "Pulisci",
-    "contextMenuTitle": "Azioni della mensola"
+    "contextMenuTitle": "Azioni della mensola",
+    "clearShelf": "Svuota mensola ({{count}})",
+    "hide": "Nascondi mensola",
+    "undo": "Annulla",
+    "removed_one": "{{count}} elemento rimosso dalla mensola",
+    "removed_other": "{{count}} elementi rimossi dalla mensola",
+    "dropFailed_one": "Impossibile aggiungere {{count}} elemento",
+    "dropFailed_other": "Impossibile aggiungere {{count}} elementi",
+    "tooLarge_one": "{{count}} file oltre 64 MB è stato saltato",
+    "tooLarge_other": "{{count}} file oltre 64 MB sono stati saltati",
+    "showFiles": "Mostra elementi",
+    "missing_one": "{{count}} elemento è stato spostato o eliminato, quindi non è più sulla mensola",
+    "missing_other": "{{count}} elementi sono stati spostati o eliminati, quindi non sono più sulla mensola",
+    "paste": "Incolla dagli Appunti",
+    "copyAll": "Copia tutti gli elementi"
   },
   "popup": {
     "itemsSelected": "{{count}} elementi selezionati",
@@ -20,110 +33,296 @@
     "viewMode": "Modalità di visualizzazione",
     "removeSelected": "Rimuovi dalla mensola",
     "files": "File sulla mensola",
-    "folder": "Cartella"
+    "folder": "Cartella",
+    "empty": "Ancora niente qui. Rilascia i file qui o sulla mensola.",
+    "open": "Apri",
+    "showInFolder": "Mostra nella cartella",
+    "copyPath_one": "Copia percorso",
+    "copyPath_other": "Copia {{count}} percorsi",
+    "copied_one": "Percorso copiato",
+    "copied_other": "{{count}} percorsi copiati",
+    "actionFailed": "Operazione non riuscita. Il file potrebbe essere stato spostato o eliminato.",
+    "copy": "Copia",
+    "copiedFiles_one": "{{count}} elemento copiato",
+    "copiedFiles_other": "{{count}} elementi copiati",
+    "pin": "Fissa sulla mensola",
+    "unpin": "Rimuovi fissaggio",
+    "pinned": "Fissato",
+    "offline": "Offline",
+    "offlineHint": "L'unità o il percorso di rete dell'elemento non è connesso. Tornerà a funzionare appena sarà di nuovo connesso.",
+    "rename": "Rinomina",
+    "renameFailed": "Impossibile rinominare l'elemento",
+    "renameOwnFile": "Si possono rinominare solo gli elementi salvati da Holdem. Rinomina i tuoi file in Esplora file.",
+    "renameExists": "Esiste già un elemento con questo nome",
+    "renameInUse": "Impossibile rinominare: il file è aperto in un'altra app"
   },
   "settings": {
     "title": "Impostazioni",
-    "subtitle": "Gestisci le preferenze dell'applicazione",
+    "subtitle": "Preferenze di Holdem",
     "loading": "Caricamento impostazioni...",
-    "loadFailed": "Impossibile caricare le impostazioni",
+    "loadFailed": "Holdem non è riuscito a leggere le impostazioni",
     "general": {
-      "title": "Impostazioni Generali",
-      "description": "Configura il comportamento di avvio e privacy",
-      "startup": "Avvia all'avvio del sistema",
-      "startupDesc": "Avvia automaticamente l'applicazione quando accedi",
-      "analytics": "Abilita Analytics",
-      "analyticsDesc": "Aiuta a migliorare Holdem condividendo i dati di utilizzo anonimi"
+      "title": "Generali",
+      "description": "Avvio e privacy",
+      "startup": "Avvia Holdem quando accedi",
+      "startupDesc": "Si apre in modo discreto nell'area di notifica",
+      "analytics": "Condividi dati di utilizzo",
+      "analyticsDesc": "Invia alcuni eventi di utilizzo associati a un ID casuale. Mai nomi, percorsi o contenuti dei file."
     },
     "language": {
       "title": "Lingua",
-      "description": "Scegli la tua lingua preferita",
-      "label": "Visualizza Lingua"
+      "description": "Lingua usata da Holdem",
+      "label": "Lingua di visualizzazione"
     },
     "shortcuts": {
       "title": "Scorciatoie",
-      "description": "Personalizza come interagisci con l'app",
-      "showHotkey": "Mostra Scorciatoia Finestra",
+      "description": "Apri la mensola dalla tastiera",
+      "showHotkey": "Scorciatoia per mostrare la mensola",
       "pressKeys": "Premi i tasti...",
       "set": "Imposta",
       "stop": "Ferma",
       "clear": "Pulisci",
       "noneSet": "Nessuno impostato",
       "escToCancel": "Premi una combinazione di tasti o Esc per annullare",
-      "needsModifier": "Aggiungi Ctrl, Alt, Shift o Win. Solo F1–F24 funzionano da soli."
+      "needsModifier": "Aggiungi Ctrl, Alt, Shift o Win. Solo F1–F24 funzionano da soli.",
+      "inactive": "Questa scorciatoia non funziona. Potrebbe essere già usata da un'altra app, quindi scegline una diversa.",
+      "toggleHint": "Premila di nuovo per nascondere la mensola."
     },
     "dragDrop": {
       "dragToCopy": "Trascina i file fuori per copiarli",
       "shiftToMove": "Tieni premuto Maiusc mentre rilascia per spostare i file"
     },
     "mouse": {
-      "title": "Monitor Del Mouse",
-      "description": "Ottimizza la sensibilità al rilevamento dello scuotimento",
-      "requiredShakes": "Agitazioni richieste",
+      "title": "Scuoti per aprire",
+      "description": "Come viene riconosciuto uno scuotimento durante il trascinamento",
+      "requiredShakes": "Scuotimenti richiesti",
       "shakeThreshold": "Distanza di scuotimento (px)",
-      "timeLimit": "Limite Di Tempo (Ms)",
-      "closeDelay": "Nascondi la mensola inutilizzata dopo (ms)",
-      "whitelistTitle": "Applicazioni Whitelisted",
-      "whitelistDesc": "Scuotere il mouse apre la mensola solo quando una di queste app è in primo piano. Accetta nomi di processi (ad es. brave, brave.exe), senza distinzione tra maiuscole e minuscole. Lascia l'elenco vuoto per consentire tutte le app.",
+      "timeLimit": "Scuoti entro (secondi)",
+      "closeDelay": "Nascondi la mensola inutilizzata dopo (secondi)",
       "addPlaceholder": "Aggiungi nome processo...",
       "add": "Aggiungi",
-      "removeApp": "Rimuovi {{app}}"
+      "removeApp": "Rimuovi {{app}}",
+      "blocklistTitle": "App in cui la mensola non si apre",
+      "blocklistDesc": "Scuotere il mouse, o tenere un trascinamento sul bordo dello schermo, apre la mensola in qualsiasi app tranne queste, e mai nelle app a schermo intero come i giochi. Usa i nomi dei processi, ad es. krita o krita.exe.",
+      "onlyIn": "Al momento la mensola si apre solo in: {{apps}}",
+      "allowAll": "Consenti in tutte le app",
+      "screenEdge": "Apri a un bordo dello schermo",
+      "screenEdgeDesc": "Durante il trascinamento, tieni per un attimo il puntatore contro questo bordo dello schermo per aprire la mensola. Con più monitor funziona solo un bordo esterno dell'intero desktop, e non il bordo in cui si trova la barra delle applicazioni.",
+      "edge": {
+        "off": "Disattivato",
+        "left": "Bordo sinistro",
+        "right": "Bordo destro",
+        "top": "Bordo superiore"
+      }
     },
     "appearance": {
       "title": "Aspetto",
-      "description": "Scegli l'aspetto di Holdem.",
+      "description": "Chiaro, scuro o come Windows",
       "system": "Sistema",
       "light": "Chiaro",
-      "dark": "Scuro"
+      "dark": "Scuro",
+      "mica": "Finestre traslucide",
+      "micaDesc": "Sfoca ciò che si trova dietro le finestre di Holdem, su Windows 11"
     },
     "footer": {
-      "save": "Salva Impostazioni",
       "saving": "Salvataggio...",
       "saveFailed": "Impossibile salvare le impostazioni",
       "hotkeyFailed": "Impostazioni salvate, ma non è stato possibile registrare la scorciatoia",
-      "autostartFailed": "Impostazioni salvate, ma non è stato possibile modificare l'avvio automatico"
-    }
+      "autostartFailed": "Impostazioni salvate, ma non è stato possibile modificare l'avvio automatico",
+      "autoSave": "Le modifiche vengono salvate automaticamente",
+      "saved": "Tutte le modifiche salvate",
+      "hotkeyRefused": "Impossibile usare quella scorciatoia, quindi resta quella precedente"
+    },
+    "loadFailedHelp": "Riavvia Holdem per riprovare. Le altre impostazioni non sono state modificate."
   },
   "consent": {
-    "title": "Aiutaci a migliorare Holdem",
-    "description": "Vorremmo raccogliere dati anonimi di utilizzo per migliorare la tua esperienza",
-    "collectTitle": "Raccogliamo:",
+    "title": "Condividere i dati di utilizzo?",
+    "description": "Holdem verifica la disponibilità di aggiornamenti a ogni avvio. A parte questo, gli eventi di utilizzo vengono inviati solo se scegli di condividerli.",
+    "collectTitle": "Se condividi, Holdem invia:",
     "collectItems": [
-      "Eventi di lancio app",
-      "Utilizzo di file drag and drop",
-      "Metriche delle prestazioni delle app di base"
+      "Quando Holdem si avvia e le versioni di Holdem e di Windows",
+      "Come è stata aperta la mensola (scuotimento, scorciatoia da tastiera o area di notifica) e quali finestre apri",
+      "Quanti elementi aggiungi, trascini fuori, rimuovi o svuoti, e i rilasci non riusciti (solo conteggi)",
+      "Modifiche alle impostazioni: avvio all'accesso attivato o disattivato, e il fatto che è stata impostata una scorciatoia (non quali tasti)",
+      "Se è stato trovato un aggiornamento"
     ],
-    "notCollectTitle": "NON raccogliamo:",
+    "notCollectTitle": "Mai inviati:",
     "notCollectItems": [
-      "Informazioni personali",
-      "Contenuto del file o nomi",
-      "La tua cronologia di navigazione"
+      "Nomi, percorsi o contenuti dei file",
+      "Testi, link o immagini che rilasci",
+      "Il tuo nome, la tua email o i tuoi account"
     ],
-    "decline": "Rifiuta",
-    "accept": "Accetta",
+    "decline": "Non condividere",
+    "accept": "Condividi dati di utilizzo",
     "changeLater": "Puoi modificare questa scelta in qualsiasi momento nelle Impostazioni.",
-    "summonTip": "Per far ricomparire la mensola dopo averla nascosta, scuoti il mouse a destra e a sinistra mentre trascini un file, oppure imposta una scorciatoia da tastiera nelle Impostazioni."
+    "privacyNote": "Gli eventi vengono inviati a PostHog (server negli Stati Uniti) con un ID casuale creato su questo PC. PostHog vede il tuo indirizzo IP quando l'app si connette; Holdem disattiva la ricerca della posizione.",
+    "startOnLogin": "Avvia Holdem quando accedo a Windows",
+    "webImages": "Quando rilasci un'immagine da una pagina web, Holdem la scarica da quel sito, come farebbe il tuo browser. I link che rilasci vengono salvati come collegamenti e non vengono aperti."
+  },
+  "welcome": {
+    "title": "Ti diamo il benvenuto in Holdem",
+    "description": "Una piccola mensola per file, immagini, link e testo. Rilascia ora gli elementi sulla mensola e più tardi trascinali dove ti servono.",
+    "howTitle": "Apri la mensola in qualsiasi momento:",
+    "how": [
+      "Scuoti il mouse a destra e a sinistra mentre trascini qualcosa",
+      "Fai clic sull'icona di Holdem nell'area di notifica",
+      "Premi la tua scorciatoia da tastiera (impostala nelle Impostazioni)"
+    ],
+    "pasteTip": "Hai copiato qualcosa? Fai clic sulla mensola e premi Ctrl+V per tenerlo lì.",
+    "next": "Avanti",
+    "hotkeyActive": "Premi {{hotkey}} (puoi cambiarla nelle Impostazioni)"
   },
   "updater": {
     "title": "Aggiornamenti Software",
     "close": "Chiudi",
     "checking": "Controllo aggiornamenti...",
     "downloading": "Scaricamento aggiornamento...",
-    "downloadedTitle": "Download completato!",
+    "downloadedTitle": "Download completato",
     "downloadedDesc": "Preparazione all'installazione...",
     "installing": "Installazione dell'aggiornamento e riavvio dell'applicazione...",
-    "availableTitle": "Aggiornamento Disponibile!",
+    "availableTitle": "Aggiornamento disponibile",
     "version": "Versione {{version}}",
     "noNotes": "Nessuna nota di rilascio disponibile",
     "releaseNotes": "Note Di Rilascio",
-    "latest": "Stai eseguendo l'ultima versione!",
-    "errorTitle": "Errore nel controllo degli aggiornamenti",
-    "downloadError": "Download e installazione dell'aggiornamento non riusciti: {{error}}",
+    "latest": "Holdem è aggiornato",
+    "errorTitle": "Impossibile verificare la disponibilità di aggiornamenti",
     "waiting": "In attesa di controllare gli aggiornamenti...",
-    "restartWarning": "Holdem verrà riavviato per completare l'aggiornamento. La mensola verrà svuotata.",
+    "restartWarning": "Holdem verrà riavviato per completare l'aggiornamento. I file sulla mensola resteranno al loro posto.",
     "installNow": "Installa ora",
     "later": "Più tardi",
     "retry": "Riprova",
-    "downloadErrorTitle": "Impossibile scaricare l'aggiornamento"
+    "downloadErrorTitle": "Impossibile scaricare l'aggiornamento",
+    "latestVersion": "Holdem {{version}} è aggiornato",
+    "errorHelp": "Controlla la connessione a Internet e riprova.",
+    "downloadErrorHelp": "Il download non è stato completato. Riprova tra qualche istante."
+  },
+  "tray": {
+    "show": "Mostra mensola",
+    "paste": "Aggiungi gli Appunti alla mensola",
+    "settings": "Impostazioni",
+    "checkUpdates": "Controlla aggiornamenti",
+    "quit": "Esci da Holdem"
+  },
+  "keys": {
+    "enter": "Invio",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "delete": "Canc",
+    "space": "Spazio",
+    "reopenShelf": "Ctrl+Shift+T"
+  },
+  "shelves": {
+    "default": "Mensola",
+    "newName": "Mensola {{n}}",
+    "new": "Nuova mensola",
+    "title": "Mensole",
+    "switch": "Mensola: {{name}}. Cambia mensola",
+    "rename": "Rinomina",
+    "delete": "Chiudi mensola",
+    "tabHint": "Doppio clic o F2 per rinominare. Clic destro per altre opzioni.",
+    "moveTo": "Sposta sulla mensola",
+    "newShelfWithItems": "Nuova mensola",
+    "moved_one": "{{count}} elemento spostato in {{name}}",
+    "moved_other": "{{count}} elementi spostati in {{name}}",
+    "deleted_one": "Mensola chiusa insieme a {{count}} elemento",
+    "deleted_other": "Mensola chiusa insieme ai suoi {{count}} elementi",
+    "deletedEmpty": "Mensola chiusa",
+    "reopen": "Riapri mensola chiusa"
+  },
+  "preview": {
+    "action": "Anteprima",
+    "title": "Anteprima di {{name}}",
+    "loading": "Caricamento anteprima…",
+    "failed": "Nessuna anteprima disponibile per questo elemento.",
+    "truncated": "Viene mostrato l'inizio del file.",
+    "emptyFolder": "Questa cartella è vuota.",
+    "more_one": "e altro {{count}}",
+    "more_other": "e altri {{count}}",
+    "position": "{{index}} di {{count}}",
+    "keys": "frecce per scorrere, Spazio per chiudere",
+    "hint": "Spazio per l'anteprima"
+  },
+  "actions": {
+    "copyToFolder": "Copia in una cartella…",
+    "compress": "Comprimi in ZIP",
+    "compressing": "Compressione…",
+    "compressed": "{{name}} aggiunto alla mensola",
+    "compressFailed": "Impossibile creare il file ZIP",
+    "archiveName": "Archivio",
+    "pickFolder": "Copia in una cartella",
+    "copiedTo_one": "{{count}} elemento copiato in {{folder}}",
+    "copiedTo_other": "{{count}} elementi copiati in {{folder}}",
+    "copyIncomplete": "Alcuni elementi non sono stati copiati in {{folder}}"
+  },
+  "image": {
+    "menu": "Immagine",
+    "toPng": "Converti in PNG",
+    "toJpeg": "Converti in JPEG",
+    "percent": "Ridimensiona al {{value}}%",
+    "fit": "Adatta entro {{value}} px",
+    "working": "Conversione…",
+    "done_one": "{{count}} immagine aggiunta alla mensola",
+    "done_other": "{{count}} immagini aggiunte alla mensola",
+    "failed_one": "Impossibile convertire {{count}} immagine",
+    "failed_other": "Impossibile convertire {{count}} immagini",
+    "animated_one": "{{count}} immagine animata è stata lasciata com'è: convertirla farebbe perdere l'animazione.",
+    "animated_other": "{{count}} immagini animate sono state lasciate come sono: convertirle farebbe perdere l'animazione."
+  },
+  "drop": {
+    "andMore": "{{text}} (+{{count}})",
+    "short": {
+      "unsupported": "Non si può tenere",
+      "dropTooLarge": "Rilascio troppo grande",
+      "readFailed": "Impossibile leggere",
+      "diskFull": "Disco pieno",
+      "accessDenied": "Salvataggio bloccato",
+      "saveFailed": "Impossibile salvare",
+      "elevatedSource": "Bloccato da Windows",
+      "holdemElevated": "Avviato come admin",
+      "clipboardBusy": "Appunti occupati",
+      "tooLarge_one": "{{count}} troppo grande",
+      "tooLarge_other": "{{count}} troppo grandi",
+      "noContents_one": "{{count}} non fornito",
+      "noContents_other": "{{count}} non forniti",
+      "unreadable_one": "{{count}} non apribile",
+      "unreadable_other": "{{count}} non apribili",
+      "savedAsLink_one": "{{count}} salvato come link",
+      "savedAsLink_other": "{{count}} salvati come link",
+      "alreadyOnShelf_one": "{{count}} già sulla mensola",
+      "alreadyOnShelf_other": "{{count}} già sulla mensola"
+    },
+    "full": {
+      "unsupported": "Holdem non può conservare questo tipo di contenuto.",
+      "tooLarge_one": "{{count}} elemento supera il limite di {{limit}} MB.",
+      "tooLarge_other": "{{count}} elementi superano il limite di {{limit}} MB.",
+      "dropTooLarge": "Alcuni elementi sono stati esclusi: un singolo rilascio può contenere al massimo {{dropLimit}} MB e {{files}} elementi.",
+      "noContents_one": "L'app non ha fornito {{count}} elemento. Se è un allegato nel cloud, scaricalo prima.",
+      "noContents_other": "L'app non ha fornito {{count}} elementi. Se sono allegati nel cloud, scaricali prima.",
+      "savedAsLink_one": "Impossibile scaricare l'immagine, quindi è stato conservato il suo link.",
+      "savedAsLink_other": "Impossibile scaricare {{count}} immagini, quindi sono stati conservati i loro link.",
+      "unreadable_one": "Impossibile aprire {{count}} elemento. Potrebbe essere stato spostato o potresti non avere accesso.",
+      "unreadable_other": "Impossibile aprire {{count}} elementi. Potrebbero essere stati spostati o potresti non avere accesso.",
+      "alreadyOnShelf_one": "{{count}} elemento è già su questa mensola.",
+      "alreadyOnShelf_other": "{{count}} elementi sono già su questa mensola.",
+      "elevatedSource": "Windows blocca il trascinamento dalle app eseguite come amministratore. Copia l'elemento in quell'app, poi premi Ctrl+V sulla mensola.",
+      "holdemElevated": "Holdem è in esecuzione come amministratore, quindi Windows blocca i rilasci dalle altre app. Riavvia Holdem normalmente.",
+      "clipboardBusy": "Un'altra app sta usando gli Appunti. Riprova tra un attimo.",
+      "diskFull_one": "Lo spazio su disco non è sufficiente per salvare l'elemento.",
+      "diskFull_other": "Lo spazio su disco non è sufficiente per salvare {{count}} elementi.",
+      "accessDenied_one": "Windows ha bloccato il salvataggio dell'elemento. Un software di sicurezza potrebbe impedirlo a Holdem.",
+      "accessDenied_other": "Windows ha bloccato il salvataggio di {{count}} elementi. Un software di sicurezza potrebbe impedirlo a Holdem.",
+      "saveFailed_one": "Impossibile salvare l'elemento nella cartella di Holdem.",
+      "saveFailed_other": "Impossibile salvare {{count}} elementi nella cartella di Holdem.",
+      "readFailed_one": "L'app ha smesso di fornire l'elemento a metà. Riprova.",
+      "readFailed_other": "L'app ha smesso di fornire {{count}} elementi a metà. Riprova."
+    },
+    "named": {
+      "tooLarge": "“{{name}}” supera il limite di {{limit}} MB.",
+      "noContents": "L'app non ha fornito “{{name}}”. Se è un allegato nel cloud, scaricalo prima.",
+      "readFailed": "L'app ha smesso di fornire “{{name}}” a metà. Riprova.",
+      "unreadable": "Impossibile aprire “{{name}}”. Potrebbe essere stato spostato o potresti non avere accesso.",
+      "alreadyOnShelf": "“{{name}}” è già su questa mensola."
+    },
+    "addedAnd": "Aggiunti: {{count}} · {{text}}"
   }
 }

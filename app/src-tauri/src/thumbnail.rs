@@ -103,7 +103,10 @@ fn generate_thumbnail(file_path: &Path) -> Result<(Vec<u8>, u32, u32), Thumbnail
         cx: THUMB_PX,
         cy: THUMB_PX,
     };
-    let hbitmap: HBITMAP = match unsafe { shell_item.GetImage(dimensions, SIIGBF(0)) } {
+    let image = unsafe { shell_item.GetImage(dimensions, SIIGBF(0)) };
+    // COM objects must be released before their apartment is torn down.
+    drop(shell_item);
+    let hbitmap: HBITMAP = match image {
         Ok(h) => h,
         Err(e) => {
             unsafe { CoUninitialize() };

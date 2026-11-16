@@ -1,15 +1,23 @@
 {
   "common": {
-    "close": "Đóng"
+    "close": "Đóng",
+    "details": "Chi tiết"
   },
   "app": {
     "dropHere": "Thả vào đây",
-    "files": "{{count}} tệp",
-    "files_one": "{{count}} tệp",
-    "files_other": "{{count}} tệp",
-    "files_plural": "{{count}} tệp",
+    "files_other": "{{count}} mục",
     "clear": "Xóa",
-    "contextMenuTitle": "Thao tác với kệ"
+    "contextMenuTitle": "Thao tác với kệ",
+    "clearShelf": "Dọn sạch kệ ({{count}})",
+    "hide": "Ẩn kệ",
+    "undo": "Hoàn tác",
+    "removed_other": "Đã gỡ {{count}} mục khỏi kệ",
+    "dropFailed_other": "Không thể thêm {{count}} mục",
+    "tooLarge_other": "Đã bỏ qua {{count}} tệp lớn hơn 64 MB",
+    "showFiles": "Hiện các mục",
+    "missing_other": "{{count}} mục đã bị di chuyển hoặc xóa nên không còn trên kệ",
+    "paste": "Dán từ khay nhớ tạm",
+    "copyAll": "Sao chép tất cả các mục"
   },
   "popup": {
     "itemsSelected": "Đã chọn {{count}} mục",
@@ -20,110 +28,273 @@
     "viewMode": "Chế độ xem",
     "removeSelected": "Gỡ khỏi kệ",
     "files": "Tệp trên kệ",
-    "folder": "Thư mục"
+    "folder": "Thư mục",
+    "empty": "Chưa có gì ở đây. Thả tệp vào đây hoặc vào kệ.",
+    "open": "Mở",
+    "showInFolder": "Hiện trong thư mục",
+    "copyPath_other": "Sao chép {{count}} đường dẫn",
+    "copied_other": "Đã sao chép {{count}} đường dẫn",
+    "actionFailed": "Không thực hiện được. Tệp có thể đã bị di chuyển hoặc xóa.",
+    "copy": "Sao chép",
+    "copiedFiles_one": "Đã sao chép {{count}} mục",
+    "copiedFiles_other": "Đã sao chép {{count}} mục",
+    "pin": "Ghim vào kệ",
+    "unpin": "Bỏ ghim",
+    "pinned": "Đã ghim",
+    "offline": "Ngoại tuyến",
+    "offlineHint": "Ổ đĩa hoặc vị trí mạng của mục này chưa được kết nối. Mục sẽ hoạt động lại khi được kết nối.",
+    "rename": "Đổi tên",
+    "renameFailed": "Không đổi tên được mục",
+    "renameOwnFile": "Chỉ có thể đổi tên các mục do Holdem tự lưu. Hãy đổi tên tệp của bạn trong Trình khám phá tệp.",
+    "renameExists": "Đã có một mục trùng tên",
+    "renameInUse": "Không đổi tên được: tệp đang mở trong ứng dụng khác"
   },
   "settings": {
     "title": "Cài đặt",
-    "subtitle": "Quản lý tùy chọn ứng dụng của bạn",
+    "subtitle": "Tùy chọn Holdem",
     "loading": "Đang tải cài đặt...",
-    "loadFailed": "Không thể tải cài đặt",
+    "loadFailed": "Holdem không đọc được cài đặt của mình",
     "general": {
-      "title": "Cài đặt chung",
-      "description": "Định cấu hình khởi động và hành vi quyền riêng tư",
-      "startup": "Khởi động cùng hệ thống",
-      "startupDesc": "Tự động khởi chạy ứng dụng khi bạn đăng nhập",
-      "analytics": "Bật phân tích",
-      "analyticsDesc": "Giúp cải thiện Holdem bằng cách chia sẻ dữ liệu sử dụng ẩn danh"
+      "title": "Chung",
+      "description": "Khởi động và quyền riêng tư",
+      "startup": "Khởi động Holdem khi bạn đăng nhập",
+      "startupDesc": "Mở lặng lẽ trong khu vực thông báo",
+      "analytics": "Chia sẻ dữ liệu sử dụng",
+      "analyticsDesc": "Gửi một vài sự kiện sử dụng gắn với một ID ngẫu nhiên. Không bao giờ gửi tên tệp, đường dẫn hoặc nội dung."
     },
     "language": {
       "title": "Ngôn ngữ",
-      "description": "Chọn ngôn ngữ bạn muốn",
+      "description": "Ngôn ngữ Holdem sử dụng",
       "label": "Ngôn ngữ hiển thị"
     },
     "shortcuts": {
       "title": "Phím tắt",
-      "description": "Tùy chỉnh cách bạn tương tác với ứng dụng",
-      "showHotkey": "Phím tắt hiện cửa sổ",
+      "description": "Mở kệ bằng bàn phím",
+      "showHotkey": "Phím tắt hiện kệ",
       "pressKeys": "Nhấn các phím...",
       "set": "Đặt",
       "stop": "Dừng",
       "clear": "Xóa",
       "noneSet": "Chưa đặt",
       "escToCancel": "Nhấn một tổ hợp phím, hoặc Esc để hủy",
-      "needsModifier": "Thêm Ctrl, Alt, Shift hoặc Win. Chỉ F1–F24 mới dùng được riêng lẻ."
+      "needsModifier": "Thêm Ctrl, Alt, Shift hoặc Win. Chỉ F1–F24 mới dùng được riêng lẻ.",
+      "inactive": "Phím tắt này không hoạt động. Có thể một ứng dụng khác đang dùng phím tắt này, vì vậy hãy chọn phím tắt khác.",
+      "toggleHint": "Nhấn lại phím tắt này để ẩn kệ."
     },
     "dragDrop": {
       "dragToCopy": "Kéo tệp ra ngoài để sao chép",
       "shiftToMove": "Giữ Shift khi thả để di chuyển tệp"
     },
     "mouse": {
-      "title": "Giám sát chuột",
-      "description": "Tinh chỉnh độ nhạy phát hiện lắc",
-      "requiredShakes": "Số lần lắc yêu cầu",
+      "title": "Lắc để mở",
+      "description": "Cách nhận biết thao tác lắc khi kéo",
+      "requiredShakes": "Số lần lắc cần thiết",
       "shakeThreshold": "Khoảng cách lắc (px)",
-      "timeLimit": "Giới hạn thời gian (ms)",
-      "closeDelay": "Ẩn kệ không dùng sau (ms)",
-      "whitelistTitle": "Ứng dụng được phép",
-      "whitelistDesc": "Lắc chuột chỉ mở kệ khi một trong các ứng dụng này đang ở phía trước. Chấp nhận tên tiến trình (ví dụ: brave, brave.exe), không phân biệt chữ hoa/thường. Để trống danh sách để cho phép mọi ứng dụng.",
+      "timeLimit": "Lắc trong vòng (giây)",
+      "closeDelay": "Ẩn kệ không dùng sau (giây)",
       "addPlaceholder": "Thêm tên tiến trình...",
       "add": "Thêm",
-      "removeApp": "Xóa {{app}}"
+      "removeApp": "Xóa {{app}}",
+      "blocklistTitle": "Ứng dụng không mở kệ",
+      "blocklistDesc": "Lắc chuột hoặc giữ mục đang kéo ở cạnh màn hình sẽ mở kệ trong mọi ứng dụng ngoại trừ các ứng dụng này, và không bao giờ mở trong ứng dụng toàn màn hình như trò chơi. Dùng tên tiến trình, ví dụ: krita hoặc krita.exe.",
+      "onlyIn": "Hiện tại, kệ chỉ mở trong: {{apps}}",
+      "allowAll": "Cho phép trong mọi ứng dụng",
+      "screenEdge": "Mở ở cạnh màn hình",
+      "screenEdgeDesc": "Khi đang kéo, giữ con trỏ sát cạnh này của màn hình một lúc để mở kệ. Nếu dùng nhiều màn hình, chỉ cạnh ngoài của toàn bộ màn hình nền mới hoạt động, còn cạnh có thanh tác vụ thì không.",
+      "edge": {
+        "off": "Tắt",
+        "left": "Cạnh trái",
+        "right": "Cạnh phải",
+        "top": "Cạnh trên"
+      }
     },
     "appearance": {
       "title": "Giao diện",
-      "description": "Chọn giao diện cho Holdem.",
+      "description": "Sáng, tối hoặc theo Windows",
       "system": "Hệ thống",
       "light": "Sáng",
-      "dark": "Tối"
+      "dark": "Tối",
+      "mica": "Cửa sổ trong mờ",
+      "micaDesc": "Làm mờ phần phía sau cửa sổ Holdem, trên Windows 11"
     },
     "footer": {
-      "save": "Lưu cài đặt",
       "saving": "Đang lưu...",
       "saveFailed": "Không lưu được cài đặt",
       "hotkeyFailed": "Đã lưu cài đặt, nhưng không đăng ký được phím tắt",
-      "autostartFailed": "Đã lưu cài đặt, nhưng không thay đổi được cài đặt khởi động"
-    }
+      "autostartFailed": "Đã lưu cài đặt, nhưng không thay đổi được cài đặt khởi động",
+      "autoSave": "Thay đổi được lưu tự động",
+      "saved": "Đã lưu mọi thay đổi",
+      "hotkeyRefused": "Không dùng được phím tắt đó nên phím tắt cũ vẫn được giữ"
+    },
+    "loadFailedHelp": "Khởi động lại Holdem để thử lại. Các cài đặt khác của bạn không bị thay đổi."
   },
   "consent": {
-    "title": "Giúp chúng tôi cải thiện Holdem",
-    "description": "Chúng tôi muốn thu thập dữ liệu sử dụng ẩn danh để cải thiện trải nghiệm của bạn",
-    "collectTitle": "Chúng tôi thu thập:",
+    "title": "Chia sẻ dữ liệu sử dụng?",
+    "description": "Holdem kiểm tra bản cập nhật mỗi lần khởi động. Ngoài ra, các sự kiện sử dụng chỉ được gửi nếu bạn chọn chia sẻ chúng.",
+    "collectTitle": "Nếu bạn chia sẻ, Holdem sẽ gửi:",
     "collectItems": [
-      "Sự kiện khởi chạy ứng dụng",
-      "Việc dùng kéo và thả tệp",
-      "Chỉ số hiệu năng cơ bản của ứng dụng"
+      "Thời điểm Holdem khởi động, cùng phiên bản Holdem và Windows",
+      "Cách kệ được mở (lắc, phím tắt hoặc khu vực thông báo) và những cửa sổ bạn mở",
+      "Số mục bạn thêm, kéo ra, gỡ hoặc dọn sạch, và số lần thả không thành công (chỉ số lượng)",
+      "Thay đổi cài đặt: bật hoặc tắt khởi động khi đăng nhập, và việc đã đặt phím tắt (không gửi phím nào)",
+      "Có tìm thấy bản cập nhật hay không"
     ],
-    "notCollectTitle": "Chúng tôi KHÔNG thu thập:",
+    "notCollectTitle": "Không bao giờ gửi:",
     "notCollectItems": [
-      "Thông tin cá nhân",
-      "Nội dung hoặc tên tệp",
-      "Lịch sử duyệt web của bạn"
+      "Tên tệp, đường dẫn hoặc nội dung",
+      "Văn bản, liên kết hoặc hình ảnh bạn thả vào",
+      "Tên, email hoặc tài khoản của bạn"
     ],
-    "decline": "Từ chối",
-    "accept": "Đồng ý",
+    "decline": "Không chia sẻ",
+    "accept": "Chia sẻ dữ liệu sử dụng",
     "changeLater": "Bạn có thể thay đổi điều này bất cứ lúc nào trong Cài đặt.",
-    "summonTip": "Để hiện lại kệ sau khi ẩn, hãy lắc chuột sang trái và phải trong khi kéo một tệp, hoặc đặt phím tắt trong Cài đặt."
+    "privacyNote": "Sự kiện được gửi đến PostHog (máy chủ tại Hoa Kỳ) cùng một ID ngẫu nhiên được tạo trên PC này. PostHog thấy địa chỉ IP của bạn khi ứng dụng kết nối; Holdem tắt tính năng tra cứu vị trí.",
+    "startOnLogin": "Khởi động Holdem khi tôi đăng nhập vào Windows",
+    "webImages": "Khi bạn thả một hình ảnh từ trang web, Holdem sẽ tải hình ảnh đó xuống từ trang web ấy, giống như trình duyệt của bạn. Các liên kết bạn thả vào được lưu dưới dạng lối tắt và không được mở."
+  },
+  "welcome": {
+    "title": "Chào mừng bạn đến với Holdem",
+    "description": "Một chiếc kệ nhỏ cho tệp, hình ảnh, liên kết và văn bản. Thả mọi thứ vào kệ ngay bây giờ, rồi kéo chúng đến bất cứ nơi nào bạn cần sau này.",
+    "howTitle": "Mở kệ bất cứ lúc nào:",
+    "how": [
+      "Lắc chuột sang trái và phải trong khi kéo một thứ gì đó",
+      "Nhấp vào biểu tượng Holdem trong khu vực thông báo",
+      "Nhấn phím tắt của bạn (đặt phím tắt trong Cài đặt)"
+    ],
+    "pasteTip": "Đã sao chép thứ gì đó? Nhấp vào kệ và nhấn Ctrl+V để giữ nó ở đó.",
+    "next": "Tiếp",
+    "hotkeyActive": "Nhấn {{hotkey}} (bạn có thể thay đổi trong Cài đặt)"
   },
   "updater": {
     "title": "Cập nhật phần mềm",
     "close": "Đóng",
     "checking": "Đang kiểm tra cập nhật...",
     "downloading": "Đang tải bản cập nhật...",
-    "downloadedTitle": "Tải xuống hoàn tất!",
+    "downloadedTitle": "Đã tải xuống xong",
     "downloadedDesc": "Đang chuẩn bị cài đặt...",
     "installing": "Đang cài đặt bản cập nhật và khởi động lại ứng dụng...",
-    "availableTitle": "Có bản cập nhật!",
+    "availableTitle": "Có bản cập nhật",
     "version": "Phiên bản {{version}}",
     "noNotes": "Không có ghi chú phát hành",
     "releaseNotes": "Ghi chú phát hành",
-    "latest": "Bạn đang dùng phiên bản mới nhất!",
-    "errorTitle": "Lỗi khi kiểm tra cập nhật",
-    "downloadError": "Không tải xuống và cài đặt được bản cập nhật: {{error}}",
+    "latest": "Holdem đang ở phiên bản mới nhất",
+    "errorTitle": "Không thể kiểm tra bản cập nhật",
     "waiting": "Đang chờ kiểm tra cập nhật...",
-    "restartWarning": "Holdem sẽ khởi động lại để hoàn tất cập nhật. Các tệp trên kệ sẽ bị xóa.",
+    "restartWarning": "Holdem sẽ khởi động lại để hoàn tất cập nhật. Các tệp trên kệ sẽ vẫn còn đó.",
     "installNow": "Cài đặt ngay",
     "later": "Để sau",
     "retry": "Thử lại",
-    "downloadErrorTitle": "Không thể tải xuống bản cập nhật"
+    "downloadErrorTitle": "Không thể tải xuống bản cập nhật",
+    "latestVersion": "Holdem {{version}} là phiên bản mới nhất",
+    "errorHelp": "Hãy kiểm tra kết nối internet và thử lại.",
+    "downloadErrorHelp": "Quá trình tải xuống chưa hoàn tất. Hãy thử lại sau giây lát."
+  },
+  "tray": {
+    "show": "Hiện kệ",
+    "paste": "Thêm khay nhớ tạm vào kệ",
+    "settings": "Cài đặt",
+    "checkUpdates": "Kiểm tra cập nhật",
+    "quit": "Thoát Holdem"
+  },
+  "keys": {
+    "enter": "Enter",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "delete": "Del",
+    "space": "Space",
+    "reopenShelf": "Ctrl+Shift+T"
+  },
+  "shelves": {
+    "default": "Kệ",
+    "newName": "Kệ {{n}}",
+    "new": "Kệ mới",
+    "title": "Các kệ",
+    "switch": "Kệ: {{name}}. Chuyển kệ",
+    "rename": "Đổi tên",
+    "delete": "Đóng kệ",
+    "tabHint": "Nhấp đúp hoặc nhấn F2 để đổi tên. Nhấp chuột phải để xem thêm.",
+    "moveTo": "Chuyển sang kệ",
+    "newShelfWithItems": "Kệ mới",
+    "moved_other": "Đã chuyển {{count}} mục sang {{name}}",
+    "deleted_other": "Đã đóng kệ và {{count}} mục trên đó",
+    "deletedEmpty": "Đã đóng kệ",
+    "reopen": "Mở lại kệ đã đóng"
+  },
+  "preview": {
+    "action": "Xem trước",
+    "title": "Xem trước {{name}}",
+    "loading": "Đang tải bản xem trước…",
+    "failed": "Không có bản xem trước cho mục này.",
+    "truncated": "Đang hiển thị phần đầu của tệp.",
+    "emptyFolder": "Thư mục này trống.",
+    "more_other": "và {{count}} mục khác",
+    "position": "{{index}}/{{count}}",
+    "keys": "phím mũi tên để chuyển, Space để đóng",
+    "hint": "Nhấn Space để xem trước"
+  },
+  "actions": {
+    "copyToFolder": "Sao chép vào thư mục…",
+    "compress": "Nén thành ZIP",
+    "compressing": "Đang nén…",
+    "compressed": "Đã thêm {{name}} vào kệ",
+    "compressFailed": "Không tạo được tệp ZIP",
+    "archiveName": "Tệp nén",
+    "pickFolder": "Sao chép vào thư mục",
+    "copiedTo_other": "Đã sao chép {{count}} mục vào {{folder}}",
+    "copyIncomplete": "Một số mục chưa được sao chép vào {{folder}}"
+  },
+  "image": {
+    "menu": "Hình ảnh",
+    "toPng": "Chuyển sang PNG",
+    "toJpeg": "Chuyển sang JPEG",
+    "percent": "Đổi kích thước thành {{value}}%",
+    "fit": "Thu vừa trong {{value}} px",
+    "working": "Đang chuyển đổi…",
+    "done_other": "Đã thêm {{count}} hình ảnh vào kệ",
+    "failed_other": "Không chuyển đổi được {{count}} hình ảnh",
+    "animated_other": "Đã giữ nguyên {{count}} hình ảnh động vì chuyển đổi sẽ làm mất hiệu ứng động."
+  },
+  "drop": {
+    "andMore": "{{text}} (+{{count}})",
+    "short": {
+      "unsupported": "Không hỗ trợ",
+      "dropTooLarge": "Thả quá nhiều",
+      "readFailed": "Không đọc được mục",
+      "diskFull": "Ổ đĩa đã đầy",
+      "accessDenied": "Bị chặn khi lưu",
+      "saveFailed": "Không lưu được",
+      "elevatedSource": "Bị Windows chặn",
+      "holdemElevated": "Đang chạy quyền admin",
+      "clipboardBusy": "Khay nhớ tạm đang bận",
+      "tooLarge_other": "{{count}} mục quá lớn",
+      "noContents_other": "Chưa nhận {{count}} mục",
+      "unreadable_other": "Không mở được {{count}} mục",
+      "savedAsLink_other": "Đã lưu {{count}} liên kết",
+      "alreadyOnShelf_other": "{{count}} mục đã có trên kệ"
+    },
+    "full": {
+      "unsupported": "Holdem không thể giữ loại nội dung này.",
+      "tooLarge_other": "{{count}} mục vượt quá giới hạn {{limit}} MB.",
+      "dropTooLarge": "Một số mục đã bị bỏ qua: mỗi lần thả chỉ được tối đa {{dropLimit}} MB và {{files}} mục.",
+      "noContents_other": "Ứng dụng không chuyển giao {{count}} mục. Nếu đó là tệp đính kèm trên đám mây, hãy tải xuống trước.",
+      "savedAsLink_other": "Không tải xuống được {{count}} hình ảnh nên đã giữ lại liên kết thay thế.",
+      "unreadable_other": "Không mở được {{count}} mục. Mục có thể đã bị di chuyển hoặc bạn không có quyền truy cập.",
+      "alreadyOnShelf_other": "{{count}} mục đã có trên kệ này.",
+      "elevatedSource": "Windows chặn thao tác kéo từ ứng dụng chạy với quyền quản trị viên. Hãy sao chép mục trong ứng dụng đó, rồi nhấn Ctrl+V trên kệ.",
+      "holdemElevated": "Holdem đang chạy với quyền quản trị viên nên Windows chặn thao tác thả từ ứng dụng khác. Hãy khởi động lại Holdem như bình thường.",
+      "clipboardBusy": "Một ứng dụng khác đang dùng khay nhớ tạm. Hãy thử lại sau giây lát.",
+      "diskFull_other": "Không đủ dung lượng ổ đĩa để lưu {{count}} mục.",
+      "accessDenied_other": "Windows đã chặn việc lưu {{count}} mục. Phần mềm bảo mật có thể đang chặn Holdem.",
+      "saveFailed_other": "Không lưu được {{count}} mục vào thư mục của Holdem.",
+      "readFailed_other": "Ứng dụng đã ngừng chuyển giao {{count}} mục giữa chừng. Hãy thử lại."
+    },
+    "named": {
+      "tooLarge": "“{{name}}” vượt quá giới hạn {{limit}} MB.",
+      "noContents": "Ứng dụng không chuyển giao “{{name}}”. Nếu đó là tệp đính kèm trên đám mây, hãy tải xuống trước.",
+      "readFailed": "Ứng dụng đã ngừng chuyển giao “{{name}}” giữa chừng. Hãy thử lại.",
+      "unreadable": "Không mở được “{{name}}”. Mục có thể đã bị di chuyển hoặc bạn không có quyền truy cập.",
+      "alreadyOnShelf": "“{{name}}” đã có trên kệ này."
+    },
+    "addedAnd": "Đã thêm {{count}} · {{text}}"
   }
 }

@@ -29,7 +29,9 @@ export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file }) => {
   }, []);
 
   useEffect(() => {
-    if (!isVisible) return;
+    // Offline items have no reachable file to read an icon from; the
+    // generic icon stays until the location is back.
+    if (!isVisible || !file.available) return;
     let cancelled = false;
     getFileIconBase64(file.path)
       .then((base64Icon) => {
@@ -39,7 +41,7 @@ export const DynamicFileIcon: React.FC<DynamicFileIconProps> = ({ file }) => {
     return () => {
       cancelled = true;
     };
-  }, [isVisible, file.path]);
+  }, [isVisible, file.path, file.available]);
 
   // Decorative: the file name is always shown next to the icon.
   return (

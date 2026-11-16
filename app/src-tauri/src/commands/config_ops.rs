@@ -23,6 +23,7 @@ pub fn save_config(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
+    let new_config = new_config.clamped();
     let analytics_enabled = new_config.analytics_enabled;
     if !analytics_enabled {
         analytics::apply_consent(&app_handle, false).map_err(|e| e.to_string())?;
@@ -224,33 +225,38 @@ pub fn register_hotkey(app_handle: AppHandle, shortcut_str: String) -> Result<()
 
     info!("Windows hotkey registered successfully");
 
+    // Only that a hotkey was set, never which keys.
     let app_handle_clone = app_handle.clone();
-    let shortcut_str_clone = shortcut_str.clone();
     tauri::async_runtime::spawn(async move {
-        let _ = analytics::send_analytics_event(
-            &app_handle_clone,
-            "hotkey_registered",
-            Some(vec![(
-                "hotkey",
-                serde_json::Value::String(shortcut_str_clone),
-            )]),
-        )
-        .await;
+        let _ = analytics::send_analytics_event(&app_handle_clone, "hotkey_registered", None).await;
     });
 
     Ok(())
 }
 
+/// Saves the first-run choices: analytics consent, and (when given) whether
+/// Holdem starts on login, which also updates the Windows startup entry.
 fn persist_analytics_consent(
     config: &Mutex<AppConfig>,
     app_handle: &AppHandle,
     enabled: bool,
+    start_on_login: Option<bool>,
 ) -> Result<(), String> {
     let mut config = config
         .lock()
         .map_err(|e| format!("Failed to lock config: {}", e))?;
     let mut updated = config.clone();
     updated.analytics_enabled = enabled;
+    if let Some(start) = start_on_login {
+        // Compare with the real startup entry, not the stored flag: the
+        // default is "on" but nothing is registered until this choice.
+        let manager = app_handle.autolaunch();
+        if manager.is_enabled().unwrap_or(!start) != start {
+            let result = if start { manager.enable() } else { manager.disable() };
+            result.map_err(|e| e.to_string())?;
+        }
+        updated.autostart = start;
+    }
     updated.save(app_handle)?;
     *config = updated;
     Ok(())
@@ -260,8 +266,9 @@ fn persist_analytics_consent(
 pub fn accept_analytics_consent(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
+    start_on_login: Option<bool>,
 ) -> Result<(), String> {
-    persist_analytics_consent(&config, &app_handle, true)?;
+    persist_analytics_consent(&config, &app_handle, true, start_on_login)?;
     info!("Analytics consent accepted");
     analytics::apply_consent(&app_handle, true).map_err(|e| e.to_string())
 }
@@ -270,11 +277,12 @@ pub fn accept_analytics_consent(
 pub fn decline_analytics_consent(
     config: State<Arc<Mutex<AppConfig>>>,
     app_handle: AppHandle,
+    start_on_login: Option<bool>,
 ) -> Result<(), String> {
     // Stop the live service first so nothing is sent even if persisting fails.
     // No "consent_declined" event is sent: opting out means no further events.
     analytics::apply_consent(&app_handle, false).map_err(|e| e.to_string())?;
-    persist_analytics_consent(&config, &app_handle, false)?;
+    persist_analytics_consent(&config, &app_handle, false, start_on_login)?;
     info!("Analytics consent declined");
     Ok(())
 }

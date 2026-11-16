@@ -1,15 +1,28 @@
 {
   "common": {
-    "close": "Sluiten"
+    "close": "Sluiten",
+    "details": "Details"
   },
   "app": {
     "dropHere": "Hier neerzetten",
-    "files": "{{count}} bestand",
-    "files_one": "{{count}} bestand",
-    "files_other": "{{count}} bestanden",
-    "files_plural": "{{count}} bestanden",
+    "files_one": "{{count}} item",
+    "files_other": "{{count}} items",
     "clear": "Verwijderen",
-    "contextMenuTitle": "Plankacties"
+    "contextMenuTitle": "Plankacties",
+    "clearShelf": "Plank leegmaken ({{count}})",
+    "hide": "Plank verbergen",
+    "undo": "Ongedaan maken",
+    "removed_one": "{{count}} item van de plank gehaald",
+    "removed_other": "{{count}} items van de plank gehaald",
+    "dropFailed_one": "Kan {{count}} item niet toevoegen",
+    "dropFailed_other": "Kan {{count}} items niet toevoegen",
+    "tooLarge_one": "{{count}} bestand groter dan 64 MB is overgeslagen",
+    "tooLarge_other": "{{count}} bestanden groter dan 64 MB zijn overgeslagen",
+    "showFiles": "Items weergeven",
+    "missing_one": "{{count}} item is verplaatst of verwijderd en staat daarom niet meer op de plank",
+    "missing_other": "{{count}} items zijn verplaatst of verwijderd en staan daarom niet meer op de plank",
+    "paste": "Plakken vanaf klembord",
+    "copyAll": "Alle items kopiëren"
   },
   "popup": {
     "itemsSelected": "{{count}} items geselecteerd",
@@ -20,110 +33,296 @@
     "viewMode": "Weergavemodus",
     "removeSelected": "Van de plank halen",
     "files": "Bestanden op de plank",
-    "folder": "Map"
+    "folder": "Map",
+    "empty": "Hier staat nog niets. Zet bestanden hier of op de plank neer.",
+    "open": "Openen",
+    "showInFolder": "Weergeven in map",
+    "copyPath_one": "Pad kopiëren",
+    "copyPath_other": "{{count}} paden kopiëren",
+    "copied_one": "Pad gekopieerd",
+    "copied_other": "{{count}} paden gekopieerd",
+    "actionFailed": "Dat is niet gelukt. Het bestand is mogelijk verplaatst of verwijderd.",
+    "copy": "Kopiëren",
+    "copiedFiles_one": "{{count}} item gekopieerd",
+    "copiedFiles_other": "{{count}} items gekopieerd",
+    "pin": "Vastmaken aan plank",
+    "unpin": "Losmaken",
+    "pinned": "Vastgemaakt",
+    "offline": "Offline",
+    "offlineHint": "Het station of de netwerklocatie van dit item is niet verbonden. Het werkt weer zodra de verbinding terug is.",
+    "rename": "Naam wijzigen",
+    "renameFailed": "Kan de naam van het item niet wijzigen",
+    "renameOwnFile": "Alleen items die Holdem zelf heeft opgeslagen, kunnen een andere naam krijgen. Wijzig de naam van je eigen bestanden in Verkenner.",
+    "renameExists": "Er is al een item met die naam",
+    "renameInUse": "Kan de naam niet wijzigen: het bestand is geopend in een andere app"
   },
   "settings": {
     "title": "Instellingen",
-    "subtitle": "Beheer uw applicatievoorkeuren",
+    "subtitle": "Holdem-voorkeuren",
     "loading": "Instellingen laden...",
-    "loadFailed": "Kan instellingen niet laden",
+    "loadFailed": "Holdem kan de instellingen niet lezen",
     "general": {
-      "title": "Algemene instellingen",
-      "description": "Configureren van start en privacy gedrag",
-      "startup": "Start bij opstarten van het systeem",
-      "startupDesc": "Open de app automatisch wanneer u inlogt",
-      "analytics": "Analytics inschakelen",
-      "analyticsDesc": "Help Holdem te verbeteren door anonieme gebruiksgegevens te delen"
+      "title": "Algemeen",
+      "description": "Opstarten en privacy",
+      "startup": "Holdem starten wanneer je je aanmeldt",
+      "startupDesc": "Opent onopvallend in het systeemvak",
+      "analytics": "Gebruiksgegevens delen",
+      "analyticsDesc": "Stuurt een paar gebruiksgebeurtenissen die aan een willekeurige ID zijn gekoppeld. Nooit bestandsnamen, paden of inhoud."
     },
     "language": {
       "title": "Taal",
-      "description": "Kies uw voorkeurstaal",
-      "label": "Taal weergeven"
+      "description": "Taal die Holdem gebruikt",
+      "label": "Weergavetaal"
     },
     "shortcuts": {
       "title": "Snelkoppelingen",
-      "description": "Aanpassen hoe je omgaat met de app",
-      "showHotkey": "Toon venster sneltoets",
+      "description": "De plank openen met het toetsenbord",
+      "showHotkey": "Sneltoets om de plank weer te geven",
       "pressKeys": "Druk op de toetsen...",
       "set": "Instellen",
       "stop": "Stoppen",
       "clear": "Verwijderen",
       "noneSet": "Niet ingesteld",
       "escToCancel": "Druk op een toetscombinatie, of op Esc om te annuleren",
-      "needsModifier": "Voeg Ctrl, Alt, Shift of Win toe. Alleen F1–F24 werken zonder extra toets."
+      "needsModifier": "Voeg Ctrl, Alt, Shift of Win toe. Alleen F1–F24 werken zonder extra toets.",
+      "inactive": "Deze sneltoets werkt niet. Misschien gebruikt een andere app hem al, dus kies een andere.",
+      "toggleHint": "Druk er nog een keer op om de plank te verbergen."
     },
     "dragDrop": {
       "dragToCopy": "Sleep bestanden naar buiten om ze te kopiëren",
       "shiftToMove": "Houd Shift ingedrukt tijdens dropping om bestanden te verplaatsen"
     },
     "mouse": {
-      "title": "Muis Monitor",
-      "description": "Afstemmen van shakedetectie gevoeligheid",
-      "requiredShakes": "Vereiste Schudden",
+      "title": "Schudden om te openen",
+      "description": "Hoe schudden tijdens het slepen wordt herkend",
+      "requiredShakes": "Vereist aantal keer schudden",
       "shakeThreshold": "Schudafstand (px)",
-      "timeLimit": "Tijdslimiet (ms)",
-      "closeDelay": "Ongebruikte plank verbergen na (ms)",
-      "whitelistTitle": "Toegestane Apps",
-      "whitelistDesc": "Schudden opent de plank alleen als een van deze apps op de voorgrond staat. Accepteert procesnamen (bijv. brave, brave.exe), niet hoofdlettergevoelig. Laat de lijst leeg om alle apps toe te staan.",
+      "timeLimit": "Schudden binnen (seconden)",
+      "closeDelay": "Ongebruikte plank verbergen na (seconden)",
       "addPlaceholder": "Voeg procesnaam toe...",
       "add": "Toevoegen",
-      "removeApp": "{{app}} verwijderen"
+      "removeApp": "{{app}} verwijderen",
+      "blocklistTitle": "Apps waarin de plank niet opent",
+      "blocklistDesc": "Schudden, of tijdens het slepen even aan de schermrand blijven, opent de plank in elke app behalve deze, en nooit in apps op volledig scherm, zoals games. Gebruik procesnamen, bijv. krita of krita.exe.",
+      "onlyIn": "De plank opent momenteel alleen in: {{apps}}",
+      "allowAll": "Toestaan in alle apps",
+      "screenEdge": "Openen aan een schermrand",
+      "screenEdgeDesc": "Houd tijdens het slepen de aanwijzer even tegen deze rand van het scherm om de plank te openen. Met meerdere beeldschermen werkt alleen een buitenrand van het hele bureaublad, en niet de rand waar de taakbalk staat.",
+      "edge": {
+        "off": "Uit",
+        "left": "Linkerrand",
+        "right": "Rechterrand",
+        "top": "Bovenrand"
+      }
     },
     "appearance": {
       "title": "Weergave",
-      "description": "Kies hoe Holdem eruitziet.",
+      "description": "Licht, donker of zoals Windows",
       "system": "Systeem",
       "light": "Licht",
-      "dark": "Donker"
+      "dark": "Donker",
+      "mica": "Doorschijnende vensters",
+      "micaDesc": "Vervaagt wat achter de vensters van Holdem staat, op Windows 11"
     },
     "footer": {
-      "save": "Instellingen opslaan",
       "saving": "Opslaan...",
       "saveFailed": "Instellingen konden niet worden opgeslagen",
       "hotkeyFailed": "Instellingen opgeslagen, maar de sneltoets kon niet worden geregistreerd",
-      "autostartFailed": "Instellingen opgeslagen, maar de opstartinstelling kon niet worden gewijzigd"
-    }
+      "autostartFailed": "Instellingen opgeslagen, maar de opstartinstelling kon niet worden gewijzigd",
+      "autoSave": "Wijzigingen worden automatisch opgeslagen",
+      "saved": "Alle wijzigingen opgeslagen",
+      "hotkeyRefused": "Die sneltoets kon niet worden gebruikt, dus de vorige blijft actief"
+    },
+    "loadFailedHelp": "Start Holdem opnieuw om het nog eens te proberen. Je andere instellingen zijn niet gewijzigd."
   },
   "consent": {
-    "title": "Help ons Holdem te verbeteren",
-    "description": "We willen graag anonieme gebruiksgegevens verzamelen om uw ervaring te verbeteren",
-    "collectTitle": "Wij verzamelen:",
+    "title": "Gebruiksgegevens delen?",
+    "description": "Holdem controleert bij elke start op updates. Verder worden gebruiksgebeurtenissen alleen verstuurd als je ervoor kiest ze te delen.",
+    "collectTitle": "Als je deelt, stuurt Holdem:",
     "collectItems": [
-      "App start evenementen",
-      "Bestanden slepen en neerzetten gebruik",
-      "Prestatiestatistieken van de basisapp"
+      "Wanneer Holdem start, en de versies van Holdem en Windows",
+      "Hoe de plank is geopend (schudden, sneltoets of systeemvak) en welke vensters je opent",
+      "Hoeveel items je toevoegt, eruit sleept, van de plank haalt of wist, en neerzetacties die mislukken (alleen aantallen)",
+      "Wijzigingen in instellingen: starten bij aanmelden aan of uit, en dat er een sneltoets is ingesteld (niet welke toetsen)",
+      "Of er een update is gevonden"
     ],
-    "notCollectTitle": "We verzamelen NIET:",
+    "notCollectTitle": "Nooit verstuurd:",
     "notCollectItems": [
-      "Persoonlijke informatie",
-      "Bestandsinhoud of namen",
-      "Uw surfgeschiedenis"
+      "Bestandsnamen, paden of inhoud",
+      "Tekst, links of afbeeldingen die je neerzet",
+      "Je naam, e-mailadres of accounts"
     ],
-    "decline": "Afwijzen",
-    "accept": "Accepteren",
+    "decline": "Niet delen",
+    "accept": "Gebruiksgegevens delen",
     "changeLater": "Je kunt dit altijd wijzigen in Instellingen.",
-    "summonTip": "Om de plank terug te halen nadat je hem hebt verborgen, schud je de muis heen en weer terwijl je een bestand sleept, of stel je een sneltoets in bij Instellingen."
+    "privacyNote": "Gebeurtenissen gaan naar PostHog (servers in de VS) met een willekeurige ID die op deze pc is gemaakt. PostHog ziet je IP-adres wanneer de app verbinding maakt; Holdem schakelt het opzoeken van de locatie uit.",
+    "startOnLogin": "Holdem starten wanneer ik me aanmeld bij Windows",
+    "webImages": "Als je een afbeelding van een webpagina neerzet, downloadt Holdem die van die website, net zoals je browser zou doen. Links die je neerzet, worden opgeslagen als snelkoppelingen en niet geopend."
+  },
+  "welcome": {
+    "title": "Welkom bij Holdem",
+    "description": "Een kleine plank voor bestanden, afbeeldingen, links en tekst. Zet er nu dingen op neer en sleep ze later naar waar je ze nodig hebt.",
+    "howTitle": "Open de plank wanneer je maar wilt:",
+    "how": [
+      "Schud de muis heen en weer terwijl je iets sleept",
+      "Klik op het Holdem-pictogram in het systeemvak",
+      "Druk op je sneltoets (stel er een in bij Instellingen)"
+    ],
+    "pasteTip": "Iets gekopieerd? Klik op de plank en druk op Ctrl+V om het daar te bewaren.",
+    "next": "Volgende",
+    "hotkeyActive": "Druk op {{hotkey}} (je kunt dit wijzigen bij Instellingen)"
   },
   "updater": {
     "title": "Software-updates",
     "close": "Sluiten",
     "checking": "Controleren op updates...",
     "downloading": "Update downloaden...",
-    "downloadedTitle": "Download voltooid!",
+    "downloadedTitle": "Download voltooid",
     "downloadedDesc": "Installatie voorbereiden...",
     "installing": "Update en herstart applicatie...",
-    "availableTitle": "Update beschikbaar!",
+    "availableTitle": "Update beschikbaar",
     "version": "Versie {{version}}",
     "noNotes": "Geen release notities beschikbaar",
     "releaseNotes": "Release opmerkingen",
-    "latest": "Je gebruikt de nieuwste versie!",
-    "errorTitle": "Fout bij het controleren op updates",
-    "downloadError": "Downloaden en installeren van de update is mislukt: {{error}}",
+    "latest": "Holdem is up-to-date",
+    "errorTitle": "Kan niet controleren op updates",
     "waiting": "Wachten om te controleren op updates...",
-    "restartWarning": "Holdem wordt opnieuw gestart om de update te voltooien. De plank wordt leeggemaakt.",
+    "restartWarning": "Holdem wordt opnieuw gestart om de update te voltooien. De bestanden op de plank blijven staan.",
     "installNow": "Nu installeren",
     "later": "Later",
     "retry": "Opnieuw proberen",
-    "downloadErrorTitle": "Kan de update niet downloaden"
+    "downloadErrorTitle": "Kan de update niet downloaden",
+    "latestVersion": "Holdem {{version}} is up-to-date",
+    "errorHelp": "Controleer je internetverbinding en probeer het opnieuw.",
+    "downloadErrorHelp": "De download is niet voltooid. Probeer het zo meteen opnieuw."
+  },
+  "tray": {
+    "show": "Plank weergeven",
+    "paste": "Klembord toevoegen aan plank",
+    "settings": "Instellingen",
+    "checkUpdates": "Controleren op updates",
+    "quit": "Holdem afsluiten"
+  },
+  "keys": {
+    "enter": "Enter",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "delete": "Delete",
+    "space": "Spatie",
+    "reopenShelf": "Ctrl+Shift+T"
+  },
+  "shelves": {
+    "default": "Plank",
+    "newName": "Plank {{n}}",
+    "new": "Nieuwe plank",
+    "title": "Planken",
+    "switch": "Plank: {{name}}. Andere plank kiezen",
+    "rename": "Naam wijzigen",
+    "delete": "Plank sluiten",
+    "tabHint": "Dubbelklik of druk op F2 om de naam te wijzigen. Klik met rechts voor meer.",
+    "moveTo": "Naar plank verplaatsen",
+    "newShelfWithItems": "Nieuwe plank",
+    "moved_one": "{{count}} item verplaatst naar {{name}}",
+    "moved_other": "{{count}} items verplaatst naar {{name}}",
+    "deleted_one": "Plank en {{count}} item erop gesloten",
+    "deleted_other": "Plank en {{count}} items erop gesloten",
+    "deletedEmpty": "Plank gesloten",
+    "reopen": "Gesloten plank heropenen"
+  },
+  "preview": {
+    "action": "Voorbeeld",
+    "title": "Voorbeeld van {{name}}",
+    "loading": "Voorbeeld laden…",
+    "failed": "Er is geen voorbeeld voor dit item.",
+    "truncated": "Het begin van het bestand wordt weergegeven.",
+    "emptyFolder": "Deze map is leeg.",
+    "more_one": "en nog {{count}}",
+    "more_other": "en nog {{count}}",
+    "position": "{{index}} van {{count}}",
+    "keys": "pijltjes voor volgende, Spatie om te sluiten",
+    "hint": "Spatie voor voorbeeld"
+  },
+  "actions": {
+    "copyToFolder": "Kopiëren naar map…",
+    "compress": "Comprimeren naar ZIP",
+    "compressing": "Comprimeren…",
+    "compressed": "{{name}} toegevoegd aan de plank",
+    "compressFailed": "Kan het ZIP-bestand niet maken",
+    "archiveName": "Archief",
+    "pickFolder": "Kopiëren naar map",
+    "copiedTo_one": "{{count}} item gekopieerd naar {{folder}}",
+    "copiedTo_other": "{{count}} items gekopieerd naar {{folder}}",
+    "copyIncomplete": "Sommige items zijn niet gekopieerd naar {{folder}}"
+  },
+  "image": {
+    "menu": "Afbeelding",
+    "toPng": "Converteren naar PNG",
+    "toJpeg": "Converteren naar JPEG",
+    "percent": "Formaat wijzigen naar {{value}}%",
+    "fit": "Passend maken binnen {{value}} px",
+    "working": "Converteren…",
+    "done_one": "{{count}} afbeelding toegevoegd aan de plank",
+    "done_other": "{{count}} afbeeldingen toegevoegd aan de plank",
+    "failed_one": "Kan {{count}} afbeelding niet converteren",
+    "failed_other": "Kan {{count}} afbeeldingen niet converteren",
+    "animated_one": "{{count}} geanimeerde afbeelding is ongewijzigd gelaten: bij converteren gaat de animatie verloren.",
+    "animated_other": "{{count}} geanimeerde afbeeldingen zijn ongewijzigd gelaten: bij converteren gaat de animatie verloren."
+  },
+  "drop": {
+    "andMore": "{{text}} (+{{count}})",
+    "short": {
+      "unsupported": "Kan dit niet bewaren",
+      "dropTooLarge": "Te veel in één keer",
+      "readFailed": "Kan item niet lezen",
+      "diskFull": "Schijf is vol",
+      "accessDenied": "Opslaan geblokkeerd",
+      "saveFailed": "Kan niet opslaan",
+      "elevatedSource": "Windows blokkeert dit",
+      "holdemElevated": "Draait als admin",
+      "clipboardBusy": "Klembord is bezet",
+      "tooLarge_one": "{{count}} te groot",
+      "tooLarge_other": "{{count}} te groot",
+      "noContents_one": "{{count}} niet ontvangen",
+      "noContents_other": "{{count}} niet ontvangen",
+      "unreadable_one": "{{count}} niet te openen",
+      "unreadable_other": "{{count}} niet te openen",
+      "savedAsLink_one": "{{count}} bewaard als link",
+      "savedAsLink_other": "{{count}} bewaard als links",
+      "alreadyOnShelf_one": "{{count}} al op de plank",
+      "alreadyOnShelf_other": "{{count}} al op de plank"
+    },
+    "full": {
+      "unsupported": "Holdem kan dit soort inhoud niet bewaren.",
+      "tooLarge_one": "{{count}} item is groter dan de limiet van {{limit}} MB.",
+      "tooLarge_other": "{{count}} items zijn groter dan de limiet van {{limit}} MB.",
+      "dropTooLarge": "Sommige items zijn weggelaten: je kunt maximaal {{dropLimit}} MB en {{files}} items in één keer neerzetten.",
+      "noContents_one": "De app heeft {{count}} item niet doorgegeven. Als het een bijlage in de cloud is, download die dan eerst.",
+      "noContents_other": "De app heeft {{count}} items niet doorgegeven. Als het bijlagen in de cloud zijn, download die dan eerst.",
+      "savedAsLink_one": "Kan de afbeelding niet downloaden, dus is in plaats daarvan de link bewaard.",
+      "savedAsLink_other": "Kan {{count}} afbeeldingen niet downloaden, dus zijn in plaats daarvan de links bewaard.",
+      "unreadable_one": "{{count}} item kan niet worden geopend. Het is mogelijk verplaatst, of je hebt geen toegang.",
+      "unreadable_other": "{{count}} items kunnen niet worden geopend. Ze zijn mogelijk verplaatst, of je hebt geen toegang.",
+      "alreadyOnShelf_one": "{{count}} item staat al op deze plank.",
+      "alreadyOnShelf_other": "{{count}} items staan al op deze plank.",
+      "elevatedSource": "Windows blokkeert slepen vanuit apps die als administrator worden uitgevoerd. Kopieer het item daar en druk dan op Ctrl+V op de plank.",
+      "holdemElevated": "Holdem wordt uitgevoerd als administrator, dus Windows blokkeert neerzetten vanuit andere apps. Start Holdem opnieuw op de normale manier.",
+      "clipboardBusy": "Een andere app gebruikt het klembord. Probeer het zo opnieuw.",
+      "diskFull_one": "Er is niet genoeg schijfruimte om het item op te slaan.",
+      "diskFull_other": "Er is niet genoeg schijfruimte om {{count}} items op te slaan.",
+      "accessDenied_one": "Windows heeft het opslaan van het item geblokkeerd. Mogelijk houdt beveiligingssoftware Holdem tegen.",
+      "accessDenied_other": "Windows heeft het opslaan van {{count}} items geblokkeerd. Mogelijk houdt beveiligingssoftware Holdem tegen.",
+      "saveFailed_one": "Kan het item niet opslaan in de map van Holdem.",
+      "saveFailed_other": "Kan {{count}} items niet opslaan in de map van Holdem.",
+      "readFailed_one": "De app is halverwege gestopt met het doorgeven van het item. Probeer het opnieuw.",
+      "readFailed_other": "De app is halverwege gestopt met het doorgeven van {{count}} items. Probeer het opnieuw."
+    },
+    "named": {
+      "tooLarge": "„{{name}}” is groter dan de limiet van {{limit}} MB.",
+      "noContents": "De app heeft „{{name}}” niet doorgegeven. Als het een bijlage in de cloud is, download die dan eerst.",
+      "readFailed": "De app is halverwege gestopt met het doorgeven van „{{name}}”. Probeer het opnieuw.",
+      "unreadable": "„{{name}}” kan niet worden geopend. Het is mogelijk verplaatst, of je hebt geen toegang.",
+      "alreadyOnShelf": "„{{name}}” staat al op deze plank."
+    },
+    "addedAnd": "{{count}} toegevoegd · {{text}}"
   }
 }

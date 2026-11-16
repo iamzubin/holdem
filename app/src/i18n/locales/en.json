@@ -1,15 +1,28 @@
 {
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "details": "Details"
   },
   "app": {
     "dropHere": "Drop here",
-    "files": "{{count}} file",
-    "files_one": "{{count}} file",
-    "files_other": "{{count}} files",
-    "files_plural": "{{count}} files",
+    "files_one": "{{count}} item",
+    "files_other": "{{count}} items",
     "clear": "Clear",
-    "contextMenuTitle": "Shelf actions"
+    "contextMenuTitle": "Shelf actions",
+    "clearShelf": "Clear shelf ({{count}})",
+    "hide": "Hide shelf",
+    "undo": "Undo",
+    "removed_one": "Removed {{count}} item",
+    "removed_other": "Removed {{count}} items",
+    "dropFailed_one": "Couldn't add {{count}} item",
+    "dropFailed_other": "Couldn't add {{count}} items",
+    "tooLarge_one": "{{count}} file over 64 MB was skipped",
+    "tooLarge_other": "{{count}} files over 64 MB were skipped",
+    "showFiles": "Show items",
+    "missing_one": "{{count}} item was moved or deleted, so it left the shelf",
+    "missing_other": "{{count}} items were moved or deleted, so they left the shelf",
+    "paste": "Paste from clipboard",
+    "copyAll": "Copy all items"
   },
   "popup": {
     "itemsSelected": "{{count}} items selected",
@@ -20,110 +33,296 @@
     "viewMode": "View mode",
     "removeSelected": "Remove from shelf",
     "files": "Shelf files",
-    "folder": "Folder"
+    "folder": "Folder",
+    "empty": "Nothing here yet. Drop files here or on the shelf.",
+    "open": "Open",
+    "showInFolder": "Show in folder",
+    "copyPath_one": "Copy path",
+    "copyPath_other": "Copy {{count}} paths",
+    "copied_one": "Path copied",
+    "copied_other": "{{count}} paths copied",
+    "actionFailed": "That didn't work. The file may have been moved or deleted.",
+    "copy": "Copy",
+    "copiedFiles_one": "Copied {{count}} item",
+    "copiedFiles_other": "Copied {{count}} items",
+    "pin": "Pin to shelf",
+    "unpin": "Unpin",
+    "pinned": "Pinned",
+    "offline": "Offline",
+    "offlineHint": "Its drive or network location isn't connected. It will work again once it is.",
+    "rename": "Rename",
+    "renameFailed": "Couldn't rename the item",
+    "renameOwnFile": "Only items Holdem saved itself can be renamed. Rename your own files in File Explorer.",
+    "renameExists": "An item with that name is already there",
+    "renameInUse": "Couldn't rename it: the file is open in another app"
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Manage your application preferences",
+    "subtitle": "Holdem preferences",
     "loading": "Loading settings...",
-    "loadFailed": "Couldn't load settings",
+    "loadFailed": "Holdem couldn't read its settings",
     "general": {
-      "title": "General Settings",
-      "description": "Configure startup and privacy behavior",
-      "startup": "Start on System Startup",
-      "startupDesc": "Automatically launch the app when you sign in",
-      "analytics": "Enable Analytics",
-      "analyticsDesc": "Help improve Holdem by sharing anonymous usage data"
+      "title": "General",
+      "description": "Startup and privacy",
+      "startup": "Start Holdem when you sign in",
+      "startupDesc": "Opens quietly in the system tray",
+      "analytics": "Share usage data",
+      "analyticsDesc": "Sends a few usage events tied to a random ID. Never file names, paths or contents."
     },
     "language": {
       "title": "Language",
-      "description": "Choose your preferred language",
-      "label": "Display Language"
+      "description": "Language used by Holdem",
+      "label": "Display language"
     },
     "shortcuts": {
       "title": "Shortcuts",
-      "description": "Customize how you interact with the app",
-      "showHotkey": "Show Window Hotkey",
+      "description": "Open the shelf from the keyboard",
+      "showHotkey": "Show shelf hotkey",
       "pressKeys": "Press keys...",
       "set": "Set",
       "stop": "Stop",
       "clear": "Clear",
       "noneSet": "None set",
       "escToCancel": "Press a key combination, or Esc to cancel",
-      "needsModifier": "Add Ctrl, Alt, Shift or Win. Only F1–F24 work on their own."
+      "needsModifier": "Add Ctrl, Alt, Shift or Win. Only F1–F24 work on their own.",
+      "inactive": "This hotkey isn't working. Another app may be using it, so pick a different one.",
+      "toggleHint": "Press it again to hide the shelf."
     },
     "dragDrop": {
       "dragToCopy": "Drag files out to copy them",
       "shiftToMove": "Hold Shift while dropping to move files"
     },
     "mouse": {
-      "title": "Mouse Monitor",
-      "description": "Fine-tune shake detection sensitivity",
-      "requiredShakes": "Required Shakes",
+      "title": "Shake to open",
+      "description": "How a shake while dragging is recognized",
+      "requiredShakes": "Required shakes",
       "shakeThreshold": "Shake distance (px)",
-      "timeLimit": "Time Limit (ms)",
-      "closeDelay": "Hide unused shelf after (ms)",
-      "whitelistTitle": "Whitelisted Apps",
-      "whitelistDesc": "Shaking opens the shelf only while one of these apps is in front. Accepts process names (e.g. brave, brave.exe), case-insensitive. Leave the list empty to allow every app.",
+      "timeLimit": "Shake within (seconds)",
+      "closeDelay": "Hide unused shelf after (seconds)",
       "addPlaceholder": "Add process name...",
       "add": "Add",
-      "removeApp": "Remove {{app}}"
+      "removeApp": "Remove {{app}}",
+      "blocklistTitle": "Apps where the shelf doesn't open",
+      "blocklistDesc": "Shaking, or holding a drag at the screen edge, opens the shelf in any app except these, and never in full-screen apps such as games. Use process names, e.g. krita or krita.exe.",
+      "onlyIn": "The shelf currently opens only in: {{apps}}",
+      "allowAll": "Allow in all apps",
+      "screenEdge": "Open at a screen edge",
+      "screenEdgeDesc": "While dragging, hold the pointer against this edge of the screen for a moment to open the shelf. With several monitors, only an outer edge of the whole desktop works, and not the edge where the taskbar is.",
+      "edge": {
+        "off": "Off",
+        "left": "Left edge",
+        "right": "Right edge",
+        "top": "Top edge"
+      }
     },
     "appearance": {
       "title": "Appearance",
-      "description": "Choose how Holdem looks.",
+      "description": "Light, dark or match Windows",
       "system": "System",
       "light": "Light",
-      "dark": "Dark"
+      "dark": "Dark",
+      "mica": "Translucent windows",
+      "micaDesc": "Blurs what's behind Holdem's windows, on Windows 11"
     },
     "footer": {
-      "save": "Save Settings",
       "saving": "Saving...",
       "saveFailed": "Couldn't save settings",
       "hotkeyFailed": "Settings saved, but the hotkey couldn't be registered",
-      "autostartFailed": "Settings saved, but the startup setting couldn't be changed"
-    }
+      "autostartFailed": "Settings saved, but the startup setting couldn't be changed",
+      "autoSave": "Changes are saved automatically",
+      "saved": "All changes saved",
+      "hotkeyRefused": "That hotkey couldn't be used, so the previous one stays"
+    },
+    "loadFailedHelp": "Restart Holdem to try again. Your other settings are not changed."
   },
   "consent": {
-    "title": "Help us improve Holdem",
-    "description": "We'd like to collect anonymous usage data to improve your experience",
-    "collectTitle": "We collect:",
+    "title": "Share usage data?",
+    "description": "Holdem checks for updates each time it starts. Apart from that, usage events are sent only if you choose to share them.",
+    "collectTitle": "If you share, Holdem sends:",
     "collectItems": [
-      "App launch events",
-      "File drag and drop usage",
-      "Basic app performance metrics"
+      "When Holdem starts, and the Holdem and Windows versions",
+      "How the shelf was opened (shake, hotkey or tray) and which windows you open",
+      "How many items you add, drag out, remove or clear, and drops that fail (counts only)",
+      "Settings changes: start on login on or off, and that a hotkey was set (not which keys)",
+      "Whether an update was found"
     ],
-    "notCollectTitle": "We do NOT collect:",
+    "notCollectTitle": "Never sent:",
     "notCollectItems": [
-      "Personal information",
-      "File contents or names",
-      "Your browsing history"
+      "File names, paths or contents",
+      "Text, links or images you drop",
+      "Your name, email or accounts"
     ],
-    "decline": "Decline",
-    "accept": "Accept",
+    "decline": "Don't share",
+    "accept": "Share usage data",
     "changeLater": "You can change this at any time in Settings.",
-    "summonTip": "To bring the shelf back after hiding it, shake the mouse left and right while dragging a file, or set a hotkey in Settings."
+    "privacyNote": "Events go to PostHog (US servers) with a random ID made on this PC. PostHog sees your IP address when the app connects; Holdem turns off location lookup.",
+    "startOnLogin": "Start Holdem when I sign in to Windows",
+    "webImages": "When you drop an image from a web page, Holdem downloads it from that site, as your browser would. Links you drop are saved as shortcuts and not opened."
+  },
+  "welcome": {
+    "title": "Welcome to Holdem",
+    "description": "A small shelf for files, images, links and text. Drop things on it now, drag them out wherever you need them later.",
+    "howTitle": "Open the shelf any time:",
+    "how": [
+      "Shake the mouse left and right while dragging something",
+      "Click the Holdem icon in the system tray",
+      "Press your hotkey (set one in Settings)"
+    ],
+    "pasteTip": "Copied something? Click the shelf and press Ctrl+V to keep it there.",
+    "next": "Next",
+    "hotkeyActive": "Press {{hotkey}} (you can change it in Settings)"
   },
   "updater": {
     "title": "Software Updates",
     "close": "Close",
     "checking": "Checking for updates...",
     "downloading": "Downloading update...",
-    "downloadedTitle": "Download completed!",
+    "downloadedTitle": "Download complete",
     "downloadedDesc": "Preparing to install...",
     "installing": "Installing update and restarting application...",
-    "availableTitle": "Update Available!",
+    "availableTitle": "Update available",
     "version": "Version {{version}}",
     "noNotes": "No release notes available",
     "releaseNotes": "Release Notes",
-    "latest": "You're running the latest version!",
-    "errorTitle": "Error checking for updates",
-    "downloadError": "Failed to download and install update: {{error}}",
+    "latest": "Holdem is up to date",
+    "errorTitle": "Couldn't check for updates",
     "waiting": "Waiting to check for updates...",
-    "restartWarning": "Holdem will restart to finish the update. Files on the shelf will be cleared.",
+    "restartWarning": "Holdem will restart to finish the update. Files on the shelf will still be there.",
     "installNow": "Install now",
     "later": "Later",
     "retry": "Try again",
-    "downloadErrorTitle": "Couldn't download the update"
+    "downloadErrorTitle": "Couldn't download the update",
+    "latestVersion": "Holdem {{version}} is up to date",
+    "errorHelp": "Check your internet connection and try again.",
+    "downloadErrorHelp": "The download didn't finish. Try again in a moment."
+  },
+  "tray": {
+    "show": "Show shelf",
+    "paste": "Add clipboard to shelf",
+    "settings": "Settings",
+    "checkUpdates": "Check for updates",
+    "quit": "Quit Holdem"
+  },
+  "keys": {
+    "enter": "Enter",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "delete": "Del",
+    "space": "Space",
+    "reopenShelf": "Ctrl+Shift+T"
+  },
+  "shelves": {
+    "default": "Shelf",
+    "newName": "Shelf {{n}}",
+    "new": "New shelf",
+    "title": "Shelves",
+    "switch": "Shelf: {{name}}. Switch shelf",
+    "rename": "Rename",
+    "delete": "Close shelf",
+    "tabHint": "Double-click or press F2 to rename. Right-click for more.",
+    "moveTo": "Move to shelf",
+    "newShelfWithItems": "New shelf",
+    "moved_one": "Moved {{count}} item to {{name}}",
+    "moved_other": "Moved {{count}} items to {{name}}",
+    "deleted_one": "Closed the shelf and its {{count}} item",
+    "deleted_other": "Closed the shelf and its {{count}} items",
+    "deletedEmpty": "Shelf closed",
+    "reopen": "Reopen closed shelf"
+  },
+  "preview": {
+    "action": "Preview",
+    "title": "Preview of {{name}}",
+    "loading": "Loading preview…",
+    "failed": "There's no preview for this item.",
+    "truncated": "Showing the beginning of the file.",
+    "emptyFolder": "This folder is empty.",
+    "more_one": "and {{count}} more",
+    "more_other": "and {{count}} more",
+    "position": "{{index}} of {{count}}",
+    "keys": "arrows for next, Space to close",
+    "hint": "Space to preview"
+  },
+  "actions": {
+    "copyToFolder": "Copy to folder…",
+    "compress": "Compress to ZIP",
+    "compressing": "Compressing…",
+    "compressed": "Added {{name}} to the shelf",
+    "compressFailed": "Couldn't create the ZIP file",
+    "archiveName": "Archive",
+    "pickFolder": "Copy to folder",
+    "copiedTo_one": "Copied {{count}} item to {{folder}}",
+    "copiedTo_other": "Copied {{count}} items to {{folder}}",
+    "copyIncomplete": "Some items weren't copied to {{folder}}"
+  },
+  "image": {
+    "menu": "Image",
+    "toPng": "Convert to PNG",
+    "toJpeg": "Convert to JPEG",
+    "percent": "Resize to {{value}}%",
+    "fit": "Fit within {{value}} px",
+    "working": "Converting…",
+    "done_one": "Added {{count}} image to the shelf",
+    "done_other": "Added {{count}} images to the shelf",
+    "failed_one": "Couldn't convert {{count}} image",
+    "failed_other": "Couldn't convert {{count}} images",
+    "animated_one": "{{count}} animated image was left as it is: converting it would lose the animation.",
+    "animated_other": "{{count}} animated images were left as they are: converting them would lose the animation."
+  },
+  "drop": {
+    "andMore": "{{text}} (+{{count}} more)",
+    "short": {
+      "unsupported": "Can't keep this",
+      "dropTooLarge": "Drop too large",
+      "readFailed": "Couldn't read item",
+      "diskFull": "Disk is full",
+      "accessDenied": "Save was blocked",
+      "saveFailed": "Couldn't save",
+      "elevatedSource": "Blocked by Windows",
+      "holdemElevated": "Running as admin",
+      "clipboardBusy": "Clipboard is busy",
+      "tooLarge_one": "{{count}} too large",
+      "tooLarge_other": "{{count}} too large",
+      "noContents_one": "{{count}} not handed over",
+      "noContents_other": "{{count}} not handed over",
+      "unreadable_one": "{{count}} can't be opened",
+      "unreadable_other": "{{count}} can't be opened",
+      "savedAsLink_one": "{{count}} saved as a link",
+      "savedAsLink_other": "{{count}} saved as links",
+      "alreadyOnShelf_one": "{{count}} already on shelf",
+      "alreadyOnShelf_other": "{{count}} already on shelf"
+    },
+    "full": {
+      "unsupported": "Holdem can't keep this kind of content.",
+      "tooLarge_one": "{{count}} item is over the {{limit}} MB limit.",
+      "tooLarge_other": "{{count}} items are over the {{limit}} MB limit.",
+      "dropTooLarge": "Some items were left out: one drop can hold up to {{dropLimit}} MB and {{files}} items.",
+      "noContents_one": "The app didn't hand over {{count}} item. If it's a cloud attachment, download it first.",
+      "noContents_other": "The app didn't hand over {{count}} items. If they're cloud attachments, download them first.",
+      "savedAsLink_one": "Couldn't download the image, so its link was kept instead.",
+      "savedAsLink_other": "Couldn't download {{count}} images, so their links were kept instead.",
+      "unreadable_one": "{{count}} item can't be opened. It may have moved, or you may not have access.",
+      "unreadable_other": "{{count}} items can't be opened. They may have moved, or you may not have access.",
+      "alreadyOnShelf_one": "{{count}} item is already on this shelf.",
+      "alreadyOnShelf_other": "{{count}} items are already on this shelf.",
+      "elevatedSource": "Windows blocks drags from apps running as administrator. Copy the item there, then press Ctrl+V on the shelf.",
+      "holdemElevated": "Holdem is running as administrator, so Windows blocks drops from other apps. Restart Holdem normally.",
+      "clipboardBusy": "Another app is using the clipboard. Try again in a moment.",
+      "diskFull_one": "There isn't enough disk space to save the item.",
+      "diskFull_other": "There isn't enough disk space to save {{count}} items.",
+      "accessDenied_one": "Windows blocked saving the item. Security software may be stopping Holdem.",
+      "accessDenied_other": "Windows blocked saving {{count}} items. Security software may be stopping Holdem.",
+      "saveFailed_one": "Couldn't save the item to Holdem's folder.",
+      "saveFailed_other": "Couldn't save {{count}} items to Holdem's folder.",
+      "readFailed_one": "The app stopped handing over the item part-way. Try again.",
+      "readFailed_other": "The app stopped handing over {{count}} items part-way. Try again."
+    },
+    "named": {
+      "tooLarge": "“{{name}}” is over the {{limit}} MB limit.",
+      "noContents": "The app didn't hand over “{{name}}”. If it's a cloud attachment, download it first.",
+      "readFailed": "The app stopped handing over “{{name}}” part-way. Try again.",
+      "unreadable": "“{{name}}” can't be opened. It may have moved, or you may not have access.",
+      "alreadyOnShelf": "“{{name}}” is already on this shelf."
+    },
+    "addedAnd": "Added {{count}} · {{text}}"
   }
 }

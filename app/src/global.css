@@ -93,3 +93,27 @@
     --ring: 240 4.9% 83.9%;
   }
 }
+
+/* Windows 11 Mica (src/hooks/useWindowStyle.ts): the window's backdrop shows
+   through a translucent page background. Menus, popovers and inputs keep
+   solid colours so text on them stays readable. Unlayered, so it wins over
+   the theme tokens above. */
+html[data-mica] {
+  background: transparent;
+}
+html[data-mica]:not(.dark) {
+  --background: 240 5.9% 96% / 0.35;
+  --card: 0 0% 100% / 0.45;
+}
+html[data-mica].dark {
+  --background: 0 0% 6% / 0.3;
+  --card: 240 6% 12% / 0.45;
+}
+
+/* Welcome window: the shake-to-open gesture. */
+@keyframes holdem-shake {
+  0%, 100% { transform: translateX(0); }
+  15%, 45% { transform: translateX(-22px) rotate(-6deg); }
+  30%, 60% { transform: translateX(22px) rotate(6deg); }
+  75% { transform: translateX(0); }
+}

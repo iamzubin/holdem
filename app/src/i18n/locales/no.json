@@ -1,15 +1,28 @@
 {
   "common": {
-    "close": "Lukk"
+    "close": "Lukk",
+    "details": "Detaljer"
   },
   "app": {
     "dropHere": "Slipp her",
-    "files": "{{count}} fil",
-    "files_one": "{{count}} fil",
-    "files_other": "{{count}} filer",
-    "files_plural": "{{count}} filer",
+    "files_one": "{{count}} element",
+    "files_other": "{{count}} elementer",
     "clear": "Tøm",
-    "contextMenuTitle": "Hyllehandlinger"
+    "contextMenuTitle": "Hyllehandlinger",
+    "clearShelf": "Tøm hyllen ({{count}})",
+    "hide": "Skjul hyllen",
+    "undo": "Angre",
+    "removed_one": "{{count}} element fjernet fra hyllen",
+    "removed_other": "{{count}} elementer fjernet fra hyllen",
+    "dropFailed_one": "Kunne ikke legge til {{count}} element",
+    "dropFailed_other": "Kunne ikke legge til {{count}} elementer",
+    "tooLarge_one": "{{count}} fil over 64 MB ble hoppet over",
+    "tooLarge_other": "{{count}} filer over 64 MB ble hoppet over",
+    "showFiles": "Vis elementer",
+    "missing_one": "{{count}} element ble flyttet eller slettet og er derfor ikke lenger på hyllen",
+    "missing_other": "{{count}} elementer ble flyttet eller slettet og er derfor ikke lenger på hyllen",
+    "paste": "Lim inn fra utklippstavlen",
+    "copyAll": "Kopier alle elementer"
   },
   "popup": {
     "itemsSelected": "{{count}} elementer valgt",
@@ -20,110 +33,296 @@
     "viewMode": "Visningsmodus",
     "removeSelected": "Fjern fra hyllen",
     "files": "Filer på hyllen",
-    "folder": "Mappe"
+    "folder": "Mappe",
+    "empty": "Ingenting her ennå. Slipp filer her eller på hyllen.",
+    "open": "Åpne",
+    "showInFolder": "Vis i mappe",
+    "copyPath_one": "Kopier bane",
+    "copyPath_other": "Kopier {{count}} baner",
+    "copied_one": "Bane kopiert",
+    "copied_other": "{{count}} baner kopiert",
+    "actionFailed": "Det fungerte ikke. Filen kan ha blitt flyttet eller slettet.",
+    "copy": "Kopier",
+    "copiedFiles_one": "{{count}} element kopiert",
+    "copiedFiles_other": "{{count}} elementer kopiert",
+    "pin": "Fest til hyllen",
+    "unpin": "Løsne",
+    "pinned": "Festet",
+    "offline": "Frakoblet",
+    "offlineHint": "Stasjonen eller nettverksplasseringen til elementet er ikke tilkoblet. Det fungerer igjen når tilkoblingen er tilbake.",
+    "rename": "Gi nytt navn",
+    "renameFailed": "Kunne ikke gi elementet nytt navn",
+    "renameOwnFile": "Bare elementer som Holdem har lagret selv, kan få nytt navn. Gi nytt navn til dine egne filer i Filutforsker.",
+    "renameExists": "Det finnes allerede et element med det navnet",
+    "renameInUse": "Kunne ikke gi nytt navn: filen er åpen i en annen app"
   },
   "settings": {
     "title": "Innstillinger",
-    "subtitle": "Administrer applikasjonsinnstillingene dine",
+    "subtitle": "Holdem-innstillinger",
     "loading": "Laster inn innstillinger...",
-    "loadFailed": "Kunne ikke laste inn innstillingene",
+    "loadFailed": "Holdem kunne ikke lese innstillingene sine",
     "general": {
-      "title": "Generelle innstillinger",
-      "description": "Konfigurer oppstart og personvern",
-      "startup": "Start ved systemoppstart",
-      "startupDesc": "Start appen automatisk når du logger inn",
-      "analytics": "Aktiver analyser",
-      "analyticsDesc": "Hjelp til med å forbedre Holdem ved å dele anonyme bruksdata"
+      "title": "Generelt",
+      "description": "Oppstart og personvern",
+      "startup": "Start Holdem når du logger på",
+      "startupDesc": "Åpnes diskret i systemstatusfeltet",
+      "analytics": "Del bruksdata",
+      "analyticsDesc": "Sender noen få brukshendelser knyttet til en tilfeldig ID. Aldri filnavn, baner eller innhold."
     },
     "language": {
       "title": "Språk",
-      "description": "Velg ditt foretrukne språk",
-      "label": "Vis språk"
+      "description": "Språket Holdem bruker",
+      "label": "Visningsspråk"
     },
     "shortcuts": {
       "title": "Snarveier",
-      "description": "Tilpass hvordan du samhandler med appen",
-      "showHotkey": "Vis hurtigtast for vindu",
+      "description": "Åpne hyllen fra tastaturet",
+      "showHotkey": "Hurtigtast for å vise hyllen",
       "pressKeys": "Tryk på taster...",
       "set": "Angi",
       "stop": "Stopp",
       "clear": "Tøm",
       "noneSet": "Ingen angitt",
       "escToCancel": "Trykk på en tastekombinasjon, eller Esc for å avbryte",
-      "needsModifier": "Legg til Ctrl, Alt, Shift eller Win. Bare F1–F24 fungerer alene."
+      "needsModifier": "Legg til Ctrl, Alt, Shift eller Win. Bare F1–F24 fungerer alene.",
+      "inactive": "Denne hurtigtasten fungerer ikke. En annen app bruker den kanskje, så velg en annen.",
+      "toggleHint": "Trykk på den igjen for å skjule hyllen."
     },
     "dragDrop": {
       "dragToCopy": "Dra filer ut for å kopiere dem",
       "shiftToMove": "Hold Shift mens du dropper for å flytte filer"
     },
     "mouse": {
-      "title": "Mus Monitor",
-      "description": "Følsomhet for full risting",
+      "title": "Rist for å åpne",
+      "description": "Slik gjenkjennes risting mens du drar",
       "requiredShakes": "Nødvendige ristinger",
       "shakeThreshold": "Risteavstand (px)",
-      "timeLimit": "Tidsgrense (ms)",
-      "closeDelay": "Skjul ubrukt hylle etter (ms)",
-      "whitelistTitle": "Hvitelistede apper",
-      "whitelistDesc": "Risting åpner hyllen bare når en av disse appene er i forgrunnen. Godtar prosessnavn (f.eks. brave, brave.exe) og skiller ikke mellom store og små bokstaver. La listen stå tom for å tillate alle apper.",
+      "timeLimit": "Rist innen (sekunder)",
+      "closeDelay": "Skjul ubrukt hylle etter (sekunder)",
       "addPlaceholder": "Legg til prosessnavn...",
       "add": "Legg til",
-      "removeApp": "Fjern {{app}}"
+      "removeApp": "Fjern {{app}}",
+      "blocklistTitle": "Apper der hyllen ikke åpnes",
+      "blocklistDesc": "Når du rister eller holder pekeren ved skjermkanten mens du drar, åpnes hyllen i alle apper unntatt disse, og aldri i apper i fullskjerm, for eksempel spill. Bruk prosessnavn, f.eks. krita eller krita.exe.",
+      "onlyIn": "Hyllen åpnes for øyeblikket bare i: {{apps}}",
+      "allowAll": "Tillat i alle apper",
+      "screenEdge": "Åpne ved en skjermkant",
+      "screenEdgeDesc": "Hold pekeren mot denne kanten av skjermen et øyeblikk mens du drar, for å åpne hyllen. Med flere skjermer fungerer bare en ytterkant av hele skrivebordet, og ikke kanten der oppgavelinjen er.",
+      "edge": {
+        "off": "Av",
+        "left": "Venstre kant",
+        "right": "Høyre kant",
+        "top": "Øvre kant"
+      }
     },
     "appearance": {
       "title": "Utseende",
-      "description": "Velg hvordan Holdem ser ut.",
+      "description": "Lys, mørk eller som Windows",
       "system": "System",
       "light": "Lys",
-      "dark": "Mørk"
+      "dark": "Mørk",
+      "mica": "Gjennomskinnelige vinduer",
+      "micaDesc": "Gjør det som er bak Holdems vinduer uskarpt, på Windows 11"
     },
     "footer": {
-      "save": "Lagre innstillinger",
       "saving": "Lagrer...",
       "saveFailed": "Kunne ikke lagre innstillingene",
       "hotkeyFailed": "Innstillingene er lagret, men hurtigtasten kunne ikke registreres",
-      "autostartFailed": "Innstillingene er lagret, men oppstartsinnstillingen kunne ikke endres"
-    }
+      "autostartFailed": "Innstillingene er lagret, men oppstartsinnstillingen kunne ikke endres",
+      "autoSave": "Endringer lagres automatisk",
+      "saved": "Alle endringer er lagret",
+      "hotkeyRefused": "Hurtigtasten kunne ikke brukes, så den forrige beholdes"
+    },
+    "loadFailedHelp": "Start Holdem på nytt for å prøve igjen. De andre innstillingene dine er ikke endret."
   },
   "consent": {
-    "title": "Hjelp oss med å forbedre Holdem",
-    "description": "Vi vil gjerne samle inn anonyme bruksdata for å forbedre opplevelsen din",
-    "collectTitle": "Vi samler:",
+    "title": "Dele bruksdata?",
+    "description": "Holdem ser etter oppdateringer hver gang programmet starter. Utover det sendes brukshendelser bare hvis du velger å dele dem.",
+    "collectTitle": "Hvis du deler, sender Holdem:",
     "collectItems": [
-      "App start hendelser",
-      "Fildra-og-slipp bruk",
-      "Grunnleggende app ytelse måltall"
+      "Når Holdem starter, og versjonene av Holdem og Windows",
+      "Hvordan hyllen ble åpnet (risting, hurtigtast eller systemstatusfeltet) og hvilke vinduer du åpner",
+      "Hvor mange elementer du legger til, drar ut, fjerner eller tømmer, og slipp som mislykkes (bare antall)",
+      "Endringer i innstillinger: start ved pålogging av eller på, og at en hurtigtast ble angitt (ikke hvilke taster)",
+      "Om en oppdatering ble funnet"
     ],
-    "notCollectTitle": "Vi samler ikke:",
+    "notCollectTitle": "Sendes aldri:",
     "notCollectItems": [
-      "Personlig informasjon",
-      "Filinnhold eller navn",
-      "Historikk for surfing"
+      "Filnavn, baner eller innhold",
+      "Tekst, lenker eller bilder du slipper",
+      "Navnet ditt, e-postadressen din eller kontoene dine"
     ],
-    "decline": "Avslå",
-    "accept": "Godta",
+    "decline": "Ikke del",
+    "accept": "Del bruksdata",
     "changeLater": "Du kan når som helst endre dette i Innstillinger.",
-    "summonTip": "For å få frem hyllen igjen etter at du har skjult den, rister du musen fra side til side mens du drar en fil, eller angir en hurtigtast i Innstillinger."
+    "privacyNote": "Hendelsene sendes til PostHog (servere i USA) med en tilfeldig ID laget på denne PC-en. PostHog ser IP-adressen din når appen kobler til; Holdem slår av stedsoppslag.",
+    "startOnLogin": "Start Holdem når jeg logger på Windows",
+    "webImages": "Når du slipper et bilde fra en nettside, laster Holdem det ned fra det nettstedet, slik nettleseren din ville gjort. Lenker du slipper, lagres som snarveier og åpnes ikke."
+  },
+  "welcome": {
+    "title": "Velkommen til Holdem",
+    "description": "En liten hylle for filer, bilder, lenker og tekst. Slipp ting på den nå, og dra dem senere dit du trenger dem.",
+    "howTitle": "Åpne hyllen når som helst:",
+    "how": [
+      "Rist musen fra side til side mens du drar noe",
+      "Klikk på Holdem-ikonet i systemstatusfeltet",
+      "Trykk på hurtigtasten din (angi en i Innstillinger)"
+    ],
+    "pasteTip": "Har du kopiert noe? Klikk på hyllen og trykk Ctrl+V for å ha det der.",
+    "next": "Neste",
+    "hotkeyActive": "Trykk på {{hotkey}} (du kan endre den i Innstillinger)"
   },
   "updater": {
     "title": "Programvare oppdateringer",
     "close": "Lukk",
     "checking": "Ser etter oppdateringer...",
     "downloading": "Laster ned oppdatering...",
-    "downloadedTitle": "Nedlasting fullført!",
+    "downloadedTitle": "Nedlastingen er fullført",
     "downloadedDesc": "Forbereder til å installere...",
     "installing": "Installerer oppdatering og starter programmet på nytt...",
-    "availableTitle": "Oppdatering tilgjengelig!",
+    "availableTitle": "Oppdatering tilgjengelig",
     "version": "Versjon {{version}}",
     "noNotes": "Ingen utgivelsesnotater tilgjengelig",
     "releaseNotes": "Utgivelsesnotater",
-    "latest": "Du kjører den nyeste versjonen!",
-    "errorTitle": "Feil under søk etter oppdateringer",
-    "downloadError": "Kunne ikke laste ned og installere oppdateringen: {{error}}",
+    "latest": "Holdem er oppdatert",
+    "errorTitle": "Kunne ikke se etter oppdateringer",
     "waiting": "Venter på å se etter oppdateringer...",
-    "restartWarning": "Holdem starter på nytt for å fullføre oppdateringen. Hyllen blir tømt.",
+    "restartWarning": "Holdem starter på nytt for å fullføre oppdateringen. Filene på hyllen vil fortsatt være der.",
     "installNow": "Installer nå",
     "later": "Senere",
     "retry": "Prøv igjen",
-    "downloadErrorTitle": "Kunne ikke laste ned oppdateringen"
+    "downloadErrorTitle": "Kunne ikke laste ned oppdateringen",
+    "latestVersion": "Holdem {{version}} er oppdatert",
+    "errorHelp": "Sjekk internettilkoblingen og prøv igjen.",
+    "downloadErrorHelp": "Nedlastingen ble ikke fullført. Prøv igjen om litt."
+  },
+  "tray": {
+    "show": "Vis hyllen",
+    "paste": "Legg til utklippstavlen i hyllen",
+    "settings": "Innstillinger",
+    "checkUpdates": "Se etter oppdateringer",
+    "quit": "Avslutt Holdem"
+  },
+  "keys": {
+    "enter": "Enter",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "delete": "Del",
+    "space": "Mellomrom",
+    "reopenShelf": "Ctrl+Shift+T"
+  },
+  "shelves": {
+    "default": "Hylle",
+    "newName": "Hylle {{n}}",
+    "new": "Ny hylle",
+    "title": "Hyller",
+    "switch": "Hylle: {{name}}. Bytt hylle",
+    "rename": "Gi nytt navn",
+    "delete": "Lukk hylle",
+    "tabHint": "Dobbeltklikk eller trykk F2 for å gi nytt navn. Høyreklikk for flere valg.",
+    "moveTo": "Flytt til hylle",
+    "newShelfWithItems": "Ny hylle",
+    "moved_one": "{{count}} element flyttet til {{name}}",
+    "moved_other": "{{count}} elementer flyttet til {{name}}",
+    "deleted_one": "Hyllen og {{count}} element på den er lukket",
+    "deleted_other": "Hyllen og {{count}} elementer på den er lukket",
+    "deletedEmpty": "Hyllen er lukket",
+    "reopen": "Åpne lukket hylle igjen"
+  },
+  "preview": {
+    "action": "Forhåndsvisning",
+    "title": "Forhåndsvisning av {{name}}",
+    "loading": "Laster inn forhåndsvisning…",
+    "failed": "Det finnes ingen forhåndsvisning for dette elementet.",
+    "truncated": "Viser begynnelsen av filen.",
+    "emptyFolder": "Denne mappen er tom.",
+    "more_one": "og {{count}} til",
+    "more_other": "og {{count}} til",
+    "position": "{{index}} av {{count}}",
+    "keys": "piltaster for neste, Mellomrom for å lukke",
+    "hint": "Mellomrom for forhåndsvisning"
+  },
+  "actions": {
+    "copyToFolder": "Kopier til mappe…",
+    "compress": "Komprimer til ZIP",
+    "compressing": "Komprimerer…",
+    "compressed": "{{name}} er lagt til i hyllen",
+    "compressFailed": "Kunne ikke opprette ZIP-filen",
+    "archiveName": "Arkiv",
+    "pickFolder": "Kopier til mappe",
+    "copiedTo_one": "{{count}} element kopiert til {{folder}}",
+    "copiedTo_other": "{{count}} elementer kopiert til {{folder}}",
+    "copyIncomplete": "Noen elementer ble ikke kopiert til {{folder}}"
+  },
+  "image": {
+    "menu": "Bilde",
+    "toPng": "Konverter til PNG",
+    "toJpeg": "Konverter til JPEG",
+    "percent": "Endre størrelse til {{value}} %",
+    "fit": "Tilpass til maks {{value}} px",
+    "working": "Konverterer…",
+    "done_one": "{{count}} bilde lagt til i hyllen",
+    "done_other": "{{count}} bilder lagt til i hyllen",
+    "failed_one": "Kunne ikke konvertere {{count}} bilde",
+    "failed_other": "Kunne ikke konvertere {{count}} bilder",
+    "animated_one": "{{count}} animert bilde ble ikke konvertert, fordi animasjonen ellers ville gått tapt.",
+    "animated_other": "{{count}} animerte bilder ble ikke konvertert, fordi animasjonen ellers ville gått tapt."
+  },
+  "drop": {
+    "andMore": "{{text}} (+{{count}})",
+    "short": {
+      "unsupported": "Kan ikke beholde dette",
+      "dropTooLarge": "For mye på én gang",
+      "readFailed": "Kunne ikke lese",
+      "diskFull": "Disken er full",
+      "accessDenied": "Lagring ble blokkert",
+      "saveFailed": "Kunne ikke lagre",
+      "elevatedSource": "Blokkert av Windows",
+      "holdemElevated": "Kjører som admin",
+      "clipboardBusy": "Utklippstavle opptatt",
+      "tooLarge_one": "{{count}} er for stor",
+      "tooLarge_other": "{{count}} er for store",
+      "noContents_one": "{{count}} ikke overført",
+      "noContents_other": "{{count}} ikke overført",
+      "unreadable_one": "{{count}} kan ikke åpnes",
+      "unreadable_other": "{{count}} kan ikke åpnes",
+      "savedAsLink_one": "{{count}} lagret som lenke",
+      "savedAsLink_other": "{{count}} lagret som lenker",
+      "alreadyOnShelf_one": "{{count}} allerede på hyllen",
+      "alreadyOnShelf_other": "{{count}} allerede på hyllen"
+    },
+    "full": {
+      "unsupported": "Holdem kan ikke beholde denne typen innhold.",
+      "tooLarge_one": "{{count}} element er over grensen på {{limit}} MB.",
+      "tooLarge_other": "{{count}} elementer er over grensen på {{limit}} MB.",
+      "dropTooLarge": "Noen elementer ble utelatt: du kan slippe opptil {{dropLimit}} MB og {{files}} elementer om gangen.",
+      "noContents_one": "Appen overførte ikke {{count}} element. Hvis det er et skyvedlegg, må du laste det ned først.",
+      "noContents_other": "Appen overførte ikke {{count}} elementer. Hvis det er skyvedlegg, må du laste dem ned først.",
+      "savedAsLink_one": "Kunne ikke laste ned bildet, så lenken ble beholdt i stedet.",
+      "savedAsLink_other": "Kunne ikke laste ned {{count}} bilder, så lenkene ble beholdt i stedet.",
+      "unreadable_one": "{{count}} element kan ikke åpnes. Det kan ha blitt flyttet, eller du har kanskje ikke tilgang.",
+      "unreadable_other": "{{count}} elementer kan ikke åpnes. De kan ha blitt flyttet, eller du har kanskje ikke tilgang.",
+      "alreadyOnShelf_one": "{{count}} element er allerede på denne hyllen.",
+      "alreadyOnShelf_other": "{{count}} elementer er allerede på denne hyllen.",
+      "elevatedSource": "Windows blokkerer dra fra apper som kjører som administrator. Kopier elementet der, og trykk deretter Ctrl+V på hyllen.",
+      "holdemElevated": "Holdem kjører som administrator, så Windows blokkerer slipp fra andre apper. Start Holdem på nytt på vanlig måte.",
+      "clipboardBusy": "En annen app bruker utklippstavlen. Prøv igjen om et øyeblikk.",
+      "diskFull_one": "Det er ikke nok diskplass til å lagre elementet.",
+      "diskFull_other": "Det er ikke nok diskplass til å lagre {{count}} elementer.",
+      "accessDenied_one": "Windows blokkerte lagringen av elementet. Sikkerhetsprogramvare kan være i veien for Holdem.",
+      "accessDenied_other": "Windows blokkerte lagringen av {{count}} elementer. Sikkerhetsprogramvare kan være i veien for Holdem.",
+      "saveFailed_one": "Kunne ikke lagre elementet i Holdem-mappen.",
+      "saveFailed_other": "Kunne ikke lagre {{count}} elementer i Holdem-mappen.",
+      "readFailed_one": "Appen sluttet å overføre elementet underveis. Prøv igjen.",
+      "readFailed_other": "Appen sluttet å overføre {{count}} elementer underveis. Prøv igjen."
+    },
+    "named": {
+      "tooLarge": "«{{name}}» er over grensen på {{limit}} MB.",
+      "noContents": "Appen overførte ikke «{{name}}». Hvis det er et skyvedlegg, må du laste det ned først.",
+      "readFailed": "Appen sluttet å overføre «{{name}}» underveis. Prøv igjen.",
+      "unreadable": "«{{name}}» kan ikke åpnes. Det kan ha blitt flyttet, eller du har kanskje ikke tilgang.",
+      "alreadyOnShelf": "«{{name}}» er allerede på denne hyllen."
+    },
+    "addedAnd": "Lagt til {{count}} · {{text}}"
   }
 }

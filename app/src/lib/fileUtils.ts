@@ -1,6 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { FilePreview } from "../types.ts";
+import { FilePreview } from "@/types";
 
 /**
  * Draw the drag image: the element's thumbnails stacked like StackedIcons,
@@ -8,7 +7,7 @@ import { FilePreview } from "../types.ts";
  * Returns null when the element has no loaded thumbnails (the backend then
  * uses its default image).
  */
-async function captureElementAsImage(
+export async function captureElementAsImage(
   element: HTMLElement,
   fileCount: number,
 ): Promise<string | null> {
@@ -33,7 +32,7 @@ async function captureElementAsImage(
     // If we have actual preview images, draw them stacked like the StackedIcons component
     if (imageElements.length > 0) {
       const maxToShow = Math.min(imageElements.length, 5);
-      
+
       for (let i = maxToShow - 1; i >= 0; i--) {
         const img = imageElements[i] as HTMLImageElement;
         if (!img.complete || !img.naturalWidth) continue;
@@ -90,67 +89,33 @@ function drawCountBadge(ctx: CanvasRenderingContext2D, canvasSize: number, count
   ctx.fillText(label, cx, cy);
 }
 
-// Store drag image data to be used synchronously
-let pendingDragImage: string | null = null;
-// Store pending files for drag
-let pendingFiles: FilePreview[] = [];
-
-export const prepareDragImage = async (element: HTMLElement, fileCount: number): Promise<void> => {
-  pendingDragImage = await captureElementAsImage(element, fileCount);
-};
-
-export const setPendingFiles = (files: FilePreview[]): void => {
-  pendingFiles = files;
-};
-
 /**
- * Trigger native drag for the pending files.
- * Call this synchronously from mousedown to avoid browser drag conflicts.
+ * Starts the OS drag for `files`, with `dragImage` (a PNG data URL) or the
+ * backend's default image. Must run while the button is still held.
  */
-export const triggerNativeDrag = (): void => {
-  if (pendingFiles.length === 0) {
-    return;
-  }
-
-  const dragImage = pendingDragImage;
-  
-  // Clear after use
-  const filesToDrag = [...pendingFiles];
-  pendingFiles = [];
-  pendingDragImage = null;
-
-  // Focus window first to enable drag from unfocused window
-  const window = getCurrentWindow();
-  window.setFocus().catch((error) => {
-    console.error('Failed to focus window before starting drag:', error);
-  });
-
-  // Start native drag after a small delay to ensure window is focused
-  setTimeout(async () => {
-    if (
-      filesToDrag.length === 1 &&
-      // Dropped text snippets are saved as note_<time>_<id>.txt.
-      filesToDrag[0].name.startsWith('note_') &&
-      filesToDrag[0].name.endsWith('.txt')
-    ) {
-      try {
-        const { readTextFile } = await import('@tauri-apps/plugin-fs');
-        const text = await readTextFile(filesToDrag[0].path);
-        await invoke('start_text_drag', {
-          text,
-          dragImage,
-        });
-        return;
-      } catch (error) {
-        console.error('Failed to read and drag text snippet:', error);
-      }
+export const startNativeDrag = async (
+  files: FilePreview[],
+  dragImage: string | null,
+  /** False for pen and touch, whose contact isn't a held mouse button. */
+  mouse = true,
+): Promise<void> => {
+  // A saved text snippet goes out as text, so it pastes into chats and
+  // editors; the backend reads it by shelf id.
+  if (files.length === 1 && files[0].kind === 'note') {
+    try {
+      await invoke('start_note_drag', { id: files[0].id, dragImage, mouse });
+      return;
+    } catch (error) {
+      console.error('Failed to drag text snippet, dragging the file instead:', error);
     }
-
-    invoke('start_multi_drag', {
-      filePaths: filesToDrag.map((file) => file.path),
+  }
+  try {
+    await invoke('start_multi_drag', {
+      filePaths: files.map((file) => file.path),
       dragImage,
-    }).catch((error) => {
-      console.error('Failed to start native drag:', error);
+      mouse,
     });
-  }, 50);
+  } catch (error) {
+    console.error('Failed to start native drag:', error);
+  }
 };

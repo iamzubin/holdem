@@ -1,15 +1,28 @@
 {
   "common": {
-    "close": "Sulje"
+    "close": "Sulje",
+    "details": "Tiedot"
   },
   "app": {
     "dropHere": "Pudota tähän",
-    "files": "{{count}} tiedosto",
-    "files_one": "{{count}} tiedosto",
-    "files_other": "{{count}} tiedostoa",
-    "files_plural": "{{count}} tiedostoa",
+    "files_one": "{{count}} kohde",
+    "files_other": "{{count}} kohdetta",
     "clear": "Tyhjennä",
-    "contextMenuTitle": "Hyllyn toiminnot"
+    "contextMenuTitle": "Hyllyn toiminnot",
+    "clearShelf": "Tyhjennä hylly ({{count}})",
+    "hide": "Piilota hylly",
+    "undo": "Kumoa",
+    "removed_one": "{{count}} kohde poistettu hyllystä",
+    "removed_other": "{{count}} kohdetta poistettu hyllystä",
+    "dropFailed_one": "{{count}} kohteen lisääminen epäonnistui",
+    "dropFailed_other": "{{count}} kohteen lisääminen epäonnistui",
+    "tooLarge_one": "{{count}} yli 64 Mt:n tiedosto ohitettiin",
+    "tooLarge_other": "{{count}} yli 64 Mt:n tiedostoa ohitettiin",
+    "showFiles": "Näytä kohteet",
+    "missing_one": "{{count}} kohde siirrettiin tai poistettiin, joten se poistui hyllystä",
+    "missing_other": "{{count}} kohdetta siirrettiin tai poistettiin, joten ne poistuivat hyllystä",
+    "paste": "Liitä leikepöydältä",
+    "copyAll": "Kopioi kaikki kohteet"
   },
   "popup": {
     "itemsSelected": "{{count}} kohdetta valittu",
@@ -20,110 +33,296 @@
     "viewMode": "Näkymätila",
     "removeSelected": "Poista hyllystä",
     "files": "Hyllyn tiedostot",
-    "folder": "Kansio"
+    "folder": "Kansio",
+    "empty": "Täällä ei ole vielä mitään. Pudota tiedostoja tähän tai hyllyyn.",
+    "open": "Avaa",
+    "showInFolder": "Näytä kansiossa",
+    "copyPath_one": "Kopioi polku",
+    "copyPath_other": "Kopioi {{count}} polkua",
+    "copied_one": "Polku kopioitu",
+    "copied_other": "{{count}} polkua kopioitu",
+    "actionFailed": "Se ei onnistunut. Tiedosto on ehkä siirretty tai poistettu.",
+    "copy": "Kopioi",
+    "copiedFiles_one": "{{count}} kohde kopioitu",
+    "copiedFiles_other": "{{count}} kohdetta kopioitu",
+    "pin": "Kiinnitä hyllyyn",
+    "unpin": "Irrota",
+    "pinned": "Kiinnitetty",
+    "offline": "Ei yhteyttä",
+    "offlineHint": "Kohteen asema tai verkkosijainti ei ole yhdistettynä. Se toimii taas, kun yhteys palaa.",
+    "rename": "Nimeä uudelleen",
+    "renameFailed": "Kohteen nimeäminen uudelleen epäonnistui",
+    "renameOwnFile": "Vain Holdemin itse tallentamia kohteita voi nimetä uudelleen. Nimeä omat tiedostosi uudelleen Resurssienhallinnassa.",
+    "renameExists": "Samanniminen kohde on jo olemassa",
+    "renameInUse": "Nimeä ei voitu muuttaa: tiedosto on auki toisessa sovelluksessa"
   },
   "settings": {
     "title": "Asetukset",
-    "subtitle": "Hallinnoi sovelluksen asetuksia",
+    "subtitle": "Holdemin asetukset",
     "loading": "Ladataan asetuksia...",
-    "loadFailed": "Asetuksia ei voitu ladata",
+    "loadFailed": "Holdem ei voinut lukea asetuksiaan",
     "general": {
-      "title": "Yleiset Asetukset",
-      "description": "Määritä käynnistys- ja yksityisyyskäyttäytyminen",
-      "startup": "Käynnistä järjestelmän käynnistyessä",
-      "startupDesc": "Käynnistä sovellus automaattisesti kun kirjaudut sisään",
-      "analytics": "Ota Analytiikka Käyttöön",
-      "analyticsDesc": "Auta parantamaan Holdemia jakamalla nimettömiä käyttötietoja"
+      "title": "Yleiset",
+      "description": "Käynnistys ja yksityisyys",
+      "startup": "Käynnistä Holdem, kun kirjaudut sisään",
+      "startupDesc": "Avautuu huomaamattomasti ilmaisinalueelle",
+      "analytics": "Jaa käyttötiedot",
+      "analyticsDesc": "Lähettää muutamia käyttötapahtumia, jotka on liitetty satunnaiseen tunnukseen. Ei koskaan tiedostonimiä, polkuja tai sisältöä."
     },
     "language": {
       "title": "Kieli",
-      "description": "Valitse haluamasi kieli",
-      "label": "Näytä Kieli"
+      "description": "Holdemin käyttämä kieli",
+      "label": "Näyttökieli"
     },
     "shortcuts": {
       "title": "Pikanäppäimet",
-      "description": "Mukauta miten olet vuorovaikutuksessa sovelluksen kanssa",
-      "showHotkey": "Näytä Ikkunan Pikanäppäin",
+      "description": "Avaa hylly näppäimistöllä",
+      "showHotkey": "Hyllyn näyttämisen pikanäppäin",
       "pressKeys": "Paina näppäimiä...",
       "set": "Aseta",
       "stop": "Pysäytä",
       "clear": "Tyhjennä",
       "noneSet": "Ei asetettu",
       "escToCancel": "Paina näppäinyhdistelmää tai peruuta painamalla Esc",
-      "needsModifier": "Lisää Ctrl, Alt, Shift tai Win. Vain F1–F24 toimivat yksinään."
+      "needsModifier": "Lisää Ctrl, Alt, Shift tai Win. Vain F1–F24 toimivat yksinään.",
+      "inactive": "Tämä pikanäppäin ei toimi. Jokin toinen sovellus saattaa käyttää sitä, joten valitse jokin toinen.",
+      "toggleHint": "Piilota hylly painamalla sitä uudelleen."
     },
     "dragDrop": {
       "dragToCopy": "Kopioi tiedostot vetämällä ne ulos",
       "shiftToMove": "Pidä siirto pohjassa siirtääksesi tiedostoja"
     },
     "mouse": {
-      "title": "Hiiren Valvonta",
-      "description": "Hienosäädä ravistuksen havaitsemisherkkyys",
+      "title": "Avaa ravistamalla",
+      "description": "Miten ravistus vedon aikana tunnistetaan",
       "requiredShakes": "Vaaditut ravistukset",
       "shakeThreshold": "Ravistuksen etäisyys (px)",
-      "timeLimit": "Aikaraja (ms)",
-      "closeDelay": "Käyttämättömän hyllyn piilotusviive (ms)",
-      "whitelistTitle": "Sallitut Sovellukset",
-      "whitelistDesc": "Ravistus avaa hyllyn vain, kun jokin näistä sovelluksista on etualalla. Hyväksyy prosessien nimet (esim. brave, brave.exe), kirjainkoolla ei ole väliä. Jätä luettelo tyhjäksi, jos haluat sallia kaikki sovellukset.",
+      "timeLimit": "Ravistuksen aikaraja (sekuntia)",
+      "closeDelay": "Käyttämättömän hyllyn piilotusviive (sekuntia)",
       "addPlaceholder": "Lisää prosessin nimi...",
       "add": "Lisää",
-      "removeApp": "Poista {{app}}"
+      "removeApp": "Poista {{app}}",
+      "blocklistTitle": "Sovellukset, joissa hylly ei avaudu",
+      "blocklistDesc": "Ravistus tai vedon pitäminen näytön reunassa avaa hyllyn missä tahansa sovelluksessa paitsi näissä, eikä koskaan koko näytön sovelluksissa, kuten peleissä. Käytä prosessien nimiä, esim. krita tai krita.exe.",
+      "onlyIn": "Hylly avautuu tällä hetkellä vain näissä: {{apps}}",
+      "allowAll": "Salli kaikissa sovelluksissa",
+      "screenEdge": "Avaa näytön reunasta",
+      "screenEdgeDesc": "Kun vedät, pidä osoitinta hetki tätä näytön reunaa vasten, niin hylly avautuu. Jos näyttöjä on useita, vain koko työpöydän ulkoreuna toimii, eikä se reuna, jossa tehtäväpalkki on.",
+      "edge": {
+        "off": "Ei käytössä",
+        "left": "Vasen reuna",
+        "right": "Oikea reuna",
+        "top": "Yläreuna"
+      }
     },
     "appearance": {
       "title": "Ulkoasu",
-      "description": "Valitse, miltä Holdem näyttää.",
+      "description": "Vaalea, tumma tai Windowsin mukaan",
       "system": "Järjestelmä",
       "light": "Vaalea",
-      "dark": "Tumma"
+      "dark": "Tumma",
+      "mica": "Läpikuultavat ikkunat",
+      "micaDesc": "Sumentaa Holdemin ikkunoiden takana olevan sisällön, Windows 11:ssä"
     },
     "footer": {
-      "save": "Tallenna Asetukset",
       "saving": "Tallennetaan...",
       "saveFailed": "Asetusten tallentaminen epäonnistui",
       "hotkeyFailed": "Asetukset tallennettiin, mutta pikanäppäintä ei voitu rekisteröidä",
-      "autostartFailed": "Asetukset tallennettiin, mutta käynnistysasetusta ei voitu muuttaa"
-    }
+      "autostartFailed": "Asetukset tallennettiin, mutta käynnistysasetusta ei voitu muuttaa",
+      "autoSave": "Muutokset tallennetaan automaattisesti",
+      "saved": "Kaikki muutokset tallennettu",
+      "hotkeyRefused": "Pikanäppäintä ei voitu käyttää, joten edellinen pysyy käytössä"
+    },
+    "loadFailedHelp": "Yritä uudelleen käynnistämällä Holdem uudelleen. Muita asetuksiasi ei ole muutettu."
   },
   "consent": {
-    "title": "Auta meitä parantamaan Holdem",
-    "description": "Haluaisimme kerätä anonyymiä käyttötietoja parantaaksemme kokemustasi",
-    "collectTitle": "Keräämme:",
+    "title": "Jaetaanko käyttötiedot?",
+    "description": "Holdem tarkistaa päivitykset aina käynnistyessään. Muuten käyttötapahtumia lähetetään vain, jos valitset niiden jakamisen.",
+    "collectTitle": "Jos jaat, Holdem lähettää:",
     "collectItems": [
-      "Sovelluksen käynnistystapahtumat",
-      "Tiedoston vedä ja pudota käyttö",
-      "Sovelluksen perussuorituskyvyn mittarit"
+      "Milloin Holdem käynnistyy sekä Holdemin ja Windowsin versiot",
+      "Miten hylly avattiin (ravistus, pikanäppäin tai ilmaisinalue) ja mitä ikkunoita avaat",
+      "Kuinka monta kohdetta lisäät, vedät ulos, poistat tai tyhjennät, sekä epäonnistuneet pudotukset (vain määrät)",
+      "Asetusten muutokset: käynnistys kirjautuessa päällä tai pois sekä se, että pikanäppäin asetettiin (ei mitkä näppäimet)",
+      "Löytyikö päivitys"
     ],
-    "notCollectTitle": "Emme kerää",
+    "notCollectTitle": "Ei koskaan lähetetä:",
     "notCollectItems": [
-      "Henkilökohtaiset tiedot",
-      "Tiedoston sisältö tai nimet",
-      "Sinun selaushistoriasi"
+      "Tiedostonimet, polut tai sisältö",
+      "Pudottamasi tekstit, linkit tai kuvat",
+      "Nimesi, sähköpostiosoitteesi tai tilisi"
     ],
-    "decline": "Hylkää",
-    "accept": "Hyväksy",
+    "decline": "Älä jaa",
+    "accept": "Jaa käyttötiedot",
     "changeLater": "Voit muuttaa tätä milloin tahansa Asetuksissa.",
-    "summonTip": "Saat hyllyn takaisin näkyviin piilottamisen jälkeen ravistamalla hiirtä vasemmalle ja oikealle tiedostoa vetäessäsi tai määrittämällä pikanäppäimen Asetuksissa."
+    "privacyNote": "Tapahtumat lähetetään PostHogille (palvelimet Yhdysvalloissa) tällä tietokoneella luodun satunnaisen tunnuksen kanssa. PostHog näkee IP-osoitteesi, kun sovellus muodostaa yhteyden; Holdem poistaa sijainnin haun käytöstä.",
+    "startOnLogin": "Käynnistä Holdem, kun kirjaudun Windowsiin",
+    "webImages": "Kun pudotat kuvan verkkosivulta, Holdem lataa sen kyseiseltä sivustolta samoin kuin selaimesi tekisi. Pudottamasi linkit tallennetaan pikakuvakkeina, eikä niitä avata."
+  },
+  "welcome": {
+    "title": "Tervetuloa käyttämään Holdemia",
+    "description": "Pieni hylly tiedostoille, kuville, linkeille ja tekstille. Pudota asioita siihen nyt ja vedä ne myöhemmin sinne, missä tarvitset niitä.",
+    "howTitle": "Avaa hylly milloin tahansa:",
+    "how": [
+      "Ravista hiirtä vasemmalle ja oikealle, kun vedät jotain",
+      "Napsauta Holdem-kuvaketta ilmaisinalueella",
+      "Paina pikanäppäintäsi (määritä se Asetuksissa)"
+    ],
+    "pasteTip": "Kopioitko jotain? Napsauta hyllyä ja paina Ctrl+V, niin se säilyy siellä.",
+    "next": "Seuraava",
+    "hotkeyActive": "Paina {{hotkey}} (voit vaihtaa sen Asetuksissa)"
   },
   "updater": {
     "title": "Ohjelmiston Päivitykset",
     "close": "Sulje",
     "checking": "Tarkistetaan päivityksiä...",
     "downloading": "Ladataan päivitystä...",
-    "downloadedTitle": "Lataus suoritettu!",
+    "downloadedTitle": "Lataus valmis",
     "downloadedDesc": "Valmistellaan asennusta...",
     "installing": "Asennetaan päivitystä ja käynnistetään sovellus...",
-    "availableTitle": "Päivitys Saatavilla!",
+    "availableTitle": "Päivitys saatavilla",
     "version": "Versio {{version}}",
     "noNotes": "Julkaisutietoja ei saatavilla",
     "releaseNotes": "Julkaisutiedot",
-    "latest": "Käytössäsi on uusin versio!",
-    "errorTitle": "Virhe päivitysten tarkistuksessa",
-    "downloadError": "Päivityksen lataaminen ja asentaminen epäonnistui: {{error}}",
+    "latest": "Holdem on ajan tasalla",
+    "errorTitle": "Päivitysten tarkistaminen epäonnistui",
     "waiting": "Odotetaan päivitysten tarkistamista...",
-    "restartWarning": "Holdem käynnistyy uudelleen päivityksen viimeistelemiseksi. Hylly tyhjennetään.",
+    "restartWarning": "Holdem käynnistyy uudelleen päivityksen viimeistelemiseksi. Hyllyn tiedostot säilyvät.",
     "installNow": "Asenna nyt",
     "later": "Myöhemmin",
     "retry": "Yritä uudelleen",
-    "downloadErrorTitle": "Päivitystä ei voitu ladata"
+    "downloadErrorTitle": "Päivitystä ei voitu ladata",
+    "latestVersion": "Holdem {{version}} on ajan tasalla",
+    "errorHelp": "Tarkista internetyhteys ja yritä uudelleen.",
+    "downloadErrorHelp": "Lataus ei valmistunut. Yritä hetken kuluttua uudelleen."
+  },
+  "tray": {
+    "show": "Näytä hylly",
+    "paste": "Lisää leikepöytä hyllyyn",
+    "settings": "Asetukset",
+    "checkUpdates": "Tarkista päivitykset",
+    "quit": "Lopeta Holdem"
+  },
+  "keys": {
+    "enter": "Enter",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "delete": "Del",
+    "space": "Välilyönti",
+    "reopenShelf": "Ctrl+Shift+T"
+  },
+  "shelves": {
+    "default": "Hylly",
+    "newName": "Hylly {{n}}",
+    "new": "Uusi hylly",
+    "title": "Hyllyt",
+    "switch": "Hylly: {{name}}. Vaihda hyllyä",
+    "rename": "Nimeä uudelleen",
+    "delete": "Sulje hylly",
+    "tabHint": "Nimeä uudelleen kaksoisnapsauttamalla tai painamalla F2. Lisää toimintoja saat napsauttamalla hiiren kakkospainikkeella.",
+    "moveTo": "Siirrä hyllyyn",
+    "newShelfWithItems": "Uusi hylly",
+    "moved_one": "{{count}} kohde siirretty hyllyyn {{name}}",
+    "moved_other": "{{count}} kohdetta siirretty hyllyyn {{name}}",
+    "deleted_one": "Hylly ja sen {{count}} kohde suljettiin",
+    "deleted_other": "Hylly ja sen {{count}} kohdetta suljettiin",
+    "deletedEmpty": "Hylly suljettiin",
+    "reopen": "Avaa suljettu hylly uudelleen"
+  },
+  "preview": {
+    "action": "Esikatselu",
+    "title": "Esikatselu: {{name}}",
+    "loading": "Ladataan esikatselua…",
+    "failed": "Tälle kohteelle ei ole esikatselua.",
+    "truncated": "Näytetään tiedoston alku.",
+    "emptyFolder": "Tämä kansio on tyhjä.",
+    "more_one": "ja {{count}} muu",
+    "more_other": "ja {{count}} muuta",
+    "position": "{{index}}/{{count}}",
+    "keys": "nuolinäppäimet: seuraava, Välilyönti: sulje",
+    "hint": "Välilyönti: esikatselu"
+  },
+  "actions": {
+    "copyToFolder": "Kopioi kansioon…",
+    "compress": "Pakkaa ZIP-tiedostoksi",
+    "compressing": "Pakataan…",
+    "compressed": "{{name}} lisättiin hyllyyn",
+    "compressFailed": "ZIP-tiedoston luominen epäonnistui",
+    "archiveName": "Arkisto",
+    "pickFolder": "Kopioi kansioon",
+    "copiedTo_one": "{{count}} kohde kopioitu kansioon {{folder}}",
+    "copiedTo_other": "{{count}} kohdetta kopioitu kansioon {{folder}}",
+    "copyIncomplete": "Kaikkia kohteita ei kopioitu kansioon {{folder}}"
+  },
+  "image": {
+    "menu": "Kuva",
+    "toPng": "Muunna PNG-muotoon",
+    "toJpeg": "Muunna JPEG-muotoon",
+    "percent": "Muuta kokoon {{value}} %",
+    "fit": "Enintään {{value}} px",
+    "working": "Muunnetaan…",
+    "done_one": "{{count}} kuva lisättiin hyllyyn",
+    "done_other": "{{count}} kuvaa lisättiin hyllyyn",
+    "failed_one": "{{count}} kuvan muuntaminen epäonnistui",
+    "failed_other": "{{count}} kuvan muuntaminen epäonnistui",
+    "animated_one": "{{count}} animoitu kuva jätettiin ennalleen: muuntaminen hävittäisi animaation.",
+    "animated_other": "{{count}} animoitua kuvaa jätettiin ennalleen: muuntaminen hävittäisi animaation."
+  },
+  "drop": {
+    "andMore": "{{text}} (+{{count}})",
+    "short": {
+      "unsupported": "Ei tuettu",
+      "dropTooLarge": "Liikaa kerralla",
+      "readFailed": "Lukeminen epäonnistui",
+      "diskFull": "Levy on täynnä",
+      "accessDenied": "Tallennus estettiin",
+      "saveFailed": "Tallennus epäonnistui",
+      "elevatedSource": "Windows esti",
+      "holdemElevated": "Järjestelmänvalvojana",
+      "clipboardBusy": "Leikepöytä on varattu",
+      "tooLarge_one": "{{count}} liian suuri",
+      "tooLarge_other": "{{count}} liian suurta",
+      "noContents_one": "{{count}} jäi saamatta",
+      "noContents_other": "{{count}} jäi saamatta",
+      "unreadable_one": "{{count}} ei avaudu",
+      "unreadable_other": "{{count}} ei avaudu",
+      "savedAsLink_one": "{{count}} jäi linkiksi",
+      "savedAsLink_other": "{{count}} jäi linkeiksi",
+      "alreadyOnShelf_one": "{{count}} jo hyllyssä",
+      "alreadyOnShelf_other": "{{count}} jo hyllyssä"
+    },
+    "full": {
+      "unsupported": "Holdem ei voi säilyttää tällaista sisältöä.",
+      "tooLarge_one": "{{count}} kohde ylittää {{limit}} Mt:n rajan.",
+      "tooLarge_other": "{{count}} kohdetta ylittää {{limit}} Mt:n rajan.",
+      "dropTooLarge": "Osa kohteista jätettiin pois: yhdellä pudotuksella voi lisätä enintään {{dropLimit}} Mt ja {{files}} kohdetta.",
+      "noContents_one": "Sovellus ei luovuttanut {{count}} kohdetta. Jos se on pilvessä oleva liite, lataa se ensin.",
+      "noContents_other": "Sovellus ei luovuttanut {{count}} kohdetta. Jos ne ovat pilvessä olevia liitteitä, lataa ne ensin.",
+      "savedAsLink_one": "Kuvaa ei voitu ladata, joten sen linkki säilytettiin.",
+      "savedAsLink_other": "{{count}} kuvaa ei voitu ladata, joten niiden linkit säilytettiin.",
+      "unreadable_one": "{{count}} kohdetta ei voi avata. Se on ehkä siirretty, tai sinulla ei ole käyttöoikeutta.",
+      "unreadable_other": "{{count}} kohdetta ei voi avata. Ne on ehkä siirretty, tai sinulla ei ole käyttöoikeutta.",
+      "alreadyOnShelf_one": "{{count}} kohde on jo tässä hyllyssä.",
+      "alreadyOnShelf_other": "{{count}} kohdetta on jo tässä hyllyssä.",
+      "elevatedSource": "Windows estää vetämisen järjestelmänvalvojana suoritettavista sovelluksista. Kopioi kohde siellä ja paina sitten Ctrl+V hyllyssä.",
+      "holdemElevated": "Holdem on käynnissä järjestelmänvalvojana, joten Windows estää pudotukset muista sovelluksista. Käynnistä Holdem uudelleen tavallisesti.",
+      "clipboardBusy": "Toinen sovellus käyttää leikepöytää. Yritä hetken kuluttua uudelleen.",
+      "diskFull_one": "Levytilaa ei ole tarpeeksi kohteen tallentamiseen.",
+      "diskFull_other": "Levytilaa ei ole tarpeeksi {{count}} kohteen tallentamiseen.",
+      "accessDenied_one": "Windows esti kohteen tallentamisen. Tietoturvaohjelmisto saattaa estää Holdemia.",
+      "accessDenied_other": "Windows esti {{count}} kohteen tallentamisen. Tietoturvaohjelmisto saattaa estää Holdemia.",
+      "saveFailed_one": "Kohteen tallentaminen Holdemin kansioon epäonnistui.",
+      "saveFailed_other": "{{count}} kohteen tallentaminen Holdemin kansioon epäonnistui.",
+      "readFailed_one": "Sovellus lopetti kohteen luovuttamisen kesken. Yritä uudelleen.",
+      "readFailed_other": "Sovellus lopetti {{count}} kohteen luovuttamisen kesken. Yritä uudelleen."
+    },
+    "named": {
+      "tooLarge": "”{{name}}” ylittää {{limit}} Mt:n rajan.",
+      "noContents": "Sovellus ei luovuttanut kohdetta ”{{name}}”. Jos se on pilvessä oleva liite, lataa se ensin.",
+      "readFailed": "Sovellus lopetti kohteen ”{{name}}” luovuttamisen kesken. Yritä uudelleen.",
+      "unreadable": "Kohdetta ”{{name}}” ei voi avata. Se on ehkä siirretty, tai sinulla ei ole käyttöoikeutta.",
+      "alreadyOnShelf": "”{{name}}” on jo tässä hyllyssä."
+    },
+    "addedAnd": "Lisätty {{count}} · {{text}}"
   }
 }

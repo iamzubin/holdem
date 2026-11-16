@@ -13,7 +13,7 @@ use std::{
     path::{Path, PathBuf},
 };
 use windows::{
-    core::{implement, Interface, BOOL, GUID, HRESULT, PCWSTR},
+    core::{implement, w, Interface, BOOL, GUID, HRESULT, PCWSTR},
     Win32::{
         Foundation::{
             GlobalFree, COLORREF, DRAGDROP_S_CANCEL, DRAGDROP_S_DROP,
@@ -25,6 +25,7 @@ use windows::{
             CoCreateInstance, IDataObject, CLSCTX_ALL, DVASPECT_CONTENT, FORMATETC, STGMEDIUM,
             STGMEDIUM_0, TYMED_HGLOBAL,
         },
+        System::DataExchange::RegisterClipboardFormatW,
         System::Memory::{GlobalAlloc, GlobalLock, GlobalUnlock, GHND},
         System::Ole::{
             DoDragDrop, IDropSource, IDropSource_Impl, OleInitialize, CF_HDROP, CF_TEXT,
@@ -104,7 +105,15 @@ pub fn start_drag<W: HasWindowHandle, F: Fn(DragResult, CursorPosition) + Send +
                 DragMode::Move => DROPEFFECT_MOVE,
                 DragMode::CopyOrMove => DROPEFFECT_COPY | DROPEFFECT_MOVE,
             };
-            (get_file_data_object(&paths)?, effects, true)
+            let data_object = get_file_data_object(&paths)?;
+            if matches!(options.mode, DragMode::CopyOrMove) {
+                // Without this, Explorer moves files dropped on the same
+                // drive. Copy stays the default; holding Shift still moves.
+                if let Err(e) = set_preferred_drop_effect(&data_object, DROPEFFECT_COPY) {
+                    log::warn!("Failed to set preferred drop effect: {e:?}");
+                }
+            }
+            (data_object, effects, true)
         }
         DragItem::Data { provider, types } => {
             let text = collect_text(&provider, &types).ok_or(crate::Error::FailedToStartDrag)?;
@@ -126,11 +135,14 @@ pub fn start_drag<W: HasWindowHandle, F: Fn(DragResult, CursorPosition) + Send +
     // Not fatal: the drag already finished, so still report the outcome.
     let _ = unsafe { GetCursorPos(&mut pt) };
 
-    // For file drags an "optimized move" (e.g. Explorer, same volume) legitimately
-    // reports DROPEFFECT_NONE even though the drop happened, so only the
-    // HRESULT is trusted there. For text, a DROPEFFECT_NONE means the target
-    // refused the data.
-    let dropped = drop_result == DRAGDROP_S_DROP && (is_files || out_effect != DROPEFFECT_NONE);
+    // DRAGDROP_S_DROP only says the button was released; a target that
+    // refused the data (the "no" cursor) still ends with it, and
+    // DROPEFFECT_NONE. The one real drop that also reports NONE is a file
+    // "optimized move" (Explorer, same volume), which the target announces
+    // through CFSTR_PERFORMEDDROPEFFECT.
+    let dropped = drop_result == DRAGDROP_S_DROP
+        && (out_effect != DROPEFFECT_NONE
+            || (is_files && performed_drop_effect(&data_object) == Some(DROPEFFECT_MOVE)));
     let result = if dropped {
         DragResult::Dropped
     } else {
@@ -203,7 +215,9 @@ fn get_drag_image(image: Image) -> Option<SHDRAGIMAGE> {
         },
         ptOffset: POINT { x: 0, y: 0 },
         hbmpDragImage: hbitmap,
-        crColorKey: COLORREF(0x00000000),
+        // CLR_NONE: the bitmap's alpha decides what is see-through. A key
+        // of 0 would also punch out every pure-black pixel.
+        crColorKey: COLORREF(0xFFFF_FFFF),
     })
 }
 
@@ -324,6 +338,52 @@ fn set_hglobal(
         }
     }
     result
+}
+
+/// Sets `CFSTR_PREFERREDDROPEFFECT` ("Preferred DropEffect"), which shell
+/// drop targets use as the default operation when the source allows several.
+fn set_preferred_drop_effect(
+    data_object: &IDataObject,
+    effect: DROPEFFECT,
+) -> windows::core::Result<()> {
+    let format = unsafe { RegisterClipboardFormatW(w!("Preferred DropEffect")) };
+    if format == 0 {
+        return Err(windows::core::Error::from_thread());
+    }
+    let bytes = effect.0.to_ne_bytes();
+    let hglobal = alloc_hglobal(bytes.len(), |ptr| unsafe {
+        std::ptr::copy_nonoverlapping(bytes.as_ptr(), ptr, bytes.len());
+    })?;
+    set_hglobal(data_object, CLIPBOARD_FORMAT(format as u16), hglobal)
+}
+
+/// What the drop target says it did (`CFSTR_PERFORMEDDROPEFFECT`), if it
+/// said anything.
+fn performed_drop_effect(data_object: &IDataObject) -> Option<DROPEFFECT> {
+    let format = unsafe { RegisterClipboardFormatW(w!("Performed DropEffect")) };
+    if format == 0 {
+        return None;
+    }
+    let request = FORMATETC {
+        cfFormat: format as u16,
+        ptd: std::ptr::null_mut(),
+        dwAspect: DVASPECT_CONTENT.0,
+        lindex: -1,
+        tymed: TYMED_HGLOBAL.0 as u32,
+    };
+    unsafe {
+        let mut medium = data_object.GetData(&request).ok()?;
+        let hglobal = medium.u.hGlobal;
+        let ptr = GlobalLock(hglobal) as *const u8;
+        let effect = (!ptr.is_null()).then(|| {
+            let mut bytes = [0u8; 4];
+            std::ptr::copy_nonoverlapping(ptr, bytes.as_mut_ptr(), 4);
+            DROPEFFECT(u32::from_ne_bytes(bytes))
+        });
+        let _ = GlobalUnlock(hglobal);
+        windows::Win32::System::Ole::ReleaseStgMedium(&mut medium);
+        effect
+    }
 }
 
 /// An empty shell data object: accepts arbitrary formats via SetData,

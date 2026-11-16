@@ -1,15 +1,23 @@
 {
   "common": {
-    "close": "閉じる"
+    "close": "閉じる",
+    "details": "詳細"
   },
   "app": {
     "dropHere": "ここにドロップ",
-    "files": "{{count}} ファイル",
-    "files_one": "{{count}} ファイル",
-    "files_other": "{{count}} ファイル",
-    "files_plural": "{{count}} ファイル",
+    "files_other": "{{count}} 個の項目",
     "clear": "クリア",
-    "contextMenuTitle": "シェルフの操作"
+    "contextMenuTitle": "シェルフの操作",
+    "clearShelf": "シェルフをクリア ({{count}})",
+    "hide": "シェルフを非表示",
+    "undo": "元に戻す",
+    "removed_other": "{{count}} 個の項目をシェルフから外しました",
+    "dropFailed_other": "{{count}} 個の項目を追加できませんでした",
+    "tooLarge_other": "64 MB を超える {{count}} 個のファイルをスキップしました",
+    "showFiles": "項目を表示",
+    "missing_other": "{{count}} 個の項目が移動または削除されたため、シェルフから外れました",
+    "paste": "クリップボードから貼り付け",
+    "copyAll": "すべての項目をコピー"
   },
   "popup": {
     "itemsSelected": "{{count}} 個の項目を選択中",
@@ -20,110 +28,273 @@
     "viewMode": "表示モード",
     "removeSelected": "シェルフから外す",
     "files": "シェルフ上のファイル",
-    "folder": "フォルダー"
+    "folder": "フォルダー",
+    "empty": "まだ何もありません。ここかシェルフにファイルをドロップしてください。",
+    "open": "開く",
+    "showInFolder": "フォルダーに表示",
+    "copyPath_other": "{{count}} 個のパスをコピー",
+    "copied_other": "{{count}} 個のパスをコピーしました",
+    "actionFailed": "操作できませんでした。ファイルが移動または削除された可能性があります。",
+    "copy": "コピー",
+    "copiedFiles_one": "{{count}} 個の項目をコピーしました",
+    "copiedFiles_other": "{{count}} 個の項目をコピーしました",
+    "pin": "シェルフにピン留め",
+    "unpin": "ピン留めを外す",
+    "pinned": "ピン留め済み",
+    "offline": "オフライン",
+    "offlineHint": "この項目のドライブまたはネットワークの場所が接続されていません。接続されると再び使用できます。",
+    "rename": "名前を変更",
+    "renameFailed": "項目の名前を変更できませんでした",
+    "renameOwnFile": "名前を変更できるのは、Holdem が保存した項目だけです。ご自身のファイルの名前はエクスプローラーで変更してください。",
+    "renameExists": "同じ名前の項目が既にあります",
+    "renameInUse": "名前を変更できませんでした: ファイルが別のアプリで開かれています"
   },
   "settings": {
     "title": "設定",
-    "subtitle": "アプリケーション設定の管理",
+    "subtitle": "Holdem の環境設定",
     "loading": "設定を読み込んでいます...",
-    "loadFailed": "設定を読み込めませんでした",
+    "loadFailed": "Holdem は設定を読み込めませんでした",
     "general": {
-      "title": "全般設定",
-      "description": "スタートアップとプライバシーの動作を設定する",
-      "startup": "システム起動時に開始",
-      "startupDesc": "サインイン時にアプリを自動的に起動します",
-      "analytics": "分析を有効にする",
-      "analyticsDesc": "匿名の使用状況データを共有することでHoldemの改善にご協力ください"
+      "title": "全般",
+      "description": "スタートアップとプライバシー",
+      "startup": "サインイン時に Holdem を起動する",
+      "startupDesc": "通知領域で目立たずに起動します",
+      "analytics": "使用状況データを共有",
+      "analyticsDesc": "ランダムな ID に関連付けられた少数の使用状況イベントを送信します。ファイル名、パス、内容は送信しません。"
     },
     "language": {
       "title": "言語",
-      "description": "お好みの言語を選択してください",
-      "label": "言語の表示"
+      "description": "Holdem の表示に使う言語",
+      "label": "表示言語"
     },
     "shortcuts": {
       "title": "ショートカット",
-      "description": "アプリの操作方法をカスタマイズします",
-      "showHotkey": "ウィンドウのホットキーを表示",
+      "description": "キーボードからシェルフを開きます",
+      "showHotkey": "シェルフを表示するホットキー",
       "pressKeys": "キーを押してください...",
       "set": "設定",
       "stop": "停止",
       "clear": "クリア",
       "noneSet": "未設定",
       "escToCancel": "キーの組み合わせを押すか、Esc でキャンセルします",
-      "needsModifier": "Ctrl、Alt、Shift、Win のいずれかを追加してください。単独で使えるのは F1–F24 のみです。"
+      "needsModifier": "Ctrl、Alt、Shift、Win のいずれかを追加してください。単独で使えるのは F1–F24 のみです。",
+      "inactive": "このホットキーは機能していません。別のアプリで使用されている可能性があるため、別のキーを選んでください。",
+      "toggleHint": "もう一度押すとシェルフが非表示になります。"
     },
     "dragDrop": {
       "dragToCopy": "ファイルを外へドラッグしてコピー",
       "shiftToMove": "ファイルを移動するにはShiftキーを押しながらドロップします"
     },
     "mouse": {
-      "title": "マウスモニター",
-      "description": "シェイク検出感度を微調整する",
+      "title": "振って開く",
+      "description": "ドラッグ中にマウスを振ったときの認識方法",
       "requiredShakes": "必要なシェイク数",
       "shakeThreshold": "シェイクの距離 (px)",
-      "timeLimit": "時間制限 (ms)",
-      "closeDelay": "未使用のシェルフを隠すまでの時間 (ms)",
-      "whitelistTitle": "ホワイトリストに登録されたアプリ",
-      "whitelistDesc": "これらのアプリのいずれかが前面にあるときだけ、シェイクでシェルフが開きます。プロセス名（例: brave、brave.exe）を入力できます。大文字と小文字は区別されません。リストを空にすると、すべてのアプリで有効になります。",
+      "timeLimit": "シェイクの制限時間 (秒)",
+      "closeDelay": "未使用のシェルフを隠すまでの時間 (秒)",
       "addPlaceholder": "プロセス名を追加...",
       "add": "追加",
-      "removeApp": "{{app}} を削除"
+      "removeApp": "{{app}} を削除",
+      "blocklistTitle": "シェルフを開かないアプリ",
+      "blocklistDesc": "シェイクするか、ドラッグしたまま画面の端で止めると、これら以外のすべてのアプリでシェルフが開きます。ゲームなどの全画面アプリでは開きません。プロセス名 (例: krita、krita.exe) を入力してください。",
+      "onlyIn": "現在、シェルフは次のアプリでのみ開きます: {{apps}}",
+      "allowAll": "すべてのアプリで許可",
+      "screenEdge": "画面の端で開く",
+      "screenEdgeDesc": "ドラッグ中にポインターを画面のこの端にしばらく当てると、シェルフが開きます。複数のモニターを使用している場合は、デスクトップ全体の外側の端でのみ機能し、タスク バーがある端では機能しません。",
+      "edge": {
+        "off": "オフ",
+        "left": "左端",
+        "right": "右端",
+        "top": "上端"
+      }
     },
     "appearance": {
       "title": "外観",
-      "description": "Holdem の外観を選択します。",
+      "description": "ライト、ダーク、または Windows に合わせる",
       "system": "システム",
       "light": "ライト",
-      "dark": "ダーク"
+      "dark": "ダーク",
+      "mica": "半透明のウィンドウ",
+      "micaDesc": "Holdem のウィンドウの背後をぼかします (Windows 11)"
     },
     "footer": {
-      "save": "設定を保存",
       "saving": "保存中...",
       "saveFailed": "設定を保存できませんでした",
       "hotkeyFailed": "設定は保存されましたが、ホットキーを登録できませんでした",
-      "autostartFailed": "設定は保存されましたが、自動起動の設定を変更できませんでした"
-    }
+      "autostartFailed": "設定は保存されましたが、自動起動の設定を変更できませんでした",
+      "autoSave": "変更は自動的に保存されます",
+      "saved": "すべての変更を保存しました",
+      "hotkeyRefused": "そのホットキーは使用できないため、以前のホットキーのままです"
+    },
+    "loadFailedHelp": "Holdem を再起動して、もう一度お試しください。ほかの設定は変更されていません。"
   },
   "consent": {
-    "title": "Holdemの改善にご協力ください",
-    "description": "ユーザーエクスペリエンスを向上させるために匿名の使用データを収集します。",
-    "collectTitle": "収集するデータ:",
+    "title": "使用状況データを共有しますか?",
+    "description": "Holdem は起動するたびに更新プログラムを確認します。それ以外の使用状況イベントは、共有を選択した場合にのみ送信されます。",
+    "collectTitle": "共有すると、Holdem は次の情報を送信します:",
     "collectItems": [
-      "アプリ起動イベント",
-      "ファイルのドラッグ＆ドロップの使用法",
-      "基本的なアプリのパフォーマンスメトリック"
+      "Holdem が起動したこと、および Holdem と Windows のバージョン",
+      "シェルフを開いた方法 (シェイク、ホットキー、通知領域) と、開いたウィンドウ",
+      "追加した、ドラッグで取り出した、外した、クリアした項目の数と、失敗したドロップの数 (件数のみ)",
+      "設定の変更: サインイン時の起動のオン/オフ、およびホットキーが設定されたこと (どのキーかは含みません)",
+      "更新プログラムが見つかったかどうか"
     ],
-    "notCollectTitle": "私たちは収集しません:",
+    "notCollectTitle": "送信しない情報:",
     "notCollectItems": [
-      "個人情報",
-      "ファイルの内容または名前",
-      "閲覧履歴"
+      "ファイル名、パス、ファイルの内容",
+      "ドロップしたテキスト、リンク、画像",
+      "名前、メール アドレス、アカウント"
     ],
-    "decline": "同意しない",
-    "accept": "同意する",
+    "decline": "共有しない",
+    "accept": "使用状況データを共有",
     "changeLater": "この設定はいつでも「設定」で変更できます。",
-    "summonTip": "非表示にしたシェルフを再表示するには、ファイルをドラッグしながらマウスを左右に振るか、「設定」でホットキーを設定してください。"
+    "privacyNote": "イベントは、この PC で作成されたランダムな ID とともに PostHog (米国のサーバー) に送信されます。アプリの接続時に PostHog はお使いの IP アドレスを確認できます。Holdem は位置情報の検索をオフにしています。",
+    "startOnLogin": "Windows にサインインしたときに Holdem を起動する",
+    "webImages": "Web ページから画像をドロップすると、Holdem はブラウザーと同じようにそのサイトから画像をダウンロードします。ドロップしたリンクはショートカットとして保存され、開かれることはありません。"
+  },
+  "welcome": {
+    "title": "Holdem へようこそ",
+    "description": "ファイル、画像、リンク、テキストを置いておける小さなシェルフです。今のうちにドロップしておけば、後で必要な場所にドラッグできます。",
+    "howTitle": "シェルフはいつでも開けます:",
+    "how": [
+      "何かをドラッグしながらマウスを左右に振る",
+      "通知領域の Holdem アイコンをクリックする",
+      "ホットキーを押す (「設定」で設定できます)"
+    ],
+    "pasteTip": "何かをコピーしましたか? シェルフをクリックして Ctrl+V を押すと、シェルフに保管できます。",
+    "next": "次へ",
+    "hotkeyActive": "{{hotkey}} を押す (「設定」で変更できます)"
   },
   "updater": {
     "title": "ソフトウェアの更新",
     "close": "閉じる",
     "checking": "アップデートを確認しています...",
     "downloading": "アップデートをダウンロードしています...",
-    "downloadedTitle": "ダウンロード完了！",
+    "downloadedTitle": "ダウンロード完了",
     "downloadedDesc": "インストールを準備しています...",
     "installing": "更新プログラムをインストールしてアプリケーションを再起動...",
-    "availableTitle": "アップデートが利用可能です！",
+    "availableTitle": "アップデートを利用できます",
     "version": "バージョン {{version}}",
     "noNotes": "リリースノートがありません",
     "releaseNotes": "リリースノート",
-    "latest": "最新バージョンを実行しています！",
-    "errorTitle": "アップデートの確認エラー",
-    "downloadError": "アップデートのダウンロードとインストールに失敗しました: {{error}}",
+    "latest": "Holdem は最新です",
+    "errorTitle": "アップデートを確認できませんでした",
     "waiting": "更新の確認を待っています...",
-    "restartWarning": "アップデートを完了するために Holdem が再起動します。シェルフ上のファイルはクリアされます。",
+    "restartWarning": "アップデートを完了するために Holdem が再起動します。シェルフ上のファイルはそのまま残ります。",
     "installNow": "今すぐインストール",
     "later": "後で",
     "retry": "再試行",
-    "downloadErrorTitle": "アップデートをダウンロードできませんでした"
+    "downloadErrorTitle": "アップデートをダウンロードできませんでした",
+    "latestVersion": "Holdem {{version}} は最新です",
+    "errorHelp": "インターネット接続を確認して、もう一度お試しください。",
+    "downloadErrorHelp": "ダウンロードが完了しませんでした。しばらくしてからもう一度お試しください。"
+  },
+  "tray": {
+    "show": "シェルフを表示",
+    "paste": "クリップボードをシェルフに追加",
+    "settings": "設定",
+    "checkUpdates": "アップデートを確認",
+    "quit": "Holdem を終了"
+  },
+  "keys": {
+    "enter": "Enter",
+    "copy": "Ctrl+C",
+    "paste": "Ctrl+V",
+    "delete": "Del",
+    "space": "Space",
+    "reopenShelf": "Ctrl+Shift+T"
+  },
+  "shelves": {
+    "default": "シェルフ",
+    "newName": "シェルフ {{n}}",
+    "new": "新しいシェルフ",
+    "title": "シェルフ",
+    "switch": "シェルフ: {{name}}。シェルフを切り替え",
+    "rename": "名前を変更",
+    "delete": "シェルフを閉じる",
+    "tabHint": "ダブルクリックまたは F2 キーで名前を変更、右クリックでその他の操作。",
+    "moveTo": "シェルフに移動",
+    "newShelfWithItems": "新しいシェルフ",
+    "moved_other": "{{count}} 個の項目を {{name}} に移動しました",
+    "deleted_other": "シェルフと {{count}} 個の項目を閉じました",
+    "deletedEmpty": "シェルフを閉じました",
+    "reopen": "閉じたシェルフを再度開く"
+  },
+  "preview": {
+    "action": "プレビュー",
+    "title": "{{name}} のプレビュー",
+    "loading": "プレビューを読み込み中…",
+    "failed": "この項目のプレビューはありません。",
+    "truncated": "ファイルの先頭部分を表示しています。",
+    "emptyFolder": "このフォルダーは空です。",
+    "more_other": "ほか {{count}} 個",
+    "position": "{{index}} / {{count}}",
+    "keys": "矢印キーで移動、Space で閉じる",
+    "hint": "Space でプレビュー"
+  },
+  "actions": {
+    "copyToFolder": "フォルダーにコピー…",
+    "compress": "ZIP に圧縮",
+    "compressing": "圧縮中…",
+    "compressed": "{{name}} をシェルフに追加しました",
+    "compressFailed": "ZIP ファイルを作成できませんでした",
+    "archiveName": "アーカイブ",
+    "pickFolder": "フォルダーにコピー",
+    "copiedTo_other": "{{count}} 個の項目を {{folder}} にコピーしました",
+    "copyIncomplete": "一部の項目を {{folder}} にコピーできませんでした"
+  },
+  "image": {
+    "menu": "画像",
+    "toPng": "PNG に変換",
+    "toJpeg": "JPEG に変換",
+    "percent": "{{value}}% にサイズ変更",
+    "fit": "{{value}} px 以内に収める",
+    "working": "変換中…",
+    "done_other": "{{count}} 個の画像をシェルフに追加しました",
+    "failed_other": "{{count}} 個の画像を変換できませんでした",
+    "animated_other": "{{count}} 個のアニメーション画像はそのままにしました。変換するとアニメーションが失われるためです。"
+  },
+  "drop": {
+    "andMore": "{{text}} (+{{count}})",
+    "short": {
+      "unsupported": "保管できません",
+      "dropTooLarge": "ドロップが大きすぎます",
+      "readFailed": "読み取れませんでした",
+      "diskFull": "ディスクがいっぱい",
+      "accessDenied": "保存が阻止されました",
+      "saveFailed": "保存できませんでした",
+      "elevatedSource": "Windows がブロック",
+      "holdemElevated": "管理者として実行中",
+      "clipboardBusy": "クリップボード使用中",
+      "tooLarge_other": "{{count}} 個が大きすぎます",
+      "noContents_other": "{{count}} 個を受け取れません",
+      "unreadable_other": "{{count}} 個を開けません",
+      "savedAsLink_other": "{{count}} 個をリンクで保存",
+      "alreadyOnShelf_other": "{{count}} 個は追加済み"
+    },
+    "full": {
+      "unsupported": "Holdem ではこの種類のコンテンツを保管できません。",
+      "tooLarge_other": "{{count}} 個の項目が上限の {{limit}} MB を超えています。",
+      "dropTooLarge": "一部の項目は除外されました。1 回のドロップで扱えるのは {{dropLimit}} MB、{{files}} 個の項目までです。",
+      "noContents_other": "アプリから {{count}} 個の項目が渡されませんでした。クラウド上の添付ファイルの場合は、先にダウンロードしてください。",
+      "savedAsLink_other": "{{count}} 個の画像をダウンロードできなかったため、代わりにリンクを保存しました。",
+      "unreadable_other": "{{count}} 個の項目を開けません。移動されたか、アクセス権がない可能性があります。",
+      "alreadyOnShelf_other": "{{count}} 個の項目は既にこのシェルフにあります。",
+      "elevatedSource": "Windows では、管理者として実行中のアプリからのドラッグはブロックされます。そのアプリで項目をコピーしてから、シェルフで Ctrl+V を押してください。",
+      "holdemElevated": "Holdem が管理者として実行されているため、Windows によって他のアプリからのドロップがブロックされます。Holdem を通常どおり再起動してください。",
+      "clipboardBusy": "別のアプリがクリップボードを使用しています。しばらくしてからもう一度お試しください。",
+      "diskFull_other": "{{count}} 個の項目を保存するためのディスクの空き容量が足りません。",
+      "accessDenied_other": "Windows によって {{count}} 個の項目の保存がブロックされました。セキュリティ ソフトウェアが Holdem を妨げている可能性があります。",
+      "saveFailed_other": "{{count}} 個の項目を Holdem のフォルダーに保存できませんでした。",
+      "readFailed_other": "アプリが {{count}} 個の項目の受け渡しを途中で中止しました。もう一度お試しください。"
+    },
+    "named": {
+      "tooLarge": "「{{name}}」は上限の {{limit}} MB を超えています。",
+      "noContents": "アプリから「{{name}}」が渡されませんでした。クラウド上の添付ファイルの場合は、先にダウンロードしてください。",
+      "readFailed": "アプリが「{{name}}」の受け渡しを途中で中止しました。もう一度お試しください。",
+      "unreadable": "「{{name}}」を開けません。移動されたか、アクセス権がない可能性があります。",
+      "alreadyOnShelf": "「{{name}}」は既にこのシェルフにあります。"
+    },
+    "addedAnd": "{{count}} 個を追加 · {{text}}"
   }
 }
