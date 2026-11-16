@@ -103,17 +103,9 @@
       "add": "Legg til",
       "removeApp": "Fjern {{app}}",
       "blocklistTitle": "Apper der hyllen ikke åpnes",
-      "blocklistDesc": "Når du rister eller holder pekeren ved skjermkanten mens du drar, åpnes hyllen i alle apper unntatt disse, og aldri i apper i fullskjerm, for eksempel spill. Bruk prosessnavn, f.eks. krita eller krita.exe.",
+      "blocklistDesc": "Når du rister mens du drar, åpnes hyllen i alle apper unntatt disse, og aldri i apper i fullskjerm, for eksempel spill. Bruk prosessnavn, f.eks. krita eller krita.exe.",
       "onlyIn": "Hyllen åpnes for øyeblikket bare i: {{apps}}",
-      "allowAll": "Tillat i alle apper",
-      "screenEdge": "Åpne ved en skjermkant",
-      "screenEdgeDesc": "Hold pekeren mot denne kanten av skjermen et øyeblikk mens du drar, for å åpne hyllen. Med flere skjermer fungerer bare en ytterkant av hele skrivebordet, og ikke kanten der oppgavelinjen er.",
-      "edge": {
-        "off": "Av",
-        "left": "Venstre kant",
-        "right": "Høyre kant",
-        "top": "Øvre kant"
-      }
+      "allowAll": "Tillat i alle apper"
     },
     "appearance": {
       "title": "Utseende",

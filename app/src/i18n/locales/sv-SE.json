@@ -103,17 +103,9 @@
       "add": "Lägg till",
       "removeApp": "Ta bort {{app}}",
       "blocklistTitle": "Appar där hyllan inte öppnas",
-      "blocklistDesc": "Skakningar, eller att hålla kvar pekaren vid skärmkanten medan du drar, öppnar hyllan i alla appar utom dessa, och aldrig i appar i helskärm, till exempel spel. Använd processnamn, t.ex. krita eller krita.exe.",
+      "blocklistDesc": "Skakningar öppnar hyllan i alla appar utom dessa, och aldrig i appar i helskärm, till exempel spel. Använd processnamn, t.ex. krita eller krita.exe.",
       "onlyIn": "Hyllan öppnas just nu bara i: {{apps}}",
-      "allowAll": "Tillåt i alla appar",
-      "screenEdge": "Öppna vid en skärmkant",
-      "screenEdgeDesc": "Håll pekaren mot den här skärmkanten en stund medan du drar för att öppna hyllan. Med flera bildskärmar fungerar bara en ytterkant av hela skrivbordet, och inte kanten där aktivitetsfältet finns.",
-      "edge": {
-        "off": "Av",
-        "left": "Vänster kant",
-        "right": "Höger kant",
-        "top": "Överkant"
-      }
+      "allowAll": "Tillåt i alla appar"
     },
     "appearance": {
       "title": "Utseende",

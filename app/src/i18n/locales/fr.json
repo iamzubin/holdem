@@ -103,17 +103,9 @@
       "add": "Ajouter",
       "removeApp": "Supprimer {{app}}",
       "blocklistTitle": "Applications où l'étagère ne s'ouvre pas",
-      "blocklistDesc": "Secouer la souris, ou maintenir un glisser au bord de l'écran, ouvre l'étagère dans toutes les applications sauf celles-ci, et jamais dans les applications en plein écran comme les jeux. Utilisez des noms de processus, par ex. krita ou krita.exe.",
+      "blocklistDesc": "Secouer la souris ouvre l'étagère dans toutes les applications sauf celles-ci, et jamais dans les applications en plein écran comme les jeux. Utilisez des noms de processus, par ex. krita ou krita.exe.",
       "onlyIn": "L'étagère ne s'ouvre actuellement que dans : {{apps}}",
-      "allowAll": "Autoriser dans toutes les applications",
-      "screenEdge": "Ouvrir au bord de l'écran",
-      "screenEdgeDesc": "Pendant un glissement, maintenez le pointeur contre ce bord de l'écran un instant pour ouvrir l'étagère. Avec plusieurs écrans, seul un bord extérieur de l'ensemble du bureau fonctionne, et pas celui où se trouve la barre des tâches.",
-      "edge": {
-        "off": "Désactivé",
-        "left": "Bord gauche",
-        "right": "Bord droit",
-        "top": "Bord supérieur"
-      }
+      "allowAll": "Autoriser dans toutes les applications"
     },
     "appearance": {
       "title": "Apparence",

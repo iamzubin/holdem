@@ -6,6 +6,13 @@ current version lives in `holdem_website/`; the updater manifest
 (`holdem_website/public/update.json`) is synced manually after each
 release — do not hand-edit it.
 
+## [Unreleased]
+
+### Removed
+
+- Opening the shelf by holding a drag against a screen edge, added in
+  3.2.0. Shake while dragging, or press the hotkey, instead.
+
 ## [3.2.0] - 2026-11-16
 
 ### Added

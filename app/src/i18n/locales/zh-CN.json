@@ -96,17 +96,9 @@
       "add": "添加",
       "removeApp": "移除 {{app}}",
       "blocklistTitle": "不打开暂存架的应用",
-      "blocklistDesc": "晃动鼠标或拖动时在屏幕边缘停留，会在除这些应用以外的任何应用中打开暂存架，但在游戏等全屏应用中始终不会打开。请使用进程名称，例如 krita 或 krita.exe。",
+      "blocklistDesc": "晃动鼠标会在除这些应用以外的任何应用中打开暂存架，但在游戏等全屏应用中始终不会打开。请使用进程名称，例如 krita 或 krita.exe。",
       "onlyIn": "目前暂存架仅在以下应用中打开：{{apps}}",
-      "allowAll": "在所有应用中允许",
-      "screenEdge": "在屏幕边缘打开",
-      "screenEdgeDesc": "拖动时，将指针在屏幕的这一边缘停留片刻即可打开暂存架。使用多台显示器时，只有整个桌面的外侧边缘有效，任务栏所在的边缘无效。",
-      "edge": {
-        "off": "关",
-        "left": "左边缘",
-        "right": "右边缘",
-        "top": "上边缘"
-      }
+      "allowAll": "在所有应用中允许"
     },
     "appearance": {
       "title": "外观",

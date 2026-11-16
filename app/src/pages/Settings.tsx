@@ -22,12 +22,7 @@ interface MouseMonitorConfig {
   whitelist: string[];
   /** Apps where shaking never opens the shelf. */
   blocklist: string[];
-  /** Screen edge that opens the shelf when a drag rests against it. */
-  screen_edge: ScreenEdge;
 }
-
-type ScreenEdge = 'off' | 'left' | 'right' | 'top';
-const SCREEN_EDGES: ScreenEdge[] = ['off', 'left', 'right', 'top'];
 
 interface AppConfig {
   mouse_monitor: MouseMonitorConfig;
@@ -124,7 +119,7 @@ export default function SettingsPage() {
     [],
   );
 
-  const updateMouse = useCallback((key: keyof MouseMonitorConfig, value: number | string[] | ScreenEdge) => {
+  const updateMouse = useCallback((key: keyof MouseMonitorConfig, value: number | string[]) => {
     setConfig((current) =>
       current ? { ...current, mouse_monitor: { ...current.mouse_monitor, [key]: value } } : current,
     );
@@ -446,25 +441,6 @@ export default function SettingsPage() {
                   scale={1000}
                   onChange={(value) => updateMouse('window_close_delay', value)}
                 />
-              </div>
-              <div className="mt-5 space-y-2 border-t pt-4">
-                <Label htmlFor="screen_edge">{t('settings.mouse.screenEdge')}</Label>
-                <p id="screen_edge_desc" className="text-xs text-muted-foreground">
-                  {t('settings.mouse.screenEdgeDesc')}
-                </p>
-                <select
-                  id="screen_edge"
-                  aria-describedby="screen_edge_desc"
-                  className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                  value={config.mouse_monitor.screen_edge ?? 'off'}
-                  onChange={(event) => updateMouse('screen_edge', event.target.value as ScreenEdge)}
-                >
-                  {SCREEN_EDGES.map((edge) => (
-                    <option key={edge} value={edge}>
-                      {t(`settings.mouse.edge.${edge}`)}
-                    </option>
-                  ))}
-                </select>
               </div>
               <div className="mt-5 space-y-2 border-t pt-4">
                 <Label htmlFor="new-app">{t('settings.mouse.blocklistTitle')}</Label>

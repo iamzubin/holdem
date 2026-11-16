@@ -103,17 +103,9 @@
       "add": "Toevoegen",
       "removeApp": "{{app}} verwijderen",
       "blocklistTitle": "Apps waarin de plank niet opent",
-      "blocklistDesc": "Schudden, of tijdens het slepen even aan de schermrand blijven, opent de plank in elke app behalve deze, en nooit in apps op volledig scherm, zoals games. Gebruik procesnamen, bijv. krita of krita.exe.",
+      "blocklistDesc": "Schudden opent de plank in elke app behalve deze, en nooit in apps op volledig scherm, zoals games. Gebruik procesnamen, bijv. krita of krita.exe.",
       "onlyIn": "De plank opent momenteel alleen in: {{apps}}",
-      "allowAll": "Toestaan in alle apps",
-      "screenEdge": "Openen aan een schermrand",
-      "screenEdgeDesc": "Houd tijdens het slepen de aanwijzer even tegen deze rand van het scherm om de plank te openen. Met meerdere beeldschermen werkt alleen een buitenrand van het hele bureaublad, en niet de rand waar de taakbalk staat.",
-      "edge": {
-        "off": "Uit",
-        "left": "Linkerrand",
-        "right": "Rechterrand",
-        "top": "Bovenrand"
-      }
+      "allowAll": "Toestaan in alle apps"
     },
     "appearance": {
       "title": "Weergave",
