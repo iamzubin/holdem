@@ -49,7 +49,7 @@ const faqs = [
   },
   {
     q: 'How much does Yoink cost vs Holdem?',
-    a: 'Per the developer site and Mac App Store, Yoink is a $8.99 (US) one-time purchase — also available via Setapp — with a free trial on the developer website. Holdem is MIT-licensed open source: free forever with no trial or paywall.',
+    a: 'Per the developer site and Mac App Store, Yoink is a $8.99 (US) one-time purchase — also available via Setapp — with a free trial on the developer website. Holdem is MIT-licensed open source: free, with no trial or paywall.',
   },
   {
     q: 'Does Holdem work like Yoink’s shelf?',
@@ -225,7 +225,7 @@ export default function VsYoinkPage() {
           <Link href="/vs/droppoint">DropPoint</Link>.
         </p>
 
-        <h2>Pricing: $0 forever vs $8.99 once</h2>
+        <h2>Pricing: $0 vs $8.99 once</h2>
         <p>
           Yoink&apos;s pricing is the friendliest kind of commercial software:
           pay $8.99 once (US Mac App Store pricing; also sold direct and bundled

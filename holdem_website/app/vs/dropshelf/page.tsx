@@ -51,7 +51,7 @@ const faqs = [
   },
   {
     q: 'Is Holdem really a free Dropshelf alternative?',
-    a: 'Yes for the core workflow: shake-to-summon shelf, stash files, drop anywhere. Holdem is MIT-licensed and free forever. Dropshelf is richer (saved/named/colored shelves, URLs, text) but its free tier throttles you and its extras sit behind Pro.',
+    a: 'Yes for the core workflow: shake-to-summon shelf, stash files, drop anywhere. Holdem is MIT-licensed and free. Dropshelf is richer (saved/named/colored shelves, URLs, text) but its free tier throttles you and its extras sit behind Pro.',
   },
   {
     q: 'What can Dropshelf hold that Holdem cannot?',
@@ -67,7 +67,7 @@ const faqs = [
   },
   {
     q: 'Should I pay for Dropshelf Pro or use Holdem?',
-    a: 'If you live in your shelf all day and want saved, named, color-coded shelves with zero waiting, check the Pro price on the Microsoft Store listing — it is a one-time purchase. If you want the core stash-and-go workflow free forever, Holdem covers it.',
+    a: 'If you live in your shelf all day and want saved, named, color-coded shelves with zero waiting, check the Pro price on the Microsoft Store listing — it is a one-time purchase. If you want the core stash-and-go workflow for free, Holdem covers it.',
   },
 ]
 
@@ -110,7 +110,7 @@ export default function VsDropshelfPage() {
           <strong>Verdict:</strong> Power users who want saved, named,
           color-coded shelves should price-check Dropshelf Pro (one-time
           purchase). Everyone else — anyone who just wants to shake, stash, and
-          drop without waiting — gets that free forever with Holdem.
+          drop without waiting — gets that free with Holdem.
         </div>
 
         <h2>Holdem vs Dropshelf: side-by-side</h2>
@@ -238,15 +238,15 @@ export default function VsDropshelfPage() {
 
         <h2>Where Holdem wins</h2>
         <p>
-          Holdem wins on three things: price ($0, forever, no asterisk),
-          friction (no timers, shelf appears at the cursor and vanishes when
-          empty), and footprint (a Tauri/Rust tray app that sips resources and
-          auto-launches). It is also fully open-source under MIT — you can read
-          every line, while Dropshelf&apos;s public repo is issue-only. For the
-          canonical use case — “I&apos;m mid-drag and need somewhere to park
-          this for thirty seconds” — Holdem is complete. Browser-image drops
-          already work, so research-style collect-and-drop flows are covered;
-          only URL/text stashes and multi-shelf organization await the roadmap.
+          Holdem wins on three things: price ($0), friction (no timers, shelf
+          appears at the cursor and vanishes when empty), and footprint (a
+          Tauri/Rust tray app that sips resources and auto-launches). It is also
+          fully open-source under MIT — you can read every line, while
+          Dropshelf&apos;s public repo is issue-only. For the canonical use case
+          — “I&apos;m mid-drag and need somewhere to park this for thirty
+          seconds” — Holdem is complete. Browser-image drops already work, so
+          research-style collect-and-drop flows are covered; only URL/text
+          stashes and multi-shelf organization await the roadmap.
         </p>
 
         <h2>Switching: Dropshelf habits → Holdem</h2>

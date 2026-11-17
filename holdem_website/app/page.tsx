@@ -22,7 +22,7 @@ const TRANSITION_SECTION = {
 const FAQS = [
   {
     q: 'Is Holdem really free?',
-    a: 'Yes. Holdem is 100% free and open-source (MIT). No wait timers, no pro unlocks, no paywall — unlike Dropshelf free tier with its 3-second wait.',
+    a: 'Yes. Holdem is free and open source (MIT), with no wait timers, unlike the Dropshelf free tier with its 3-second wait.',
   },
   {
     q: 'Which Windows versions are supported?',
@@ -498,7 +498,7 @@ export default function Home() {
               href="/pricing"
               className="text-ink-muted hover:text-ink underline"
             >
-              Pricing — free forever
+              Pricing
             </Link>
             <Link
               href="/changelog"

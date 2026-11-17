@@ -99,7 +99,7 @@ export default function DownloadPage() {
 
       <hr className="my-10" />
       <p className="text-ink-subtle text-sm">
-        <Link href="/pricing">Pricing — free forever</Link> •{' '}
+        <Link href="/pricing">Pricing</Link> •{' '}
         <Link href="/changelog">Changelog</Link> •{' '}
         <Link href="/">Homepage →</Link>
       </p>

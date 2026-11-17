@@ -6,7 +6,7 @@
 
 - [How to use Holdem](https://holdem.iamzub.in/docs): install, summon with mouse-shake or global hotkey, stash, navigate, drop. What you can stash, tips, comparisons.
 - [Download](https://holdem.iamzub.in/download): Windows 10/11 x64 installer (.exe). Latest: v3.1.1 — https://github.com/iamzubin/holdem/releases/download/3.1.1/holdem_3.1.1_x64-setup.exe
-- [Pricing — free forever](https://holdem.iamzub.in/pricing): 100% free, MIT open-source. No wait timers, no pro unlocks.
+- [Pricing](https://holdem.iamzub.in/pricing): free, MIT open source. No wait timers.
 - [Changelog](https://holdem.iamzub.in/changelog): v3.1.1 file-drop reliability + thumbnail fixes; v3.1.0 native OLE drops, 25-locale i18n; v3.0.0 first Windows release.
 - [Comparisons](https://holdem.iamzub.in/vs): Holdem vs Mac-only/freemium shelf apps
   - [vs Dropover](https://holdem.iamzub.in/vs/dropover)

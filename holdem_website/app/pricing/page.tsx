@@ -5,22 +5,22 @@ import { ButtonLink } from '../components/ui/button'
 import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
 
 export const metadata: Metadata = {
-  title: 'Pricing — Holdem Is Free Forever',
+  title: 'Pricing | Holdem',
   description:
-    'Holdem pricing: 100% free & open-source, forever. Compare with Dropover Pro ($6.99), Yoink ($8.99), Dropshelf Pro, and DropPoint.',
+    'Holdem is free and open source. Compare its price with Dropover Pro ($6.99), Yoink ($8.99), Dropshelf Pro, and DropPoint.',
   alternates: {
     canonical: 'https://holdem.iamzub.in/pricing',
   },
   openGraph: {
-    title: 'Pricing — Holdem Is Free Forever',
-    description: 'Holdem is free & open-source forever. See how it compares.',
+    title: 'Pricing | Holdem',
+    description: 'Holdem is free and open source. See how it compares.',
     url: 'https://holdem.iamzub.in/pricing',
     images: [
       {
         url: '/og.png',
         width: 1280,
         height: 640,
-        alt: 'Holdem pricing — free forever',
+        alt: 'Holdem pricing',
       },
     ],
     type: 'website',
@@ -36,7 +36,7 @@ const faqSchema = {
       name: 'Is Holdem really free?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. Holdem is MIT-licensed open-source software: free to download, free to use, no wait timers, no pro tier.',
+        text: 'Yes. Holdem is MIT-licensed open-source software: free to download and use, with no wait timers.',
       },
     },
     {
@@ -63,14 +63,12 @@ export default function PricingPage() {
       <p className="text-ink-subtle mt-6 text-sm font-medium tracking-widest uppercase">
         Pricing
       </p>
-      <h1 className="mb-3 text-3xl font-bold md:text-4xl">
-        Holdem is free. Forever.
-      </h1>
+      <h1 className="mb-3 text-3xl font-bold md:text-4xl">Holdem is free.</h1>
       <p className="text-ink-muted">
         Holdem is MIT-licensed open source: free to download, free to use, no
-        wait timers, no “Pro” unlock. If you are comparing shelves, here is what
-        the alternatives cost — checked September 2026, always confirm on the
-        official listing before buying.
+        wait timers. If you are comparing shelves, here is what the alternatives
+        cost — checked September 2026, always confirm on the official listing
+        before buying.
       </p>
 
       <div className="border-hairline mt-8 overflow-x-auto rounded-xl border">
@@ -166,7 +164,7 @@ export default function PricingPage() {
           href={DOWNLOAD_URL_FALLBACK}
           download
         >
-          <Download className="h-5 w-5" /> Download Holdem — $0 forever
+          <Download className="h-5 w-5" /> Download Holdem for free
         </ButtonLink>
       </div>
 

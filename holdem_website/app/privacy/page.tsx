@@ -128,8 +128,7 @@ export default function PrivacyPage() {
         <p>
           Turning usage data off stops all events at once. Events already sent
           stay in PostHog, tied only to the random ID, which isn&apos;t linked
-          to your name, email, or account. You can ask about this data or ask
-          for it to be deleted through the contact link below.
+          to your name, email, or account.
         </p>
       </Section>
 
@@ -194,7 +193,7 @@ export default function PrivacyPage() {
 
       <Section title="Contact">
         <p>
-          Ask about this policy, your data, or deletion by{' '}
+          Ask about this policy by{' '}
           <ExternalLink href={ISSUES_URL}>
             opening an issue on GitHub
           </ExternalLink>

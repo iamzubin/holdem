@@ -49,7 +49,7 @@ const faqs = [
   },
   {
     q: 'Is Holdem really free compared to Dropover?',
-    a: 'Yes. Dropover is a free download with a 14-day full trial; after the trial a 3-second wait applies unless you buy Dropover Pro ($6.99 one-time). Holdem is MIT-licensed open source: free forever, no wait timers, no pro tier.',
+    a: 'Yes. Dropover is a free download with a 14-day full trial; after the trial a 3-second wait applies unless you buy Dropover Pro ($6.99 one-time). Holdem is MIT-licensed open source: free, with no wait timers.',
   },
   {
     q: 'Does Holdem work like Dropover’s shelf?',
@@ -221,7 +221,7 @@ export default function VsDropoverPage() {
           see our <Link href="/vs">full comparison index</Link>.
         </p>
 
-        <h2>Pricing: $0 forever vs $6.99 once</h2>
+        <h2>Pricing: $0 vs $6.99 once</h2>
         <p>
           Dropover follows the classic indie-Mac model: the download is free and
           includes a fully functional 14-day trial. After the trial expires you
@@ -229,8 +229,8 @@ export default function VsDropoverPage() {
           before you can interact with the shelf. Removing it costs $6.99 as a
           one-time in-app purchase (per its Mac App Store listing; verify the
           current price before buying). That is fair pricing for a mature app —
-          but it is still a paywall on the core interaction. Holdem has no
-          trial, no timer, and no paid tier at all: the MIT-licensed code is on{' '}
+          but it is still a paywall on the core interaction. Holdem has no trial
+          and no timer: the MIT-licensed code is on{' '}
           <a
             href="https://github.com/iamzubin/holdem"
             target="_blank"
