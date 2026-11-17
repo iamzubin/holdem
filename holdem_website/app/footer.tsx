@@ -7,6 +7,7 @@ const FOOTER_LINKS = [
   { href: '/pricing', label: 'Pricing' },
   { href: '/changelog', label: 'Changelog' },
   { href: '/docs', label: 'Docs' },
+  { href: '/privacy', label: 'Privacy' },
   { href: '/vs/dropshelf', label: 'Holdem vs Dropshelf' },
   { href: '/vs/droppoint', label: 'Holdem vs DropPoint' },
   { href: '/vs/dropover', label: 'Holdem vs Dropover' },
