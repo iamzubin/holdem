@@ -109,16 +109,18 @@ function DemoSwitcher() {
         <video
           controls
           preload="none"
-          poster="/og.png"
+          muted
+          playsInline
+          poster="/assets/hero-poster.jpg"
           className="border-hairline bg-surface-1 w-full rounded-2xl border shadow-lg"
-          aria-label="Holdem demo video: shake mouse while dragging to summon the floating file shelf on Windows"
+          aria-label="Holdem demo video: the shelf peeks in from the screen edge during a drag, collects files from Explorer, Teams and Edge, and drags them all into an Outlook email"
         >
           <source src="/assets/herovideo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         <figcaption className="text-ink-subtle mt-2 text-sm">
-          Watch: shake to summon the shelf, stash files, drop anywhere on
-          Windows.
+          Collect files from several places onto the shelf, then drag them all
+          out at once.
         </figcaption>
       </figure>
       <div className="mt-1.5 text-center">
