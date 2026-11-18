@@ -2,18 +2,25 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Download } from 'lucide-react'
 import { ButtonLink } from '../components/ui/button'
-import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
+import { StoreBadge } from '../components/store-badge'
+import {
+  DOWNLOAD_URL_FALLBACK,
+  STORE_PRICE,
+  STORE_TRIAL_DAYS,
+  STORE_URL,
+} from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Pricing | Holdem',
   description:
-    'Holdem is free and open source. Compare its price with Dropover Pro ($6.99), Yoink ($8.99), Dropshelf Pro, and DropPoint.',
+    'Holdem is free and open source on GitHub, or $4.99 on the Microsoft Store with a 7-day free trial. Compare it with Dropover Pro ($6.99), Yoink ($8.99), Dropshelf Pro, and DropPoint.',
   alternates: {
     canonical: 'https://holdem.iamzub.in/pricing',
   },
   openGraph: {
     title: 'Pricing | Holdem',
-    description: 'Holdem is free and open source. See how it compares.',
+    description:
+      'Free on GitHub, or $4.99 on the Microsoft Store. See how it compares.',
     url: 'https://holdem.iamzub.in/pricing',
     images: [
       {
@@ -36,7 +43,15 @@ const faqSchema = {
       name: 'Is Holdem really free?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. Holdem is MIT-licensed open-source software: free to download and use, with no wait timers.',
+        text: 'Yes. The GitHub installer is MIT-licensed open-source software, free to download and use, with no wait timers. Holdem is also on the Microsoft Store for $4.99 with a 7-day free trial; it is the same app, and buying it supports development.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Why pay for Holdem on the Microsoft Store?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'The Store version installs and updates through the Microsoft Store, works on every PC signed in to your Microsoft account, and pays for continued development. Features are identical to the free GitHub build.',
       },
     },
     {
@@ -63,12 +78,28 @@ export default function PricingPage() {
       <p className="text-ink-subtle mt-6 text-sm font-medium tracking-widest uppercase">
         Pricing
       </p>
-      <h1 className="mb-3 text-3xl font-bold md:text-4xl">Holdem is free.</h1>
+      <h1 className="mb-3 text-3xl font-bold md:text-4xl">
+        Free, or {STORE_PRICE} if you want to chip in.
+      </h1>
       <p className="text-ink-muted">
-        Holdem is MIT-licensed open source: free to download, free to use, no
-        wait timers. If you are comparing shelves, here is what the alternatives
-        cost — checked September 2026, always confirm on the official listing
-        before buying.
+        Holdem is MIT-licensed open source. The installer on GitHub is free,
+        with nothing locked and no wait timers. The same app is on the{' '}
+        <a
+          href={STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Microsoft Store
+        </a>{' '}
+        for {STORE_PRICE} with a {STORE_TRIAL_DAYS}-day free trial: it updates
+        through the Store, installs on every PC signed in to your Microsoft
+        account, and pays for continued development.
+      </p>
+      <p className="text-ink-muted mt-4">
+        If you are comparing shelves, here is what the alternatives cost —
+        checked September 2026, always confirm on the official listing before
+        buying.
       </p>
 
       <div className="border-hairline mt-8 overflow-x-auto rounded-xl border">
@@ -84,7 +115,8 @@ export default function PricingPage() {
             <tr>
               <td className="px-4 py-3 font-medium">Holdem</td>
               <td className="px-4 py-3">
-                Free, open-source (MIT) — no paywall
+                Free from GitHub (MIT, no paywall), or {STORE_PRICE} one-time on
+                the Microsoft Store with a {STORE_TRIAL_DAYS}-day trial
               </td>
               <td className="px-4 py-3">Windows 10/11</td>
             </tr>
@@ -157,14 +189,15 @@ export default function PricingPage() {
         </table>
       </div>
 
-      <div className="border-hairline bg-surface-1 mt-8 rounded-2xl border p-6 text-center">
+      <div className="border-hairline bg-surface-1 mt-8 flex flex-col items-center justify-center gap-4 rounded-2xl border p-6 sm:flex-row">
+        <StoreBadge />
         <ButtonLink
-          variant="primary"
+          variant="secondary"
           size="lg"
           href={DOWNLOAD_URL_FALLBACK}
           download
         >
-          <Download className="h-5 w-5" /> Download Holdem for free
+          <Download className="h-5 w-5" /> Download free from GitHub
         </ButtonLink>
       </div>
 

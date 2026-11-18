@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
+import { DOWNLOAD_URL_FALLBACK, STORE_URL } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'Docs — How to Use Holdem on Windows',
@@ -43,12 +43,21 @@ export default function DocsPage() {
 
       <h2 className="mt-10 mb-4 text-2xl font-bold">1. Install</h2>
       <p className="text-ink-muted">
-        <a href={DOWNLOAD_URL_FALLBACK} download className="underline">
-          Download Holdem for Windows
+        Get Holdem from the{' '}
+        <a
+          href={STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline"
+        >
+          Microsoft Store
         </a>{' '}
-        (Windows 10/11, 64-bit), run the .exe installer, and Holdem starts
-        running quietly in your system tray. Enable auto-launch so it is ready
-        when you log in.
+        ($4.99, 7-day free trial) or{' '}
+        <a href={DOWNLOAD_URL_FALLBACK} download className="underline">
+          download the free installer
+        </a>{' '}
+        (Windows 10/11, 64-bit). Holdem starts running quietly in your system
+        tray. Enable auto-launch so it is ready when you log in.
       </p>
 
       <h2 className="mt-10 mb-4 text-2xl font-bold">2. Summon the shelf</h2>
@@ -75,13 +84,23 @@ export default function DocsPage() {
 
       <h2 className="mt-10 mb-4 text-2xl font-bold">What you can stash</h2>
       <ul className="text-ink-muted list-disc space-y-2 pl-6">
-        <li>Files and folders from File Explorer</li>
-        <li>Images dragged directly from your web browser</li>
+        <li>Files and folders from File Explorer or any app</li>
         <li>
-          URL and text-snippet drops are on the roadmap — see the{' '}
+          Images and links from your browser (links are saved as shortcuts
+          without visiting the site)
+        </li>
+        <li>Text snippets, saved as text files</li>
+        <li>
+          Email attachments, and emails from classic Outlook as .msg files
+        </li>
+        <li>Images from chat apps</li>
+        <li>Files from ZIP folders, 7-Zip or WinRAR</li>
+        <li>
+          Anything on your clipboard, with Ctrl+V — see the{' '}
           <Link href="/changelog" className="underline">
             changelog
-          </Link>
+          </Link>{' '}
+          for what is new
         </li>
       </ul>
 

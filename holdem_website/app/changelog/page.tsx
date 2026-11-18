@@ -150,8 +150,7 @@ export default function ChangelogPage() {
 
       <h2 className="mt-10 mb-4 text-2xl font-bold">On the roadmap</h2>
       <ul className="text-ink-muted list-disc space-y-2 pl-6">
-        <li>Multiple shelves for different tasks</li>
-        <li>Custom theme and opacity controls</li>
+        <li>Custom opacity controls</li>
       </ul>
 
       <hr className="my-10" />

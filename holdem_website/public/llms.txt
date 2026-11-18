@@ -1,13 +1,13 @@
 # Holdem
 
-> Holdem is the free Dropover for Windows: a free, open-source (MIT) floating file shelf. Shake your mouse while dragging to summon a holding area for files, folders, and browser images — navigate anywhere, then drop them where needed. Windows 10/11 x64. Built with Tauri + Rust.
+> Holdem is the Dropover for Windows: an open-source (MIT) floating file shelf. Free from GitHub, or $4.99 on the Microsoft Store (7-day free trial, same app). Shake your mouse while dragging to summon a holding area for files, folders, images, links and text — navigate anywhere, then drop them where needed. Windows 10 (1809+)/11 x64. Built with Tauri + Rust.
 
 ## Docs
 
 - [How to use Holdem](https://holdem.iamzub.in/docs): install, summon with mouse-shake or global hotkey, stash, navigate, drop. What you can stash, tips, comparisons.
-- [Download](https://holdem.iamzub.in/download): Windows 10/11 x64 installer (.exe). Latest: v3.1.1 — https://github.com/iamzubin/holdem/releases/download/3.1.1/holdem_3.1.1_x64-setup.exe
-- [Pricing](https://holdem.iamzub.in/pricing): free, MIT open source. No wait timers.
-- [Changelog](https://holdem.iamzub.in/changelog): v3.1.1 file-drop reliability + thumbnail fixes; v3.1.0 native OLE drops, 25-locale i18n; v3.0.0 first Windows release.
+- [Download](https://holdem.iamzub.in/download): Microsoft Store (https://apps.microsoft.com/detail/9NPKBTJ0SZ05) or the free Windows 10/11 x64 installer (.exe). Latest: v3.2.0 — https://github.com/iamzubin/holdem/releases/download/3.2.0/holdem_3.2.0_x64-setup.exe
+- [Pricing](https://holdem.iamzub.in/pricing): free from GitHub (MIT, nothing locked, no wait timers), or $4.99 one-time on the Microsoft Store with a 7-day free trial. Same features either way.
+- [Changelog](https://holdem.iamzub.in/changelog): v3.2.0 multiple shelves, persistent shelf, preview, item actions, image resize/convert, paste; v3.1.1 file-drop reliability; v3.1.0 native OLE drops, 25-locale i18n; v3.0.0 first Windows release.
 - [Comparisons](https://holdem.iamzub.in/vs): Holdem vs Mac-only/freemium shelf apps
   - [vs Dropover](https://holdem.iamzub.in/vs/dropover)
   - [vs Dropshelf](https://holdem.iamzub.in/vs/dropshelf)
@@ -17,7 +17,7 @@
 ## How it works
 
 1. Install and launch — Holdem sits in the system tray (enable auto-launch).
-2. Start dragging files in Explorer, then shake the mouse — the shelf appears at your cursor. Or press the global hotkey (customizable).
+2. Start dragging files in Explorer, then shake the mouse — the shelf appears at your cursor. Or press the global hotkey (Win+Shift+H, customizable), or turn on opening it by holding a drag against a screen edge.
 3. Drop files, folders, or browser images onto the shelf; let go of the mouse.
 4. Switch folders, apps, or desktops freely; drag items out to finish. Shelf auto-hides when empty.
 5. Right-click the tray icon for settings, hotkey, and quick actions.
@@ -26,23 +26,24 @@
 
 - Floating always-on-top shelf (draggable, 165x175, skip-taskbar)
 - Shake-to-summon while dragging + global hotkey
-- Native Windows OLE drops: Explorer files/folders, web images, URLs, text snippets
+- Native Windows OLE drops: Explorer files/folders, web images, links, text snippets, email attachments, classic Outlook emails (.msg), chat images, files from ZIP/7-Zip/WinRAR; paste with Ctrl+V
+- Multiple shelves as tabs (Ctrl+Tab); reopen a closed shelf with Ctrl+Shift+T for 7 days; shelf survives restarts
+- Item actions: Space to preview, Ctrl+C copy as files, copy paths, copy to folder, ZIP, pin, undo, F2 rename; image resize and PNG/JPEG convert
+- Light/dark/system theme, Mica on Windows 11; clear messages when a drop fails
 - System-tray integration with settings and quick actions
-- Auto-launch on login + auto-update (update manifest: https://holdem.iamzub.in/update.json)
+- Auto-launch on login + auto-update (GitHub build: https://holdem.iamzub.in/update.json; Store build updates through the Microsoft Store)
 - 25 languages, browser-locale detection, RTL layout
 - Low memory use (Tauri/Rust backend)
 
 ## Roadmap
 
-- URL / text-snippet drops
-- Multiple shelves for different tasks
-- Custom theme and opacity controls
+- Custom opacity controls
 
 ## FAQ
 
-- Is Holdem really free? Yes — MIT open-source, no paywall, no wait timers (unlike Dropshelf free tier).
-- Windows versions? Windows 10 and 11 (x64).
-- Dropover/Dropshelf/Yoink alternative? Yes — those are Mac-only or freemium; Holdem brings the shelf workflow to Windows, free.
+- Is Holdem really free? Yes — the GitHub build is MIT open-source with no paywall or wait timers. The Microsoft Store version ($4.99, 7-day trial) is the same app; buying it supports development.
+- Windows versions? Windows 10 version 1809 or later and Windows 11 (x64).
+- Dropover/Dropshelf/Yoink alternative? Yes — those are Mac-only or freemium; Holdem brings the shelf workflow to Windows, free or $4.99 on the Store.
 - How do I summon it? Shake while dragging, or the global hotkey.
 - Source code? https://github.com/iamzubin/holdem — bug reports and PRs welcome; translations via Crowdin.
 
@@ -51,4 +52,5 @@
 - Website: https://holdem.iamzub.in
 - Repo: https://github.com/iamzubin/holdem
 - Releases: https://github.com/iamzubin/holdem/releases
+- Microsoft Store: https://apps.microsoft.com/detail/9NPKBTJ0SZ05
 - License: MIT — https://github.com/iamzubin/holdem/blob/master/LICENSE

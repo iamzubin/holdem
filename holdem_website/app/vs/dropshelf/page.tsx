@@ -55,7 +55,7 @@ const faqs = [
   },
   {
     q: 'What can Dropshelf hold that Holdem cannot?',
-    a: 'Today: URLs, text snippets, and multimedia beyond files and web images — plus saved shelves you can name, color-code (Pro), and reopen later from the tray. Holdem holds files, folders, and browser images; URL/text drops are on the roadmap.',
+    a: 'Dropshelf has richer shelf management: shelves you can name, color-code (Pro), and reopen later from the tray with timestamps, plus favicons for web links. Since v3.2.0 Holdem also holds links, text snippets and email attachments, and keeps multiple shelves as tabs that survive restarts.',
   },
   {
     q: 'How do the triggers compare?',
@@ -126,7 +126,10 @@ export default function VsDropshelfPage() {
             <tbody className="divide-hairline divide-y">
               <tr>
                 <td className="px-4 py-3 font-medium">Pricing</td>
-                <td className="px-4 py-3">100% free &amp; open-source (MIT)</td>
+                <td className="px-4 py-3">
+                  Free &amp; open-source (MIT) on GitHub, or $4.99 one-time on
+                  the Microsoft Store
+                </td>
                 <td className="px-4 py-3">
                   Free with 3-second wait; Pro is a one-time in-app purchase
                   (see Store listing for current price)
@@ -152,7 +155,7 @@ export default function VsDropshelfPage() {
               <tr>
                 <td className="px-4 py-3 font-medium">Supported content</td>
                 <td className="px-4 py-3">
-                  Files, folders, web images (URLs &amp; text on the roadmap)
+                  Files, folders, web images, links, text, email attachments
                 </td>
                 <td className="px-4 py-3">
                   Files, folders, documents, images, videos, multimedia, URLs,
@@ -222,31 +225,31 @@ export default function VsDropshelfPage() {
 
         <h2>Where Dropshelf is honestly ahead</h2>
         <p>
-          Credit where due: Dropshelf is the richer app today. It accepts URLs,
-          text snippets, and multimedia — content types Holdem has on its
-          roadmap but does not ship yet. Its shelves can be viewed as lists or
-          grids, moved anywhere, and — the killer feature — automatically saved
-          when closed with items inside, then reopened from the tray with
-          timestamps, custom names, and colors (naming/colors are Pro). It
-          handles 100+ file drops without hanging, shows favicons for web links,
-          lets you Ctrl-drag to copy instead of move, and its WinUI 3 interface
-          with Fluent acrylic genuinely looks at home on Windows 11. Settings go
-          deep: shake sensitivity, excluded apps, shelf placement, auto-close
-          behavior, monochrome tray icon. If your shelf is a project inbox you
-          return to for days, Dropshelf earns its Pro price.
+          Credit where due: Dropshelf has been refining its shelf longer. It
+          accepts URLs, text snippets, and multimedia, as Holdem now does too.
+          Its shelves can be viewed as lists or grids, moved anywhere, and — the
+          killer feature — automatically saved when closed with items inside,
+          then reopened from the tray with timestamps, custom names, and colors
+          (naming/colors are Pro). It handles 100+ file drops without hanging,
+          shows favicons for web links, lets you Ctrl-drag to copy instead of
+          move, and its WinUI 3 interface with Fluent acrylic genuinely looks at
+          home on Windows 11. Settings go deep: shake sensitivity, excluded
+          apps, shelf placement, auto-close behavior, monochrome tray icon. If
+          your shelf is a project inbox you return to for days, Dropshelf earns
+          its Pro price.
         </p>
 
         <h2>Where Holdem wins</h2>
         <p>
-          Holdem wins on three things: price ($0), friction (no timers, shelf
-          appears at the cursor and vanishes when empty), and footprint (a
-          Tauri/Rust tray app that sips resources and auto-launches). It is also
-          fully open-source under MIT — you can read every line, while
-          Dropshelf&apos;s public repo is issue-only. For the canonical use case
-          — “I&apos;m mid-drag and need somewhere to park this for thirty
-          seconds” — Holdem is complete. Browser-image drops already work, so
-          research-style collect-and-drop flows are covered; only URL/text
-          stashes and multi-shelf organization await the roadmap.
+          Holdem wins on three things: price ($0 from GitHub, or a one-off $4.99
+          on the Microsoft Store), friction (no timers, shelf appears at the
+          cursor and vanishes when empty), and footprint (a Tauri/Rust tray app
+          that sips resources and auto-launches). It is also fully open-source
+          under MIT — you can read every line, while Dropshelf&apos;s public
+          repo is issue-only. For the canonical use case — “I&apos;m mid-drag
+          and need somewhere to park this for thirty seconds” — Holdem is
+          complete. Browser images, links, text snippets and email attachments
+          all drop in, and since v3.2.0 you can keep a separate shelf per task.
         </p>
 
         <h2>Switching: Dropshelf habits → Holdem</h2>

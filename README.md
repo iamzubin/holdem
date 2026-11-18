@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center">Holdem</h1>
   <p align="center">
-    <strong>The free Dropover for Windows.</strong><br />
+    <strong>The Dropover for Windows.</strong><br />
     A lightweight floating shelf to stash files mid-drag — shake, drop, done.
   </p>
 </p>
@@ -15,8 +15,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/iamzubin/holdem/releases/download/3.1.0/holdem_3.1.0_x64-setup.exe"><strong>⬇ Download for Windows — Free</strong></a><br />
-  <sub>Windows 10/11 x64 · v3.1.0 · Free & open-source (MIT) · <a href="https://holdem.iamzub.in">Website</a> · <a href="https://github.com/iamzubin/holdem/releases">All releases</a></sub>
+  <a href="https://apps.microsoft.com/detail/9NPKBTJ0SZ05?cid=github"><img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft" width="200" /></a><br />
+  <sub>$4.99 on the Microsoft Store · 7-day free trial · supports development</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/iamzubin/holdem/releases/download/3.2.0/holdem_3.2.0_x64-setup.exe"><strong>⬇ Or download free from GitHub</strong></a><br />
+  <sub>Windows 10/11 x64 · v3.2.0 · Same app, free & open-source (MIT) · <a href="https://holdem.iamzub.in">Website</a> · <a href="https://github.com/iamzubin/holdem/releases">All releases</a></sub>
 </p>
 
 <p align="center">
@@ -35,9 +40,9 @@ Holdem fixes that with a temporary floating shelf:
 2. **Drop** files, folders, or browser images onto it, let go of the mouse
 3. **Navigate** anywhere, then drag everything out where you need it
 
-Built with [Tauri](https://tauri.app) + Rust for low memory use. Runs quietly in your system tray. No paywall, no wait timers — unlike Dropshelf free tier or macOS-only Dropover.
+Built with [Tauri](https://tauri.app) + Rust for low memory use. Runs quietly in your system tray. The GitHub build has no paywall and no wait timers, unlike the Dropshelf free tier or macOS-only Dropover.
 
-> 🌐 Learn more: [holdem.iamzub.in](https://holdem.iamzub.in) · [Docs](https://holdem.iamzub.in/docs) · [Changelog](https://holdem.iamzub.in/changelog) · [Pricing — free forever](https://holdem.iamzub.in/pricing)
+> 🌐 Learn more: [holdem.iamzub.in](https://holdem.iamzub.in) · [Docs](https://holdem.iamzub.in/docs) · [Changelog](https://holdem.iamzub.in/changelog) · [Pricing](https://holdem.iamzub.in/pricing)
 
 ## ✨ Features
 
@@ -45,30 +50,41 @@ Built with [Tauri](https://tauri.app) + Rust for low memory use. Runs quietly in
 |---|---|
 | 🗂️ | **Floating holding area** — draggable, always-on-top shelf for files & folders |
 | 🖱️ | **Shake to summon** — start dragging, shake, shelf appears at cursor |
-| ⌨️ | **Global hotkey** — summon the shelf anytime (customizable) |
-| 🖼️ | **Browser image drops** — drag images straight from Chrome / Edge / Firefox |
-| 🔔 | **Tray integration** — right-click for settings, quick actions |
+| ⌨️ | **Global hotkey** — Win+Shift+H by default, customizable |
+| 📑 | **Multiple shelves** — one tab per task, Ctrl+Shift+T reopens a closed shelf for 7 days |
+| 💾 | **Remembers your shelf** — items survive restarts and updates |
+| 👀 | **Preview & actions** — Space to preview, Ctrl+C to copy as files, copy to folder, ZIP, pin, undo |
+| 🖼️ | **Image tools** — resize or convert to PNG/JPEG without touching the original |
+| 🔔 | **Tray integration** — settings, quick actions, "Add clipboard to shelf" |
 | 🚀 | **Auto-launch + auto-update** — ready on login, always up to date |
-| 🌍 | **25 languages** — auto-detects locale, RTL layout support |
+| 🌍 | **25 languages** — light/dark/system theme, Mica on Windows 11 |
 
 **What you can stash:**
-- Files & folders from File Explorer
-- Images dragged from the browser
+- Files & folders from File Explorer or any app
+- Images and links from the browser
+- Text snippets, email attachments, emails from classic Outlook (.msg)
+- Images from chat apps, files from ZIP folders, 7-Zip or WinRAR
+- Anything on the clipboard, with Ctrl+V
 
 **On the roadmap:**
-- URL / text-snippet drops
-- Multiple shelves for different tasks
-- Custom theme & opacity controls
+- Custom opacity controls
 
-See [Changelog](https://holdem.iamzub.in/changelog) for what's new in v3.1.0.
+See [Changelog](https://holdem.iamzub.in/changelog) for what's new in v3.2.0.
 
 ## 📥 Download
 
-**Recommended:** grab the signed installer from GitHub Releases:
+Two ways to get the same app:
 
-👉 **[Download holdem_3.1.0_x64-setup.exe](https://github.com/iamzubin/holdem/releases/download/3.1.0/holdem_3.1.0_x64-setup.exe)**
+| | Microsoft Store | GitHub |
+|---|---|---|
+| Price | $4.99 one-time, 7-day free trial | Free |
+| Updates | Through the Microsoft Store | Built-in updater |
+| Install | Any PC signed in to your Microsoft account | .exe installer |
+| Features | All | All |
 
-Or browse [all releases](https://github.com/iamzubin/holdem/releases) for notes and older versions.
+👉 **[Get it from the Microsoft Store](https://apps.microsoft.com/detail/9NPKBTJ0SZ05?cid=github)**: buying it there pays for continued development.
+
+👉 **[Download holdem_3.2.0_x64-setup.exe](https://github.com/iamzubin/holdem/releases/download/3.2.0/holdem_3.2.0_x64-setup.exe)**, or browse [all releases](https://github.com/iamzubin/holdem/releases) for notes and older versions.
 
 ## 🚀 Quick start
 
@@ -119,13 +135,13 @@ Project layout:
 ## ❓ FAQ
 
 **Is Holdem really free?**
-Yes — 100% free and MIT open-source. No pro unlocks, no wait timers.
+Yes. The GitHub build is MIT open source with no pro unlocks and no wait timers. The Microsoft Store version ($4.99) is the same app; buying it supports development.
 
 **Windows versions?**
-Windows 10 and 11 (x64).
+Windows 10 version 1809 or later and Windows 11 (x64).
 
 **Dropover / Dropshelf / Yoink alternative?**
-Yes — those are Mac-only or freemium. Holdem brings the same shelf workflow to Windows, free.
+Yes — those are Mac-only or freemium. Holdem brings the same shelf workflow to Windows.
 Comparisons: [vs Dropover](https://holdem.iamzub.in/vs/dropover) · [vs Dropshelf](https://holdem.iamzub.in/vs/dropshelf) · [vs Yoink](https://holdem.iamzub.in/vs/yoink) · [vs DropPoint](https://holdem.iamzub.in/vs/droppoint)
 
 **How do I summon it?**
@@ -139,7 +155,7 @@ We welcome bug reports, feature requests, and PRs!
 - Translations via [Crowdin](https://crowdin.com/project/holdem) (`crowdin.yml`)
 - Please run `cargo clippy -- -D warnings` and `npm run build` before submitting
 
-If Holdem saves you time, ⭐ star the repo and share it with a friend.
+If Holdem saves you time, ⭐ star the repo, share it with a friend, or [buy it on the Microsoft Store](https://apps.microsoft.com/detail/9NPKBTJ0SZ05?cid=github) to support development.
 
 ## 📄 License
 

@@ -57,7 +57,7 @@ const faqs = [
   },
   {
     q: 'Can I drag browser images into Holdem like Dropover?',
-    a: 'Yes. Holdem already supports dragging web images directly from the browser into the shelf. URL drops and text snippets are on the roadmap; Dropover already supports links and text today.',
+    a: 'Yes. Holdem already supports dragging web images directly from the browser into the shelf. Since v3.2.0 it also takes links (saved as shortcuts), text snippets, email attachments and chat images.',
   },
   {
     q: 'Does Holdem upload files to the cloud like Dropover?',
@@ -109,8 +109,8 @@ export default function VsDropoverPage() {
           <strong>Verdict:</strong> On a Mac, Dropover wins — it is the native,
           full-featured original. On Windows, Dropover is not an option, and
           Holdem is the free, open-source shelf that covers the core workflow:
-          shake, stash, navigate, drop. No trial countdown, no 3-second wait, no
-          $6.99 unlock.
+          shake, stash, navigate, drop. Free from GitHub with no 3-second wait,
+          or $4.99 once on the Microsoft Store to support development.
         </div>
 
         <h2>Holdem vs Dropover: side-by-side</h2>
@@ -133,7 +133,10 @@ export default function VsDropoverPage() {
               </tr>
               <tr>
                 <td className="px-4 py-3 font-medium">Pricing</td>
-                <td className="px-4 py-3">100% free &amp; open-source (MIT)</td>
+                <td className="px-4 py-3">
+                  Free &amp; open-source (MIT) on GitHub, or $4.99 one-time on
+                  the Microsoft Store
+                </td>
                 <td className="px-4 py-3">
                   Free download; Dropover Pro $6.99 one-time in-app purchase
                 </td>
@@ -161,7 +164,7 @@ export default function VsDropoverPage() {
               <tr>
                 <td className="px-4 py-3 font-medium">Supported content</td>
                 <td className="px-4 py-3">
-                  Files, folders, web images (URLs &amp; text on the roadmap)
+                  Files, folders, web images, links, text, email attachments
                 </td>
                 <td className="px-4 py-3">
                   Files, folders, documents, images, URLs, text snippets,
@@ -229,8 +232,10 @@ export default function VsDropoverPage() {
           before you can interact with the shelf. Removing it costs $6.99 as a
           one-time in-app purchase (per its Mac App Store listing; verify the
           current price before buying). That is fair pricing for a mature app —
-          but it is still a paywall on the core interaction. Holdem has no trial
-          and no timer: the MIT-licensed code is on{' '}
+          but it is still a paywall on the core interaction. Holdem never adds a
+          timer: the free build has every feature, the Microsoft Store version
+          ($4.99, 7-day trial) is the same app for people who want to chip in,
+          and the MIT-licensed code is on{' '}
           <a
             href="https://github.com/iamzubin/holdem"
             target="_blank"
@@ -265,11 +270,12 @@ export default function VsDropoverPage() {
           share via AirDrop/Mail/Messages, resize images, extract text, zip
           archives, run Instant Actions, fire custom scripts, watch folders, and
           upload to seven cloud services including its own free anonymous
-          Dropover Cloud. Holdem covers files, folders, and web images dragged
-          from the browser; URL and text drops are roadmap items, and there is
-          no cloud, sharing, or scripting layer — by design it is a local-only
-          utility with no account and no network calls. Choose based on whether
-          your shelf is a transit lounge (Holdem) or a workbench (Dropover).
+          Dropover Cloud. Holdem covers files, folders, web images, links, text
+          snippets and email attachments, and can resize, convert and zip what
+          it holds, but there is no cloud, sharing, or scripting layer — by
+          design it is a local-only utility with no account and no network
+          calls. Choose based on whether your shelf is a transit lounge (Holdem)
+          or a workbench (Dropover).
         </p>
 
         <h2>How to switch: Dropover habits → Holdem</h2>

@@ -49,7 +49,7 @@ const faqs = [
   },
   {
     q: 'How much does Yoink cost vs Holdem?',
-    a: 'Per the developer site and Mac App Store, Yoink is a $8.99 (US) one-time purchase — also available via Setapp — with a free trial on the developer website. Holdem is MIT-licensed open source: free, with no trial or paywall.',
+    a: 'Per the developer site and Mac App Store, Yoink is a $8.99 (US) one-time purchase — also available via Setapp — with a free trial on the developer website. Holdem is MIT-licensed open source: free from GitHub with nothing locked, or $4.99 one-time on the Microsoft Store (7-day free trial) for the same app.',
   },
   {
     q: 'Does Holdem work like Yoink’s shelf?',
@@ -108,8 +108,8 @@ export default function VsYoinkPage() {
           <strong>Verdict:</strong> On a Mac, Yoink wins — $8.99 once buys a
           shelf, clipboard history, QuickLook, and Handoff refined over a
           decade. On Windows, Yoink is not an option, and Holdem covers the core
-          shelf workflow free: shake, stash, navigate, drop. No purchase, no
-          subscription, no trial clock.
+          shelf workflow: shake, stash, navigate, drop. Free from GitHub, or
+          $4.99 once on the Microsoft Store. No subscription.
         </div>
 
         <h2>Holdem vs Yoink: side-by-side</h2>
@@ -133,7 +133,10 @@ export default function VsYoinkPage() {
               </tr>
               <tr>
                 <td className="px-4 py-3 font-medium">Pricing</td>
-                <td className="px-4 py-3">100% free &amp; open-source (MIT)</td>
+                <td className="px-4 py-3">
+                  Free &amp; open-source (MIT) on GitHub, or $4.99 one-time on
+                  the Microsoft Store
+                </td>
                 <td className="px-4 py-3">
                   $8.99 (US) one-time — Mac App Store, direct, or Setapp; free
                   trial on the developer site
@@ -153,7 +156,7 @@ export default function VsYoinkPage() {
               <tr>
                 <td className="px-4 py-3 font-medium">Supported content</td>
                 <td className="px-4 py-3">
-                  Files, folders, web images (URLs &amp; text on the roadmap)
+                  Files, folders, web images, links, text, email attachments
                 </td>
                 <td className="px-4 py-3">
                   Virtually anything draggable: Finder files, app content, web
@@ -268,10 +271,10 @@ export default function VsYoinkPage() {
           Apple devices with Handoff. It is localized into 8+ languages and
           plugs into Services, Quick Actions, and Automator. Holdem does not
           attempt any of this: it is a young, Windows-only, local-only shelf
-          whose roadmap (URL/text drops, multiple shelves) targets the dragging
-          workflow specifically. If your computer is a Mac, buy Yoink with
-          confidence. If it runs Windows, Holdem is the free way to get the
-          shelf habit.
+          focused on the dragging workflow: links, text, attachments and
+          multiple shelves, but no clipboard history or Handoff. If your
+          computer is a Mac, buy Yoink with confidence. If it runs Windows,
+          Holdem is the way to get the shelf habit, free or for $4.99.
         </p>
 
         <h2>Switching: Yoink habits → Holdem</h2>

@@ -1,6 +1,7 @@
 'use client'
 import { TextLoop } from '@/components/ui/text-loop'
 import Link from 'next/link'
+import { STORE_URL } from '@/lib/constants'
 
 const FOOTER_LINKS = [
   { href: '/download', label: 'Download' },
@@ -30,6 +31,14 @@ export function Footer() {
           </TextLoop>
         </a>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+          <a
+            href={STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-ink-subtle hover:text-ink hover:underline"
+          >
+            Microsoft Store
+          </a>
           {FOOTER_LINKS.map((l) => (
             <Link
               key={l.href}

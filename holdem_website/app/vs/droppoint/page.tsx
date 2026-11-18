@@ -62,7 +62,7 @@ const faqs = [
   },
   {
     q: 'What content can each hold?',
-    a: 'DropPoint holds files and folders. Holdem holds files, folders, and images dragged directly from the browser, with URL and text-snippet drops on the roadmap.',
+    a: 'DropPoint holds files and folders. Holdem holds files, folders, browser images and links, text snippets, email attachments and chat images.',
   },
   {
     q: 'Which free open-source shelf should I pick?',
@@ -128,7 +128,9 @@ export default function VsDroppointPage() {
             <tbody className="divide-hairline divide-y">
               <tr>
                 <td className="px-4 py-3 font-medium">Pricing &amp; license</td>
-                <td className="px-4 py-3">Free, open-source (MIT)</td>
+                <td className="px-4 py-3">
+                  Free, open-source (MIT); or $4.99 on the Microsoft Store
+                </td>
                 <td className="px-4 py-3">Free, open-source (GPL-3.0)</td>
               </tr>
               <tr>
@@ -159,7 +161,7 @@ export default function VsDroppointPage() {
               <tr>
                 <td className="px-4 py-3 font-medium">Supported content</td>
                 <td className="px-4 py-3">
-                  Files, folders, web images (URLs &amp; text on the roadmap)
+                  Files, folders, web images, links, text, email attachments
                 </td>
                 <td className="px-4 py-3">Files and folders</td>
               </tr>

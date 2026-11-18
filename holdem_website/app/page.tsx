@@ -6,7 +6,12 @@ import { Coffee, Download, Share2, X } from 'lucide-react'
 import { HoldemDemo } from './components/holdem-demo'
 import { Button, ButtonLink } from './components/ui/button'
 import { cn } from '@/lib/utils'
-import { DOWNLOAD_URL_FALLBACK } from '@/lib/constants'
+import { StoreBadge } from './components/store-badge'
+import {
+  DOWNLOAD_URL_FALLBACK,
+  STORE_PRICE,
+  STORE_TRIAL_DAYS,
+} from '@/lib/constants'
 
 // Below-fold sections animate on scroll into view — hero stays plain HTML
 // so crawlers and LCP never wait on opacity:0/blur JS.
@@ -22,19 +27,23 @@ const TRANSITION_SECTION = {
 const FAQS = [
   {
     q: 'Is Holdem really free?',
-    a: 'Yes. Holdem is free and open source (MIT), with no wait timers, unlike the Dropshelf free tier with its 3-second wait.',
+    a: 'Yes. The installer on GitHub is free and open source (MIT), with no wait timers and nothing locked. Holdem is also on the Microsoft Store for $4.99 with a 7-day free trial. It is the same app; buying it there supports development and gets you updates through the Store.',
+  },
+  {
+    q: 'What is the difference between the free download and the Microsoft Store version?',
+    a: 'Features are identical. The Store version installs and updates through the Microsoft Store, works on every PC signed in to your Microsoft account, and pays for continued development. The free .exe from GitHub updates itself.',
   },
   {
     q: 'Which Windows versions are supported?',
-    a: 'Windows 10 and Windows 11 (x64). Download the .exe installer from the download page or GitHub Releases.',
+    a: 'Windows 10 version 1809 or later and Windows 11, 64-bit (x64). Get it from the Microsoft Store, or download the .exe installer from the download page or GitHub Releases.',
   },
   {
     q: 'How do I summon the shelf?',
-    a: 'Shake your mouse while dragging files, or press the global hotkey. The floating shelf appears at your cursor — drop files in, navigate anywhere, then drag them out.',
+    a: 'Shake your mouse while dragging files, or press the global hotkey (Win+Shift+H by default). You can also turn on opening the shelf by holding a drag against a screen edge. Drop files in, go anywhere, then drag them out.',
   },
   {
     q: 'What can I drop on the shelf?',
-    a: 'Files, folders, and images dragged directly from the browser. URL and text-snippet support is on the roadmap — see the changelog.',
+    a: 'Files and folders, images and links from the browser, text snippets, email attachments, emails from classic Outlook, images from chat apps, and files from ZIP folders, 7-Zip or WinRAR. You can also paste onto the shelf with Ctrl+V.',
   },
   {
     q: 'Is Holdem a Dropover alternative for Windows?',
@@ -61,24 +70,6 @@ const Feature = ({
 }) => (
   <div>
     <p className="font-medium">{title}</p>
-    <p className="text-ink-muted mt-1 text-sm">{description}</p>
-  </div>
-)
-
-const ComingSoonFeature = ({
-  title,
-  description,
-}: {
-  title: string
-  description: string
-}) => (
-  <div>
-    <p className="flex items-center gap-2 font-medium">
-      {title}
-      <span className="bg-surface-2 text-ink-muted rounded-full px-2 py-0.5 text-xs font-medium">
-        Soon
-      </span>
-    </p>
     <p className="text-ink-muted mt-1 text-sm">{description}</p>
   </div>
 )
@@ -324,24 +315,29 @@ export default function Home() {
             Holdem — the free Dropover for Windows
           </h1>
           <p className="text-ink-muted mx-auto mb-8 max-w-2xl">
-            Holdem is a lightweight, free and open-source shelf for Windows that
-            makes moving files effortless. Shake your mouse while dragging to
-            summon a floating holding area, collect files, images, and folders
-            from anywhere — then drop them exactly where you need them. Built
-            with Tauri for speed and privacy, it runs quietly in your system
-            tray and keeps your desktop clutter-free.
+            Holdem is a lightweight, open-source shelf for Windows that makes
+            moving files effortless. Shake your mouse while dragging to summon a
+            floating holding area, collect files, images, links and text from
+            anywhere, then drop them exactly where you need them. Built with
+            Tauri for speed and privacy, it runs quietly in your system tray and
+            never sends your files anywhere.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-3">
+            <StoreBadge />
+            <p className="text-ink-subtle text-xs">
+              {STORE_PRICE} on the Microsoft Store · {STORE_TRIAL_DAYS}-day free
+              trial · supports development
+            </p>
             <ButtonLink
-              variant="primary"
+              variant="secondary"
               size="md"
               href={downloadUrl}
               download
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Download className="h-4 w-4" /> Download for Windows — Free
+              <Download className="h-4 w-4" /> Or download free from GitHub
               {downloads !== null && (
                 <span className="ml-1 text-xs opacity-70">
                   ({downloads.toLocaleString()} downloads)
@@ -349,7 +345,8 @@ export default function Home() {
               )}
             </ButtonLink>
             <p className="text-ink-subtle text-xs">
-              Windows 10/11 x64 · v3.2.0 · Free &amp; open-source ·{' '}
+              Windows 10/11 x64 · v3.2.0 · Same app, free &amp; open-source
+              (MIT) ·{' '}
               <a
                 href="https://github.com/iamzubin/holdem/releases"
                 target="_blank"
@@ -432,8 +429,20 @@ export default function Home() {
               description="Drag files or folders in and out of the shelf with ease."
             />
             <Feature
-              title="Browser Image Support"
-              description="Drop images directly from your web browser into the shelf."
+              title="Drop Almost Anything"
+              description="Browser images and links, text snippets, email attachments, Outlook emails, chat images, and files from ZIP, 7-Zip or WinRAR."
+            />
+            <Feature
+              title="Multiple Shelves"
+              description="Keep a shelf per task as tabs. Reopen a closed shelf with Ctrl+Shift+T for up to a week."
+            />
+            <Feature
+              title="Preview and Item Actions"
+              description="Preview with Space, copy as files with Ctrl+C, copy to a folder, zip, pin, and undo."
+            />
+            <Feature
+              title="Image Resize and Convert"
+              description="Resize or convert to PNG or JPEG. The original is never changed."
             />
             <Feature
               title="System Tray Integration"
@@ -445,12 +454,12 @@ export default function Home() {
             />
             <Feature
               title="Auto-launch on Startup"
-              description="Always ready when you log in."
+              description="Always ready when you log in. Your shelves survive restarts and updates."
             />
           </div>
         </motion.section>
 
-        {/* Coming soon */}
+        {/* Two ways to get it */}
         <motion.section
           variants={VARIANTS_SECTION}
           initial="hidden"
@@ -459,17 +468,34 @@ export default function Home() {
           transition={TRANSITION_SECTION}
           className="mb-12"
         >
-          <h2 className="mb-6 text-2xl font-bold">Coming Soon</h2>
+          <h2 className="mb-6 text-2xl font-bold">Two ways to get Holdem</h2>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <ComingSoonFeature
-              title="Drop anything"
-              description="Support for images, text, links — not just files."
-            />
-            <ComingSoonFeature
-              title="Multiple Shelves"
-              description="Organize files into separate shelves for different tasks."
-            />
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="border-hairline bg-surface-1 flex flex-col rounded-2xl border p-5">
+              <p className="font-medium">Microsoft Store · {STORE_PRICE}</p>
+              <p className="text-ink-muted mt-1 mb-4 flex-1 text-sm">
+                Try it free for {STORE_TRIAL_DAYS} days. Installs and updates
+                through the Store, works on every PC signed in to your Microsoft
+                account, and pays for new features.
+              </p>
+              <StoreBadge height={40} />
+            </div>
+            <div className="border-hairline bg-surface-1 flex flex-col rounded-2xl border p-5">
+              <p className="font-medium">GitHub · Free</p>
+              <p className="text-ink-muted mt-1 mb-4 flex-1 text-sm">
+                The same app, MIT-licensed. Download the installer and it
+                updates itself. Nothing is locked and there are no timers.
+              </p>
+              <ButtonLink
+                variant="secondary"
+                size="md"
+                href={downloadUrl}
+                download
+                className="self-start"
+              >
+                <Download className="h-4 w-4" /> Download .exe
+              </ButtonLink>
+            </div>
           </div>
         </motion.section>
 

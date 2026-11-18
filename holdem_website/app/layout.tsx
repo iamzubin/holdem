@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: '%s | Holdem',
   },
   description:
-    'Holdem is the free Dropover for Windows: a free, open-source drag-and-drop file shelf. Shake your mouse while dragging to summon a floating holding area for files, folders & web images. No wait timers, no paywall.',
+    'Holdem is the Dropover for Windows: an open-source drag-and-drop file shelf, free on GitHub or $4.99 on the Microsoft Store. Shake your mouse while dragging to summon a floating holding area for files, folders, images, links and text.',
   // Google Search Console: set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION in Vercel
   // env vars to emit the google-site-verification meta tag.
   verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
@@ -106,15 +106,33 @@ export default async function RootLayout({
     name: 'Holdem',
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Windows 10, Windows 11',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'GitHub release (open source)',
+        price: '0',
+        priceCurrency: 'USD',
+        url: 'https://github.com/iamzubin/holdem/releases',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Microsoft Store',
+        price: '4.99',
+        priceCurrency: 'USD',
+        url: 'https://apps.microsoft.com/detail/9NPKBTJ0SZ05',
+      },
+    ],
     isAccessibleForFree: true,
     softwareVersion: '3.2.0',
     url: 'https://holdem.iamzub.in',
     downloadUrl:
       'https://github.com/iamzubin/holdem/releases/download/3.2.0/holdem_3.2.0_x64-setup.exe',
-    sameAs: ['https://github.com/iamzubin/holdem'],
+    sameAs: [
+      'https://github.com/iamzubin/holdem',
+      'https://apps.microsoft.com/detail/9NPKBTJ0SZ05',
+    ],
     description:
-      'Free, open-source drag-and-drop file shelf for Windows. Shake your mouse while dragging to summon a floating holding area.',
+      'Open-source drag-and-drop file shelf for Windows, free on GitHub or $4.99 on the Microsoft Store. Shake your mouse while dragging to summon a floating holding area.',
     author: {
       '@type': 'Person',
       name: 'Zubin Choudhary',
